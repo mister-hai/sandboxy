@@ -48,6 +48,7 @@ services:
         - traefik.http.routers.bwapp.rule=Host(`${BWAPPNAME}`)
         #- traefik.http.routers.blog.tls=true
         #- traefik.http.routers.blog.tls.certresolver=lets-encrypt
+        - traefik.http.services.bwapp.loadbalancer.server.port=${BWAPPPORT}
         - traefik.port=${BWAPPPORT}
       #expose:
       #  - ${BWAPPPORT}
@@ -86,6 +87,7 @@ services:
         #- traefik.http.routers.blog.tls=true
         #- traefik.http.routers.blog.tls.certresolver=lets-encrypt
         - traefik.port=${DVWAPORT}
+        - traefik.http.services.dvwa.loadbalancer.server.port=${DVWAPORT}
       #expose:
       #  - ${DVWAPORT}
       restart: unless-stopped
