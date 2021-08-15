@@ -1,0 +1,142 @@
+version: "3"
+#################################################################
+##
+## THIS FILE CONTAINS THE ENTRIES FOR EVERYTHING
+##
+#################################################################
+services:
+##########################################################`#######
+##  COMMAND AND CONTROL - will NOT mount volumes from HOST
+##    This is for users in the network game to access 
+##    for exploring the simulated network
+#################################################################    
+#    cnc:
+#      #build:
+#      #  context: ./cnc
+#      #  dockerfile: Dockerfile
+#      image: debian:buster
+#      #security_opt:
+#      #  - no-new-privileges
+#      restart: unless-stopped
+#      ports:
+#        #maps openvpn directly
+#        - 1194:1194
+#        # we have to visit port 17730
+#        # to access the ssh
+#        # TODO: USE __PORTKNOCKING__.shellops.py and make a script to knock
+#        # on the door and handoff a shell to the users terminal
+#        - 17730:22
+#      network_mode: macvlan
+#      mac_address: 02:42:c0:a8:84:22
+#      networks:
+#        macvlan:
+#          driver: macvlan
+#          subnet: 192.168.0.0/24
+#          gateway: 192.168.0.1
+#          ipvlan_mode: l2
+#          parent: eth0 ipvlan210
+        
+   
+#################################################################
+##  BWAPP   ; will be locked down for semi-private usage
+#################################################################
+    bwapp:
+      image: raesene/bwapp
+      #depends_on:
+      #  - traefik
+      labels:
+        - traefik.http.routers.bwapp.rule=Host(`${BWAPPNAME}`)
+        #- traefik.http.routers.blog.tls=true
+        #- traefik.http.routers.blog.tls.certresolver=lets-encrypt
+        - traefik.port=${BWAPPPORT}
+      #expose:
+      #  - ${BWAPPPORT}
+      ports:
+        - ${BWAPPPORT}:80
+      networks:
+        - net
+##################################################################
+##        WEB GOAT AND WOLF  ; will be locked down for semi-private usage
+#################################################################
+#    webgoat:
+#      image: webgoat/webgoat-7.1
+#      #depends_on:
+#      #  - traefik      
+#      labels:
+#        - traefik.http.routers.webgoat.rule=Host(`webgoat.${HOST}`)
+#        #- traefik.http.routers.blog.tls=true
+#        #- traefik.http.routers.blog.tls.certresolver=lets-encrypt
+#        - traefik.port=${WEEBGOATPORT}          
+#      #expose:
+#      #  - ${WEEBGOATPORT}
+#      restart: unless-stopped
+#      ports:
+#        - ${WEEBGOATPORT}:8080
+#      networks:
+#        - net
+#################################################################
+##  Damn Vulnerable WEB APP ; will be locked down for semi-private usage
+#################################################################
+    dvwa:
+      image: vulnerables/web-dvwa
+      #depends_on:
+      #  - traefik
+      labels:
+        - traefik.http.routers.dvwa.rule=Host(`${DVWANAME}`)
+        #- traefik.http.routers.blog.tls=true
+        #- traefik.http.routers.blog.tls.certresolver=lets-encrypt
+        - traefik.port=${DVWAPORT}
+      #expose:
+      #  - ${DVWAPORT}
+      restart: unless-stopped
+      ports:
+        - ${DVWAPORT}:80
+      networks:
+        - net
+        
+#################################################################
+##  Mutillidae2 ; will be locked down for semi-private usage
+#################################################################
+#    mutillidae2:
+#      image: santosomar/mutillidae_2
+#      #depends_on:
+#      #  - traefik      
+#      labels:
+#        - traefik.http.routers.mutillidae2.rule=Host(`mutillidae2.${HOST}`)
+#        #- traefik.http.routers.blog.tls=true
+#        #- traefik.http.routers.blog.tls.certresolver=lets-encrypt
+#        - traefik.port=${MUTILLIDAE2PORT}    
+#      #expose:
+#      #  - ${MUTILLIDAE2PORT}
+#      restart: unless-stopped
+#      #ports:
+#      #  - ${MUTILLIDAE2PORT}:80
+#      networks:
+#        - net
+#################################################################
+##  CTFD; part of the network game, will allow network pivoting
+## will use the builder script portion for production. 
+#################################################################        
+    ctfd:
+      image: ctfd/ctfd
+      #depends_on:
+      #  - traefik      
+      labels:
+        - traefik.http.routers.ctfd.rule=Host(`ctfd.${HOST}`)      
+        - traefik.port=${CTFDPORT}
+        - traefik.http.services.ctfd.loadbalancer.server.port=${CTFDPORT}
+      #expose:
+      #  - ${CTFDPORT}
+      restart: unless-stopped
+      ports:
+        - ${CTFDPORT}:8000
+      networks:
+        - net
+#################################################################
+#     NETWORKS SECTION
+#################################################################      
+#networks:
+#  macvlan:
+networks:
+  net:
+    external: true

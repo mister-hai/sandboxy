@@ -1,0 +1,77 @@
+version: "3.5"
+
+services:
+#################################################################
+## Traefik: a random proxy solution I was reccomended
+#################################################################
+    traefik:
+      image: traefik:v2.0
+      command:
+        - --entrypoints.net.address=:${TRAEFIKHTTPPORT}
+        - --entrypoints.websecure.address=:${TRAEFIKHTTPSPORT}
+        - --log.level=${LOG_LEVEL}
+        - --providers.docker
+        - --providers.docker.network=net
+        - --providers.docker.exposedbydefault=true
+        #- --providers.file.filename=/etc/traefik/certs.toml
+        - --api
+        # Writing Logs to a file
+        - --log.filePath=/logs/traefik.log
+        # supports common (Common Log Format) or json
+        - --log.format=${LOG_FORMAT:-common}
+        # Configuring a buffer of 100 lines
+        - --accesslog=${ACCESSLOG:-true}
+        - --accesslog.filepath=/logs/access.log
+        - --accesslog.bufferingsize=${ACCESSLOG_BUFFERINGSIZE:-100}
+
+        # access log fields
+        # Limiting the Logs to Specific Fields
+        - --accesslog.fields.defaultmode=${ACCESSLOG_FIELDS_DEFAULTMODE:-keep}
+        - --accesslog.fields.names.ClientUsername=${ACCESSLOG_FIELDS_NAMES_CLIENTUSERNAME:-keep}
+        - --accesslog.fields.headers.defaultmode=${ACCESSLOG_FIELDS_HEADERS_DEFAULTMODE:-keep}
+        - --accesslog.fields.headers.names.User-Agent=${ACCESSLOG_FIELDS_HEADERS_NAMES_USER_AGENT:-keep}
+        - --accesslog.fields.headers.names.Authorization=${ACCESSLOG_FIELDS_HEADERS_NAMES_AUTHORIZATION:-keep}
+        - --accesslog.fields.headers.names.Content-Type=${ACCESSLOG_FIELDS_HEADERS_NAMES_CONTENT_TYPE:-keep}
+
+        # cert resolvers
+        #- --certificatesresolvers.le.acme.caserver=${CA_SERVER}
+        #- --certificatesresolvers.le.acme.email=${EMAIL}
+        #- --certificatesresolvers.le.acme.storage=/acme.json
+        #- --certificatesResolvers.le.acme.tlsChallenge=${TLS_CHALLENGE}
+        #- --certificatesResolvers.le.acme.dnsChallenge=${DNS_CHALLENGE}
+        #- --certificatesResolvers.le.acme.dnsChallenge.provider=${PROVIDER}
+        #- --certificatesResolvers.le.acme.dnsChallenge.resolvers=1.1.1.1:53,8.8.8.8:53
+      volumes:
+        - "$PWD/certs:/certs"
+        - "$PWD/traefik.toml:/etc/traefik/traefik.toml"
+        - "$PWD/acme.json:/acme.json"
+        #- $PWD/traefik.yml:/etc/traefik/traefik.yml
+        - "$PWD/traefik_dynamic.toml:/traefik_dynamic.toml"
+        - /var/run/docker.sock:/var/run/docker.sock
+      labels:
+        # set this lebel to `false` and the rest is history
+        traefik.enable: true
+        # middleware redirect
+        #traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
+
+        # redirection HTTP to HTTPS
+        #traefik.http.routers.http_catchall.rule: hostregexp(`{host:.+}`)
+        #traefik.http.routers.http_catchall.entrypoints: net
+        #traefik.http.routers.http_catchall.middlewares: redirect-to-https
+        # dashboard
+        #traefik.http.routers.dashboard.rule: Host(`${DASHBOARD_HOST}`)
+        #DEV OPTION
+        #traefik.http.routers.traefik.entrypoints: websecure
+        #traefik.http.routers.traefik.entrypoints: net
+        
+        #traefik.http.routers.traefik.service: api@internal
+        #traefik.http.routers.traefik.tls: true        
+      ports:
+        - 8080:8080
+        - 80:80
+      #network_mode: host
+      networks:
+        - net
+networks:
+  net:
+    external: true

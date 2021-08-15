@@ -1,0 +1,34 @@
+version: "3"
+#################################################################
+##
+## THIS FILE CONTAINS THE ENTRIES FOR THE REVERSE PROXY TEST
+##
+#################################################################
+services:
+#################################################################
+##  nginx-reverse-proxy
+#################################################################
+    nginxreverseproxy:
+      image: nginxproxy/nginx-proxy
+      depends_on:
+        - bwapp
+        - mutillidae2
+        - dvwa
+        - ctfd
+      volumes:
+        - /var/run/docker.sock:/tmp/docker.sock:ro
+      ports:
+        - 80:80
+
+#################################################################
+#     NETWORKS SECTION
+#################################################################      
+networks:
+  macvlan:
+    
+  containers:
+    driver: bridge
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge

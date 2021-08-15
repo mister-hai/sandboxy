@@ -1,0 +1,215 @@
+# set the user to run under
+# Default: nobody
+user ${user};  
+#user www-data;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+# Default: 1
+worker_processes  5;
+worker_rlimit_nofile 8192;
+
+events {
+  worker_connections  ${WORKER_CONNECTIONS};  
+}
+
+http {
+	##
+	# Basic Settings
+	##
+
+  	# set the hostname please
+  	#server_name fightbiscuits.firewall-gateway.net;
+	# server_name_in_redirect off;
+
+	include /etc/nginx/mime.types;
+  	include /etc/nginx/fastcgi.conf;
+	#include /etc/nginx/conf.d/*.conf;
+
+  	# required for some VHOSTS
+  	server_names_hash_bucket_size 128; 
+
+	default_type application/octet-stream;
+	root     /usr/share/nginx/html;
+  	index    index.html index.htm index.php;
+
+	sendfile on;
+	tcp_nopush on;
+	tcp_nodelay on;
+	keepalive_timeout 65;
+	types_hash_max_size 2048;
+	# server_tokens off;
+
+	##
+	# SSL Settings
+	##
+
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+	ssl_prefer_server_ciphers on;
+
+	##
+	#Choose your proxy settings
+	# Load from file or inline style
+	##
+	#include    /etc/nginx/proxy.conf;
+	proxy_redirect          off;
+	proxy_set_header        Host            $host;
+	proxy_set_header        X-Real-IP       $remote_addr;
+	proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+	client_max_body_size    10m;
+	client_body_buffer_size 128k;
+	proxy_connect_timeout   90;
+	proxy_send_timeout      90;
+	proxy_read_timeout      90;
+	proxy_buffers           32 4k;
+
+
+	##
+	# Logging Settings
+	##
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+  	log_format   main '$remote_addr - $remote_user [$time_local]  $status '
+	    '"$request" $body_bytes_sent "$http_referer" '
+    	'"$http_user_agent" "$http_x_forwarded_for"';
+
+	#simple reverse-proxy
+  	server {
+	    listen 80;
+    	listen 443 ssl;
+	    server_name ${SERVER_NAME};
+
+		##
+		# Virtual Host Configs
+		##
+		#include /etc/nginx/sites-enabled/*;
+
+		##
+		# Encryption stuff
+		## LOL you have to generate the keys first!
+		# then uncomment!	
+
+    	#ssl_certificate /etc/letsencrypt/cert.crt;
+	    #ssl_certificate_key /etc/letsencrypt/keys/key.pem;
+
+		##
+		# Logging Settings
+		##
+		
+		#access_log /var/log/nginx/access.log;
+		#error_log /var/log/nginx/error.log;
+
+		##	
+		# Gzip Settings
+		##	
+
+		gzip on;
+		gzip_vary on;
+		gzip_proxied any;
+		gzip_comp_level 6;
+		gzip_buffers 16 8k;
+		gzip_http_version 1.1;
+		gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+# the original request URL: $scheme is the protocol (http or https) 
+# and $request_uri is the full URI including arguments.
+#
+# For a code in the 3xx series, the url parameter defines the 
+# new (rewritten) URL.
+#	return (301 | 302 | 303 | 307) url;
+#
+# For other codes, you optionally define a text string which appears 
+# in the body of the response (the standard text for the HTTP code, 
+# such as Not Found for 404, is still included in the header). The 
+# text can contain NGINX variables.
+#	return (1xx | 2xx | 4xx | 5xx) ["text"];
+    	
+		# serve static files
+    	location ~ ^/(images|javascript|js|css|flash|media|static)/  {
+        	root    /var/www/http;
+        	expires 30d;
+    	}
+    	# serve ARACHNI SCANNER
+		# you can change this one to whatever tool you wanna use
+		# to test the internals
+    	location hades/login/ {
+    		rewrite ^/hades/l(.*) /$1 last
+        	proxy_set_header X-Real-IP $remote_addr;
+	        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    	    proxy_set_header X-NginX-Proxy true;
+        	proxy_pass http://localhost:${LOGINPORT};
+	        proxy_ssl_session_reuse off;
+    	    proxy_set_header Host $http_host;
+        	proxy_cache_bypass $http_upgrade;
+	        proxy_redirect off;
+    	}
+    	# serve bwapp
+    	location /challenges/bwapp/ {
+    		rewrite ^/challenges/bwapp(.*) /$1 last
+        	proxy_set_header X-Real-IP $remote_addr;
+	        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    	    proxy_set_header X-NginX-Proxy true;
+        	proxy_pass http://localhost:${BWAPPPORT/;
+	        proxy_ssl_session_reuse off;
+    	    proxy_set_header Host $http_host;
+        	proxy_cache_bypass $http_upgrade;
+	        proxy_redirect off;
+    	}    	
+	    #serve webgoat
+    	location /challenges/webgoat {
+    		rewrite ^/challenges/webgoat(.*) /$1 last
+        	proxy_set_header X-Real-IP $remote_addr;
+	        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    	    proxy_set_header X-NginX-Proxy true;
+        	proxy_pass http://localhost:${WEEBGOATPORT/;
+	        proxy_ssl_session_reuse off;
+    	    proxy_set_header Host $http_host;
+        	proxy_cache_bypass $http_upgrade;
+	        proxy_redirect off;
+	    }
+    	#serve webgoat
+	    location /challenges/multillidae2 {
+	    	rewrite ^/challenges/multillidae2/(.*) /$1 last
+    	    proxy_set_header X-Real-IP $remote_addr;
+        	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	        proxy_set_header X-NginX-Proxy true;
+    	    proxy_pass http://localhost:${MUTILLIDAE2PORT}/;
+        	proxy_ssl_session_reuse off;
+	        proxy_set_header Host $http_host;
+    	    proxy_cache_bypass $http_upgrade;
+        	proxy_redirect off;
+	    }
+    	#serve webgoat
+	    location /challenges/CTFd {
+	    	rewrite ^/challenges/CTFd(.*) /$1 last
+    	    proxy_set_header X-Real-IP $remote_addr;
+        	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        	proxy_set_header X-NginX-Proxy true;
+	        proxy_pass http://localhost:${CTFDPORT}/;
+    	    proxy_ssl_session_reuse off;
+        	proxy_set_header Host $http_host;
+	        proxy_cache_bypass $http_upgrade;
+    	    proxy_redirect off;
+	    }
+	}	
+}
+
+#mail {
+#	# See sample authentication script at:
+#	# http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
+# 
+#	# auth_http localhost/auth.php;
+#	# pop3_capabilities "TOP" "USER";
+#	# imap_capabilities "IMAP4rev1" "UIDPLUS";
+# 
+#	server {
+#		listen     localhost:110;
+#		protocol   pop3;
+#		proxy      on;
+#	}
+# 
+#	server {
+#		listen     localhost:143;
+#		protocol   imap;
+#		proxy      on;
+#	}
+#}

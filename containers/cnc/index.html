@@ -1,0 +1,816 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><h1>inetsim-dockerized</h1>
+<p>Dockerfile and scripts to build a <a href="https://www.docker.com/">Docker</a> image for <a href="http://www.inetsim.org/">INetSim</a>. Version of INetSim used: 1.3.2.</p>
+<h1>Quickstart</h1>
+<p>To start INetSim with DNS, HTTP, HTTPS, and FTP enabled run:</p>
+<pre><code>$ docker run -it --rm --name inetsim \
+      -p 127.0.0.1:53:53/udp \
+      -p 127.0.0.1:80:80 \
+      -p 127.0.0.1:443:443 \
+      -p 127.0.0.1:21:21 \
+      -e INETSIM_START_SERVICES=dns,http,https,ftp \
+      -e INETSIM_DNS_VERSION="DNS Version" \
+      -e INETSIM_FTPS_BIND_PORT=21 \
+      -v $(pwd)/user_configs:/opt/inetsim/conf/user_configs:ro \
+      0x4d4c/inetsim</code></pre><h1>Volumes</h1>
+<p>The following directories are defined as volumes:</p>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/opt/inetsim/conf/user_configs</code></td>
+<td>Place for files to override default config files.</td>
+</tr>
+<tr>
+<td><code>/opt/inetsim/data</code></td>
+<td>Service data directory.</td>
+</tr>
+<tr>
+<td><code>/opt/inetsim/log</code></td>
+<td>INetSim log files.</td>
+</tr>
+<tr>
+<td><code>/opt/inetsim/report</code></td>
+<td>INetSim report files.</td>
+</tr>
+</tbody></table>
+<h1>Configuration</h1>
+<p>Most of the configuration is done via environment variables. Since 
+there are quite some options which can be set I suggest using an 
+environment file (via <code>--env-file</code>) or a <code>docker-compose.yml</code>.</p>
+<h2>Global</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_START_SERVICES</code></td>
+<td>Commna separated list of services to start.</td>
+<td><code>dns,http,https,ftp</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SERVICE_MAX_CHILDS</code></td>
+<td>Maximum number of child processes (parallel connections) for each service.</td>
+<td><code>10</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SERVICE_TIMEOUT</code></td>
+<td>If a client does not send any data for the number of seconds given here, the corresponding connection will be closed.</td>
+<td><code>120</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_CREATE_REPORTS</code></td>
+<td>Create report with a summary of connections for the session on shutdown.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_REPORT_LANGUAGE</code></td>
+<td>Set language for reports. Refer to the INetSim docs for a list of supported languages.</td>
+<td><code>en</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_FAKETIME_INIT_DELTA</code></td>
+<td>Initial number of seconds (positive or negative) relative to current date/time for fake time used by all services.</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_FAKETIME_AUTO_DELAY</code></td>
+<td>Number of seconds to wait before incrementing fake time by value specified with <code>INETSIM_FAKETIME_AUTO_INCREMENT</code> (<code>0</code> disables this option).</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_FAKETIME_AUTO_INCREMENT</code></td>
+<td>Number of seconds by which fake time is incremented at regular intervals specified by <code>INETSIM_FAKETIME_AUTO_DELAY</code>. This option only takes effect if <code>INETSIM_FAKETIME_AUTO_DELAY</code> not set to <code>0</code>.</td>
+<td><code>0</code></td>
+</tr>
+</tbody></table>
+<h2>SSL/TLS Files</h2>
+<p>Some services use of TLS connections. All TLS related files (certificates, keys, DH parameters) have to be stored under <code>/opt/inetsim/data/certs/</code>.
+ If this directory is empty, the [entrypoint 
+script(docker-entrypoint.sh) will generate a private key, a self-signed 
+certificate, and a DH parameters file. These will be used by all 
+activated services, which use TLS. If you want to use your own files, 
+simply put them into <code>/opt/inetsim/data/certs/</code>, e.g. by mounting a volume.</p>
+<p>The following table lists which services uses which files:</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Certificate</th>
+<th>Key</th>
+<th>DH parameters</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HTTPS</td>
+<td>https_cert.pem</td>
+<td>https_key.pem</td>
+<td>https_dhparams.pem</td>
+</tr>
+<tr>
+<td>SMTP</td>
+<td>smtp_cert.pem</td>
+<td>smtp_key.pem</td>
+<td>smtp_dhparams.pem</td>
+</tr>
+<tr>
+<td>SMTPS</td>
+<td>smtps_cert.pem</td>
+<td>smtps_key.pem</td>
+<td>smtps_dhparams.pem</td>
+</tr>
+<tr>
+<td>POP3</td>
+<td>pop3_cert.pem</td>
+<td>pop3_key.pem</td>
+<td>pop3_dhparams.pem</td>
+</tr>
+<tr>
+<td>POP3s</td>
+<td>pop3s_cert.pem</td>
+<td>pop3s_key.pem</td>
+<td>pop3s_dhparams.pem</td>
+</tr>
+<tr>
+<td>FTPS</td>
+<td>ftps_cert.pem</td>
+<td>ftps_key.pem</td>
+<td>ftps_dhparams.pem</td>
+</tr>
+</tbody></table>
+<p>If you don't provide your own files for a service, it will use the default certificate (<code>default_cert.pem</code>), default key (<code>default_key.pem</code>), and default DH parameters (<code>default_dhparams.pem</code>).</p>
+<h2>Services</h2>
+<h3>DNS</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_DNS_BIND_PORT</code></td>
+<td>Port number to bind DNS service to.</td>
+<td><code>53</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_DNS_DEFAULT_IP</code></td>
+<td>Default IP address to return with DNS replies.</td>
+<td><code>10.10.10.1</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_DNS_DEFAULT_HOSTNAME</code></td>
+<td>Default hostname to return with DNS replies.</td>
+<td><code>somehost</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_DNS_VERSION</code></td>
+<td>DNS version to return.</td>
+<td><code>"INetSim DNS Server"</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_DNS_DEFAULT_DOMAINNAME</code></td>
+<td>Default domain name to return with DNS replies.</td>
+<td><code>some.domain</code></td>
+</tr>
+</tbody></table>
+<h4>Static DNS Mappings</h4>
+<p>INetSim allows you to define static domain ↔ IP mappings. These 
+mappings can be used to make the DNS service respond with the defined 
+IPs when the corresponding domains are queried and vice versa. There are
+ no predefined static mappings. That is, the services uses the values of
+ <code>INETSIM_DNS_DEFAULT_IP</code> and <code>INETSIM_DNS_DEFAULT_HOSTNAME</code> for all answers. If you want to define your own static mappings, you can add them to the file <code>/opt/inetsim/conf/user_configs/dns_static_mappings</code>. The syntax is <code>dns_static &lt;domain&gt; &lt;ip&gt;</code>.</p>
+<h3>HTTP</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_HTTP_BIND_PORT</code></td>
+<td>Port number to bind HTTP service to.</td>
+<td><code>80</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_HTTP_VERSION</code></td>
+<td>Version string to return in HTTP replies.</td>
+<td><code>"INetSim HTTP server"</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_HTTP_FAKEMODE</code></td>
+<td>Turn HTTP fake mode on (<code>yes</code>) or off (<code>on</code>).</td>
+<td><code>yes</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_HTTP_POST_LIMIT</code></td>
+<td>Size limit for HTTP POST requests.</td>
+<td><code>500000000</code></td>
+</tr>
+</tbody></table>
+<h4>Fake Files</h4>
+<p>Fake files are returned by the INetSim HTTP server if <code>INETSIM_HTTP_FAKEMODE</code>
+ is enabled. You can specify the files to return based on the file 
+extension in the HTTP request of based on the query path. In any case, 
+the files to serve must be placed in <code>/opt/inetsim/data/http/fakefiles</code>.</p>
+<p>The <a href="default_service_configs/http_fakefiles">default mapping</a> between extensions and files can be overridden by placing your own <code>http_fakefiles</code> mapping file into <code>/opt/inetsim/conf/user_configs</code>. The file has to contain one mapping per line; the syntax for a line is <code>http_fakefile &lt;extension&gt; &lt;filename&gt; &lt;mime-type&gt;</code>.</p>
+<p>The same holds for the mapping between paths and files. Place your own <code>http_static_fakefiles</code> into <code>/opt/inetsim/conf/user_configs</code> and it will override the <a href="default_service_configs/http_static_fakefiles">default mapping</a>. The syntax is <code>http_static_fakefile &lt;path&gt; &lt;filename&gt; &lt;mime-type&gt;</code>.</p>
+<h3>HTTPS</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_HTTPS_BIND_PORT</code></td>
+<td>Port number to bind HTTPS service to.</td>
+<td><code>443</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_HTTPS_VERSION</code></td>
+<td>Version string to return in HTTPS replies.</td>
+<td><code>"INetSim HTTPs server"</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_HTTPS_FAKEMODE</code></td>
+<td>Turn HTTPS fake mode on (<code>yes</code>) or off (<code>on</code>).</td>
+<td><code>yes</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_HTTPS_POST_LIMIT</code></td>
+<td>Size limit for HTTPS POST requests.</td>
+<td><code>500000000</code></td>
+</tr>
+</tbody></table>
+<h4>Fake Files</h4>
+<p>Fake files in the HTTPS service work in the same way as in the HTTP service (see above). Place a file called <code>https_fakefiles</code> into <code>/opt/inetsim/conf/user_configs</code> to override the <a href="default_service_configs/https_fakefiles">default</a> mapping between file extensions and files (syntax: <code>https_fakefile &lt;extension&gt; &lt;filename&gt; &lt;mime-type&gt;</code>) and a file called <code>http_static_fakefiles</code> to <code>/opt/inetsim/conf/user_configs</code> to override the <a href="default_service_configs/https_static_fakefiles">default</a> mapping between paths and files.</p>
+<h4>SSL/TLS</h4>
+<p>The HTTPS service expects the certificate under <code>/opt/inetsim/data/certs/https_cert.pem</code>, the key under <code>/opt/inetsim/data/certs/https_key.pem</code>, and the DH parameters under <code>/opt/inetsim/data/certs/https_dhparams.pem</code>. If they are not found, the default files are used.</p>
+<h3>SMTP</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_SMTP_BIND_PORT</code></td>
+<td>Port number to bind SMTP service to.</td>
+<td><code>25</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SMTP_FQDN_HOSTNAME</code></td>
+<td>The FQDN hostname used for SMTP.</td>
+<td><code>mail.inetsim.org</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SMTP_BANNER</code></td>
+<td>The banner string used in SMTP greeting message.</td>
+<td><code>"INetSim Mail Service ready."</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SMTP_HELO_REQUIRED</code></td>
+<td>Define whether the client has to send HELO/EHLO before any other command.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SMTP_EXTENDED_SMTP</code></td>
+<td>Turn support for extended smtp (ESMTP) on (<code>yes</code>) or off (<code>no</code>).</td>
+<td><code>yes</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SMTP_AUTH_REVERSIBLEONLY</code></td>
+<td>Only offer authentication mechanisms which allow reversing the 
+authentication information sent by a client to clear text 
+username/password. This option only takes effect if <code>INETSIM_SMTP_EXTENDED_SMTP</code> is enabled and <code>smtp_service_extension AUTH</code> is configured.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SMTP_AUTH_REQUIRED</code></td>
+<td>Force the client to authenticate. This option only takes effect if <code>INETSIM_SMTP_EXTENDED_SMTP</code> is enabled and <code>smtp_service_extension AUTH</code> is configured.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+</tbody></table>
+<h4>SMTP Service Extensions</h4>
+<p>The <a href="default_service_configs/smtp_service_extensions">default SMTP service extensions</a> offered to client can be overridden by placing a file called <code>smtp_service_extensions</code> into <code>/opt/inetsim/conf/user_configs</code>. The syntax per line is <code>smtp_service_extension &lt;extension [parameter(s)]&gt;</code>. Consider the INetSim documentation for a list of supported extensions.</p>
+<h4>SSL/TLS</h4>
+<p>The SMTP service expects the certificate under <code>/opt/inetsim/data/certs/smtp_cert.pem</code>, the key under <code>/opt/inetsim/data/certs/smtp_key.pem</code>, and the DH parameters under <code>/opt/inetsim/data/certs/smtp_dhparams.pem</code>. If they are not found, the default files are used.</p>
+<h3>SMTPS</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_SMTPS_BIND_PORT</code></td>
+<td>Port number to bind SMTPS service to.</td>
+<td><code>465</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SMTPS_FQDN_HOSTNAME</code></td>
+<td>The FQDN hostname used for SMTPS.</td>
+<td><code>mail.inetsim.org</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SMTPS_BANNER</code></td>
+<td>The banner string used in SMTPS greeting message.</td>
+<td><code>"INetSim Mail Service ready."</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SMTPS_HELO_REQUIRED</code></td>
+<td>Define whether the client has to send HELO/EHLO before any other command.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SMTPS_EXTENDED_SMTP</code></td>
+<td>Turn support for extended smtp (ESMTP) on (<code>yes</code>) or off (<code>no</code>).</td>
+<td><code>yes</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SMTPS_AUTH_REVERSIBLEONLY</code></td>
+<td>Only offer authentication mechanisms which allow reversing the 
+authentication information sent by a client to clear text 
+username/password. This option only takes effect if <code>INETSIM_SMTPS_EXTENDED_SMTP</code> is enabled and <code>smtps_service_extension AUTH</code> is configured.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SMTPS_AUTH_REQUIRED</code></td>
+<td>Force the client to authenticate. This option only takes effect if <code>INETSIM_SMTPS_EXTENDED_SMTP</code> is enabled and <code>smtps_service_extension AUTH</code> is configured.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+</tbody></table>
+<h4>SMTPS Service Extensions</h4>
+<p>The <a href="default_service_configs/smtps_service_extensions">default SMTP service extensions</a> offered to client can be overridden by placing a file called <code>smtps_service_extensions</code> into <code>/opt/inetsim/conf/user_configs</code>. The syntax per line is <code>smtps_service_extension &lt;extension [parameter(s)]&gt;</code>. Consider the INetSim documentation for a list of supported extensions.</p>
+<h4>SSL/TLS</h4>
+<p>The SMTPS service expects the certificate under <code>/opt/inetsim/data/certs/smtps_cert.pem</code>, the key under <code>/opt/inetsim/data/certs/smtps_key.pem</code>, and the DH parameters under <code>/opt/inetsim/data/certs/smtps_dhparams.pem</code>. If they are not found, the default files are used.</p>
+<h3>POP3</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_POP3_BIND_PORT</code></td>
+<td>Port number to bind POP3 service to.</td>
+<td><code>110</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3_BANNER</code></td>
+<td>The banner string used in POP3 greeting message.</td>
+<td><code>"INetSim POP3 Server ready"</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3_HOSTNAME</code></td>
+<td>The hostname used in POP3 greeting message.</td>
+<td><code>pop3host</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3_MBOX_MAXMAILS</code></td>
+<td>Maximum number of e-mails to select from supplied mbox files for creation of random POP3 mailbox</td>
+<td><code>10</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3_MBOX_REREAD</code></td>
+<td>Re-read supplied mbox files if POP3 service was inactive for <code>INETSIM_POP3_MBOX_REREAD</code> seconds</td>
+<td><code>180</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3_MBOX_REBUILD</code></td>
+<td>Rebuild random POP3 mailbox if POP3 service was inactive for <code>INETSIM_POP3_MBOX_REBUILD</code> seconds</td>
+<td><code>60</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3_ENABLE_APOP</code></td>
+<td>Turn APOP on (<code>yes</code>) or off (<code>no</code>)</td>
+<td><code>yes</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3_AUTH_REVERSIBLEONLY</code></td>
+<td>Only offer authentication mechanisms which allow reversing the 
+authentication information sent by a client to clear text 
+username/password</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3_ENABLE_CAPABILITIES</code></td>
+<td>Turn support for pop3 capabilities on (<code>yes</code>) or off (<code>no</code>)</td>
+<td><code>yes</code></td>
+</tr>
+</tbody></table>
+<h4>POP3 Capabilities</h4>
+<p>The <a href="default_service_configs/pop3_capabilities">default POP3 capabilities</a> offered to client can be overridden by placing a file called <code>pop3_capabilities</code> into <code>/opt/inetsim/conf/user_configs</code>. The syntax per line is <code>pop3_capability &lt;capability [parameter(s)]&gt;</code>. Consider the INetSim documentation for a list of supported capabilities.</p>
+<h4>SSL/TLS</h4>
+<p>The POP3 service expects the certificate under <code>/opt/inetsim/data/certs/pop3_cert.pem</code>, the key under <code>/opt/inetsim/data/certs/pop3_key.pem</code>, and the DH parameters under <code>/opt/inetsim/data/certs/pop3_dhparams.pem</code>. If they are not found, the default files are used.</p>
+<h3>POP3S</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_POP3S_BIND_PORT</code></td>
+<td>Port number to bind POP3S service to.</td>
+<td><code>995</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3S_BANNER</code></td>
+<td>The banner string used in POP3 greeting message.</td>
+<td><code>"INetSim POP3 Server ready"</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3S_HOSTNAME</code></td>
+<td>The hostname used in POP3 greeting message.</td>
+<td><code>pop3host</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3S_MBOX_MAXMAILS</code></td>
+<td>Maximum number of e-mails to select from supplied mbox files for creation of random POP3 mailbox.</td>
+<td><code>10</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3S_MBOX_REREAD</code></td>
+<td>Re-read supplied mbox files if POP3S service was inactive for <code>INETSIM_POP3S_MBOX_REREAD</code> seconds</td>
+<td><code>180</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3S_MBOX_REBUILD</code></td>
+<td>Rebuild random POP3 mailbox if POP3S service was inactive for <code>INETSIM_POP3S_MBOX_REBUILD</code> seconds</td>
+<td><code>60</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3S_ENABLE_APOP</code></td>
+<td>Turn APOP on (<code>yes</code>) or off (<code>no</code>)</td>
+<td><code>yes</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3S_AUTH_REVERSIBLEONLY</code></td>
+<td>Only offer authentication mechanisms which allow reversing the 
+authentication information sent by a client to clear text 
+username/password.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_POP3S_ENABLE_CAPABILITIES</code></td>
+<td>Turn support for pop3 capabilities on (<code>yes</code>) or off (<code>no</code>)</td>
+<td><code>yes</code></td>
+</tr>
+</tbody></table>
+<h4>POP3 Capabilities</h4>
+<p>The <a href="default_service_configs/pop3s_capabilities">default POP3 capabilities</a> offered to client can be overridden by placing a file called <code>pop3s_capabilities</code> into <code>/opt/inetsim/conf/user_configs</code>. The syntax per line is <code>pop3s_capability &lt;capability [parameter(s)]&gt;</code>. Consult the INetSim documentation for a list of supported capabilities.</p>
+<h4>SSL/TLS</h4>
+<p>The POP3S service expects the certificate under <code>/opt/inetsim/data/certs/pop3s_cert.pem</code>, the key under <code>/opt/inetsim/data/certs/pop3s_key.pem</code>, and the DH parameters under <code>/opt/inetsim/data/certs/pop3s_dhparams.pem</code>. If they are not found, the default files are used.</p>
+<h3>TFTP</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_TFTP_BIND_PORT</code></td>
+<td>Port number to bind TFTP service to.</td>
+<td><code>69</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_TFTP_ALLOW_OVERWRITE</code></td>
+<td>Allow overwriting of existing files.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_TFTP_ENABLE_OPTIONS</code></td>
+<td>Turn support for tftp options on (<code>yes</code>) or off (<code>no</code>)</td>
+<td><code>yes</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_TFTP_MAX_FILESIZE</code></td>
+<td>Size limit for uploaded files.</td>
+<td><code>500000000</code></td>
+</tr>
+</tbody></table>
+<h4>TFTP Options</h4>
+<p>The <a href="default_service_configs/tftp_options">default</a> can be overridden by placing a file called <code>tftp_options</code> into <code>/opt/inetsim/conf/user_configs</code>. The syntax per line is <code>tftp_option &lt;option [parameter(s)]&gt;</code>. Consult the INetSim documentation for a list of supported capabilities.</p>
+<h3>FTP</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_FTP_BIND_PORT</code></td>
+<td>Port number to bind FTP service to.</td>
+<td><code>21</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_FTP_VERSION</code></td>
+<td>Version string to return in replies to the STAT command.</td>
+<td><code>"INetSim FTP Server"</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_FTP_BANNER</code></td>
+<td>The banner string used in FTP greeting message.</td>
+<td><code>"INetSim FTP Service ready."</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_FTP_RECURSIVE_DELETE</code></td>
+<td>Allow recursive deletion of directories, even if they are not empty.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_FTP_MAX_FILESIZE</code></td>
+<td>Size limit for uploaded files.</td>
+<td><code>500000000</code></td>
+</tr>
+</tbody></table>
+<h3>FTPS</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_FTPS_BIND_PORT</code></td>
+<td>Port number to bind FTP service to.</td>
+<td><code>990</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_FTPS_VERSION</code></td>
+<td>Version string to return in replies to the STAT command.</td>
+<td><code>"INetSim FTPs Server"</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_FTPS_BANNER</code></td>
+<td>The banner string used in FTP greeting message.</td>
+<td><code>"INetSim FTP Service ready."</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_FTPS_RECURSIVE_DELETE</code></td>
+<td>Allow recursive deletion of directories, even if they are not empty.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_FTPS_MAX_FILESIZE</code></td>
+<td>Size limit for uploaded files.</td>
+<td><code>500000000</code></td>
+</tr>
+</tbody></table>
+<h4>SSL/TLS</h4>
+<p>The POP3S service expects the certificate under <code>/opt/inetsim/data/certs/ftps_cert.pem</code>, the key under <code>/opt/inetsim/data/certs/ftps_key.pem</code>, and the DH parameters under <code>/opt/inetsim/data/certs/ftps_dhparams.pem</code>. If they are not found, the default files are used.</p>
+<h3>NTP</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_NTP_BIND_PORT</code></td>
+<td>Port number to bind NTP service to.</td>
+<td><code>123</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_NTP_SERVER_IP</code></td>
+<td>The IP address to return in NTP replies.</td>
+<td><code>10.15.20.30</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_NTP_STRICT_CHECKS</code></td>
+<td>Turn strict checks for client packets on (<code>yes</code>) or off (<code>no</code>).</td>
+<td><code>yes</code></td>
+</tr>
+</tbody></table>
+<h3>IRC</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_IRC_BIND_PORT</code></td>
+<td>Port number to bind IRC service to.</td>
+<td><code>6667</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_IRC_FQDN_HOSTNAME</code></td>
+<td>The FQDN hostname used for IRC</td>
+<td><code>irc.inetsim.org</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_IRC_VERSION</code></td>
+<td>Version string to return.</td>
+<td><code>"INetSim IRC Server"</code></td>
+</tr>
+</tbody></table>
+<h3>Time</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_TIME_BIND_PORT</code></td>
+<td>Port number to bind time service to.</td>
+<td><code>37</code></td>
+</tr>
+</tbody></table>
+<h3>Daytime</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_DAYTIME_BIND_PORT</code></td>
+<td>Port number to bind daytime service to.</td>
+<td><code>13</code></td>
+</tr>
+</tbody></table>
+<h3>Echo</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_ECHO_BIND_PORT</code></td>
+<td>Port number to bind echo service to.</td>
+<td><code>7</code></td>
+</tr>
+</tbody></table>
+<h3>Discard</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_DISCARD_BIND_PORT</code></td>
+<td>Port number to bind discard service to.</td>
+<td><code>9</code></td>
+</tr>
+</tbody></table>
+<h3>QOTD</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_QUOTD_BIND_PORT</code></td>
+<td>Port number to bind quotd service to.</td>
+<td><code>17</code></td>
+</tr>
+</tbody></table>
+<h3>Chargen</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_CHARGEN_BIND_PORT</code></td>
+<td>Port number to bind chargen service to.</td>
+<td><code>19</code></td>
+</tr>
+</tbody></table>
+<h3>Finger</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_FINGER_BIND_PORT</code></td>
+<td>Port number to bind finger service to.</td>
+<td><code>79</code></td>
+</tr>
+</tbody></table>
+<h3>Ident</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_IDENT_BIND_PORT</code></td>
+<td>Port number to bind ident service to.</td>
+<td><code>113</code></td>
+</tr>
+</tbody></table>
+<h3>Syslog</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_SYSLOG_BIND_PORT</code></td>
+<td>Port number to bind syslog service to.</td>
+<td><code>514</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SYSLOG_TRIM_MAXLENGTH</code></td>
+<td>Chop syslog messages at 1024 bytes.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_SYSLOG_ACCEPT_INVALID</code></td>
+<td>Accept invalid syslog messages.</td>
+<td><code>yes</code> or <code>no</code></td>
+</tr>
+</tbody></table>
+<h3>Dummy</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>INETSIM_DUMMY_BIND_PORT</code></td>
+<td>Port number to bind dummy service to.</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_DUMMY_BANNER</code></td>
+<td>Banner string sent to client if no data has been received for 
+'INETSIM_DUMMY_BANNER_WAIT' seconds since the client has established the
+ connection. If set to an empty string (<code>""</code>), only CRLF will be sent. This option only takes effect if 'INETSIM_DUMMY_BANNER_WAIT' is not set to <code>0</code>.</td>
+<td><code>"220 ESMTP FTP +OK POP3 200 OK"</code></td>
+</tr>
+<tr>
+<td><code>INETSIM_DUMMY_BANNER_WAIT</code></td>
+<td>Number of seconds to wait for client sending any data after 
+establishing a new connection. If no data has been received within this 
+amount of time, 'INETSIM_DUMMY_BANNER' will be sent to the client. 
+Setting to <code>0</code> disables sending of a banner string.</td>
+<td><code>5</code></td>
+</tr>
+</tbody></table>
+</body></html>

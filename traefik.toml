@@ -1,0 +1,36 @@
+[entryPoints]
+  [entryPoints.net]
+    address = ":80"
+    #[entryPoints.net.http.redirections.entryPoint]
+    #  to = "websecure"
+    #  scheme = "https"
+  #[entryPoints.websecure]
+  #  address = ":443"
+
+[api]
+  dashboard = true
+  insecure = true
+
+##This section is called acme because ACME is the name of the protocol used to 
+#communicate with Let’s Encrypt to manage certificates. The Let’s Encrypt 
+#service requires registration with a valid email address, so to have Traefik 
+#generate certificates for your hosts, set the email key to your email address. 
+#You then specify that you will store the information that you will receive from 
+#Let’s Encrypt in a JSON file called acme.json.
+
+#The acme.tlsChallenge section allows us to specify how Let’s Encrypt can verify 
+#that the certificate. You’re configuring it to serve a file as part of the 
+#challenge over port 443.
+
+#[certificatesResolvers.lets-encrypt.acme]
+#  email = "your_email@your_domain"
+#  storage = "acme.json"
+#  [certificatesResolvers.lets-encrypt.acme.tlsChallenge]
+
+[providers.docker]
+  watch = true
+  network = "net"
+  defaultRule = "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`)"
+
+#[providers.file]
+#  filename = "traefik_dynamic.toml"

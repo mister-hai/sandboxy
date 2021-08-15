@@ -1,0 +1,50 @@
+Bridge Server on Linux
+First, make sure you have the bridge-utils package installed.
+
+Edit the bridge-start script below. Set the br, tap, eth, eth_ip, 
+eth_netmask, and eth_broadcast parameters according to the physical 
+ethernet interface you would like to bridge. Make sure to use an 
+interface which is private and which is connected to a LAN which 
+is protected from the internet by a firewall. You can use the Linux 
+ifconfig command to get the necessary information about your network 
+interfaces to fill in the bridge-start parameters.
+
+Now run the bridge-start script. It will create a persistent tap0 
+interface and bridge it with the active ethernet interface.
+
+Next, we will edit the OpenVPN server configuration file to enable 
+a bridging configuration.
+
+Comment out the line which says dev tun and replace it instead with:
+
+    dev tap0
+
+Comment out the line that begins with server and replace it with:
+
+    server-bridge 192.168.8.4 255.255.255.0 192.168.8.128 192.168.8.254
+
+Now set up the Linux firewall to permit packets to flow freely over the 
+created tap0 and br0interfaces:
+
+    iptables -A INPUT -i tap0 -j ACCEPT
+    iptables -A INPUT -i br0 -j ACCEPT
+    iptables -A FORWARD -i br0 -j ACCEPT
+
+The OpenVPN bridge can now be started and stopped using this sequence::
+
+    run bridge-start
+    run openvpn
+    stop openvpn
+    run bridge-stop
+
+At this point, the bridging-specific aspects of the configuration are
+complete, and you can continue where you left off in the HOWTO.
+
+ON THIS STEP:
+
+First, make sure the OpenVPN server will be accessible from the internet. That means:
+
+    opening up UDP port 1194 on the firewall (or whatever TCP/UDP 
+    port you've configured), or
+    setting up a port forward rule to forward UDP port 1194 from 
+    the firewall/gateway to the machine running the OpenVPN server.
