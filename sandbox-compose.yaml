@@ -12,6 +12,14 @@ version: "3"
 ##   CTFDPORT=
 #################################################################
 services:
+    cnc:
+      image: debian:buster
+      build:
+        context: ./containers/cnc
+        dockerfile: Dockerfile
+      networks:
+        net:
+          ipv4_address: 172.18.0.2
 #################################################################
 ##  Parrotsec/ParOS
 #################################################################

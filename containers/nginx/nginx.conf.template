@@ -120,20 +120,20 @@ http {
     #    server login:${LOGINPORT};
     #}
     upstream docker-bwapp {
-        server 172.18.0.5:8081;
+        server ${BWAPPIP}:${BWAPPPORT};
     }
     #upstream docker-webgoat {
     #    server webgoat:${WEEBGOATPORT};
     #}
     upstream docker-dvwa {
-       server 172.18.0.6:8082;
+       server ${DVWAIP}:${DVWAPORT};
     }
     upstream docker-ctfd {
-        server 172.18.0.7:8000;
+        server ${CTFDIP}:${CTFDPORT};
     }
     server {
     listen 0.0.0.0:80;
-    server_name moopboxen.local;
+    server_name ${SERVER_NAME};
     return 301 http://$server_name$request_uri;
     #rewrite ^/(.*) /$1 last;
     }
@@ -146,7 +146,7 @@ http {
         default_type application/octet-stream;
         server_name_in_redirect off;
         proxy_set_header Host $host:$server_port;
-        location ~ /bwapp {
+        location ~ / {
             proxy_pass http://docker-bwapp;
             proxy_redirect  http://docker-bwapp/ /;
             #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
@@ -160,7 +160,7 @@ server {
         server_name_in_redirect off;
         proxy_set_header Host $host:$server_port;
         index    index.html index.htm index.php;
-        location ~ /dvwa/ {
+        location ~ / {
             proxy_pass http://docker-dvwa;
             proxy_redirect http://docker-dvwa/ /;
             #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
@@ -174,7 +174,7 @@ server {
         index    index.html index.htm index.php;
         server_name_in_redirect off;
         proxy_set_header Host $host:$server_port;
-        location ~ /ctfd/ {
+        location ~ / {
             proxy_pass http://docker-ctfd;
             proxy_redirect http://docker-ctfd /;
             #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
