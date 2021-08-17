@@ -1,73 +1,93 @@
 version: "3"
 #################################################################
 ##
-## THIS FILE CONTAINS THE ENTRIES FOR EVERYTHING
+## THIS FILE CONTAINS THE ENTRIES FOR THE INFRASTRUCTURE
 ##
+## container port mapping to avoid confuflict
+##   LOGINPORT=8080
+#3   BWAPPPORT=
+##   WEEBGOATPORT=
+##   DVWAPORT=
+##   MUTILLIDAE2PORT=
+##   CTFDPORT=
 #################################################################
 services:
-##########################################################`#######
-##  COMMAND AND CONTROL - will NOT mount volumes from HOST
-##    This is for users in the network game to access 
-##    for exploring the simulated network
-#################################################################    
-#    cnc:
-#      #build:
-#      #  context: ./cnc
-#      #  dockerfile: Dockerfile
-#      image: debian:buster
-#      #security_opt:
-#      #  - no-new-privileges
-#      restart: unless-stopped
-#      ports:
-#        #maps openvpn directly
-#        - 1194:1194
-#        # we have to visit port 17730
-#        # to access the ssh
-#        # TODO: USE __PORTKNOCKING__.shellops.py and make a script to knock
-#        # on the door and handoff a shell to the users terminal
-#        - 17730:22
-#      network_mode: macvlan
-#      mac_address: 02:42:c0:a8:84:22
+#################################################################
+##  Parrotsec/ParOS
+#################################################################
+    parrot:
+      image: parrotsec/security
+      volumes:
+        - "/run/docker.sock:/var/run/docker.sock"
+      networks:
+        net:
+          ipv4_address: 172.18.0.2
+      #volumes:
+      #  -  /tmp/msf:/tmp/data:Z
+      #network_mode: host
+#################################################################
+##  NGINX ; proxies to the other containers
+# DEPRECATED in favor of TRAEFIK currently
+#################################################################        
+    nginx:
+      build:
+        context: ./containers/nginx
+        dockerfile: Dockerfile
+      image: nginx:latest
+      depends_on:
+        - bwapp
+        - dvwa
+        - ctfd
+      restart: unless-stopped
+      env_file:
+        - ./.env
+      ports:
+      - 80:80
+      - 443:443
+      environment: 
+        NGINX_ENVSUBST_TEMPLATE_SUFFIX: ".template"
+        NGINX_ENVSUBST_TEMPLATE_DIR: "/etc/nginx"
+        NGINX_ENVSUBST_OUTPUT_DIR: "/etc/nginx"
+      volumes:
+        - ./data/certbot/conf:/etc/letsencrypt
+        - ./data/certbot/www:/var/www/certbot
+        - "/run/docker.sock:/var/run/docker.sock"
+      #  - ./confs/nginx.conf:/etc/nginx/nginx.conf
+      hostname: nginx
+      networks:
+        net:
+          ipv4_address: 172.18.0.3
+
+################################################################
+## CERTBOT
+################################################################
+#    certbot:
+#      image: certbot/certbot
+#      hostname: certbot
+#      #volumes:
+#        #- ./data/certbot/conf:/etc/letsencrypt
+#        #- ./data/certbot/www:/var/www/certbot
 #      networks:
-#        macvlan:
-#          driver: macvlan
-#          subnet: 192.168.0.0/24
-#          gateway: 192.168.0.1
-#          ipvlan_mode: l2
-#          parent: eth0 ipvlan210
-        
-   
+#        net:
+#          ipv4_address: 172.18.0.4
 #################################################################
 ##  BWAPP   ; will be locked down for semi-private usage
 #################################################################
     bwapp:
       image: raesene/bwapp
-      #depends_on:
-      #  - traefik
-      labels:
-        - traefik.http.routers.bwapp.rule=Host(`${BWAPPNAME}`)
-        #- traefik.http.routers.blog.tls=true
-        #- traefik.http.routers.blog.tls.certresolver=lets-encrypt
-        - traefik.http.services.bwapp.loadbalancer.server.port=${BWAPPPORT}
-        - traefik.port=${BWAPPPORT}
-      #expose:
-      #  - ${BWAPPPORT}
+      expose:
+        - 80
       ports:
-        - ${BWAPPPORT}:80
+        - 8081:80
       networks:
-        - net
+        net:
+          ipv4_address: 172.18.0.5
+      hostname: bwapp
 ##################################################################
 ##        WEB GOAT AND WOLF  ; will be locked down for semi-private usage
 #################################################################
 #    webgoat:
 #      image: webgoat/webgoat-7.1
-#      #depends_on:
-#      #  - traefik      
-#      labels:
-#        - traefik.http.routers.webgoat.rule=Host(`webgoat.${HOST}`)
-#        #- traefik.http.routers.blog.tls=true
-#        #- traefik.http.routers.blog.tls.certresolver=lets-encrypt
-#        - traefik.port=${WEEBGOATPORT}          
 #      #expose:
 #      #  - ${WEEBGOATPORT}
 #      restart: unless-stopped
@@ -80,34 +100,21 @@ services:
 #################################################################
     dvwa:
       image: vulnerables/web-dvwa
-      #depends_on:
-      #  - traefik
-      labels:
-        - traefik.http.routers.dvwa.rule=Host(`${DVWANAME}`)
-        #- traefik.http.routers.blog.tls=true
-        #- traefik.http.routers.blog.tls.certresolver=lets-encrypt
-        - traefik.port=${DVWAPORT}
-        - traefik.http.services.dvwa.loadbalancer.server.port=${DVWAPORT}
-      #expose:
-      #  - ${DVWAPORT}
+      hostname: dvwa
+      expose:
+        - 80
       restart: unless-stopped
       ports:
-        - ${DVWAPORT}:80
+        - 8082:80
       networks:
-        - net
+        net:
+          ipv4_address: 172.18.0.6
         
 #################################################################
 ##  Mutillidae2 ; will be locked down for semi-private usage
 #################################################################
 #    mutillidae2:
 #      image: santosomar/mutillidae_2
-#      #depends_on:
-#      #  - traefik      
-#      labels:
-#        - traefik.http.routers.mutillidae2.rule=Host(`mutillidae2.${HOST}`)
-#        #- traefik.http.routers.blog.tls=true
-#        #- traefik.http.routers.blog.tls.certresolver=lets-encrypt
-#        - traefik.port=${MUTILLIDAE2PORT}    
 #      #expose:
 #      #  - ${MUTILLIDAE2PORT}
 #      restart: unless-stopped
@@ -121,19 +128,17 @@ services:
 #################################################################        
     ctfd:
       image: ctfd/ctfd
-      #depends_on:
-      #  - traefik      
-      labels:
-        - traefik.http.routers.ctfd.rule=Host(`ctfd.${HOST}`)      
-        - traefik.port=${CTFDPORT}
-        - traefik.http.services.ctfd.loadbalancer.server.port=${CTFDPORT}
-      #expose:
-      #  - ${CTFDPORT}
+      hostname: ctfd
+      expose:
+        - 8000
       restart: unless-stopped
       ports:
-        - ${CTFDPORT}:8000
+        - 8000:8000
+      #network_mode: host
       networks:
-        - net
+        net:
+          ipv4_address: 172.18.0.7
+
 #################################################################
 #     NETWORKS SECTION
 #################################################################      
@@ -141,4 +146,8 @@ services:
 #  macvlan:
 networks:
   net:
-    external: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.18.0.0/24
