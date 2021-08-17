@@ -128,9 +128,6 @@ http {
     upstream docker-dvwa {
        server 172.18.0.6:8082;
     }
-    #upstream moopboxen {
-    #    server moopboxen.local;
-    #}
     upstream docker-ctfd {
         server 172.18.0.7:8000;
     }
@@ -143,24 +140,31 @@ http {
     #proxy_redirect $scheme://docker-bwapp $scheme://$host$request_uri;
     server {
         listen 80;
-        listen 443 ;#ssl;
+        #listen 443 ;#ssl;
         server_name bwapp;
         index index.html index.htm index.php;
         default_type application/octet-stream;
+        server_name_in_redirect off;
+        proxy_set_header Host $host:$server_port;
         location ~ /bwapp {
             proxy_pass http://docker-bwapp;
-            proxy_redirect off;
+            proxy_redirect  http://docker-bwapp/ /bwapp;
+            #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
+            #proxy_redirect $scheme://docker-bwapp $scheme://$host$request_uri;
         }
     }
 server {
         listen 80;
-        listen 443;#ssl;
-        server_name dvwa.moopboxen;
+        #listen 443;#ssl;
+        server_name dvwa;
+        server_name_in_redirect off;
+        proxy_set_header Host $host:$server_port;
         index    index.html index.htm index.php;
-        location ~ /dvwa {
+        location ~ /dvwa/ {
             proxy_pass http://docker-dvwa;
-            #proxy_redirect default;
-            proxy_redirect off;
+            proxy_redirect http://docker-dvwa/ /dvwa/;
+            #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
+            #proxy_redirect off;
         }
     }
     server {
@@ -168,10 +172,14 @@ server {
         listen 443 ;#ssl;
         server_name ctfd;
         index    index.html index.htm index.php;
-        location ~ /ctfd {
+        server_name_in_redirect off;
+        proxy_set_header Host $host:$server_port;
+        location ~ /ctfd/ {
             proxy_pass http://docker-ctfd;
+            proxy_redirect http://docker-ctfd /ctfd/;
+            #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
             #proxy_redirect http://docker-ctfd /;
-            proxy_redirect default;
+            #proxy_redirect off;
         }
     }    
 }
