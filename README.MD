@@ -2,23 +2,43 @@
 
 This is an all in one setup script for docker on a
 
-    cloud VM (WIP)
+    cloud VM(backend only)
+        - urlrewriting acting funky, cant seem to scrub ports from url
 
 or 
 
-    raspi4b (WIP)
+    raspi4b(start.sh needs finishing to setup the environment)
 
 The setup will setup a:
 
-    - networking protocol/wep app pentesting playground
+    - parrotOS/security
+        172.18.02
+    - nginx reverse proxy 
+        172.18.0.3
+            - redis
+                172.18.0.4
+            - mysql
+                172.18.0.5
+            - bwapp
+                172.18.0.5
+            - dvwa
+                172.18.0.6
+            - ctfd
+                172.18.0.7
+
 
 sources :
-    https://www.digitalocean.com/community/tutorials/how-to-use-traefik-v2-as-a-reverse-proxy-for-docker-containers-on-ubuntu-20-04
-
-    https://stackoverflow.com/questions/40801772/what-is-the-difference-between-docker-compose-ports-vs-expose
 
     OFFICIAL DOCS
+        kubernetes
+        docker
+        nginx
 
+    STACKOVERFLOW
+        lots
+        of
+        it
+    
 we need more https://asmen.icopy.site/awesome/awesome-ctf/
 
 #Table Of Contents
