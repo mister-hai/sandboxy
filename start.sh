@@ -88,22 +88,13 @@ cecho ()
   # Argument $1 = message
   # Argument $2 = color
   local default_msg="No message passed."
-    # Doesn't really need to be a local variable.
+  # Doesn't really need to be a local variable.
   # Message is first argument OR default
-  message=${1:-$default_msg}
-  # olor is second argument OR white
-  color=${2:$white}
-  if [$color='lolz']
-  then
-    echo $message | lolcat
-    return
-  else
-    message=${1:-$default_msg}   # Defaults to default message.
-    color=${2:-$black}           # Defaults to black, if not specified.
-    echo -e "$color"
-    echo "$message"
-    Reset                      # Reset to normal.
-    return
+  # color is second argument
+  message=${1:-$default_msg}   # Defaults to default message.
+  color=${2:-$black}           # Defaults to black, if not specified.
+  printf "%s%s" "${color}${message}"
+  Reset                      # Reset to normal.
 } 
 
 #greps all "##" at the start of a line and displays it in the help text
@@ -269,8 +260,9 @@ installapt()
 
 installdockerdebian()
 {
-  cecho "[+] Installing Docker" "yellow"
+  cecho "[+] Installing Docker" yellow
 
+  sudo apt-get remove docker docker-engine docker.io containerd runc
 }
 ###############################################################################
 # Docker stuff
@@ -294,28 +286,29 @@ installdockercompose()
     sudo mv docker-compose /usr/local/bin
   fi
 }
+
 # $1 == compose-filename
-build()
+composebuild()
 {
   #set -ev
   docker-compose config
-  docker-compose build -f $1
-  docker-compose up -d
-  docker-compose ps
-}
-cleanup()
-{
-  printf "Cleaning up..."
-  docker-compose down
-  docker network rm $NETWORK | printf
+  docker-compose -f $1 build
 }
 
+cleanup()
+{
+  cecho "[+] Cleaning up" yellow
+  docker-compose -f ${PROJECTFILENAME} down
+  docker network prune -f
+  docker container prune -f
+  docker volume prune -f
+}
 
 installprerequisites()
 {
 while true; do
     cecho "[!] This action is about use quite a bit of time and internet data." red
-    cecho "[!] Do you wish to use lots of data and time downloading things?" red
+    cecho "[!] Do you wish to use lots of data and time downloading and installing things?" red
     cecho "[?]" red; cecho "y/N ?" yellow
     read -e -i "n" yesno
     cecho "[?] Are You Sure? (y/N)" yellow
@@ -327,8 +320,29 @@ while true; do
     esac
 done
 }
-read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
-
+# $1 == compose-filename
+buildproject()
+{
+while true; do
+    cecho "[!] This action will create multiple containers and volumes" red
+    cecho "[!] cleanup may be required if modifications are made while down" red
+    cecho "[!] Do you wish to continue?" red
+    cecho "[?]" red; cecho "y/N ?" yellow
+    read -e -i "n" yesno
+    cecho "[?] Are You Sure? (y/N)" yellow
+    read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+    case $yesno in
+        [Yy]* ) composebuild;;
+        [Nn]* ) exit;;
+        * ) cecho "Please answer yes or no." red;;
+    esac
+done
+}
+###############################################################################
+# MAIN LOOP, CONTAINS MENU THEN INFINITE LOOP, AFTER THAT IS DATA SECTION
+###############################################################################
+# Trap CTRL+C, CTRL+Z and quit singles
+trap '' SIGINT SIGQUIT SIGTSTP
 show_menus() {
 	clear
   cecho "## |-- BEGIN MESSAGE -- ////##################################################" green
@@ -341,47 +355,30 @@ show_menus() {
   cecho "## | 7> Retrieve Data From Script" yellow
   cecho "## | 8> Quit Program" yellow
   cecho "## |-- END MESSAGE -- ////#####################################################" green
+  PS3="Choose your doom:"
+  select option in install build run clean refresh append recall quit
+  do
+	  case $option in
+      install) 
+	  		installprerequisites;;
+      build)
+        buildproject
+      run)
+
+      clean) 
+        cleanup
+      refresh)
+
+      append)
+
+      recall)
+
+      quit)
+        break;;
+      esac
+  done
 }
-PS3="Choose your doom:"
-select option in install clean appenddata recalldata quit
-do
-	case $option in
-    install) 
-			installprerequisites
-    clean) 
-        establish_network
-    appenddata)
-        setup_disk
-    quit)
-      break;;
-    esac
-done
-# read input from the keyboard and take a action
-# invoke the one() when the user select 1 from the menu option.
-# invoke the two() when the user select 2 from the menu option.
-# Exit when user the user select 3 form the menu option.
-read_options(){
-	local choice
-	read -p "Enter choice [ 1 - 3] " choice
-	case $choice in
-		1) one ;;
-		2) two ;;
-		3) exit 0;;
-		*) echo -e "${RED}Error...${STD}" && sleep 2
-	esac
-}
- 
-# ----------------------------------------------
-# Step #3: Trap CTRL+C, CTRL+Z and quit singles
-# ----------------------------------------------
-trap '' SIGINT SIGQUIT SIGTSTP
- 
-# -----------------------------------
-# Step #4: Main logic - infinite loop
-# ------------------------------------
 while true
 do
- 
 	show_menus
-	read_options
 done
