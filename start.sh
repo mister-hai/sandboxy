@@ -1,14 +1,7 @@
 #!/bin/bash
 ## $PROG SANDBOXY.SH v1.0
 ## |-- BEGIN MESSAGE -- ////##################################################
-## |This program is an installer for a sandboxing environment using:
-## |  - Docker 
-## |    - CTFD
-## |    - mutillidae2
-## |    - dvwa
-## |    - webgoat
-## |    - 
-## |    - 
+## |This program is an installer
 ## |
 ## |
 ## |
@@ -19,8 +12,9 @@
 ##
 ##  -u, --user USER       The username to be created      (Default: moop)
 ##  -p, --password PASS   The password to said username   (Default: root)
-##  -l, --location   	   Full Path to install location   (Default: /sandypath)
-##  -r, --raspi           us if installing on raspi4b
+##  -l, --location         Full Path to install location   (Default: /sandboxy)
+##  -l, --token           Token for data storage          (Default: ===DATA===)
+##  -r, --raspi           use if installing on raspi4b
 ##
 ## Commands:
 ##   -h, --help             Displays this help and exists
@@ -55,6 +49,13 @@ location()
 {
     SANDBOX='/sandypath'
 }
+tarinstalldir(){
+    INSTALLDIR="/tmp"
+}
+token()
+{
+    TOKEN="===DATA==="
+}
 ###############################################################################
 ## Menu parsing and output colorization
 ###############################################################################
@@ -70,10 +71,10 @@ magenta='\E[35;47m'
 cyan='\E[36;47m'
 white='\E[37;47m'
 # color
-RESET=$'\E[1;0m'
-RED=$'\E[1;31m'
-GREEN=$'\E[1;32m'
-YELLOW=$'\E[1;33m'
+#RESET=$'\E[1;0m'
+#RED=$'\E[1;31m'
+#GREEN=$'\E[1;32m'
+#YELLOW=$'\E[1;33m'
 RED_BACK=$'\E[101m'
 GREEN_BACK=$'\E[102m'
 YELLOW_BACK=$'\E[103m'
@@ -81,25 +82,25 @@ alias Reset="tput sgr0"      #  Reset text attributes to normal
                              #+ without clearing screen.
 cecho ()
 {
-	# Argument $1 = message
-	# Argument $2 = color
-	local default_msg="No message passed."
+  # Argument $1 = message
+  # Argument $2 = color
+  local default_msg="No message passed."
     # Doesn't really need to be a local variable.
-	# Message is first argument OR default
-	message=${1:-$default_msg}
-	# olor is second argument OR white
-	color=${2:$white}
-	if [$color='lolz']
-	then
-		echo $message | lolcat
-		return
-	else
-		message=${1:-$default_msg}   # Defaults to default message.
-		color=${2:-$black}           # Defaults to black, if not specified.
-		echo -e "$color"
-		echo "$message"
-		Reset                      # Reset to normal.
-		return
+  # Message is first argument OR default
+  message=${1:-$default_msg}
+  # olor is second argument OR white
+  color=${2:$white}
+  if [$color='lolz']
+  then
+    echo $message | lolcat
+    return
+  else
+    message=${1:-$default_msg}   # Defaults to default message.
+    color=${2:-$black}           # Defaults to black, if not specified.
+    echo -e "$color"
+    echo "$message"
+    Reset                      # Reset to normal.
+    return
 } 
 
 #greps all "##" at the start of a line and displays it in the help text
@@ -170,26 +171,6 @@ unset CDPATH
 ###############################################################################
 ## functions
 ###############################################################################
-encodeb64()
-{
-# basic structure of a semi-well written function
-# Argument1 == $1
-# Argument2 == $2
-## and so on
-	local default_str="some text to encode"
-  # Doesn't really need to be a local variable.
-	# Message is first argument OR default
-	message=${1:-$default_msg}
-  printf "%s" message | base64
-}
-decodeb64()
-{
-	local default_str="c29tZSB0ZXh0IHRvIGVuY29kZQo="
-  # Doesn't really need to be a local variable.
-	# Message is first argument OR default
-	message=${1:-$default_msg}
-  printf "%s" message | base64 -d -i
-}
 getscriptworkingdir()
 ##
 ##Beware: if you cd to a different directory before running the result
@@ -207,104 +188,74 @@ getscriptworkingdir()
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
   printf "%s" $DIR
 }
-appendtoself()
-# appends base64 data to self after a token
-# $1 : data as single quote string
-# $2 : token to store data as
+# set some more globals
+SELFPATH=(getscriptworkingdir)
+SELF=$selfaspath/$0
+
+encodeb64()
 {
-  local default_derp="forgot something?"
-	local default_token="==DATA=="
+# Argument1 == $1
+  local default_str="some text to encode"
   # Doesn't really need to be a local variable.
-	# Message is first argument OR default
-	datastring=${1:-$default_derp}
-  selfaspath=(getscriptworkingdir)
-  printf "%s\n%s\n%s" default_token datastring default_token >> $selfaspath
+  # Message is first argument OR default
+  message=${1:-$default_msg}
+  printf "%s" message | base64
+}
+decodeb64()
+{
+  local default_str="c29tZSB0ZXh0IHRvIGVuY29kZQo="
+  message=${1:-$default_msg}
+  printf "%s" message | base64 -d -i
 }
 
-###############################################################################
-## traefik Docker container scripts
-###############################################################################
-installdockercompose()
-{
-  set -ex
-  if [ -z "$DOCKER_COMPOSE_VERSION" ]; then
-    DOCKER_COMPOSE_VERSION=1.25.4
-  fi
-  echo "Installing docker-compose version: $DOCKER_COMPOSE_VERSION"
-  if [ -z "`sudo -l 2>/dev/null`" ]; then
-    rm /usr/local/bin/docker-compose | echo
-    curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-    chmod +x docker-compose
-    mv docker-compose /usr/local/bin
-  else
-    sudo rm /usr/local/bin/docker-compose | echo
-    curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-    sudo chmod +x docker-compose
-    sudo mv docker-compose /usr/local/bin
-  fi
-}
-build()
-{
-  set -ev
-  docker-compose config
-  docker-compose pull
-  docker-compose up -d
-  docker-compose ps
-}
-cleanup()
-{
-  echo "Cleaning up..."
-  docker-compose down
-  printf "Deleting  network: "
-  eval $(egrep '^NETWORK' .env | xargs)
-  printf "$NETWORK\n"
-  docker network rm $NETWORK | echo
-}
-hosts()
-{
-  set -ev
-  eval $(egrep '^HOST' .env | xargs)
-  if [ "$HOST" != "localhost" ]; then
-    grep "127.0.0.1	${HOST}" /etc/hosts || (echo "127.0.0.1	${HOST}" | sudo tee -a /etc/hosts)
-  fi
-  grep "127.0.0.1	docker.${HOST}" /etc/hosts || (echo "127.0.0.1	docker.${HOST}" | sudo tee -a /etc/hosts)
-  grep "127.0.0.1	dashboard.${HOST}" /etc/hosts || (echo "127.0.0.1	dashboard.${HOST}" | sudo tee -a /etc/hosts)
-}
-certs()
-{
-  set -e
-  eval $(egrep '^HOST' .env | xargs)
-  eval $(egrep '^CERT_PATH' .env | xargs)
-  echo "Domain: ${HOST}"
-  echo "Cert Path: ${CERT_PATH}"
-  if [ -f certs/cert.crt ] || [ -f certs/cert.key ] || [ -f certs/cert.pem ]; then
-    echo -e "cert already exists in certs directory\nDo you want to overwrite the files? [y]es/[n]o"
-    read -r ANSWER
-    echo
-    if [[ "$ANSWER" =~ ^[Yy](es)?$ ]] ; then
-      echo "Creating Cert"
-    else
-      exit 1
-    fi
-  fi
-  #another function in this script, right above this one
-  requests
-  openssl genrsa -out $CERT_PATH/cert.key
-  openssl req -new -key $CERT_PATH/cert.key -out $CERT_PATH/cert.csr -config $CERT_PATH/csr.conf
-  openssl x509 -req -days 365 -in $CERT_PATH/cert.csr -signkey $CERT_PATH/cert.key -out $CERT_PATH/cert.crt -extensions req_ext -extfile $CERT_PATH/csr.conf
-  sudo cp $CERT_PATH/cert.crt /usr/local/share/ca-certificates/cert.crt
-  sudo rm -f /usr/local/share/ca-certificates/certificate.crt
-  # --fresh is needed to remove symlinks to no-longer-present certificates
-  sudo update-ca-certificates --fresh
-}
 ###############################################################################
 ##
 ###############################################################################
-grabsectionfromself()
-# First arg: section, single noun
+
+# first arg is tarfile name, to allow for multiple files
+readselfarchive()
 {
+  selfaspath=(getscriptworkingdir)
+  # line number where payload starts
+  PAYLOAD_START=$(awk "/^==${TOKEN}==${1}==START==/ { print NR + 1; exit 0; }" $0)
+  PAYLOAD_END=$(awk "/^==${TOKEN}==${1}==END==/ { print NR + 1; exit 0; }" $0)
+  #tail will read and discard the first X-1 lines, 
+  #then read and print the following lines. head will read and print the requested 
+  #number of lines, then exit. When head exits, tail receives a SIGPIPE
+  < ${SELF} tail -n "+${PAYLOAD_START}" | head -n "$((${PAYLOAD_END}-${PAYLOAD_START}+1))" | tar -zpvx -C ${INSTALLDIR}${1}
+}
 
+# first arg: filename or string data
+appendtoselfasbase64()
+{
+  # add token with filename for identifier
+  printf "%s" "==${TOKEN}==${1}==START==" >> $SELF
+  # add the encoded data
+  base64 $1 >> $SELF
+  printf "%s" "==${TOKEN}==${1}==END==" >> $SELF
+}
 
+# First arg: section
+#   ==${TOKEN}START==${1}==
+#       DATA AS BASE64
+#   ==${TOKEN}END==${1}==
+grabsectionfromself()
+{
+  STARTFLAG="false"
+  while read LINE; do
+      if [ "$STARTFLAG" == "true" ]; then
+              if [ "$LINE" == "==${TOKEN}==${1}==END==" ];then
+                      exit
+              else
+                printf "%s" $LINE
+              fi
+      elif [ "$LINE" == "==${TOKEN}==${1}==START==" ]; then
+              STARTFLAG="true"
+              continue
+      fi
+  # this sends the descriptor to the while loop
+  # it gets fed from the bottom
+  done < $SELF
 }
 
 # adds lines for vbox and other things
@@ -370,4 +321,78 @@ startwebgoat()
   export WEBGOAT_HSQLPORT=19001
   export WEBWOLF_PORT=19090
   java -jar webgoat-server-8.1.0.jar && java -jar webwolf-8.1.0.jar 
+}
+
+###############################################################################
+## traefik Docker container scripts
+###############################################################################
+installdockercompose()
+{
+  set -ex
+  if [ -z "$DOCKER_COMPOSE_VERSION" ]; then
+    DOCKER_COMPOSE_VERSION=1.25.4
+  fi
+  echo "Installing docker-compose version: $DOCKER_COMPOSE_VERSION"
+  if [ -z "`sudo -l 2>/dev/null`" ]; then
+    rm /usr/local/bin/docker-compose | echo
+    curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+    chmod +x docker-compose
+    mv docker-compose /usr/local/bin
+  else
+    sudo rm /usr/local/bin/docker-compose | echo
+    curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+    sudo chmod +x docker-compose
+    sudo mv docker-compose /usr/local/bin
+  fi
+}
+build()
+{
+  set -ev
+  docker-compose config
+  docker-compose pull
+  docker-compose up -d
+  docker-compose ps
+}
+cleanup()
+{
+  printf "Cleaning up..."
+  docker-compose down
+  docker network rm $NETWORK | printf
+}
+hosts()
+{
+  set -ev
+  eval $(egrep '^HOST' .env | xargs)
+  if [ "$HOST" != "localhost" ]; then
+    grep "127.0.0.1  ${HOST}" /etc/hosts || (echo "127.0.0.1  ${HOST}" | sudo tee -a /etc/hosts)
+  fi
+  grep "127.0.0.1  docker.${HOST}" /etc/hosts || (echo "127.0.0.1  docker.${HOST}" | sudo tee -a /etc/hosts)
+  grep "127.0.0.1  dashboard.${HOST}" /etc/hosts || (echo "127.0.0.1  dashboard.${HOST}" | sudo tee -a /etc/hosts)
+}
+certs()
+{
+  set -e
+  eval $(egrep '^HOST' .env | xargs)
+  eval $(egrep '^CERT_PATH' .env | xargs)
+  echo "Domain: ${HOST}"
+  echo "Cert Path: ${CERT_PATH}"
+  if [ -f certs/cert.crt ] || [ -f certs/cert.key ] || [ -f certs/cert.pem ]; then
+    echo -e "cert already exists in certs directory\nDo you want to overwrite the files? [y]es/[n]o"
+    read -r ANSWER
+    echo
+    if [[ "$ANSWER" =~ ^[Yy](es)?$ ]] ; then
+      echo "Creating Cert"
+    else
+      exit 1
+    fi
+  fi
+  #another function in this script, right above this one
+  requests
+  openssl genrsa -out $CERT_PATH/cert.key
+  openssl req -new -key $CERT_PATH/cert.key -out $CERT_PATH/cert.csr -config $CERT_PATH/csr.conf
+  openssl x509 -req -days 365 -in $CERT_PATH/cert.csr -signkey $CERT_PATH/cert.key -out $CERT_PATH/cert.crt -extensions req_ext -extfile $CERT_PATH/csr.conf
+  sudo cp $CERT_PATH/cert.crt /usr/local/share/ca-certificates/cert.crt
+  sudo rm -f /usr/local/share/ca-certificates/certificate.crt
+  # --fresh is needed to remove symlinks to no-longer-present certificates
+  sudo update-ca-certificates --fresh
 }
