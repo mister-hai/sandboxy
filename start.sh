@@ -255,7 +255,16 @@ grabsectionfromself()
 # installs for debian amd64
 installapt()
 {
-  sudo apt-get install docker,python3,python3-pip,git,tmux
+  sudo apt-get install \
+    python3\
+    python3-pip\
+    git\
+    tmux\
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
 }
 
 installdockerdebian()
