@@ -258,16 +258,6 @@ appendtoselfasbase64()
   base64 $1 >> $SELF
   printf "%s" "==${TOKEN}==${1}==END==" >> $SELF
 }
-}
-appendtoselfasbase64()
-{
-  # add token with filename for identifier
-  printf "%s" "==${TOKEN}==${1}==START==" >> $SELF
-  # add the encoded data
-  base64 $1 >> $SELF
-  printf "%s" "==${TOKEN}==${1}==END==" >> $SELF
-}
-
 # First arg: section
 #   ==${TOKEN}START==${1}==
 #       DATA AS BASE64
@@ -351,9 +341,13 @@ installeverything(){
   installdockercompose
   installkctf
 }
+
+###############################################################################
+## FUNCTIONS GETTING USER INPUT
+###############################################################################
 installprerequisites()
 {
-while true; do
+  while true; do
     cecho "[!] This action is about use quite a bit of time and internet data." red
     cecho "[!] Do you wish to use lots of data and time downloading and installing things?" red
     cecho "[?]" red; cecho "y/N ?" yellow
@@ -365,12 +359,11 @@ while true; do
         [Nn]* ) exit;;
         * ) cecho "Please answer yes or no." red;;
     esac
-done
+  done
 }
-# $1 == compose-filename
 buildproject()
 {
-while true; do
+  while true; do
     cecho "[!] This action will create multiple containers and volumes" red
     cecho "[!] cleanup may be required if modifications are made while down" red
     cecho "[!] Do you wish to continue?" red
@@ -383,7 +376,7 @@ while true; do
         [Nn]* ) exit;;
         * ) cecho "Please answer yes or no." red;;
     esac
-done
+  done
 }
 # first arg: filename or string data
 asktoappend()
@@ -400,8 +393,52 @@ asktoappend()
         [Nn]* ) exit;;
         * ) cecho "Please answer yes or no." red;;
     esac
-done
-
+  done
+}
+askforappendfile()
+{
+  while true; do
+    cecho "[!] INPUT: Filename" red
+    read -e -i "n" filename
+    cecho "[?] Are You Sure? (y/N)" yellow
+    read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+    case $yesno in
+        [Yy]* ) asktoappend "${1}";;
+        [Nn]* ) exit;;
+        * ) cecho "Please answer yes or no." red;;
+    esac
+  done
+}
+asktorecall()
+{
+  while true; do
+    cecho "[!] RECALLING : ${1}" red
+    cecho "[!] Do you wish to continue?" red
+    cecho "[?]" red; cecho "y/N ?" yellow
+    read -e -i "n" yesno
+    cecho "[?] Are You Sure? (y/N)" yellow
+    read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+    case $yesno in
+        [Yy]* ) grabsectionfromself "${1}";;
+        [Nn]* ) exit;;
+        * ) cecho "Please answer yes or no." red;;
+    esac
+  done
+}
+askforrecallfile()
+{
+  while true; do
+    cecho "[!] INPUT: Filename" red
+    read -e -i "n" filename
+    cecho "[?] Are You Sure? (y/N)" yellow
+    read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+    case $yesno in
+        [Yy]* ) asktorecall "${1}";;
+        [Nn]* ) exit;;
+        * ) cecho "Please answer yes or no." red;;
+    esac
+  done
+}
 ###############################################################################
 # MAIN LOOP, CONTAINS MENU THEN INFINITE LOOP, AFTER THAT IS DATA SECTION
 ###############################################################################
@@ -450,9 +487,9 @@ getselection()
       refresh)
         dockerpurge;;
       append)
-
+        asktoappend;;
       recall)
-
+        asktorecall;;
       quit)
         break;;
       esac
