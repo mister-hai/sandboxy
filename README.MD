@@ -52,7 +52,7 @@ we need more https://asmen.icopy.site/awesome/awesome-ctf/
     ## |    - Docker
     ## |    - Docker-compose
     ## |    - kctf from Google
-    ## |    - CTFd
+    ## |    - CTFd (https://ctfd.io/) © Copyright CTFd LLC 2017 - 2020
     ## |    
     ## |    
     ## |    
