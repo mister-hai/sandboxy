@@ -1,10 +1,24 @@
 #!/bin/bash
 ## $PROG SANDBOXY.SH v1.0
 ## |-- BEGIN MESSAGE -- ////##################################################
-## | This program is an installer
-## |
-## |
-## |
+## | This program is an installer and manager for a sandboxing system based on
+## |    - linux
+## |    - Kubernetes
+## |    - Docker
+## |    - Docker-compose
+## |    - kctf from Google
+## |    - CTFd
+## |    
+## |    
+## |    
+## |    
+## |    
+## |    
+## |    
+## |    
+## |    
+## |    
+## |    
 ## |-- END MESSAGE -- ////#####################################################
 ##
 ## Usage: $PROG [OPTION...] [COMMAND]...
@@ -24,13 +38,8 @@
 ## Examples:
 ##   $PROG -i myscrip-simple.sh > myscript-full.sh
 ##   $PROG -r myscrip-full.sh   > myscript-simple.sh
-## Thanks:
-## https://www.tldp.org/LDP/abs/html/colorizing.html
-## That one person on stackexchange who answered everything in one post.
-## The internet and search engines!
 ## 
 # https://stackoverflow.com/questions/14786984/best-way-to-parse-command-line-args-in-bash
-# https://gist.github.com/TheMengzor/968e5ea87e99d9c41782
 #
 #  THESE GET CREATED TO REFLECT THE OPTIONS ABOVE, EVERYTHING IS PARSED WITH SED
 #
@@ -38,18 +47,9 @@ PROG=${0##*/}
 LOGFILE="$0.logfile"
 die() { echo $@ >&2; exit 2; }
 #SANDBOX user configuration
-user()
-{
-    USER=''
-}
-password()
-{
-    PASSWORD=''
-}
-
 location()
 {
-    SANDBOX='/sandypath'
+    SANDBOX='/sandboxy'
 }
 tarinstalldir(){
     INSTALLDIR="/tmp"

@@ -2,6 +2,7 @@
 ###############################################################################
 # USER FUNCTIONS
 # This file gets imported to the launcher for cleanlyness
+# the launcher will have some features making it unsuitable for modification
 # you should modify this to suit your preferences
 ###############################################################################
 # $1 == compose-filename
