@@ -1,7 +1,7 @@
 #!/bin/bash
 ## $PROG SANDBOXY.SH v1.0
 ## |-- BEGIN MESSAGE -- ////##################################################
-## |This program is an installer
+## | This program is an installer
 ## |
 ## |
 ## |
@@ -10,11 +10,10 @@
 ## Usage: $PROG [OPTION...] [COMMAND]...
 ## Options: CHANGE THESE TO SUIT APPLICATIONS
 ##
-##  -u, --user USER       The username to be created      (Default: moop)
-##  -p, --password PASS   The password to said username   (Default: root)
-##  -l, --location         Full Path to install location   (Default: /sandboxy)
-##  -l, --token           Token for data storage          (Default: ===DATA===)
-##  -r, --raspi           use if installing on raspi4b
+##  -l, --location         Full Path to install location       (Default: /sandboxy)
+##  -l, --extractlocation  Path to Archive Extraction Location (Default: /tmp)
+##  -l, --token            Token for data storage              (Default: DATA)
+##  -n, --network          Name of the network to create       (Default: net)
 ##
 ## Commands:
 ##   -h, --help             Displays this help and exists
@@ -54,7 +53,11 @@ tarinstalldir(){
 }
 token()
 {
-    TOKEN="===DATA==="
+    TOKEN="DATA"
+}
+network()
+{
+  NETWORK="net"
 }
 ###############################################################################
 ## Menu parsing and output colorization
@@ -258,73 +261,19 @@ grabsectionfromself()
   done < $SELF
 }
 
-# adds lines for vbox and other things
-addsourcesrepo()
-{
-  #one method is to ech
-  #echo 'deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian <mydist> contrib' | sudo tee -a /etc/apt/sources.list
-  
-  # another is to `add-apt-repository`
-  # this is the preffered method as it uses the system package manager
-  wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
-  wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
-  sudo add-apt-repository 'deb https://download.virtualbox.org/virtualbox/debian $(lsb_release -s -c) contrib'
-  sudo apt-key add oracle_vbox_2016.asc
-  sudo apt-key add oracle_vbox.asc
-}
 # installs for debian amd64
 installapt()
 {
   sudo apt-get install docker,python3,python3-pip,git,tmux
 }
-#installs docker on raspi
-raspiinstall()
-{
-  curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
-  #curl -sSL https://get.docker.com | sh
-  sudo groupadd docker
-  #sudo gpasswd -a pi docker
-  sudo usermod -aG docker ${USER}
-  sudo systemctl enable docker
-  docker run hello-world
-  sudo apt-get install libffi-dev libssl-dev
-  sudo apt-get install -y python python-pip
-  sudo pip install docker-compose
-  docker-compose build
-}
 
-#installs openvpn
-installopenvpn()
-{
-export DEBIAN_FRONTEND=noninteractive 
-apt-get update && apt-get upgrade -y
-apt-get install -y openvpn
-apt-get clean
-rm -rf /var/lib/apt/lists/*
-useradd --system --uid 666 -M --shell /usr/sbin/nologin vpn
-}
 installdockerdebian()
 {
   cecho "[+] Installing Docker" "yellow"
 
 }
-#starts webgoat
-startwebgoat()
-{
-  # use if not setting vars in docker compose
-  # MUST ADD EXECUTABLES TO PATH!!!!
-  #start with specific menus
-  #export EXCLUDE_CATEGORIES="CLIENT_SIDE,GENERAL,CHALLENGE"
-  #export EXCLUDE_LESSONS="SqlInjectionAdvanced,SqlInjectionMitigations"
-  #java -jar webgoat-server/target/webgoat-server-v8.2.0-SNAPSHOT.jar
-  export WEBGOAT_PORT=18080
-  export WEBGOAT_HSQLPORT=19001
-  export WEBWOLF_PORT=19090
-  java -jar webgoat-server-8.1.0.jar && java -jar webwolf-8.1.0.jar 
-}
-
 ###############################################################################
-## traefik Docker container scripts
+# Docker stuff
 ###############################################################################
 installdockercompose()
 {
@@ -345,11 +294,12 @@ installdockercompose()
     sudo mv docker-compose /usr/local/bin
   fi
 }
+# $1 == compose-filename
 build()
 {
-  set -ev
+  #set -ev
   docker-compose config
-  docker-compose pull
+  docker-compose build -f $1
   docker-compose up -d
   docker-compose ps
 }
@@ -359,40 +309,79 @@ cleanup()
   docker-compose down
   docker network rm $NETWORK | printf
 }
-hosts()
+
+
+installprerequisites()
 {
-  set -ev
-  eval $(egrep '^HOST' .env | xargs)
-  if [ "$HOST" != "localhost" ]; then
-    grep "127.0.0.1  ${HOST}" /etc/hosts || (echo "127.0.0.1  ${HOST}" | sudo tee -a /etc/hosts)
-  fi
-  grep "127.0.0.1  docker.${HOST}" /etc/hosts || (echo "127.0.0.1  docker.${HOST}" | sudo tee -a /etc/hosts)
-  grep "127.0.0.1  dashboard.${HOST}" /etc/hosts || (echo "127.0.0.1  dashboard.${HOST}" | sudo tee -a /etc/hosts)
+while true; do
+    cecho "[!] This action is about use quite a bit of time and internet data." red
+    cecho "[!] Do you wish to use lots of data and time downloading things?" red
+    cecho "[?]" red; cecho "y/N ?" yellow
+    read -e -i "n" yesno
+    cecho "[?] Are You Sure? (y/N)" yellow
+    read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+    case $yesno in
+        [Yy]* ) installapt; installdockerdebian; installdockercompose;;
+        [Nn]* ) exit;;
+        * ) cecho "Please answer yes or no." red;;
+    esac
+done
 }
-certs()
-{
-  set -e
-  eval $(egrep '^HOST' .env | xargs)
-  eval $(egrep '^CERT_PATH' .env | xargs)
-  echo "Domain: ${HOST}"
-  echo "Cert Path: ${CERT_PATH}"
-  if [ -f certs/cert.crt ] || [ -f certs/cert.key ] || [ -f certs/cert.pem ]; then
-    echo -e "cert already exists in certs directory\nDo you want to overwrite the files? [y]es/[n]o"
-    read -r ANSWER
-    echo
-    if [[ "$ANSWER" =~ ^[Yy](es)?$ ]] ; then
-      echo "Creating Cert"
-    else
-      exit 1
-    fi
-  fi
-  #another function in this script, right above this one
-  requests
-  openssl genrsa -out $CERT_PATH/cert.key
-  openssl req -new -key $CERT_PATH/cert.key -out $CERT_PATH/cert.csr -config $CERT_PATH/csr.conf
-  openssl x509 -req -days 365 -in $CERT_PATH/cert.csr -signkey $CERT_PATH/cert.key -out $CERT_PATH/cert.crt -extensions req_ext -extfile $CERT_PATH/csr.conf
-  sudo cp $CERT_PATH/cert.crt /usr/local/share/ca-certificates/cert.crt
-  sudo rm -f /usr/local/share/ca-certificates/certificate.crt
-  # --fresh is needed to remove symlinks to no-longer-present certificates
-  sudo update-ca-certificates --fresh
+read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+
+show_menus() {
+	clear
+  cecho "## |-- BEGIN MESSAGE -- ////##################################################" green
+  cecho "## | 1> Install Prerequisites" green
+  cecho "## | 2> Build Cluster" green
+  cecho "## | 3> Run Cluster" green
+  cecho "## | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" green
+  cecho "## | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" green
+  cecho "## | 6> Append Data To Script" yellow
+  cecho "## | 7> Retrieve Data From Script" yellow
+  cecho "## | 8> Quit Program" yellow
+  cecho "## |-- END MESSAGE -- ////#####################################################" green
 }
+PS3="Choose your doom:"
+select option in install clean appenddata recalldata quit
+do
+	case $option in
+    install) 
+			installprerequisites
+    clean) 
+        establish_network
+    appenddata)
+        setup_disk
+    quit)
+      break;;
+    esac
+done
+# read input from the keyboard and take a action
+# invoke the one() when the user select 1 from the menu option.
+# invoke the two() when the user select 2 from the menu option.
+# Exit when user the user select 3 form the menu option.
+read_options(){
+	local choice
+	read -p "Enter choice [ 1 - 3] " choice
+	case $choice in
+		1) one ;;
+		2) two ;;
+		3) exit 0;;
+		*) echo -e "${RED}Error...${STD}" && sleep 2
+	esac
+}
+ 
+# ----------------------------------------------
+# Step #3: Trap CTRL+C, CTRL+Z and quit singles
+# ----------------------------------------------
+trap '' SIGINT SIGQUIT SIGTSTP
+ 
+# -----------------------------------
+# Step #4: Main logic - infinite loop
+# ------------------------------------
+while true
+do
+ 
+	show_menus
+	read_options
+done

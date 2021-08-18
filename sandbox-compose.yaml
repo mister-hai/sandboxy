@@ -12,30 +12,8 @@ version: "3"
 ##   CTFDPORT=
 #################################################################
 services:
-    cnc:
-      image: debian:buster
-      build:
-        context: ./containers/cnc
-        dockerfile: Dockerfile
-      networks:
-        net:
-          ipv4_address: 172.18.0.2
-#################################################################
-##  Parrotsec/ParOS
-#################################################################
-    parrot:
-      image: parrotsec/security
-      volumes:
-        - "/run/docker.sock:/var/run/docker.sock"
-      networks:
-        net:
-          ipv4_address: 172.18.0.2
-      #volumes:
-      #  -  /tmp/msf:/tmp/data:Z
-      #network_mode: host
 #################################################################
 ##  NGINX ; proxies to the other containers
-# DEPRECATED in favor of TRAEFIK currently
 #################################################################        
     nginx:
       build:
@@ -60,7 +38,7 @@ services:
         #- ./data/certbot/conf:/etc/letsencrypt
         #- ./data/certbot/www:/var/www/certbot
         - "/run/docker.sock:/var/run/docker.sock"
-      #  - ./confs/nginx.conf:/etc/nginx/nginx.conf
+        #  - ./confs/nginx.conf:/etc/nginx/nginx.conf
       hostname: nginx
       networks:
         net:
@@ -86,10 +64,10 @@ services:
       expose:
         - 80
       ports:
-        - 8081:80
+        - ${BWAPPPORT}:80
       networks:
         net:
-          ipv4_address: 172.18.0.5
+          ipv4_address: ${BWAPPIP}
       hostname: bwapp
 ##################################################################
 ##        WEB GOAT AND WOLF  ; will be locked down for semi-private usage
@@ -113,10 +91,10 @@ services:
         - 80
       restart: unless-stopped
       ports:
-        - 8082:80
+        - ${DVWAPORT}:80
       networks:
         net:
-          ipv4_address: 172.18.0.6
+          ipv4_address: ${DVWAIP}
         
 #################################################################
 ##  Mutillidae2 ; will be locked down for semi-private usage
@@ -136,17 +114,60 @@ services:
 #################################################################        
     ctfd:
       image: ctfd/ctfd
+      build:
+        context: ./containers/CTFd
+        dockerfile: Dockerfile
       hostname: ctfd
       expose:
         - 8000
       restart: unless-stopped
       ports:
-        - 8000:8000
+        - ${CTFDPORT}:8000
       #network_mode: host
       networks:
         net:
-          ipv4_address: 172.18.0.7
+          ipv4_address: ${CTFDIP}
 
+#################################################################
+##  target1
+#################################################################
+#    cnc:
+#      image: debian:buster
+#      build:
+#        context: ./containers/cnc
+#        dockerfile: Dockerfile
+#      networks:
+#        net:
+#          ipv4_address: 172.18.0.2
+#################################################################
+##  Parrotsec/ParOS
+#################################################################
+#    parrot:
+#      image: parrotsec/security
+#      volumes:
+#        - "/run/docker.sock:/var/run/docker.sock"
+#      networks:
+#        net:
+#          ipv4_address: 172.18.0.2
+#      #volumes:
+#      #  -  /tmp/msf:/tmp/data:Z
+#      #network_mode: host
+#################################################################
+#     DATABASE SECTION
+#################################################################
+    redis:
+      image: redis
+      hostname: redis
+      command: redis-server --appendonly yes
+      ports:
+        - ${REDISPORT}:6379
+      volumes:
+        - ./data:/data
+      restart: unless-stopped
+      networks:
+        net:
+          ipv4_address: ${REDISIP}
+          
 #################################################################
 #     NETWORKS SECTION
 #################################################################      
