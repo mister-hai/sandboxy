@@ -11,9 +11,12 @@
 ## Options: CHANGE THESE TO SUIT APPLICATIONS
 ##
 ##  -l, --location         Full Path to install location       (Default: /sandboxy)
-##  -l, --extractlocation  Path to Archive Extraction Location (Default: /tmp)
-##  -l, --token            Token for data storage              (Default: DATA)
+##  -e, --extractlocation  Path to Archive Extraction Location (Default: /tmp)
+##  -t, --token            Token for data storage              (Default: DATA)
 ##  -n, --network          Name of the network to create       (Default: net)
+##  -f, --composefile      Name of the compose file to use     (Default: ./sandbox-compose.yaml)
+##  -c, --extraslocation   Location of the lib.sh              (Default: ./lib.sh)
+##  -s, --setup            Sets required OS settings
 ##
 ## Commands:
 ##   -h, --help             Displays this help and exists
@@ -58,6 +61,20 @@ token()
 network()
 {
   NETWORK="net"
+}
+composefile()
+{
+  PROJECTFILE="./sandbox-compose.yaml"
+}
+#
+extraslocation()
+{
+  EXTRASLOCATION="compose.sh"
+  source $(dirname "$0")/"${EXTRASLOCATION}"
+}
+setup()
+{
+  SETUP=true
 }
 ###############################################################################
 ## Menu parsing and output colorization
@@ -162,6 +179,17 @@ done
 #CDPATH is not a bash-specific feature; it’s actually specified by POSIX.
 unset CDPATH
 
+
+###############################################################################
+## FIRST TIME RUN, SYSTEM PREP
+###############################################################################
+# run only once, the first time this program is run
+newinstallsetup()
+{
+    umask a+rx
+    echo 'kernel.unprivileged_userns_clone=1' | sudo tee -a /etc/sysctl.d/00-local-userns.conf
+    sudo service procps restart
+}
 ###############################################################################
 ## functions
 ###############################################################################
@@ -203,9 +231,9 @@ decodeb64()
 }
 
 ###############################################################################
-##
+## SELF ARCHIVING FEATURES
+## TODO: tar everything in directory and append to self
 ###############################################################################
-
 # first arg is tarfile name, to allow for multiple files
 readselfarchive()
 {
@@ -252,6 +280,9 @@ grabsectionfromself()
   done < $SELF
 }
 
+###############################################################################
+## INSTALLER FUNCTIONS
+###############################################################################
 # installs for debian amd64
 installapt()
 {
@@ -264,18 +295,20 @@ installapt()
     ca-certificates \
     curl \
     gnupg \
-    lsb-release
+    lsb-release\
+    xxd wget curl netcat
 }
-
 installdockerdebian()
 {
   cecho "[+] Installing Docker" yellow
-
   sudo apt-get remove docker docker-engine docker.io containerd runc
+  curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  echo \
+  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  sudo apt-get update
+  sudo apt-get install docker-ce docker-ce-cli containerd.io
 }
-###############################################################################
-# Docker stuff
-###############################################################################
 installdockercompose()
 {
   set -ex
@@ -295,24 +328,18 @@ installdockercompose()
     sudo mv docker-compose /usr/local/bin
   fi
 }
-
-# $1 == compose-filename
-composebuild()
+installkctf()
 {
-  #set -ev
-  docker-compose config
-  docker-compose -f $1 build
+  mkdir ctf-directory && cd ctf-directory
+  curl -sSL https://kctf.dev/sdk | tar xz
 }
-
-cleanup()
-{
-  cecho "[+] Cleaning up" yellow
-  docker-compose -f ${PROJECTFILENAME} down
-  docker network prune -f
-  docker container prune -f
-  docker volume prune -f
+#runs the list
+installeverything(){
+  installapt
+  installdockerdebian
+  installdockercompose
+  installkctf
 }
-
 installprerequisites()
 {
 while true; do
@@ -323,7 +350,7 @@ while true; do
     cecho "[?] Are You Sure? (y/N)" yellow
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     case $yesno in
-        [Yy]* ) installapt; installdockerdebian; installdockercompose;;
+        [Yy]* ) installeverything;;
         [Nn]* ) exit;;
         * ) cecho "Please answer yes or no." red;;
     esac
@@ -350,9 +377,17 @@ done
 ###############################################################################
 # MAIN LOOP, CONTAINS MENU THEN INFINITE LOOP, AFTER THAT IS DATA SECTION
 ###############################################################################
+activatekctf(){
+  source kctf/activate
+}
+k8sclusterinit()
+{
+  kctf cluster create local-cluster --start --type kind
+}
 # Trap CTRL+C, CTRL+Z and quit singles
 trap '' SIGINT SIGQUIT SIGTSTP
-show_menus() {
+show_menus()
+{
 	clear
   cecho "## |-- BEGIN MESSAGE -- ////##################################################" green
   cecho "## | 1> Install Prerequisites" green
@@ -362,10 +397,18 @@ show_menus() {
   cecho "## | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" green
   cecho "## | 6> Append Data To Script" yellow
   cecho "## | 7> Retrieve Data From Script" yellow
-  cecho "## | 8> Quit Program" yellow
+  cecho "## | 8> Activate Kubernetes Cluster" yellow
+  cecho "## | 9> KCTF-google CLI (use after install only!)" green
+  cecho "## | 10> CTFd CLI (use after install only!)" green
+  cecho "## | 11> Quit Program" yellow      
+  cecho "## | 12> Quit Program" RED
   cecho "## |-- END MESSAGE -- ////#####################################################" green
+}
+getselection()
+{
+  show_menus
   PS3="Choose your doom:"
-  select option in install build run clean refresh append recall quit
+  select option in install build run clean refresh append recall initk8s initkctf ctfdcli quit
   do
 	  case $option in
       install) 
@@ -387,7 +430,16 @@ show_menus() {
       esac
   done
 }
+# main loop
+main()
+{
+  getselection
+}
 while true
 do
-	show_menus
+	main
 done
+
+###############################################################################
+## BEGIN DATA STORAGE SECTION
+###############################################################################

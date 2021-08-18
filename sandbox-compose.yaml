@@ -3,13 +3,6 @@ version: "3"
 ##
 ## THIS FILE CONTAINS THE ENTRIES FOR THE INFRASTRUCTURE
 ##
-## container port mapping to avoid confuflict
-##   LOGINPORT=8080
-#3   BWAPPPORT=
-##   WEEBGOATPORT=
-##   DVWAPORT=
-##   MUTILLIDAE2PORT=
-##   CTFDPORT=
 #################################################################
 services:
 #################################################################
@@ -45,7 +38,7 @@ services:
           ipv4_address: 172.18.0.3
 
 ################################################################
-## CERTBOT
+## CERTBOT enables ssl for the backend
 ################################################################
 #    certbot:
 #      image: certbot/certbot
@@ -70,7 +63,7 @@ services:
           ipv4_address: ${BWAPPIP}
       hostname: bwapp
 ##################################################################
-##        WEB GOAT AND WOLF  ; will be locked down for semi-private usage
+## WEB GOAT AND WOLF  ; will be locked down for semi-private usage
 #################################################################
 #    webgoat:
 #      image: webgoat/webgoat-7.1
@@ -109,7 +102,7 @@ services:
 #      networks:
 #        - net
 #################################################################
-##  CTFD; part of the network game, will allow network pivoting
+## CTFD; part of the network game, will allow network pivoting
 ## will use the builder script portion for production. 
 #################################################################        
     ctfd:
@@ -118,18 +111,36 @@ services:
         context: ./containers/CTFd
         dockerfile: Dockerfile
       hostname: ctfd
+      user: root
+      restart: always
+      environment:
+        - UPLOAD_FOLDER=${UPLOAD_FOLDER}
+        - DATABASE_URL=${DATABASE_URL}
+        - REDIS_URL=${REDIS_URL}
+        - WORKERS=${WORKERS}
+        - LOG_FOLDER=${LOG_FOLDER}
+        - ACCESS_LOG=${ACCESS_LOG}
+        - ERROR_LOG=${ERROR_LOG}
+        - REVERSE_PROXY=${REVERSE_PROXY}
+      volumes:
+        - .data/CTFd/logs:${LOG_FOLDER}
+        - .data/CTFd/uploads:${UPLOAD_FOLDER}
+        - ${CTFDBUILDDIR}:/opt/CTFd:ro
+      depends_on:
+        - db
       expose:
         - 8000
       restart: unless-stopped
       ports:
         - ${CTFDPORT}:8000
-      #network_mode: host
       networks:
+        default:
+        internal:
         net:
           ipv4_address: ${CTFDIP}
 
 #################################################################
-##  target1
+##  target1 available for pwnage
 #################################################################
 #    cnc:
 #      image: debian:buster
@@ -155,25 +166,44 @@ services:
 #################################################################
 #     DATABASE SECTION
 #################################################################
-    redis:
+    cache:
       image: redis
-      hostname: redis
-      command: redis-server --appendonly yes
+      hostname: cache
+      #command: redis-server --appendonly yes
       ports:
         - ${REDISPORT}:6379
       volumes:
-        - ./data:/data
+        - ./data/redis:/data
       restart: unless-stopped
       networks:
+        internal:
         net:
           ipv4_address: ${REDISIP}
-          
+
+    db:
+      image: mariadb:10.4.12
+      restart: always
+      environment:
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+      volumes:
+        - .data/mysql:/var/lib/mysql
+      networks:
+          internal:
+    # This command is required to set important mariadb defaults
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
+
 #################################################################
 #     NETWORKS SECTION
 #################################################################      
 #networks:
 #  macvlan:
 networks:
+  default:
+  internal:
+    internal: true
   net:
     driver: bridge
     ipam:
