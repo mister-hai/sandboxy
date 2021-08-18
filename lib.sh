@@ -17,10 +17,15 @@ composerun()
 {
     docker-compose -f "${PROJECTFILE}" up
 }
-#generic purge
-cleanup()
+#FULL SYSTEM PURGE
+dockerpurge()
 {
-  cecho "[+] Cleaning up" yellow
+  docker system prune --force --all
+}
+#docker selective pruning
+dockerprune()
+{
+  cecho "[+] pruning everything" yellow
   docker-compose -f "${PROJECTFILENAME}" down
   docker network prune -f
   docker container prune -f

@@ -53,7 +53,7 @@ we need more https://asmen.icopy.site/awesome/awesome-ctf/
     ## |    - Docker-compose
     ## |    - kctf from Google
     ## |    - CTFd (https://ctfd.io/) © Copyright CTFd LLC 2017 - 2020
-    ## |    
+    ## |        - UIUCTF-2021-PUBLIC challenge set
     ## |    
     ## |    
     ## |    
@@ -84,3 +84,15 @@ we need more https://asmen.icopy.site/awesome/awesome-ctf/
     ##   $PROG -i myscrip-simple.sh > myscript-full.sh
     ##   $PROG -r myscrip-full.sh   > myscript-simple.sh
     ## 
+
+##Some Notes
+
+    
+    Historically the security of user namespace was uncertain. eg: lwn.net/Articles/673597 . 
+    If a user, as root inside her own namespace can trick the kernel into allowing an operation
+    on the real host, there's privilege escalation. Usual non-user namespaces require explicit
+    root (so admin) permission and so run what the admin chose: that's a known risk. A later
+    mechanism was added in vanilla kernel: user.max_user_namespaces . When set to 0 user
+    namespaces are disabled. The Debian (actually from Ubuntu) patch is still around, even if
+    probably obsolete. Maybe for compatibility reasons – A.B Mar 20 '18 at 14:30
+

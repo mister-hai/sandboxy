@@ -2,12 +2,16 @@
 ## $PROG SANDBOXY.SH v1.0
 ## |-- BEGIN MESSAGE -- ////##################################################
 ## | This program is an installer and manager for a sandboxing system based on
-## |    - linux
-## |    - Kubernetes
-## |    - Docker
-## |    - Docker-compose
-## |    - kctf from Google
-## |    - CTFd
+## |    ~ linux
+## |       ~ debian
+## |    ~ Kubernetes
+## |    ~ Docker
+## |    ~ Docker-compose
+## |    ~ kctf from Google
+## |       ~ https://google.github.io/kctf/
+## |    ~ CTFd (https://ctfd.io/) © Copyright CTFd LLC 2017 - 2020
+## |       ~ UIUCTF-2021-PUBLIC challenge set
+## |       ~ https://github.com/sigpwny/UIUCTF-2021-Public
 ## |    
 ## |    
 ## |    
@@ -17,35 +21,33 @@
 ## |    
 ## |    
 ## |    
-## |    
-## |    
+## |
+## | Usage: $PROG --flag1 value --flag2 value
+## | Options:
+## |
+## | -l, --location         Full Path to install location       (Default: /sandboxy)
+## | -e, --extractlocation  Path to Archive Extraction Location (Default: /tmp)
+## | -t, --token            Token for data storage              (Default: DATA)
+## | -n, --network          Name of the network to create       (Default: net)
+## | -f, --composefile      Name of the compose file to use     (Default: ./sandbox-compose.yaml)
+## | -c, --extraslocation   Location of the lib.sh              (Default: ./lib.sh)
+## | -s, --setup            Sets required OS settings
+## |
+## | Commands:
+## |   -h, --help             Displays this help and exists
+## |   -v, --version          Displays output version and exits
+## | Examples:
+## |  $PROG -i myscrip-simple.sh > myscript-full.sh
+## |  $PROG -r myscrip-full.sh   > myscript-simple.sh
+## | 
 ## |-- END MESSAGE -- ////#####################################################
-##
-## Usage: $PROG [OPTION...] [COMMAND]...
-## Options: CHANGE THESE TO SUIT APPLICATIONS
-##
-##  -l, --location         Full Path to install location       (Default: /sandboxy)
-##  -e, --extractlocation  Path to Archive Extraction Location (Default: /tmp)
-##  -t, --token            Token for data storage              (Default: DATA)
-##  -n, --network          Name of the network to create       (Default: net)
-##  -f, --composefile      Name of the compose file to use     (Default: ./sandbox-compose.yaml)
-##  -c, --extraslocation   Location of the lib.sh              (Default: ./lib.sh)
-##  -s, --setup            Sets required OS settings
-##
-## Commands:
-##   -h, --help             Displays this help and exists
-##   -v, --version          Displays output version and exits
-## Examples:
-##   $PROG -i myscrip-simple.sh > myscript-full.sh
-##   $PROG -r myscrip-full.sh   > myscript-simple.sh
-## 
 # https://stackoverflow.com/questions/14786984/best-way-to-parse-command-line-args-in-bash
 #
 #  THESE GET CREATED TO REFLECT THE OPTIONS ABOVE, EVERYTHING IS PARSED WITH SED
 #
 PROG=${0##*/}
 LOGFILE="$0.logfile"
-die() { echo $@ >&2; exit 2; }
+die() { echo "$@" >&2; exit 2; }
 #SANDBOX user configuration
 location()
 {
@@ -154,14 +156,14 @@ while [ $# -gt 0 ]; do
 #            "resets the line position"
 #            With -o it will 
 #            print the result from \K to the end that matched the regex. 
-# 
-# It's often used together grep -Po 'blabla\Kblabla'
-#     For example `echo abcde | grep -P 'ab\K..'` will print "de"
+#             It's often used together grep -Po 'blabla\Kblabla'
+#             For example `echo abcde | grep -P 'ab\K..'` will print "de"
 
-# tr - _ substitutes all - for _
+#           tr - _ 
+#             substitutes all - for _
   CMD=$(grep -m 1 -Po "^## *$1, --\K[^= ]*|^##.* --\K${1#--}(?:[= ])" ${0} | tr - _)
   if [ -z "$CMD" ]; then echo "ERROR: Command '$1' not supported"; exit 1; fi
-  shift; eval "$CMD" $@ || shift $? 2> /dev/null
+  shift; eval "$CMD" "$@" || shift $? 2> /dev/null
 done
 ###############################################################################
 #Every bash script that uses the cd command with a relative path needs 
@@ -214,6 +216,11 @@ getscriptworkingdir()
 SELFPATH=(getscriptworkingdir)
 SELF=$selfaspath/$0
 
+###############################################################################
+## SELF ARCHIVING FEATURES
+## TODO: tar everything in directory and append to self
+###############################################################################
+
 encodeb64()
 {
 # Argument1 == $1
@@ -230,10 +237,6 @@ decodeb64()
   printf "%s" message | base64 -d -i
 }
 
-###############################################################################
-## SELF ARCHIVING FEATURES
-## TODO: tar everything in directory and append to self
-###############################################################################
 # first arg is tarfile name, to allow for multiple files
 readselfarchive()
 {
@@ -247,7 +250,15 @@ readselfarchive()
   < ${SELF} tail -n "+${PAYLOAD_START}" | head -n "$((${PAYLOAD_END}-${PAYLOAD_START}+1))" | tar -zpvx -C ${INSTALLDIR}${1}
 }
 
-# first arg: filename or string data
+appendtoselfasbase64()
+{
+  # add token with filename for identifier
+  printf "%s" "==${TOKEN}==${1}==START==" >> $SELF
+  # add the encoded data
+  base64 $1 >> $SELF
+  printf "%s" "==${TOKEN}==${1}==END==" >> $SELF
+}
+}
 appendtoselfasbase64()
 {
   # add token with filename for identifier
@@ -374,6 +385,23 @@ while true; do
     esac
 done
 }
+# first arg: filename or string data
+asktoappend()
+{
+  while true; do
+    cecho "[!] APPENDING : ${1}" red
+    cecho "[!] Do you wish to continue?" red
+    cecho "[?]" red; cecho "y/N ?" yellow
+    read -e -i "n" yesno
+    cecho "[?] Are You Sure? (y/N)" yellow
+    read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+    case $yesno in
+        [Yy]* ) appendtoselfasbase64 "${1}";;
+        [Nn]* ) exit;;
+        * ) cecho "Please answer yes or no." red;;
+    esac
+done
+
 ###############################################################################
 # MAIN LOOP, CONTAINS MENU THEN INFINITE LOOP, AFTER THAT IS DATA SECTION
 ###############################################################################
@@ -414,13 +442,13 @@ getselection()
       install) 
 	  		installprerequisites;;
       build)
-        buildproject
+        buildproject;;
       run)
-
+        composerun;;
       clean) 
-        cleanup
+        dockerprune;;
       refresh)
-
+        dockerpurge;;
       append)
 
       recall)

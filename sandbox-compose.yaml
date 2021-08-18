@@ -92,15 +92,14 @@ services:
 #################################################################
 ##  Mutillidae2 ; will be locked down for semi-private usage
 #################################################################
-#    mutillidae2:
-#      image: santosomar/mutillidae_2
-#      #expose:
-#      #  - ${MUTILLIDAE2PORT}
-#      restart: unless-stopped
-#      #ports:
-#      #  - ${MUTILLIDAE2PORT}:80
-#      networks:
-#        - net
+    mutillidae2:
+      image: santosomar/mutillidae_2
+      restart: unless-stopped
+      ports:
+        - ${MUTILLIDAE2PORT}:80
+      networks:
+        net:
+          ipv4_address: ${MUTILLIDAE2IP}
 #################################################################
 ## CTFD; part of the network game, will allow network pivoting
 ## will use the builder script portion for production. 
