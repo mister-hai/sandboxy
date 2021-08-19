@@ -32,7 +32,7 @@
 ## | -f, --composefile      Name of the compose file to use     (Default: ./sandbox-compose.yaml)
 ## | -c, --extraslocation   Location of the lib.sh              (Default: ./lib.sh)
 ## | -s, --setup            Sets required OS settings
-## |
+## | -v, -composeversion    Sets the Version to Install         (Default:1.25.4)
 ## | Commands:
 ## |   -h, --help             Displays this help and exists
 ## |   -v, --version          Displays output version and exits
@@ -77,6 +77,12 @@ extraslocation()
 setup()
 {
   SETUP=true
+}
+composeversion()
+{
+  if [ -z "$DOCKER_COMPOSE_VERSION" ]; then
+    DOCKER_COMPOSE_VERSION=1.25.4
+  fi
 }
 ###############################################################################
 ## Menu parsing and output colorization
@@ -284,54 +290,7 @@ grabsectionfromself()
 ###############################################################################
 ## INSTALLER FUNCTIONS
 ###############################################################################
-# installs for debian amd64
-installapt()
-{
-  sudo apt-get install \
-    python3\
-    python3-pip\
-    git\
-    tmux\
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release\
-    xxd wget curl netcat
-}
-installdockerdebian()
-{
-  cecho "[+] Installing Docker" yellow
-  sudo apt-get remove docker docker-engine docker.io containerd runc
-  curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-  echo \
-  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-  sudo apt-get update
-  sudo apt-get install docker-ce docker-ce-cli containerd.io
-}
-installdockercompose()
-{
-  set -ex
-  if [ -z "$DOCKER_COMPOSE_VERSION" ]; then
-    DOCKER_COMPOSE_VERSION=1.25.4
-  fi
-  echo "Installing docker-compose version: $DOCKER_COMPOSE_VERSION"
-  if [ -z "$(sudo -l 2>/dev/null)" ]; then
-    curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-    chmod +x docker-compose
-    mv docker-compose /usr/local/bin
-  else
-    curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-    sudo chmod +x docker-compose
-    sudo mv docker-compose /usr/local/bin
-  fi
-}
-installkctf()
-{
-  mkdir ctf-directory && cd ctf-directory
-  curl -sSL https://kctf.dev/sdk | tar xz
-}
+
 #runs the list
 installeverything(){
   installapt
@@ -430,7 +389,7 @@ askforrecallfile()
     read -e -i "n" filename
     cecho "[?] Are You Sure? (y/N)" yellow
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
-    case $yesno in
+    case $filename in
         [Yy]* ) asktorecall "${1}";;
         [Nn]* ) exit;;
         * ) cecho "Please answer yes or no." red;;
