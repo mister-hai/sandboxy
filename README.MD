@@ -4,6 +4,7 @@ This is an all in one setup script for docker on a
 
     cloud VM(backend only)
         - urlrewriting acting funky, cant seem to scrub ports from url
+            EDIT THE .ENV FILE TO REFLECT YOUR CURRENT ENVIRONMENT/CHOICES
 
     QUESTIONS FOR THE ADMIN:
         Can I install the following softwares:
@@ -34,8 +35,8 @@ or
 
 The setup will setup a:
 
-    - parrotOS/security
-        172.18.02
+    - parrotOS/security (development/learning version)
+        172.18.0.2
     - nginx reverse proxy 
         172.18.0.3
             - redis
@@ -48,6 +49,14 @@ The setup will setup a:
                 172.18.0.6
             - ctfd
                 172.18.0.7
+            - JuiceShop
+                172.168.0.8
+        NETWORKGAME
+            192.168.0.1/24
+                - ponyDB UIUCTF 2021
+                    192.168.0.2
+                - miniponyDB UIUCTF 2021
+                    192.168.0.3
 
 
 ## sources :
@@ -82,7 +91,7 @@ we need more https://asmen.icopy.site/awesome/awesome-ctf/
     ## |       ~ https://github.com/sigpwny/UIUCTF-2021-Public
     ## |    
     ## |    
-    ## |    
+    ## |    EDIT THE .ENV FILE TO REFLECT YOUR CURRENT ENVIRONMENT/CHOICES
     ## |    
     ## |    
     ## |    

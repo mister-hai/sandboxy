@@ -1,12 +1,12 @@
 version: '3.1'
 ###############################################################################
-## Change the build paths to data\UIUCTF-2021-Public
+## Change the build paths to ./containers/CTFd/challengedirectory
 ###############################################################################
 services:
 ###############################################################################
-## ponydb
+## miniaturehorsedb
 ###############################################################################
-  db:
+  minidb:
     image: mysql
     environment:
       MYSQL_DATABASE: ponies
@@ -14,18 +14,19 @@ services:
       MYSQL_PASSWORD: wv38f8hnDb1IThTw6A
       MYSQL_RANDOM_ROOT_PASSWORD: 1
   ponydb:
-    build: ./data/UIUCTF-2021-Public/web/ponydb
+    privileged: true
+    build: ${MINIPONYDBBUILDDIR}
     environment:
-      FLAG: uiuctf{My_l33tle_p0ny}
+      FLAG: uiuctf{wh0ops_th1s_on3_was_harder_r1ght_9fa2b}
       DB: ponies
-      DB_HOST: db
+      DB_HOST: minidb
       DB_USER: iheartponies
       DB_PASS: wv38f8hnDb1IThTw6A
       SECRET_KEY: uSsV465Looe1P8
-    ports:
-      - ${PONYDBPORT}:1337
     #and here we deviate
+    ports:
+      - ${MINIPONYDBPORT}:1337
     networks:
-      net:
+      - ${SANDBOX_NETWORK_NAME}
         external: true
-        ipv4_address: ${PONYDBIP}
+        ipv4_address: ${MINIPONYDBIP}

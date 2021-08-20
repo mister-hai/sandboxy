@@ -1,4 +1,5 @@
-ctfd/logs/*
+CTFd/logs/*
+CTFd/uploads/*
 redis/*
 mysql/*
 UIUCTF-2021-Public/*

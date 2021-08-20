@@ -65,15 +65,18 @@ services:
 ##################################################################
 ## WEB GOAT AND WOLF  ; will be locked down for semi-private usage
 #################################################################
-#    webgoat:
-#      image: webgoat/webgoat-7.1
-#      #expose:
-#      #  - ${WEEBGOATPORT}
-#      restart: unless-stopped
-#      ports:
-#        - ${WEEBGOATPORT}:8080
-#      networks:
-#        - net
+#docker run --rm -p 3000:3000 bkimminich/juice-shop
+    juiceshop:
+      image: bkimminich/juice-shop
+      hostname: juiceshop
+      expose:
+        - 3000
+      restart: unless-stopped
+      ports:
+        - ${JUICESHOPPORT}:3000
+      networks:
+        net:
+          ipv4_address: ${DVWAIP}
 #################################################################
 ##  Damn Vulnerable WEB APP ; will be locked down for semi-private usage
 #################################################################
@@ -133,7 +136,6 @@ services:
       ports:
         - ${CTFDPORT}:8000
       networks:
-        default:
         internal:
         net:
           external: true
@@ -171,14 +173,15 @@ services:
       hostname: cache
       #command: redis-server --appendonly yes
       ports:
-        - ${REDISPORT}:6379
+        #- ${REDISPORT}:6379
+        - 6379:6379
       volumes:
         - ./data/redis:/data
       restart: unless-stopped
       networks:
         internal:
-        net:
-          ipv4_address: ${REDISIP}
+        #net:
+        #  ipv4_address: ${REDISIP}
 
     db:
       image: mariadb:10.4.12
@@ -201,7 +204,6 @@ services:
 #networks:
 #  macvlan:
 networks:
-  default:
   internal:
     internal: true
   net:
