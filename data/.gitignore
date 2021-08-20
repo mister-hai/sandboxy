@@ -1,0 +1,7 @@
+ctfd/logs/*
+redis/*
+mysql/*
+UIUCTF-2021-Public/*
+!UIUCTF-2021-Public/README.md
+
+

@@ -108,17 +108,22 @@ http {
     ##
     #include /etc/nginx/sites-enabled/*;
 
-    ######
-    ## Upstream servers
-    #######
-    # upstream declarations. The server inside each of the upstreams represents 
-    # where to find each of the applications.
-    # The hostname must match the service name found in the docker-compose.yml 
-    # file. By default, NGINX and Apache web servers broadcast on port 80, but
-    # if you’ve changed it, make sure to update the upstream server port.
+###############################################################################
+## UPSTREAM SERVERS
+###############################################################################
+# upstream declarations. The server inside each of the upstreams represents 
+# where to find each of the applications.
+# The hostname must match the service name found in the docker-compose.yml 
+# file. By default, NGINX and Apache web servers broadcast on port 80, but
+# if you’ve changed it, make sure to update the upstream server port.
+    
     #upstream docker-login {
     #    server login:${LOGINPORT};
     #}
+      # Configuration containing list of application servers
+    upstream app_servers {
+        server ${CTFDIP}:${CTFDPORT};
+    }
     upstream docker-bwapp {
         server ${BWAPPIP}:${BWAPPPORT};
     }
@@ -128,15 +133,48 @@ http {
     upstream docker-dvwa {
        server ${DVWAIP}:${DVWAPORT};
     }
-    upstream docker-ctfd {
-        server ${CTFDIP}:${CTFDPORT};
-    }
+###############################################################################
+## DEFAULT CONFIGURATION
+###############################################################################
     server {
     listen 0.0.0.0:80;
     server_name ${SERVER_NAME};
     return 301 http://$server_name$request_uri;
     #rewrite ^/(.*) /$1 last;
     }
+###############################################################################
+## CTFD CONIGURATION
+###############################################################################
+    server {
+    listen 80;
+    client_max_body_size 4G;
+    # Handle Server Sent Events for Notifications
+        location /events {
+            proxy_pass http://app_servers;
+            proxy_set_header Connection '';
+            proxy_http_version 1.1;
+            chunked_transfer_encoding off;
+            proxy_buffering off;
+            proxy_cache off;
+            proxy_redirect off;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Host $server_name;
+        }
+    # Proxy connections to the application servers
+        location / {
+            proxy_pass http://app_servers;
+            proxy_redirect off;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Host $server_name;
+        }
+    }
+###############################################################################
+## bwapp CONFIGURATION
+###############################################################################
     #proxy_redirect $scheme://docker-bwapp $scheme://$host$request_uri;
     server {
         listen 80;
@@ -145,44 +183,61 @@ http {
         index index.html index.htm index.php;
         default_type application/octet-stream;
         server_name_in_redirect off;
-        proxy_set_header Host $host:$server_port;
+        #proxy_set_header Host $host:$server_port;
         location ~ / {
             proxy_pass http://docker-bwapp;
-            proxy_redirect  http://docker-bwapp/ /;
+            #proxy_redirect  http://docker-bwapp/ /;
+            proxy_redirect off;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Host $server_name;            
             #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
             #proxy_redirect $scheme://docker-bwapp $scheme://$host$request_uri;
         }
     }
-server {
+###############################################################################
+## DVWA CONFIGURATION
+###############################################################################
+    server {
         listen 80;
         #listen 443;#ssl;
         server_name dvwa;
         server_name_in_redirect off;
-        proxy_set_header Host $host:$server_port;
+        #proxy_set_header Host $host:$server_port;
         index    index.html index.htm index.php;
         location ~ / {
             proxy_pass http://docker-dvwa;
-            proxy_redirect http://docker-dvwa/ /;
+            #proxy_redirect http://docker-dvwa/ /;
+            proxy_redirect off;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Host $server_name;
             #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
             #proxy_redirect off;
         }
     }
-    server {
-        listen 80;
-        #listen 443 ;#ssl;
-        server_name ctfd;
-        index    index.html index.htm index.php;
-        server_name_in_redirect off;
-        proxy_set_header Host $host:$server_port;
-        location ~ / {
-            proxy_pass http://docker-ctfd;
-            proxy_redirect http://docker-ctfd /;
-            #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
-            #proxy_redirect http://docker-ctfd /;
-            #proxy_redirect off;
-        }
-    }    
 }
+###############################################################################
+## OLD CTFD CONFIGURATION
+###############################################################################
+#    server {
+#        listen 80;
+#        #listen 443 ;#ssl;
+#        server_name ctfd;
+#        index    index.html index.htm index.php;
+#        server_name_in_redirect off;
+#        proxy_set_header Host $host:$server_port;
+#        location ~ / {
+#            proxy_pass http://docker-ctfd;
+#            proxy_redirect http://docker-ctfd /;
+#            #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
+#            #proxy_redirect http://docker-ctfd /;
+#            #proxy_redirect off;
+#        }
+#    }    
+#}
     #server {
     #    listen 80;
     #    #listen 443 ssl;

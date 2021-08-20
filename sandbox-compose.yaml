@@ -92,23 +92,23 @@ services:
 #################################################################
 ##  Mutillidae2 ; will be locked down for semi-private usage
 #################################################################
-    mutillidae2:
-      image: santosomar/mutillidae_2
-      restart: unless-stopped
-      ports:
-        - ${MUTILLIDAE2PORT}:80
-      networks:
-        net:
-          ipv4_address: ${MUTILLIDAE2IP}
+#    mutillidae2:
+#      image: santosomar/mutillidae_2
+#      restart: unless-stopped
+#      ports:
+#        - ${MUTILLIDAE2PORT}:80
+#      networks:
+#        net:
+#          ipv4_address: ${MUTILLIDAE2IP}
 #################################################################
 ## CTFD; 
 ## will use the builder script portion for production. 
 #################################################################        
     ctfd:
       image: ctfd/ctfd
-      build:
-        context: ./containers/CTFd
-        dockerfile: Dockerfile
+      #build:
+      #  context: ./containers/CTFd
+      #  dockerfile: Dockerfile
       hostname: ctfd
       user: root
       restart: always
@@ -122,9 +122,9 @@ services:
         - ERROR_LOG=${ERROR_LOG}
         - REVERSE_PROXY=${REVERSE_PROXY}
       volumes:
-        - .data/CTFd/logs:${LOG_FOLDER}
-        - .data/CTFd/uploads:${UPLOAD_FOLDER}
-        - ${CTFDBUILDDIR}:/opt/CTFd:ro
+        - ./data/CTFd/logs:${LOG_FOLDER}
+        - ./data/CTFd/uploads:${UPLOAD_FOLDER}
+        - ./data/UIUCTF-2021-Public:/opt/challenges:ro
       depends_on:
         - db
       expose:
@@ -140,15 +140,15 @@ services:
 
 #################################################################
 ##  target1 available for pwnage
-#################################################################
-#    cnc:
-#      image: debian:buster
-#      build:
-#        context: ./containers/cnc
-#        dockerfile: Dockerfile
-#      networks:
-#        net:
-#          ipv4_address: 172.18.0.2
+################################################################
+    cnc:
+      image: debian:buster
+      build:
+        context: ./containers/cnc
+        dockerfile: Dockerfile
+      networks:
+        net:
+          ipv4_address: 172.18.0.2
 #################################################################
 ##  Parrotsec/ParOS
 #################################################################

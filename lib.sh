@@ -4,6 +4,10 @@
 # This file gets imported to the launcher for cleanlyness
 # the launcher will have some features making it unsuitable for modification
 # you should modify this to suit your preferences
+#
+# This line adds the .env variables to the environment... very danger
+source .env
+
 ###############################################################################
 # $1 == compose-filename
 composebuild()
@@ -73,8 +77,20 @@ installdockercompose()
     sudo mv docker-compose /usr/local/bin
   fi
 }
+installgooglecloudsdk()
+{
+  curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-353.0.0-linux-x86_64.tar.gz | tar xvf
+}
 installkctf()
 {
-  mkdir ctf-directory && cd ctf-directory
+  mkdir ./ctf-directory && cd ./ctf-directory
   curl -sSL https://kctf.dev/sdk | tar xz
+}
+
+#runs the list
+installeverything(){
+  installapt
+  installdockerdebian
+  installdockercompose
+  installkctf
 }

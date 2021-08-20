@@ -3,7 +3,7 @@
 ## |-- BEGIN MESSAGE -- ////##################################################
 ## | This program is an installer and manager for a sandboxing system based on
 ## |    ~ linux
-## |       ~ debian
+## |       ~ debian-buster
 ## |    ~ Kubernetes
 ## |    ~ Docker
 ## |    ~ Docker-compose
@@ -287,17 +287,6 @@ grabsectionfromself()
   done < $SELF
 }
 
-###############################################################################
-## INSTALLER FUNCTIONS
-###############################################################################
-
-#runs the list
-installeverything(){
-  installapt
-  installdockerdebian
-  installdockercompose
-  installkctf
-}
 
 ###############################################################################
 ## FUNCTIONS GETTING USER INPUT
@@ -385,7 +374,7 @@ asktorecall()
 askforrecallfile()
 {
   while true; do
-    cecho "[!] INPUT: Filename" red
+    cecho "[!] OUTPUT: Filename" red
     read -e -i "n" filename
     cecho "[?] Are You Sure? (y/N)" yellow
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
