@@ -5,6 +5,29 @@ This is an all in one setup script for docker on a
     cloud VM(backend only)
         - urlrewriting acting funky, cant seem to scrub ports from url
 
+    QUESTIONS FOR THE ADMIN:
+        Can I install the following softwares:
+            vagrant
+            packer
+            docker
+            docker-compose
+            kubernetes
+            nsjail
+
+        May I enable user namespaces?
+            if a user manages to run code in the host namespace
+            it will have an interesting UID/GID possibly
+
+        TODO:
+            - add option to start.sh to include/build/init
+                https://echoctf.red/
+                https://github.com/echoCTF/echoCTF.RED
+            
+            - moar ctfd challenges here
+                https://github.com/bsidessf
+
+            - oohhh shiny!
+                https://github.com/cliffe/SecGen
 or 
 
     raspi4b(start.sh needs finishing to setup the environment)

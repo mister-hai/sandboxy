@@ -16,19 +16,17 @@
 ## |    
 ## |    
 ## |    
-## |    
-## |    
-## |    
+## |    LIB.SH is the user-editable script you should modify
+## |      DO NOT open this script in a terminal window it may contain binary data
+## |      that means there are characters that can damage your session
 ## |    
 ## |    
 ## |
 ## | Usage: $PROG --flag1 value --flag2 value
 ## | Options:
 ## |
-## | -l, --location         Full Path to install location       (Default: /sandboxy)
 ## | -e, --extractlocation  Path to Archive Extraction Location (Default: /tmp)
 ## | -t, --token            Token for data storage              (Default: DATA)
-## | -n, --network          Name of the network to create       (Default: net)
 ## | -f, --composefile      Name of the compose file to use     (Default: ./sandbox-compose.yaml)
 ## | -c, --extraslocation   Location of the lib.sh              (Default: ./lib.sh)
 ## | -s, --setup            Sets required OS settings
@@ -49,10 +47,6 @@ PROG=${0##*/}
 LOGFILE="$0.logfile"
 die() { echo "$@" >&2; exit 2; }
 #SANDBOX user configuration
-location()
-{
-    SANDBOX='/sandboxy'
-}
 tarinstalldir(){
     INSTALLDIR="/tmp"
 }
@@ -60,19 +54,11 @@ token()
 {
     TOKEN="DATA"
 }
-network()
-{
-  NETWORK="net"
-}
 composefile()
 {
-  PROJECTFILE="./sandbox-compose.yaml"
-}
-#
-extraslocation()
-{
-  EXTRASLOCATION="compose.sh"
-  source $(dirname "$0")/"${EXTRASLOCATION}"
+  # ignore the shellcheck error
+  # the assignment prevents shit from collapsing
+  PROJECT_FILE=$PROJECT_FILE
 }
 setup()
 {
@@ -81,7 +67,7 @@ setup()
 composeversion()
 {
   if [ -z "$DOCKER_COMPOSE_VERSION" ]; then
-    DOCKER_COMPOSE_VERSION=1.25.4
+    DOCKER_COMPOSE_VERSION=1.29.2
   fi
 }
 ###############################################################################
@@ -187,7 +173,10 @@ done
 #CDPATH is not a bash-specific feature; it’s actually specified by POSIX.
 unset CDPATH
 
-
+###############################################################################
+## IMPORT USER DEFINED FUNCTIONS FROM SCRIPT DIR
+###############################################################################
+source $(dirname "$0")/"${EXTRASLOCATION}"
 ###############################################################################
 ## FIRST TIME RUN, SYSTEM PREP
 ###############################################################################
@@ -201,11 +190,13 @@ newinstallsetup()
 ###############################################################################
 ## functions
 ###############################################################################
+#run this every time you cd to another DIR 
 getscriptworkingdir()
 ##
 ##Beware: if you cd to a different directory before running the result
-## may be incorrect! run unset CDPATH before calling
+## may be incorrect! run unset CDPATH before trying this!
 {
+  unset CDPATH
   SOURCE="${BASH_SOURCE[0]}"
    # resolve $SOURCE until the file is no longer a symlink
     while [ -h "$SOURCE" ]; do
@@ -401,15 +392,16 @@ show_menus()
 {
 	clear
   cecho "## |-- BEGIN MESSAGE -- ////##################################################" green
+  cecho "## |   OPTIONS IN RED ARE EITHER NOT IMPLEMENTED YET OR OUTRIGHT DANGEROUS"
   cecho "## | 1> Install Prerequisites" green
   cecho "## | 2> Build Cluster" green
   cecho "## | 3> Run Cluster" green
-  cecho "## | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" green
-  cecho "## | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" green
-  cecho "## | 6> Append Data To Script" yellow
+  cecho "## | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" yellow
+  cecho "## | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" red
+  cecho "## | 6> Append Data To Script" red
   cecho "## | 7> Retrieve Data From Script" yellow
   cecho "## | 8> Activate Kubernetes Cluster" yellow
-  cecho "## | 9> KCTF-google CLI (use after install only!)" green
+  cecho "## | 9> KCTF-google CLI (use after install only!)" red
   cecho "## | 10> CTFd CLI (use after install only!)" green
   cecho "## | 11> Quit Program" yellow      
   cecho "## | 12> Quit Program" RED

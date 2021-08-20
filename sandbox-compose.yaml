@@ -136,19 +136,20 @@ services:
         default:
         internal:
         net:
+          external: true
           ipv4_address: ${CTFDIP}
 
 #################################################################
 ##  target1 available for pwnage
 ################################################################
-    cnc:
-      image: debian:buster
-      build:
-        context: ./containers/cnc
-        dockerfile: Dockerfile
-      networks:
-        net:
-          ipv4_address: 172.18.0.2
+#    cnc:
+#      image: debian:buster
+#      build:
+#        context: ./containers/cnc
+#        dockerfile: Dockerfile
+#      networks:
+#        net:
+#          ipv4_address: 172.18.0.2
 #################################################################
 ##  Parrotsec/ParOS
 #################################################################
@@ -188,7 +189,7 @@ services:
         - MYSQL_PASSWORD=${MYSQL_PASSWORD}
         - MYSQL_DATABASE=${MYSQL_DATABASE}
       volumes:
-        - .data/mysql:/var/lib/mysql
+        - ./data/mysql:/var/lib/mysql
       networks:
           internal:
       # This command is required to set important mariadb defaults
@@ -209,3 +210,9 @@ networks:
       driver: default
       config:
         - subnet: 172.18.0.0/24
+  hax:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet ${HAXSUBNETRANGE}
