@@ -6,20 +6,32 @@
 # you should modify this to suit your preferences
 #
 # This line adds the .env variables to the environment... very danger
-source .env
+source ./.env
 
 ###############################################################################
-# $1 == compose-filename
+# use this if adding/removing from configs for containers
 composebuild()
 {
   #set -ev
-  docker-compose config
-  docker-compose -f "${PROJECTFILE}" build
+  if docker-compose config ;then
+    docker-compose -f "${PROJECTFILE}" build
+  else
+    printf "[-] Compose file failed to validate, stopping operation"
+  fi
 }
 # provide filename of composefile.yaml 
 composerun()
 {
     docker-compose -f "${PROJECTFILE}" up
+}
+composestop()
+{
+  docker-compose -f "${PROJECTFILE}" down
+}
+startproject()
+{
+  composebuild
+  composerun
 }
 #FULL SYSTEM PURGE
 dockerpurge()

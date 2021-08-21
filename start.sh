@@ -401,17 +401,21 @@ show_menus()
   cecho "## |-- BEGIN MESSAGE -- ////##################################################" green
   cecho "## |   OPTIONS IN RED ARE EITHER NOT IMPLEMENTED YET OR OUTRIGHT DANGEROUS"
   cecho "## | 1> Install Prerequisites" green
-  cecho "## | 2> Build Cluster" green
-  cecho "## | 3> Run Cluster" green
-  cecho "## | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" yellow
-  cecho "## | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" red
-  cecho "## | 6> Append Data To Script" red
-  cecho "## | 7> Retrieve Data From Script" yellow
-  cecho "## | 8> Activate Kubernetes Cluster" yellow
-  cecho "## | 9> KCTF-google CLI (use after install only!)" red
-  cecho "## | 10> CTFd CLI (use after install only!)" green
-  cecho "## | 11> Quit Program" yellow      
-  cecho "## | 12> Quit Program" RED
+  cecho "## | 2> Install CTFd challenges" green
+  cecho "## | 3> Update Containers (docker-compose build)" green
+  cecho "## | 4> Run Project (docker-compose up)" green
+  cecho "## | 5> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" yellow
+  cecho "## | 6> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" red
+  cecho "## | 7> CTFd CLI (use after install only!)" green
+  cecho "## | 8> Append Data To Script" yellow
+  cecho "## | 9> Retrieve Data From Script" yellow
+  cecho "## | 0> NOT IMPLEMENTED Install kctf" red
+  cecho "## | 0> NOT IMPLEMENTED Install GoogleCloud SDK" red
+  cecho "## | 0> NOT IMPLEMENTED Activate Cluster" red
+  cecho "## | 0> NOT IMPLEMENTED Build Cluster" red
+  cecho "## | 0> NOT IMPLEMENTED Run Cluster" red
+  cecho "## | 0> NOT IMPLEMENTED KCTF-google CLI (use after install only!)" red
+  cecho "## | 10> Quit Program" red
   cecho "## |-- END MESSAGE -- ////#####################################################" green
 }
 getselection()
@@ -424,11 +428,11 @@ getselection()
       install) 
 	  		installprerequisites;;
       build)
-        buildproject;;
+        cloneallchallengerepos;;
       run)
-        composerun;;
+        composebuild;;
       clean) 
-        dockerprune;;
+        composerun;;
       refresh)
         dockerpurge;;
       append)
