@@ -1,8 +1,14 @@
-#PENTEST SANDBOX
+# PENTEST SANDBOX
 
-This is an all in one setup script for docker on a
+# Table Of Contents
+    usage
+    info
+    this is an all in one setup script for a docker/kubernetes cluster
+    specifically, it creates a pentesting sandbox
+    
+    on a :
 
-    cloud VM(backend only)
+    cloud VM/docker environment
         - urlrewriting acting funky, cant seem to scrub ports from url
             EDIT THE .ENV FILE TO REFLECT YOUR CURRENT ENVIRONMENT/CHOICES
 
@@ -73,7 +79,6 @@ The setup will setup a:
     
 we need more https://asmen.icopy.site/awesome/awesome-ctf/
 
-## Table Of Contents
 
     #!/bin/bash
     ## $PROG SANDBOXY.SH v1.0

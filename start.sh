@@ -27,7 +27,7 @@
 ## |
 ## | -e, --extractlocation  Path to Archive Extraction Location (Default: /tmp)
 ## | -t, --token            Token for data storage              (Default: DATA)
-## | -f, --composefile      Name of the compose file to use     (Default: ./sandbox-compose.yaml)
+## | -f, --composefile      Name of the compose file to use     (Default: ./MAIN.yaml)
 ## | -c, --extraslocation   Location of the lib.sh              (Default: ./lib.sh)
 ## | -s, --setup            Sets required OS settings
 ## | -v, -composeversion    Sets the Version to Install         (Default:1.25.4)
@@ -43,10 +43,16 @@
 #
 #  THESE GET CREATED TO REFLECT THE OPTIONS ABOVE, EVERYTHING IS PARSED WITH SED
 #
+
+# import env variables
+source ./.env
+#set program name
 PROG=${0##*/}
+#set logfile name
 LOGFILE="$0.logfile"
+#set exit command
 die() { echo "$@" >&2; exit 2; }
-#SANDBOX user configuration
+
 tarinstalldir(){
     INSTALLDIR="/tmp"
 }
@@ -186,6 +192,7 @@ newinstallsetup()
     umask a+rx
     echo 'kernel.unprivileged_userns_clone=1' | sudo tee -a /etc/sysctl.d/00-local-userns.conf
     sudo service procps restart
+    
 }
 ###############################################################################
 ## functions

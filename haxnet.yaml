@@ -1,0 +1,75 @@
+services:
+#################################################################
+##  target1 available for pwnage
+################################################################
+#    cnc:
+#      image: debian:buster
+#      build:
+#        context: ./containers/cnc
+#        dockerfile: Dockerfile
+#      networks:
+#        net:
+#          ipv4_address: 172.18.0.2
+###############################################################################
+## miniaturehorsedb
+###############################################################################
+  minidb:
+    image: mysql
+    environment:
+      MYSQL_DATABASE: ponies
+      MYSQL_USER: iheartponies
+      MYSQL_PASSWORD: wv38f8hnDb1IThTw6A
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+  miniponydb:
+    privileged: true
+    build: ${MINIPONYDBBUILDDIR}
+    environment:
+      FLAG: uiuctf{wh0ops_th1s_on3_was_harder_r1ght_9fa2b}
+      DB: ponies
+      DB_HOST: minidb
+      DB_USER: iheartponies
+      DB_PASS: wv38f8hnDb1IThTw6A
+      SECRET_KEY: uSsV465Looe1P8
+    #and here we deviate
+    ports:
+      - ${MINIPONYDBPORT}:1337
+    networks:
+    # can I do this? about to try
+      ${SANDBOX_NETWORK_NAME}:
+        ipv4_address: ${MINIPONYDBIP}
+###############################################################################
+## ponydb
+###############################################################################
+  pwnydb:
+    image: mysql
+    environment:
+      MYSQL_DATABASE: ponies
+      MYSQL_USER: iheartponies
+      MYSQL_PASSWORD: wv38f8hnDb1IThTw6A
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+  ponydb:
+    build: ${PONYDBBUILDDIR}
+    environment:
+      FLAG: uiuctf{My_l33tle_p0ny}
+      DB: ponies
+      DB_HOST: pwnydb
+      DB_USER: iheartponies
+      DB_PASS: wv38f8hnDb1IThTw6A
+      SECRET_KEY: uSsV465Looe1P8
+    ports:
+      - ${PONYDBPORT}:1337
+    #and here we deviate
+    networks:
+      - ${SANDBOX_NETWORK_NAME}
+        external: true
+        ipv4_address: ${PONYDBIP}
+#################################################################
+#     NETWORKS SECTION
+#################################################################      
+networks:
+  hax:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet ${HAXSUBNETRANGE}

@@ -90,6 +90,8 @@ installkctf()
 #places them in the /data/challenges/ folder
 cloneallchallengerepos()
 {
+  # download ctfdcli to install the challenges via the yaml file
+  git clone https://github.com/CTFd/ctfcli "${PROJECT_ROOT}"/data/challenges/
   git clone https://github.com/BSidesSF/ctf-2021-release "${PROJECT_ROOT}"/data/challenges/
   git clone https://github.com/BSidesSF/ctf-2020-release "${PROJECT_ROOT}"/data/challenges/
   git clone https://github.com/BSidesSF/ctf-2019-release "${PROJECT_ROOT}"/data/challenges/

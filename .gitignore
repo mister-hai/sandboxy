@@ -1,3 +1,10 @@
 kctf/*
 !kctf/readme.md
 !kctf/VERSION
+.data/
+.vscode/
+data/mysql/*
+data/CTFd/logs/*
+data/redis/*
+data/UIUCTF-2021-Public/*
+!data/UIUCTF-2021-Public/README.md

@@ -127,12 +127,13 @@ http {
     upstream docker-bwapp {
         server ${BWAPPIP}:${BWAPPPORT};
     }
-    #upstream docker-webgoat {
-    #    server webgoat:${WEEBGOATPORT};
-    #}
+    upstream docker-juiceshop {
+        server juiceshop:${JUICESHOPPORT};
+    }
     upstream docker-dvwa {
        server ${DVWAIP}:${DVWAPORT};
     }
+
 ###############################################################################
 ## DEFAULT CONFIGURATION
 ###############################################################################
@@ -175,7 +176,6 @@ http {
 ###############################################################################
 ## bwapp CONFIGURATION
 ###############################################################################
-    #proxy_redirect $scheme://docker-bwapp $scheme://$host$request_uri;
     server {
         listen 80;
         #listen 443 ;#ssl;
@@ -184,7 +184,7 @@ http {
         default_type application/octet-stream;
         server_name_in_redirect off;
         #proxy_set_header Host $host:$server_port;
-        location ~ / {
+        location ~ /$server_name/ {
             proxy_pass http://docker-bwapp;
             #proxy_redirect  http://docker-bwapp/ /;
             proxy_redirect off;
@@ -219,6 +219,30 @@ http {
         }
     }
 }
+###############################################################################
+## juiceshop CONFIGURATION
+###############################################################################
+    #proxy_redirect $scheme://docker-bwapp $scheme://$host$request_uri;
+    server {
+        listen 80;
+        #listen 443 ;#ssl;
+        server_name juiceshop;
+        index index.html index.htm index.php;
+        default_type application/octet-stream;
+        server_name_in_redirect off;
+        #proxy_set_header Host $host:$server_port;
+        location ~ / {
+            proxy_pass http://docker-juiceshop;
+            proxy_redirect  http://docker-juiceshop/ /;
+            #proxy_redirect Default;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Host $server_name;         
+            #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
+            #proxy_redirect $scheme://docker-bwapp $scheme://$host$request_uri;
+        }
+    }
 ###############################################################################
 ## OLD CTFD CONFIGURATION
 ###############################################################################

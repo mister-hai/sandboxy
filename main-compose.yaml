@@ -13,47 +13,29 @@ services:
         context: ./containers/nginx
         dockerfile: Dockerfile
       image: nginx:latest
-      depends_on:
-        - bwapp
-        - dvwa
-        - ctfd
+      hostname: nginx
+      #depends_on:
+      #  - bwapp
+      #  - dvwa
+      #  - ctfd
       restart: unless-stopped
       env_file:
         - ./.env
       ports:
-      - 80:80
-      - 443:443
-      environment: 
-        NGINX_ENVSUBST_TEMPLATE_SUFFIX: ".template"
-        NGINX_ENVSUBST_TEMPLATE_DIR: "/etc/nginx"
-        NGINX_ENVSUBST_OUTPUT_DIR: "/etc/nginx"
-      volumes:
-        #- ./data/certbot/conf:/etc/letsencrypt
-        #- ./data/certbot/www:/var/www/certbot
-        - "/run/docker.sock:/var/run/docker.sock"
-        #  - ./confs/nginx.conf:/etc/nginx/nginx.conf
-      hostname: nginx
+        - 80:80
+        - 443:443
       networks:
         net:
-          ipv4_address: 172.18.0.3
+          ipv4_address: ${NGINXIP}
 
-################################################################
-## CERTBOT enables ssl for the backend
-################################################################
-#    certbot:
-#      image: certbot/certbot
-#      hostname: certbot
-#      #volumes:
-#        #- ./data/certbot/conf:/etc/letsencrypt
-#        #- ./data/certbot/www:/var/www/certbot
-#      networks:
-#        net:
-#          ipv4_address: 172.18.0.4
 #################################################################
 ##  BWAPP   ; will be locked down for semi-private usage
 #################################################################
     bwapp:
       image: raesene/bwapp
+      hostname: bwapp
+      depends_on:
+        - nginx
       expose:
         - 80
       ports:
@@ -61,27 +43,14 @@ services:
       networks:
         net:
           ipv4_address: ${BWAPPIP}
-      hostname: bwapp
-##################################################################
-## WEB GOAT AND WOLF  ; will be locked down for semi-private usage
-#################################################################
-#docker run --rm -p 3000:3000 bkimminich/juice-shop
-    juiceshop:
-      image: bkimminich/juice-shop
-      hostname: juiceshop
-      expose:
-        - 3000
-      restart: unless-stopped
-      ports:
-        - ${JUICESHOPPORT}:3000
-      networks:
-        net:
-          ipv4_address: ${DVWAIP}
+
 #################################################################
 ##  Damn Vulnerable WEB APP ; will be locked down for semi-private usage
 #################################################################
     dvwa:
       image: vulnerables/web-dvwa
+      depends_on:
+        - nginx
       hostname: dvwa
       expose:
         - 80
@@ -91,7 +60,24 @@ services:
       networks:
         net:
           ipv4_address: ${DVWAIP}
-        
+##################################################################
+## OWASP JUICESHOP  ; will be locked down for semi-private usage
+#################################################################
+#docker run --rm -p 3000:3000 bkimminich/juice-shop
+    juiceshop:
+      image: bkimminich/juice-shop
+      hostname: juiceshop
+      depends_on:
+        - nginx
+      expose:
+        - 3000
+      restart: unless-stopped
+      ports:
+        - ${JUICESHOPPORT}:3000
+      networks:
+        net:
+          ipv4_address: ${JUICESHOPIP}
+       
 #################################################################
 ##  Mutillidae2 ; will be locked down for semi-private usage
 #################################################################
@@ -130,6 +116,7 @@ services:
         - ./data/UIUCTF-2021-Public:/opt/challenges:ro
       depends_on:
         - db
+        - nginx
       expose:
         - 8000
       restart: unless-stopped
@@ -138,38 +125,15 @@ services:
       networks:
         internal:
         net:
-          external: true
           ipv4_address: ${CTFDIP}
 
 #################################################################
-##  target1 available for pwnage
-################################################################
-#    cnc:
-#      image: debian:buster
-#      build:
-#        context: ./containers/cnc
-#        dockerfile: Dockerfile
-#      networks:
-#        net:
-#          ipv4_address: 172.18.0.2
-#################################################################
-##  Parrotsec/ParOS
-#################################################################
-#    parrot:
-#      image: parrotsec/security
-#      volumes:
-#        - "/run/docker.sock:/var/run/docker.sock"
-#      networks:
-#        net:
-#          ipv4_address: 172.18.0.2
-#      #volumes:
-#      #  -  /tmp/msf:/tmp/data:Z
-#      #network_mode: host
-#################################################################
-#     DATABASE SECTION
+#                   REDIS SERVER
 #################################################################
     cache:
       image: redis
+      depends_on:
+        - nginx
       hostname: cache
       #command: redis-server --appendonly yes
       ports:
@@ -180,41 +144,34 @@ services:
       restart: unless-stopped
       networks:
         internal:
-        #net:
-        #  ipv4_address: ${REDISIP}
-
+#################################################################
+#                   MYSQL SERVER
+#################################################################
     db:
       image: mariadb:10.4.12
+      depends_on:
+        - nginx
       restart: always
       environment:
         - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
         - MYSQL_USER=${MYSQL_USER}
         - MYSQL_PASSWORD=${MYSQL_PASSWORD}
         - MYSQL_DATABASE=${MYSQL_DATABASE}
+      # This command is required to set important mariadb defaults
+      command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
       volumes:
         - ./data/mysql:/var/lib/mysql
       networks:
           internal:
-      # This command is required to set important mariadb defaults
-      command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
 
 #################################################################
 #     NETWORKS SECTION
 #################################################################      
-#networks:
-#  macvlan:
 networks:
   internal:
     internal: true
   net:
-    driver: bridge
+    #external: true
     ipam:
-      driver: default
       config:
         - subnet: 172.18.0.0/24
-  hax:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet ${HAXSUBNETRANGE}
