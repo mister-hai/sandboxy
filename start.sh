@@ -410,9 +410,9 @@ show_menus()
   cecho "## | 10> Install kctf" green
   cecho "## | 11> Install GoogleCloud SDK" green
   cecho "## | 12> Activate Cluster" green
-#  cecho "## | 13> NOT IMPLEMENTED Build Cluster" red
-#  cecho "## | 14> NOT IMPLEMENTED Run Cluster" red
-#  cecho "## | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!)" red
+# cecho "## | 13> NOT IMPLEMENTED Build Cluster" red
+# cecho "## | 14> NOT IMPLEMENTED Run Cluster" red
+# cecho "## | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!)" red
   cecho "## | 16> Quit Program" red
   cecho "## |-- END MESSAGE -- ////#####################################################" green
 }
