@@ -206,18 +206,6 @@ printf "SELF: %s \n " "$SELF"
 source "${DIR}"/"${EXTRASLOCATION}"
 
 ###############################################################################
-## FIRST TIME RUN, SYSTEM PREP
-###############################################################################
-# run only once, the first time this program is run
-# required for nsjail
-newinstallsetup()
-{
-    umask a+rx
-    echo 'kernel.unprivileged_userns_clone=1' | sudo tee -a /etc/sysctl.d/00-local-userns.conf
-    sudo service procps restart
-    
-}
-###############################################################################
 ## SELF ARCHIVING FEATURES
 ###############################################################################
 
@@ -400,13 +388,7 @@ askforrecallfile()
 ###############################################################################
 # MAIN LOOP, CONTAINS MENU THEN INFINITE LOOP, AFTER THAT IS DATA SECTION
 ###############################################################################
-activatekctf(){
-  source kctf/activate
-}
-k8sclusterinit()
-{
-  kctf cluster create local-cluster --start --type kind
-}
+
 # Trap CTRL+C, CTRL+Z and quit singles
 trap '' SIGINT SIGQUIT SIGTSTP
 show_menus()
@@ -426,10 +408,10 @@ show_menus()
   cecho "## | 9> Retrieve Data From Script (list sections to see the filenames)" red
   cecho "## | 10> Install kctf" red
   cecho "## | 11> Install GoogleCloud SDK" red
-  cecho "## | 12> NOT IMPLEMENTED Activate Cluster" red
-  cecho "## | 13> NOT IMPLEMENTED Build Cluster" red
-  cecho "## | 14> NOT IMPLEMENTED Run Cluster" red
-  cecho "## | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!)" red
+  cecho "## | 12> Activate Cluster" red
+#  cecho "## | 13> NOT IMPLEMENTED Build Cluster" red
+#  cecho "## | 14> NOT IMPLEMENTED Run Cluster" red
+#  cecho "## | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!)" red
   cecho "## | 16> Quit Program" red
   cecho "## |-- END MESSAGE -- ////#####################################################" green
 }
@@ -450,10 +432,11 @@ recall \
 instkctf \
 installgcloud \
 clusteractivate \
-clusterbuild \
-clusterrun \
-kctfcli \
 quit
+#clusterbuild \
+#clusterrun \
+#kctfcli \
+#quit
   do
 	  case $option in
       install) 
@@ -481,11 +464,11 @@ quit
       installgcloud)
         installgooglecloudsdk;;
       clusteractivate)
-        placeholder;;
-      clusterbuild)
-        placeholder;;
-      clusterrun)
-        placeholder;;
+        k8sclusterinit;;
+#      clusterbuild)
+#        placeholder;;
+#      clusterrun)
+#        placeholder;;
       quit)
         break;;
       esac

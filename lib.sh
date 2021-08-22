@@ -8,6 +8,18 @@
 # This line adds the .env variables to the environment... very danger
 source ./.env
 
+###############################################################################
+## SYSTEM PREP
+###############################################################################
+# required for nsjail, kubernetes
+# run this before running 
+systemparams()
+{
+    umask a+rx
+    echo 'kernel.unprivileged_userns_clone=1' | sudo tee -a /etc/sysctl.d/00-local-userns.conf
+    sudo service procps restart
+    sudo modprobe br_netfilter
+}
 #=========================================================
 #            Colorization stuff
 #=========================================================
@@ -137,6 +149,11 @@ installdockercompose()
   fi
 }
 
+#TODO: add falback to non-root install
+# chmod +x kubectl
+# mkdir -p ~/.local/bin/kubectl
+# mv ./kubectl ~/.local/bin/kubectl
+# and then add ~/.local/bin/kubectl to $PATH
 installkubernetes()
 {
   #kubectl
@@ -157,10 +174,18 @@ installkubernetes()
     exit 1
   fi
   if sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl; then
-    cecho "[+] Kubernetes Installed!"
+    cecho "[+] Kubernetes Installed to /usr/local/bin/kubectl"
   else
-    cecho "[-] Failed to install Kubernetes! Exiting!"
+    cecho "[-] Failed to install Kubernetes to /usr/local/bin/kubectl! Exiting!"
     exit 1
+  fi
+  if kubectl version --client; then
+    locatiobino=$(which kubectl)
+    cecho "[+] Install Validated in ${locatiobino}!"
+    kubectl version --client
+  else
+    cecho "[-] Validation Failed, if you see a version output below, something strange is happening"
+    kubectl version --client
   fi
 }
 installgooglecloudsdk()
@@ -214,4 +239,13 @@ ctfclifunction()
   if listofinstalledpythonpackages | grep "ctfcli"; then
     ctfcli
   fi
+}
+#activatekctf(){
+#  source kctf/activate
+#}
+k8sclusterinit()
+{
+  cecho "[+] TYPE THE FOLLOWING COMMANDS INTO THE SHELL AND PRESS ENTER" yellow
+  cecho "source kctf/activate" yellow
+  cecho "kctf cluster create local-cluster --start --type kind" yellow
 }
