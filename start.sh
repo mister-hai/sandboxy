@@ -227,7 +227,8 @@ readselfarchive()
   #tail will read and discard the first X-1 lines, 
   #then read and print the following lines. head will read and print the requested 
   #number of lines, then exit. When head exits, tail receives a SIGPIPE
-  if < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$(("${PAYLOAD_END}"-"${PAYLOAD_START}"+1))" | tar -zpvx -C "${INSTALLDIR}""${1}"; then
+  #if < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$(("${PAYLOAD_END}"-"${PAYLOAD_START}"+1))" | tar -zpvx -C "${INSTALLDIR}""${1}"; then
+  if < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$(("${PAYLOAD_END}"-"${PAYLOAD_START}"+1))" | tar -zpvx -C ./sandboxy ; then
     cecho "[+] SUCCESS! You should now be able to perform the next step!"
     cecho "[+] Modify the .env file and make any changes you want then build the environment and run it"
   else
@@ -404,11 +405,11 @@ show_menus()
   cecho "## | 6> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" red
   cecho "## | 7> CTFd CLI (use after install only!)" green
   cecho "## | 8> List Data Sections/Files Appended to script" green
-  cecho "## | 8> Append Data To Script (compresses project directory into start.sh)" yellow
+  cecho "## | 8> Append Data To Script (compresses project directory into start.sh)" red
   cecho "## | 9> Retrieve Data From Script (list sections to see the filenames)" red
-  cecho "## | 10> Install kctf" red
-  cecho "## | 11> Install GoogleCloud SDK" red
-  cecho "## | 12> Activate Cluster" red
+  cecho "## | 10> Install kctf" green
+  cecho "## | 11> Install GoogleCloud SDK" green
+  cecho "## | 12> Activate Cluster" green
 #  cecho "## | 13> NOT IMPLEMENTED Build Cluster" red
 #  cecho "## | 14> NOT IMPLEMENTED Run Cluster" red
 #  cecho "## | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!)" red

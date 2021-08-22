@@ -234,15 +234,6 @@ listofinstalledpythonpackages()
   python.exe -c "import pip; sorted(['%s==%s' % (i.key, i.version) for i in pip.get_installed_distributions()])"
 }
 
-ctfclifunction()
-{
-  if listofinstalledpythonpackages | grep "ctfcli"; then
-    ctfcli
-  fi
-}
-#activatekctf(){
-#  source kctf/activate
-#}
 k8sclusterinit()
 {
   cecho "[+] TYPE THE FOLLOWING COMMANDS INTO THE SHELL AND PRESS ENTER" yellow
