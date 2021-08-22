@@ -120,6 +120,18 @@ installeverything(){
   installdockercompose
   installkctf
 }
+#https://stackoverflow.com/questions/739993/how-can-i-get-a-list-of-locally-installed-python-modules
+listofinstalledpythonpackages()
+{
+  python.exe -c "import pip; sorted(['%s==%s' % (i.key, i.version) for i in pip.get_installed_distributions()])"
+}
+
+ctfclifunction()
+{
+  if listofinstalledpythonpackages | grep "ctfcli"; then
+    ctfcli
+  fi
+}
 ###############################################################################
 ## Menu parsing and output colorization
 ###############################################################################

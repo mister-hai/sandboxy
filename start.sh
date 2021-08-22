@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## $PROG SANDBOXY.SH v1.0
 ## |-- BEGIN MESSAGE -- ////##################################################
 ## | This program is an installer and manager for a sandboxing system based on
@@ -159,9 +159,13 @@ while [ $# -gt 0 ]; do
 
 #           tr - _ 
 #             substitutes all - for _
-  CMD=$(grep -m 1 -Po "^## *$1, --\K[^= ]*|^##.* --\K${1#--}(?:[= ])" ${0} | tr - _)
-  if [ -z "$CMD" ]; then echo "ERROR: Command '$1' not supported"; exit 1; fi
-  shift; eval "$CMD" "$@" || shift $? 2> /dev/null
+  CMD=$(grep -m 1 -Po "^## *$1, --\K[^= ]*|^##.* --\K${1#--}(?:[= ])" "${0}" | tr - _)
+  if [ -z "$CMD" ]; then 
+    echo "ERROR: Command '$1' not supported"; 
+    exit 1; 
+  fi
+  shift; 
+  eval "$CMD" "$@" || shift $? 2> /dev/null
 done
 ###############################################################################
 #Every bash script that uses the cd command with a relative path needs 
@@ -180,13 +184,28 @@ done
 unset CDPATH
 
 ###############################################################################
-## IMPORT USER DEFINED FUNCTIONS FROM SCRIPT DIR
+## IMPORT USER DEFINED FUNCTIONS FROM SCRIPT DIR AND SET LOCATION
 ###############################################################################
-source $(dirname "$0")/"${EXTRASLOCATION}"
+# gets pwd
+DIR=$( cd -P "$( dirname "$SOURCE" )" && pwd )
+printf "pwd: %s \n" $DIR
+
+#./start.sh
+SELFRELATIVE=$0
+printf "self:  %s \n " $SELFRELATIVE
+
+#/pwd/start.sh
+SELF=$(realpath $0)
+printf "SELF: %s \n " $SELF
+
+#import lib
+source "${DIR}"/"${EXTRASLOCATION}"
+
 ###############################################################################
 ## FIRST TIME RUN, SYSTEM PREP
 ###############################################################################
 # run only once, the first time this program is run
+# required for nsjail
 newinstallsetup()
 {
     umask a+rx
@@ -195,73 +214,58 @@ newinstallsetup()
     
 }
 ###############################################################################
-## functions
-###############################################################################
-#run this every time you cd to another DIR 
-getscriptworkingdir()
-##
-##Beware: if you cd to a different directory before running the result
-## may be incorrect! run unset CDPATH before trying this!
-{
-  unset CDPATH
-  SOURCE="${BASH_SOURCE[0]}"
-   # resolve $SOURCE until the file is no longer a symlink
-    while [ -h "$SOURCE" ]; do
-      DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-      SOURCE="$(readlink "$SOURCE")"
-      # if $SOURCE was a relative symlink, we need to resolve it relative to
-      # the path where the symlink file was located
-      [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" 
-    done
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  printf "%s" $DIR
-}
-# set some more globals
-SELFPATH=(getscriptworkingdir)
-SELF=$selfaspath/$0
-
-###############################################################################
 ## SELF ARCHIVING FEATURES
 ## TODO: tar everything in directory and append to self
 ###############################################################################
 
+# returns an int representing seconds since first epoch
+# The 'date' command provides the option to display the time in seconds since 
+# Epoch(1970-01-01 00:00:00 UTC).  
+# Use the FORMAT specifier '%s' to display the value.
+getepochseconds()
+{
+   date '+%s'
+}
+
+# returns a base64 encoded string or default value
 encodeb64()
 {
 # Argument1 == $1
   local default_str="some text to encode"
   # Doesn't really need to be a local variable.
   # Message is first argument OR default
-  message=${1:-$default_msg}
+  message=${1:-$default_str}
   printf "%s" message | base64
 }
 decodeb64()
 {
   local default_str="c29tZSB0ZXh0IHRvIGVuY29kZQo="
-  message=${1:-$default_msg}
+  message=${1:-$default_str}
   printf "%s" message | base64 -d -i
 }
 
 # first arg is tarfile name, to allow for multiple files
 readselfarchive()
 {
-  selfaspath=(getscriptworkingdir)
   # line number where payload starts
-  PAYLOAD_START=$(awk "/^==${TOKEN}==${1}==START==/ { print NR + 1; exit 0; }" $0)
-  PAYLOAD_END=$(awk "/^==${TOKEN}==${1}==END==/ { print NR + 1; exit 0; }" $0)
+  PAYLOAD_START=$(awk "/^==${TOKEN}==${1}==START==/ { print NR + 1; exit 0; }" ${SELF}) #$0)
+  PAYLOAD_END=$(awk "/^==${TOKEN}==${1}==END==/ { print NR + 1; exit 0; }" ${SELF} ) #$0)
   #tail will read and discard the first X-1 lines, 
   #then read and print the following lines. head will read and print the requested 
   #number of lines, then exit. When head exits, tail receives a SIGPIPE
-  < ${SELF} tail -n "+${PAYLOAD_START}" | head -n "$((${PAYLOAD_END}-${PAYLOAD_START}+1))" | tar -zpvx -C ${INSTALLDIR}${1}
+  < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$((${PAYLOAD_END}-${PAYLOAD_START}+1))" | tar -zpvx -C ${INSTALLDIR}${1}
 }
 
 appendtoselfasbase64()
 {
+  currentdatetime=getepochseconds
   # add token with filename for identifier
-  printf "%s" "==${TOKEN}==${1}==START==" >> $SELF
+  printf "%s" "==${TOKEN}==${currentdatetime}==START==" >> $SELF
   # add the encoded data
-  base64 $1 >> $SELF
-  printf "%s" "==${TOKEN}==${1}==END==" >> $SELF
+  tar --exclude="${SELF}" --exclude="./lib.sh" -zcv - . | base64 >> $SELF
+  printf "%s" "==${TOKEN}==${currentdatetime}==END==" >> $SELF
 }
+
 # First arg: section
 #   ==${TOKEN}START==${1}==
 #       DATA AS BASE64
@@ -284,8 +288,26 @@ grabsectionfromself()
   # it gets fed from the bottom
   done < $SELF
 }
-
-
+#yes this needs cleaning
+listappendedsections()
+{
+  grep "${TOKEN}" < "${SELF}"
+}
+###
+# something for the hackers
+# set encpass in shell
+# > export ENCPASS=passwordstring
+# > cat /some/file | encbuffer >> encrypted.file
+# now you have that
+###
+encbuffer()
+{
+  printf "%s" "$1" | openssl aes-256-cbc -a -salt -pass pass:"${ENCPASS}"
+}
+decbuffer()
+{
+  printf "%s" "$1" | openssl aes-256-cbc -d -a -pass pass:"${ENCPASS}"
+}
 ###############################################################################
 ## FUNCTIONS GETTING USER INPUT
 ###############################################################################
@@ -326,14 +348,14 @@ buildproject()
 asktoappend()
 {
   while true; do
-    cecho "[!] APPENDING : ${1}" red
+    cecho "[!] APPENDING ARCHIVE!" red
     cecho "[!] Do you wish to continue?" red
     cecho "[?]" red; cecho "y/N ?" yellow
     read -e -i "n" yesno
     cecho "[?] Are You Sure? (y/N)" yellow
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     case $yesno in
-        [Yy]* ) appendtoselfasbase64 "${1}";;
+        [Yy]* ) appendtoselfasbase64;;
         [Nn]* ) exit;;
         * ) cecho "Please answer yes or no." red;;
     esac
@@ -342,12 +364,12 @@ asktoappend()
 askforappendfile()
 {
   while true; do
-    cecho "[!] INPUT: Filename" red
-    read -e -i "n" filename
+    cecho "[!] This Action will compress the current directory's contents into an archive" red
+    read -e -i "n" yesno
     cecho "[?] Are You Sure? (y/N)" yellow
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     case $yesno in
-        [Yy]* ) asktoappend "${1}";;
+        [Yy]* ) asktoappend;;
         [Nn]* ) exit;;
         * ) cecho "Please answer yes or no." red;;
     esac
@@ -407,8 +429,9 @@ show_menus()
   cecho "## | 5> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" yellow
   cecho "## | 6> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" red
   cecho "## | 7> CTFd CLI (use after install only!)" green
-  cecho "## | 8> Append Data To Script" yellow
-  cecho "## | 9> Retrieve Data From Script" yellow
+  cecho "## | 8> List Data Sections/Files Appended to script" green
+  cecho "## | 8> Append Data To Script (compresses project directory into start.sh)" yellow
+  cecho "## | 9> Retrieve Data From Script (list sections to see the filenames)" red
   cecho "## | 0> NOT IMPLEMENTED Install kctf" red
   cecho "## | 0> NOT IMPLEMENTED Install GoogleCloud SDK" red
   cecho "## | 0> NOT IMPLEMENTED Activate Cluster" red
@@ -422,7 +445,7 @@ getselection()
 {
   show_menus
   PS3="Choose your doom:"
-  select option in install build run clean refresh append recall initk8s initkctf ctfdcli quit
+  select option in install build run clean refresh cli listsections append recall initkctf ctfdcli quit
   do
 	  case $option in
       install) 
@@ -434,11 +457,15 @@ getselection()
       clean) 
         composerun;;
       refresh)
-        dockerpurge;;
+        dockerprune;;
+      cli)
+        ctfclifunction;;
+      listsections)
+        listappendedsections;;
       append)
-        asktoappend;;
+        askforappendfile;;
       recall)
-        asktorecall;;
+        askforrecallfile;;
       quit)
         break;;
       esac
