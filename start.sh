@@ -215,7 +215,6 @@ newinstallsetup()
 }
 ###############################################################################
 ## SELF ARCHIVING FEATURES
-## TODO: tar everything in directory and append to self
 ###############################################################################
 
 # returns an int representing seconds since first epoch
@@ -226,34 +225,22 @@ getepochseconds()
 {
    date '+%s'
 }
-
-# returns a base64 encoded string or default value
-encodeb64()
-{
-# Argument1 == $1
-  local default_str="some text to encode"
-  # Doesn't really need to be a local variable.
-  # Message is first argument OR default
-  message=${1:-$default_str}
-  printf "%s" message | base64
-}
-decodeb64()
-{
-  local default_str="c29tZSB0ZXh0IHRvIGVuY29kZQo="
-  message=${1:-$default_str}
-  printf "%s" message | base64 -d -i
-}
-
 # first arg is tarfile name, to allow for multiple files
 readselfarchive()
 {
+  cecho "[+] EXTRACTING: ${1}"
   # line number where payload starts
   PAYLOAD_START=$(awk "/^==${TOKEN}==${1}==START==/ { print NR + 1; exit 0; }" ${SELF}) #$0)
   PAYLOAD_END=$(awk "/^==${TOKEN}==${1}==END==/ { print NR + 1; exit 0; }" ${SELF} ) #$0)
   #tail will read and discard the first X-1 lines, 
   #then read and print the following lines. head will read and print the requested 
   #number of lines, then exit. When head exits, tail receives a SIGPIPE
-  < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$((${PAYLOAD_END}-${PAYLOAD_START}+1))" | tar -zpvx -C ${INSTALLDIR}${1}
+  if < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$((${PAYLOAD_END}-${PAYLOAD_START}+1))" | tar -zpvx -C ${INSTALLDIR}${1}; then
+    cecho "[+] SUCCESS! You should now be able to perform the next step!"
+  else
+    cecho "[-] FAILED to Extract Archive Labeled ${1}"
+    exit 1
+  fi
 }
 
 appendtoselfasbase64()
@@ -297,16 +284,34 @@ listappendedsections()
 # something for the hackers
 # set encpass in shell
 # > export ENCPASS=passwordstring
-# > cat /some/file | encbuffer >> encrypted.file
+# > # lol unset ENCPASS didnt work
+# > encbuffer ./asdf.sh > encrypted.sh.asdf; ENCPASS=""
 # now you have that
 ###
 encbuffer()
 {
-  printf "%s" "$1" | openssl aes-256-cbc -a -salt -pass pass:"${ENCPASS}"
+  openssl aes-256-cbc -a -salt -pass pass:"${ENCPASS}" < "$1"
 }
+# give encrypted file
 decbuffer()
 {
-  printf "%s" "$1" | openssl aes-256-cbc -d -a -pass pass:"${ENCPASS}"
+ openssl aes-256-cbc -d -a -pass pass:"${ENCPASS}" < "$1"
+}
+# returns a base64 encoded string or default value
+encodeb64()
+{
+# Argument1 == $1
+  local default_str="some text to encode"
+  # Doesn't really need to be a local variable.
+  # Message is first argument OR default
+  message=${1:-$default_str}
+  printf "%s" message | base64
+}
+decodeb64()
+{
+  local default_str="c29tZSB0ZXh0IHRvIGVuY29kZQo="
+  message=${1:-$default_str}
+  printf "%s" message | base64 -d -i
 }
 ###############################################################################
 ## FUNCTIONS GETTING USER INPUT
