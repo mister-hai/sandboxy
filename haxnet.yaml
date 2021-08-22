@@ -70,4 +70,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet ${HAXSUBNETRANGE}
+        - subnet: ${HAXSUBNETRANGE}
