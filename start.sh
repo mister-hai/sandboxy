@@ -230,12 +230,12 @@ readselfarchive()
 {
   cecho "[+] EXTRACTING: ${1}"
   # line number where payload starts
-  PAYLOAD_START=$(awk "/^==${TOKEN}==${1}==START==/ { print NR + 1; exit 0; }" ${SELF}) #$0)
-  PAYLOAD_END=$(awk "/^==${TOKEN}==${1}==END==/ { print NR + 1; exit 0; }" ${SELF} ) #$0)
+  PAYLOAD_START=$(awk "/^==${TOKEN}==${1}==START==/ { print NR + 1; exit 0; }" "${SELF}") #$0)
+  PAYLOAD_END=$(awk "/^==${TOKEN}==${1}==END==/ { print NR + 1; exit 0; }" "${SELF}" ) #$0)
   #tail will read and discard the first X-1 lines, 
   #then read and print the following lines. head will read and print the requested 
   #number of lines, then exit. When head exits, tail receives a SIGPIPE
-  if < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$((${PAYLOAD_END}-${PAYLOAD_START}+1))" | tar -zpvx -C ${INSTALLDIR}${1}; then
+  if < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$(("${PAYLOAD_END}"-"${PAYLOAD_START}"+1))" | tar -zpvx -C "${INSTALLDIR}""${1}"; then
     cecho "[+] SUCCESS! You should now be able to perform the next step!"
   else
     cecho "[-] FAILED to Extract Archive Labeled ${1}"
@@ -246,11 +246,24 @@ readselfarchive()
 appendtoselfasbase64()
 {
   currentdatetime=getepochseconds
+  cecho "[+] APPENDING: ${currentdatetime}" yellow
   # add token with filename for identifier
-  printf "%s" "==${TOKEN}==${currentdatetime}==START==" >> $SELF
+  printf "%s" "==${TOKEN}==${currentdatetime}==START==" >> "$SELF"
   # add the encoded data
-  tar --exclude="${SELF}" --exclude="./lib.sh" -zcv - . | base64 >> $SELF
-  printf "%s" "==${TOKEN}==${currentdatetime}==END==" >> $SELF
+  # " - " is the "dummy" or "pipe to stdout" operator for tar 
+  if tar --exclude="${SELF}" --exclude="./lib.sh" -zcv - * | base64 >> "$SELF"; then
+    cecho "[+] Project packed into archive!"
+    # seal with an ending token
+  else
+    cecho "[-] Failed to tar directory into archive"
+  fi
+  cecho "[+] Sealing archive"
+  if printf "%s" "==${TOKEN}==${currentdatetime}==END==" >> "$SELF"; then
+    cecho "[+] Sealed! Modifications saved as ${currentdatetime}"
+  else
+    cecho "[-] Failed to seal archive, this shouldn't happen, the file might have dissappeared"
+    exit 1
+  fi
 }
 
 # First arg: section
@@ -273,45 +286,12 @@ grabsectionfromself()
       fi
   # this sends the descriptor to the while loop
   # it gets fed from the bottom
-  done < $SELF
+  done < "$SELF"
 }
 #yes this needs cleaning
 listappendedsections()
 {
   grep "${TOKEN}" < "${SELF}"
-}
-###
-# something for the hackers
-# set encpass in shell
-# > export ENCPASS=passwordstring
-# > # lol unset ENCPASS didnt work
-# > encbuffer ./asdf.sh > encrypted.sh.asdf; ENCPASS=""
-# now you have that
-###
-encbuffer()
-{
-  openssl aes-256-cbc -a -salt -pass pass:"${ENCPASS}" < "$1"
-}
-# give encrypted file
-decbuffer()
-{
- openssl aes-256-cbc -d -a -pass pass:"${ENCPASS}" < "$1"
-}
-# returns a base64 encoded string or default value
-encodeb64()
-{
-# Argument1 == $1
-  local default_str="some text to encode"
-  # Doesn't really need to be a local variable.
-  # Message is first argument OR default
-  message=${1:-$default_str}
-  printf "%s" message | base64
-}
-decodeb64()
-{
-  local default_str="c29tZSB0ZXh0IHRvIGVuY29kZQo="
-  message=${1:-$default_str}
-  printf "%s" message | base64 -d -i
 }
 ###############################################################################
 ## FUNCTIONS GETTING USER INPUT
@@ -322,7 +302,7 @@ installprerequisites()
     cecho "[!] This action is about use quite a bit of time and internet data." red
     cecho "[!] Do you wish to use lots of data and time downloading and installing things?" red
     cecho "[?]" red; cecho "y/N ?" yellow
-    read -e -i "n" yesno
+    read -r -e -i "n" yesno
     cecho "[?] Are You Sure? (y/N)" yellow
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     case $yesno in
@@ -398,13 +378,14 @@ asktorecall()
 }
 askforrecallfile()
 {
+  listappendedsections
   while true; do
-    cecho "[!] OUTPUT: Filename" red
-    read -e -i "n" filename
+    cecho "[!] Please Input the label you wish to retrieve" red
+    read -e -i "n" archivelabel
     cecho "[?] Are You Sure? (y/N)" yellow
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
-    case $filename in
-        [Yy]* ) asktorecall "${1}";;
+    case $archivelabel in
+        [Yy]* ) asktorecall "${archivelabel}";;
         [Nn]* ) exit;;
         * ) cecho "Please answer yes or no." red;;
     esac

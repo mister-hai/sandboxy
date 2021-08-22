@@ -164,54 +164,36 @@ unset CDPATH
 ###############################################################################
 ## functions
 ###############################################################################
+###
+# something for the hackers
+# set encpass in shell
+# > export ENCPASS=passwordstring
+# > # lol unset ENCPASS didnt work
+# > encbuffer ./asdf.sh > encrypted.sh.asdf; ENCPASS=""
+# now you have that
+###
+encbuffer()
+{
+  openssl aes-256-cbc -a -salt -pass pass:"${ENCPASS}" < "$1"
+}
+# give encrypted file
+decbuffer()
+{
+ openssl aes-256-cbc -d -a -pass pass:"${ENCPASS}" < "$1"
+}
+# returns a base64 encoded string or default value
 encodeb64()
 {
-# basic structure of a semi-well written function
 # Argument1 == $1
-# Argument2 == $2
-## and so on
-	local default_str="some text to encode"
+  local default_str="some text to encode"
   # Doesn't really need to be a local variable.
-	# Message is first argument OR default
-	message=${1:-$default_msg}
+  # Message is first argument OR default
+  message=${1:-$default_str}
   printf "%s" message | base64
 }
 decodeb64()
 {
-	local default_str="c29tZSB0ZXh0IHRvIGVuY29kZQo="
-  # Doesn't really need to be a local variable.
-	# Message is first argument OR default
-	message=${1:-$default_msg}
+  local default_str="c29tZSB0ZXh0IHRvIGVuY29kZQo="
+  message=${1:-$default_str}
   printf "%s" message | base64 -d -i
 }
-getscriptworkingdir()
-##
-##Beware: if you cd to a different directory before running the result
-## may be incorrect! run unset CDPATH before calling
-{
-  SOURCE="${BASH_SOURCE[0]}"
-   # resolve $SOURCE until the file is no longer a symlink
-    while [ -h "$SOURCE" ]; do
-      DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-      SOURCE="$(readlink "$SOURCE")"
-      # if $SOURCE was a relative symlink, we need to resolve it relative to
-      # the path where the symlink file was located
-      [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" 
-    done
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  printf "%s" $DIR
-}
-appendtoself()
-# appends base64 data to self after a token
-# $1 : data as single quote string
-# $2 : token to store data as
-{
-  local default_derp="forgot something?"
-	local default_token="==DATA=="
-  # Doesn't really need to be a local variable.
-	# Message is first argument OR default
-	datastring=${1:-$default_derp}
-  selfaspath=(getscriptworkingdir)
-  printf "%s\n%s\n%s" default_token datastring default_token >> $selfaspath
-}
-```
