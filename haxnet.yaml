@@ -34,8 +34,7 @@ services:
     ports:
       - ${MINIPONYDBPORT}:1337
     networks:
-    # can I do this? about to try
-      ${SANDBOX_NETWORK_NAME}:
+      hax:
         ipv4_address: ${MINIPONYDBIP}
 ###############################################################################
 ## ponydb
@@ -60,8 +59,7 @@ services:
       - ${PONYDBPORT}:1337
     #and here we deviate
     networks:
-      - ${SANDBOX_NETWORK_NAME}
-        external: true
+      hax:
         ipv4_address: ${PONYDBIP}
 #################################################################
 #     NETWORKS SECTION
