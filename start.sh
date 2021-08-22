@@ -66,6 +66,10 @@ composefile()
   # the assignment prevents shit from collapsing
   PROJECT_FILE=$PROJECT_FILE
 }
+extraslocation()
+{
+  EXTRANAME="./lib.sh"
+}
 setup()
 {
   SETUP=true
@@ -188,15 +192,15 @@ unset CDPATH
 ###############################################################################
 # gets pwd
 DIR=$( cd -P "$( dirname "$SOURCE" )" && pwd )
-printf "pwd: %s \n" $DIR
+printf "pwd: %s \n" "$DIR"
 
 #./start.sh
 SELFRELATIVE=$0
-printf "self:  %s \n " $SELFRELATIVE
+printf "self:  %s \n " "$SELFRELATIVE"
 
 #/pwd/start.sh
 SELF=$(realpath $0)
-printf "SELF: %s \n " $SELF
+printf "SELF: %s \n " "$SELF"
 
 #import lib
 source "${DIR}"/"${EXTRASLOCATION}"
@@ -249,9 +253,10 @@ appendtoselfasbase64()
   cecho "[+] APPENDING: ${currentdatetime}" yellow
   # add token with filename for identifier
   printf "%s" "==${TOKEN}==${currentdatetime}==START==" >> "$SELF"
-  # add the encoded data
+  # add the contents of the current directory
+  # minus the start.sh and lib.sh scripts
   # " - " is the "dummy" or "pipe to stdout" operator for tar 
-  if tar --exclude="${SELF}" --exclude="./lib.sh" -zcv - * | base64 >> "$SELF"; then
+  if tar --exclude="${SELF}" --exclude="${EXTRANAME}" -zcv - ./* | base64 >> "$SELF"; then
     cecho "[+] Project packed into archive!"
     # seal with an ending token
   else
@@ -409,7 +414,7 @@ show_menus()
   cecho "## |-- BEGIN MESSAGE -- ////##################################################" green
   cecho "## |   OPTIONS IN RED ARE EITHER NOT IMPLEMENTED YET OR OUTRIGHT DANGEROUS"
   cecho "## | 1> Install Prerequisites" green
-  cecho "## | 2> Install CTFd challenges" green
+  cecho "## | 2> Clone CTFd challenges" green
   cecho "## | 3> Update Containers (docker-compose build)" green
   cecho "## | 4> Run Project (docker-compose up)" green
   cecho "## | 5> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" yellow
@@ -418,7 +423,7 @@ show_menus()
   cecho "## | 8> List Data Sections/Files Appended to script" green
   cecho "## | 8> Append Data To Script (compresses project directory into start.sh)" yellow
   cecho "## | 9> Retrieve Data From Script (list sections to see the filenames)" red
-  cecho "## | 0> NOT IMPLEMENTED Install kctf" red
+  cecho "## | 10> NOT IMPLEMENTED Install kctf" red
   cecho "## | 0> NOT IMPLEMENTED Install GoogleCloud SDK" red
   cecho "## | 0> NOT IMPLEMENTED Activate Cluster" red
   cecho "## | 0> NOT IMPLEMENTED Build Cluster" red
@@ -431,19 +436,37 @@ getselection()
 {
   show_menus
   PS3="Choose your doom:"
-  select option in install build run clean refresh cli listsections append recall initkctf ctfdcli quit
+  select option in install \
+cloner \
+build \
+run \
+clean \
+refresh \
+cli \
+listsections \
+append \
+recall \
+instkctf \
+installgcloud \
+clusteractivate \
+clusterbuild \
+clusterrun \
+kctfcli \
+quit
   do
 	  case $option in
       install) 
 	  		installprerequisites;;
-      build)
+      cloner)
         cloneallchallengerepos;;
-      run)
+      build)
         composebuild;;
-      clean) 
+      run)
         composerun;;
+      clean) 
+        dockersoftrefresh;;
       refresh)
-        dockerprune;;
+        dockerhardreset;;
       cli)
         ctfclifunction;;
       listsections)
@@ -452,6 +475,14 @@ getselection()
         askforappendfile;;
       recall)
         askforrecallfile;;
+      instkctf)
+        installkctf;;
+      installgcloud)
+        installgooglecloudsdk;;
+      clusteractivate)
+      
+      clusterbuild)
+      clusterrun)
       quit)
         break;;
       esac

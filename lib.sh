@@ -47,6 +47,14 @@ dockerprune()
   docker container prune -f
   docker volume prune -f
 }
+dockersoftrefresh()
+{
+  dockerprune && composebuild
+}
+dockerhardreset()
+{
+  dockerpurge && composebuild
+}
 ###############################################################################
 ## INSTALLER FUNCTIONS
 ###############################################################################
@@ -118,7 +126,6 @@ installeverything(){
   installapt
   installdockerdebian
   installdockercompose
-  installkctf
 }
 #https://stackoverflow.com/questions/739993/how-can-i-get-a-list-of-locally-installed-python-modules
 listofinstalledpythonpackages()
