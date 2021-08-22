@@ -8,6 +8,45 @@
 # This line adds the .env variables to the environment... very danger
 source ./.env
 
+#=========================================================
+#            Colorization stuff
+#=========================================================
+black='\E[30;47m'
+red='\E[31;47m'
+green='\E[32;47m'
+yellow='\E[33;47m'
+blue='\E[34;47m'
+magenta='\E[35;47m'
+cyan='\E[36;47m'
+white='\E[37;47m'
+# color
+#RESET=$'\E[1;0m'
+#RED=$'\E[1;31m'
+#GREEN=$'\E[1;32m'
+#YELLOW=$'\E[1;33m'
+RED_BACK=$'\E[101m'
+GREEN_BACK=$'\E[102m'
+YELLOW_BACK=$'\E[103m'
+alias Reset="tput sgr0"      #  Reset text attributes to normal
+                             #+ without clearing screen.
+cecho ()
+{
+  # Argument $1 = message
+  # Argument $2 = color
+  local default_msg="No message passed."
+  # Doesn't really need to be a local variable.
+  # Message is first argument OR default
+  # color is second argument
+  message=${1:-$default_msg}   # Defaults to default message.
+  color=${2:-$black}           # Defaults to black, if not specified.
+  printf "%s%s" "${color}" "${message}"
+  Reset                      # Reset to normal.
+} 
+
+placeholder()
+{
+  cecho "[x] NOT IMPLEMENTED YET" red
+}
 ###############################################################################
 # use this if adding/removing from configs for containers
 composebuild()
@@ -22,7 +61,7 @@ composebuild()
 # provide filename of composefile.yaml 
 composerun()
 {
-    docker-compose -f "${PROJECTFILE}" up
+  docker-compose -f "${PROJECTFILE}" up
 }
 composestop()
 {
@@ -86,7 +125,7 @@ installdockerdebian()
 }
 installdockercompose()
 {
-  echo "Installing docker-compose version: $DOCKER_COMPOSE_VERSION"
+  cecho "[+] Installing docker-compose version: $DOCKER_COMPOSE_VERSION" green
   if [ -z "$(sudo -l 2>/dev/null)" ]; then
     curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
     chmod +x docker-compose
@@ -97,13 +136,50 @@ installdockercompose()
     sudo mv docker-compose /usr/local/bin
   fi
 }
+
+installkubernetes()
+{
+  #kubectl
+  if curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"; then
+    cecho "[+] kubectl downloaded" green
+  else
+    cecho "[-] failed to download, exiting" yellow
+    exit 1
+  fi
+  #validate binary
+  curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+  if echo "$(<kubectl.sha256) kubectl" | sha256sum --check | grep "OK"; then
+    cecho "[+] Kubectl binary validated" green
+  else
+    cecho "[-] Vailed to validate binary, removing downloaded file and exiting" red
+    rm -rf ./kubectl 
+    rm -rf ./kubectl.sha256
+    exit 1
+  fi
+  if sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl; then
+    cecho "[+] Kubernetes Installed!"
+  else
+    cecho "[-] Failed to install Kubernetes! Exiting!"
+    exit 1
+  fi
+}
 installgooglecloudsdk()
 {
-  curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-353.0.0-linux-x86_64.tar.gz | tar xvf
+  if curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-353.0.0-linux-x86_64.tar.gz | tar xvf; then
+    cecho "[+] Google Cloud SDK downloaded" green
+  else
+    cecho "[-] failed to download Google Cloud SDK, exiting" yellow
+    exit 1
+  fi
 }
 installkctf()
 {
-  curl -sSL https://kctf.dev/sdk | tar xz
+  if curl -sSL https://kctf.dev/sdk | tar xz; then
+    cecho "[+] kctf downloaded" green
+  else
+    cecho "[-] kctf failed to download, exiting" yellow
+    exit 1
+  fi
 }
 
 #pulls quite a bit of data over the network
@@ -139,40 +215,3 @@ ctfclifunction()
     ctfcli
   fi
 }
-###############################################################################
-## Menu parsing and output colorization
-###############################################################################
-#=========================================================
-#            Colorization stuff
-#=========================================================
-black='\E[30;47m'
-red='\E[31;47m'
-green='\E[32;47m'
-yellow='\E[33;47m'
-blue='\E[34;47m'
-magenta='\E[35;47m'
-cyan='\E[36;47m'
-white='\E[37;47m'
-# color
-#RESET=$'\E[1;0m'
-#RED=$'\E[1;31m'
-#GREEN=$'\E[1;32m'
-#YELLOW=$'\E[1;33m'
-RED_BACK=$'\E[101m'
-GREEN_BACK=$'\E[102m'
-YELLOW_BACK=$'\E[103m'
-alias Reset="tput sgr0"      #  Reset text attributes to normal
-                             #+ without clearing screen.
-cecho ()
-{
-  # Argument $1 = message
-  # Argument $2 = color
-  local default_msg="No message passed."
-  # Doesn't really need to be a local variable.
-  # Message is first argument OR default
-  # color is second argument
-  message=${1:-$default_msg}   # Defaults to default message.
-  color=${2:-$black}           # Defaults to black, if not specified.
-  printf "%s%s" "${color}" "${message}"
-  Reset                      # Reset to normal.
-} 

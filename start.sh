@@ -241,6 +241,7 @@ readselfarchive()
   #number of lines, then exit. When head exits, tail receives a SIGPIPE
   if < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$(("${PAYLOAD_END}"-"${PAYLOAD_START}"+1))" | tar -zpvx -C "${INSTALLDIR}""${1}"; then
     cecho "[+] SUCCESS! You should now be able to perform the next step!"
+    cecho "[+] Modify the .env file and make any changes you want then build the environment and run it"
   else
     cecho "[-] FAILED to Extract Archive Labeled ${1}"
     exit 1
@@ -423,13 +424,13 @@ show_menus()
   cecho "## | 8> List Data Sections/Files Appended to script" green
   cecho "## | 8> Append Data To Script (compresses project directory into start.sh)" yellow
   cecho "## | 9> Retrieve Data From Script (list sections to see the filenames)" red
-  cecho "## | 10> NOT IMPLEMENTED Install kctf" red
-  cecho "## | 0> NOT IMPLEMENTED Install GoogleCloud SDK" red
-  cecho "## | 0> NOT IMPLEMENTED Activate Cluster" red
-  cecho "## | 0> NOT IMPLEMENTED Build Cluster" red
-  cecho "## | 0> NOT IMPLEMENTED Run Cluster" red
-  cecho "## | 0> NOT IMPLEMENTED KCTF-google CLI (use after install only!)" red
-  cecho "## | 10> Quit Program" red
+  cecho "## | 10> Install kctf" red
+  cecho "## | 11> Install GoogleCloud SDK" red
+  cecho "## | 12> NOT IMPLEMENTED Activate Cluster" red
+  cecho "## | 13> NOT IMPLEMENTED Build Cluster" red
+  cecho "## | 14> NOT IMPLEMENTED Run Cluster" red
+  cecho "## | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!)" red
+  cecho "## | 16> Quit Program" red
   cecho "## |-- END MESSAGE -- ////#####################################################" green
 }
 getselection()
@@ -480,9 +481,11 @@ quit
       installgcloud)
         installgooglecloudsdk;;
       clusteractivate)
-      
+        placeholder;;
       clusterbuild)
+        placeholder;;
       clusterrun)
+        placeholder;;
       quit)
         break;;
       esac
