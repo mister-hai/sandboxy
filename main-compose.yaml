@@ -47,19 +47,19 @@ services:
 #################################################################
 ##  Damn Vulnerable WEB APP ; will be locked down for semi-private usage
 #################################################################
-    dvwa:
-      image: vulnerables/web-dvwa
-      depends_on:
-        - nginx
-      hostname: dvwa
-      expose:
-        - 80
-      restart: unless-stopped
-      ports:
-        - ${DVWAPORT}:80
-      networks:
-        net:
-          ipv4_address: ${DVWAIP}
+#    dvwa:
+#      image: vulnerables/web-dvwa
+#      depends_on:
+#        - nginx
+#      hostname: dvwa
+#      expose:
+#        - 80
+#      restart: unless-stopped
+#      ports:
+#        - ${DVWAPORT}:80
+#      networks:
+#        net:
+#          ipv4_address: ${DVWAIP}
 ##################################################################
 ## OWASP JUICESHOP  ; will be locked down for semi-private usage
 #################################################################

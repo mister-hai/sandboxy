@@ -121,22 +121,25 @@ http {
     #    server login:${LOGINPORT};
     #}
       # Configuration containing list of application servers
-    upstream app_servers {
-        server ${CTFDIP}:${CTFDPORT};
-    }
-    upstream docker-bwapp {
-        server ${BWAPPIP}:${BWAPPPORT};
-    }
-    upstream docker-juiceshop {
-        server juiceshop:${JUICESHOPPORT};
-    }
-    upstream docker-dvwa {
-       server ${DVWAIP}:${DVWAPORT};
-    }
+    #upstream ctfd {
+    #    server 172.18.0.3:8000;
+    #}
+    #upstream docker-bwapp {
+    #    server $server_name:${BWAPPPORT};
+    #}
+    #testing is hostname is issue
+    #upstream docker-juiceshop {
+    #    server juiceshop:${JUICESHOPPORT};
+    #}
+    #testing if ip is issue
+    #upstream docker-dvwa {
+    #   server 172.18.0.6:${DVWAPORT};
+    #}
 
 ###############################################################################
 ## DEFAULT CONFIGURATION
 ###############################################################################
+    # provided by ctfd
     server {
     listen 0.0.0.0:80;
     server_name moopboxen.local;
@@ -148,11 +151,13 @@ http {
 ###############################################################################
     server {
     listen 80;
+    #testing hostname
     server_name ctfd.moopboxen.local;
     client_max_body_size 4G;
     # Handle Server Sent Events for Notifications
         location /events {
-            proxy_pass http://app_servers/;
+            proxy_pass http://$server_name:8000;
+            #proxy_pass http://ctfd/;
             proxy_set_header Connection '';
             proxy_http_version 1.1;
             chunked_transfer_encoding off;
@@ -165,9 +170,10 @@ http {
             proxy_set_header X-Forwarded-Host $server_name;
         }
     # Proxy connections to the application servers
-        location /ctfd {
-            proxy_pass http://app_servers/;
+        location /ctfd/ {
+            proxy_pass http://$server_name:8000;/;
             proxy_redirect off;
+            # host == ctfd
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -181,45 +187,45 @@ http {
         listen 80;
         #listen 443 ;#ssl;
         server_name bwapp.moopboxen.local;
-        index index.html index.htm index.php;
+#        index index.html index.htm index.php;
         default_type application/octet-stream;
-        server_name_in_redirect off;
-        #proxy_set_header Host $host:$server_port;
+#        server_name_in_redirect off;
+#        #proxy_set_header Host $host:$server_port;
         location ~ /bwapp/ {
-            proxy_pass http://docker-bwapp/;
-            #proxy_redirect  http://docker-bwapp/ /;
+            proxy_pass http://$server_name:${BWAPPPORT}/;
+#            proxy_redirect  http://docker-bwapp/ /;
             proxy_redirect off;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Host $server_name;            
-            #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
+#           #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
             #proxy_redirect $scheme://docker-bwapp $scheme://$host$request_uri;
         }
     }
 ###############################################################################
 ## DVWA CONFIGURATION
 ###############################################################################
-    server {
-        listen 80;
-        #listen 443;#ssl;
-        server_name dvwa.moopboxen.local;
-        server_name_in_redirect off;
-        #proxy_set_header Host $host:$server_port;
-        index    index.html index.htm index.php;
-        location ~ /dvwa/ {
-            proxy_pass http://docker-dvwa/;
-            #proxy_redirect http://docker-dvwa/ /;
-            proxy_redirect off;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Host $server_name;
-            #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
-            #proxy_redirect off;
-        }
-    }
-}
+#    server {
+#        listen 80;
+#        #listen 443;#ssl;
+#        #server_name dvwa.moopboxen.local;
+#        server_name_in_redirect off;
+#        #proxy_set_header Host $host:$server_port;
+#        index    index.html index.htm index.php;
+#        location ~ /dvwa/ {
+#            proxy_pass http://172.18.0.6:8082; #http://docker-dvwa/;
+#            #proxy_redirect http://docker-dvwa/ /;
+#            proxy_redirect off;
+#            proxy_set_header Host $host;
+#            proxy_set_header X-Real-IP $remote_addr;
+#            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#            proxy_set_header X-Forwarded-Host $server_name;
+#            #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
+#            #proxy_redirect off;
+#        }
+#    }
+#}
 ###############################################################################
 ## juiceshop CONFIGURATION
 ###############################################################################
@@ -228,20 +234,20 @@ http {
         listen 80;
         #listen 443 ;#ssl;
         server_name juiceshop.moopboxen.local;
-        index index.html index.htm index.php;
+        #index index.html index.htm index.php;
         default_type application/octet-stream;
-        server_name_in_redirect off;
+        #server_name_in_redirect off;
         #proxy_set_header Host $host:$server_port;
         location ~ /juiceshop/ {
-            proxy_pass http://docker-juiceshop/;
-            proxy_redirect  http://docker-juiceshop/ /;
+            proxy_pass http://$server_name:8085/;
+            #proxy_redirect  http://docker-juiceshop/ /;
             #proxy_redirect Default;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Host $server_name;         
             #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
-            #proxy_redirect $scheme://docker-bwapp $scheme://$host$request_uri;
+            proxy_redirect $scheme://$server_name:8085 $scheme://$host$request_uri;
         }
     }
 ###############################################################################
@@ -258,7 +264,6 @@ http {
 #            proxy_pass http://docker-ctfd;
 #            proxy_redirect http://docker-ctfd /;
 #            #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
-#            #proxy_redirect http://docker-ctfd /;
 #            #proxy_redirect off;
 #        }
 #    }    
