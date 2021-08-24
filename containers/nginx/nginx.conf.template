@@ -46,8 +46,8 @@ http {
     # SSL Settings
     ##
 
-    #ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
-    #ssl_prefer_server_ciphers on;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+    ssl_prefer_server_ciphers on;
 
     ##
     #Choose your proxy settings
@@ -122,13 +122,18 @@ http {
     #}
       # Configuration containing list of application servers
     upstream ctfd {
-        server  moopboxen.local:8000;
+        server localhost:8000
+        #server ctfd:8000
+        #server ${CTFDIP}:${CTFDPORT}
+        #server  moopboxen.local:8000;
     }
     upstream bwapp {
-        server  moopboxen.local:${BWAPPPORT};
+        server bwapp:${BWAPPPORT}
+        #server  moopboxen.local:${BWAPPPORT};
     }
     upstream juiceshop {
-        server  moopboxen.local:${JUICESHOPPORT};
+        server juiceshop:${JUICESHOPPORT}
+        #server  moopboxen.local:${JUICESHOPPORT};
     }
     #testing if ip is issue
     #upstream docker-dvwa {
@@ -139,12 +144,12 @@ http {
 ## DEFAULT CONFIGURATION
 ###############################################################################
     # provided by ctfd
-    server {
-    listen 0.0.0.0:80;
-    server_name moopboxen.local;
-    return 301 http://moopboxen.local$request_uri;
+    #server {
+    #listen 0.0.0.0:80;
+    #server_name moopboxen.local;
+    #return 301 http://moopboxen.local$request_uri;
     #rewrite ^/(.*) /$1 last;
-    }
+    #}
 ###############################################################################
 ## CTFD CONIGURATION
 ###############################################################################
@@ -157,13 +162,13 @@ http {
         location /events {
             proxy_pass http://ctfd;
             #proxy_pass http://moopboxen.local:${CTFDPORT};
-            #proxy_pass http://ctfd/;
+            #proxy_pass http://${BWAPPPORT}:8000/;
             proxy_set_header Connection '';
             proxy_http_version 1.1;
             chunked_transfer_encoding off;
             proxy_buffering off;
             proxy_cache off;
-            proxy_redirect  http://moopboxen.local:${CTFDPORT};
+            proxy_redirect  off;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
