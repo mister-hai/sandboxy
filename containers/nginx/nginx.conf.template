@@ -56,10 +56,10 @@ http {
     #include    /etc/nginx/proxy.conf;
     #proxy_redirect          off;
     proxy_ssl_session_reuse off;
-    proxy_set_header        Host            $host;
-    proxy_set_header        X-Real-IP       $remote_addr;
-    proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header        Referer $http_referer;
+    proxy_set_header        Host              $host;
+    proxy_set_header        X-Real-IP         $remote_addr;
+    proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header        Referer           $http_referer;
     proxy_set_header        X-Forwarded-Proto $scheme;
     # DISABLED DURING DEVELOPMENT
     #proxy_cache_bypass $http_upgrade;
@@ -121,20 +121,19 @@ http {
     #    server login:${LOGINPORT};
     #}
       # Configuration containing list of application servers
-    upstream ctfd {
-        server localhost:8000
+    #upstream ctfd {
         #server ctfd:8000
         #server ${CTFDIP}:${CTFDPORT}
         #server  moopboxen.local:8000;
-    }
-    upstream bwapp {
-        server bwapp:${BWAPPPORT}
+    #}
+    #upstream bwapp {
+    #    server bwapp:${BWAPPPORT}
         #server  moopboxen.local:${BWAPPPORT};
-    }
-    upstream juiceshop {
-        server juiceshop:${JUICESHOPPORT}
+    #}
+    #upstream juiceshop {
+    #    server juiceshop:${JUICESHOPPORT}
         #server  moopboxen.local:${JUICESHOPPORT};
-    }
+    #}
     #testing if ip is issue
     #upstream docker-dvwa {
     #   server 172.18.0.6:${DVWAPORT};
@@ -146,8 +145,8 @@ http {
     # provided by ctfd
     #server {
     #listen 0.0.0.0:80;
-    #server_name moopboxen.local;
-    #return 301 http://moopboxen.local$request_uri;
+    #server_name $server_name;
+    #return 301 http://$server_name$request_uri;
     #rewrite ^/(.*) /$1 last;
     #}
 ###############################################################################
@@ -155,41 +154,44 @@ http {
 ###############################################################################
     server {
     listen 80;
-    server_name moopboxen.local;
+    server_name $server_name;
     #why the fuck is this so large??
     client_max_body_size 4G;
     # Handle Server Sent Events for Notifications
         location /events {
-            proxy_pass http://ctfd;
-            #proxy_pass http://moopboxen.local:${CTFDPORT};
-            #proxy_pass http://${BWAPPPORT}:8000/;
+            #proxy_pass http://ctfd;
+            proxy_pass http://${CTFDIP}:${CTFDPORT};
             proxy_set_header Connection '';
             proxy_http_version 1.1;
             chunked_transfer_encoding off;
             proxy_buffering off;
             proxy_cache off;
             proxy_redirect  off;
-            proxy_set_header Host $host;
+            #proxy_set_header Host $host;
+            proxy_set_header Host $host:$server_port;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Host $server_name;
         }
     # Proxy connections to the application servers
         location /ctfd {
-            proxy_pass http://ctfd;
-            #proxy_pass http://moopboxen.local:${CTFDPORT};
+            #proxy_pass http://ctfd;
+            proxy_pass http://${CTFDIP}:${CTFDPORT};
             proxy_redirect off;
-            proxy_set_header Host $host;
+            #proxy_set_header Host $host;
+            proxy_set_header Host $host:$server_port;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Host $server_name;
         }
         location ~ /bwapp {
-            proxy_pass http://bwapp;
-            #proxy_pass http://moopboxen.local:${BWAPPPORT}/;
-            #proxy_redirect   http://moopboxen.local:${BWAPPPORT} /;
+            # for upstream
+            #proxy_pass http://bwapp;
+            proxy_pass http://${BWAPPIP}:${BWAPPPORT}/;
+            #proxy_redirect   http://localhost:${BWAPPPORT} /;
             proxy_redirect off;
-            proxy_set_header Host $host;
+            #proxy_set_header Host $host;
+            proxy_set_header Host $host:$server_port;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Host $server_name;            
@@ -197,12 +199,14 @@ http {
             #proxy_redirect $scheme://docker-bwapp $scheme://$host$request_uri;
         }
         location ~ /juiceshop {
-            proxy_pass http://juiceshop;
-            #proxy_pass http://moopboxen.local:${JUICESHOPPORT}/;
-            #proxy_redirect  http://moopboxen.local:${JUICESHOPPORT} /;
+            # for upstream
+            #proxy_pass http://juiceshop;
+            proxy_pass http://${JUICESHOPIP}:${JUICESHOPPORT}/;
+            #proxy_redirect  http://localhost:${JUICESHOPPORT} /;
             #proxy_redirect Default;
             proxy_redirect off;
-            proxy_set_header Host $host;
+            #proxy_set_header Host $host;
+            proxy_set_header Host $host:$server_port;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Host $server_name;         
@@ -216,7 +220,7 @@ http {
 #    server {
 #        listen 80;
         #listen 443 ;#ssl;
-        #server_name bwapp#.$server_name;
+        #server_name bwapp;
 #        index index.html index.htm index.php;
 #        default_type application/octet-stream;
 #        server_name_in_redirect off;
@@ -239,7 +243,7 @@ http {
 #    server {
 #        listen 80;
 #        #listen 443;#ssl;
-#        #server_name dvwa.moopboxen.local;
+#        #server_name dvwa;
 #        server_name_in_redirect off;
 #        #proxy_set_header Host $host:$server_port;
 #        index    index.html index.htm index.php;
@@ -263,7 +267,7 @@ http {
 #    server {
 #        listen 80;
         #listen 443 ;#ssl;
-#        server_name juiceshop#.moopboxen.local;
+#        server_name juiceshop;
         #index index.html index.htm index.php;
 #        default_type application/octet-stream;
         #server_name_in_redirect off;
@@ -280,49 +284,4 @@ http {
             #proxy_redirect $scheme://${JUICESHOPIP}:${JUICESHOPPORT} $scheme://$host$request_uri;
 #        }
 #    }
-###############################################################################
-## OLD CTFD CONFIGURATION
-###############################################################################
-#    server {
-#        listen 80;
-#        #listen 443 ;#ssl;
-#        server_name ctfd;
-#        index    index.html index.htm index.php;
-#        server_name_in_redirect off;
-#        proxy_set_header Host $host:$server_port;
-#        location ~ / {
-#            proxy_pass http://docker-ctfd;
-#            proxy_redirect http://docker-ctfd /;
-#            #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
-#            #proxy_redirect off;
-#        }
-#    }    
-#}
-    #server {
-    #    listen 80;
-    #    #listen 443 ssl;
-    #    server_name webgoat;
-    #    default_type application/octet-stream;
-    #    index    index.html index.htm index.php;
-    #    location ~ /webgoat {
-    #        #rewrite ^/challenges/webgoat(.*) /$1 last;
-    #        #proxy_pass http://docker-webgoat;
-    #        proxy_pass http://localhost:${WEEBGOATPORT};
-    #        #proxy_redirect http://localhost:${WEEBGOATPORT} / ;
-    #        proxy_redirect default;
 
-    #    }
-    #}
-    #server {
-    #    listen 80;
-        #listen 443 ssl;
-        #server_name ${SERVER_NAME};
-    #    index    index.html index.htm index.php;
-    #    location ~ /challenges/multillidae2 {
-    #        #rewrite ^/challenges/webgoat(.*) /$1 last;
-    #        #proxy_pass http://docker-mutillidae2;
-    #        proxy_pass http://localhost:${MUTILLIDAE2PORT};
-    #        #proxy_redirect http://localhost:${MUTILLIDAE2PORT} / ;
-    #        proxy_redirect default;
-    #    }
-    #}
