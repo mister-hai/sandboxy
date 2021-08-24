@@ -23,29 +23,17 @@ systemparams()
 #=========================================================
 #            Colorization stuff
 #=========================================================
-black='\E[30;47m'
 red='\E[31;47m'
 green='\E[32;47m'
 yellow='\E[33;47m'
-blue='\E[34;47m'
-magenta='\E[35;47m'
-cyan='\E[36;47m'
-white='\E[37;47m'
-# color
-#RESET=$'\E[1;0m'
-#RED=$'\E[1;31m'
-#GREEN=$'\E[1;32m'
-#YELLOW=$'\E[1;33m'
-RED_BACK=$'\E[101m'
-GREEN_BACK=$'\E[102m'
-YELLOW_BACK=$'\E[103m'
+
 alias Reset="tput sgr0"      #  Reset text attributes to normal
                              #+ without clearing screen.
 cecho ()
 {
   # Argument $1 = message
   # Argument $2 = color
-  local default_msg="No message passed."
+  default_msg="No message passed."
   # Doesn't really need to be a local variable.
   # Message is first argument OR default
   # color is second argument
@@ -124,17 +112,18 @@ installapt()
     lsb-release\
     xxd wget curl netcat
 }
+#requires sudo
+# specifically for debian
 installdockerdebian()
 {
   cecho "[+] Installing Docker" yellow
   sudo apt-get remove docker docker-engine docker.io containerd runc
   curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-  echo \
-  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
   sudo apt-get update
   sudo apt-get install docker-ce docker-ce-cli containerd.io
 }
+
 installdockercompose()
 {
   cecho "[+] Installing docker-compose version: $DOCKER_COMPOSE_VERSION" green

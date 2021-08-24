@@ -1,36 +1,16 @@
 #!/usr/bin/env bash
-## $PROG SANDBOXY.SH v1.0
+## $PROG MALBOX.SH v1.0
 ## |-- BEGIN MESSAGE -- ////##################################################
-## | This program is an installer and manager for a sandboxing system based on
-## |    ~ linux
-## |       ~ debian-buster
-## |    ~ Kubernetes
-## |    ~ Docker
-## |    ~ Docker-compose
-## |    ~ kctf from Google
-## |       ~ https://google.github.io/kctf/
-## |    ~ CTFd (https://ctfd.io/) © Copyright CTFd LLC 2017 - 2020
-## |       ~ UIUCTF-2021-PUBLIC challenge set
-## |       ~ https://github.com/sigpwny/UIUCTF-2021-Public
-## |    
-## |    
-## |    
-## |    
-## |    LIB.SH is the user-editable script you should modify
-## |      DO NOT open this script in a terminal window it may contain binary data
-## |      that means there are characters that can damage your session
-## |    
-## |    
-## |
-## | Usage: $PROG --flag1 value --flag2 value
+## | This program will tar -zcvf all of the contents in the current directory 
+## |    and append them to the end of this script as base64 encoded text
+## |    there is code inside this script showing how to aes-256-cbc encrpyt it
+## | 
+## | Usage: $PROG --extractlocation /home/dev/wat/ --token MALWARE_LOADER
 ## | Options:
 ## |
 ## | -e, --extractlocation  Path to Archive Extraction Location (Default: /tmp)
 ## | -t, --token            Token for data storage              (Default: DATA)
-## | -f, --composefile      Name of the compose file to use     (Default: ./MAIN.yaml)
-## | -c, --extraslocation   Location of the lib.sh              (Default: ./lib.sh)
-## | -s, --setup            Sets required OS settings
-## | -v, -composeversion    Sets the Version to Install         (Default:1.25.4)
+## |
 ## | Commands:
 ## |   -h, --help             Displays this help and exists
 ## |   -v, --version          Displays output version and exits
@@ -43,13 +23,8 @@
 #
 #  THESE GET CREATED TO REFLECT THE OPTIONS ABOVE, EVERYTHING IS PARSED WITH SED
 #
-
-# import env variables
-source ./.env
 #set program name
 PROG=${0##*/}
-#set logfile name
-LOGFILE="$0.logfile"
 #set exit command
 die() { echo "$@" >&2; exit 2; }
 
@@ -60,64 +35,9 @@ token()
 {
     TOKEN="DATA"
 }
-composefile()
-{
-  # ignore the shellcheck error
-  # the assignment prevents shit from collapsing
-  PROJECT_FILE=$PROJECT_FILE
-}
-extraslocation()
-{
-  EXTRANAME="./lib.sh"
-}
-setup()
-{
-  SETUP=true
-}
-composeversion()
-{
-  if [ -z "$DOCKER_COMPOSE_VERSION" ]; then
-    DOCKER_COMPOSE_VERSION=1.29.2
-  fi
-}
 ###############################################################################
 ## Menu parsing and output colorization
 ###############################################################################
-#=========================================================
-#            Colorization stuff
-#=========================================================
-black='\E[30;47m'
-red='\E[31;47m'
-green='\E[32;47m'
-yellow='\E[33;47m'
-blue='\E[34;47m'
-magenta='\E[35;47m'
-cyan='\E[36;47m'
-white='\E[37;47m'
-# color
-#RESET=$'\E[1;0m'
-#RED=$'\E[1;31m'
-#GREEN=$'\E[1;32m'
-#YELLOW=$'\E[1;33m'
-RED_BACK=$'\E[101m'c
-GREEN_BACK=$'\E[102m'
-YELLOW_BACK=$'\E[103m'
-alias Reset="tput sgr0"      #  Reset text attributes to normal
-                             #+ without clearing screen.
-cecho ()
-{
-  # Argument $1 = message
-  # Argument $2 = color
-  local default_msg="No message passed."
-  # Doesn't really need to be a local variable.
-  # Message is first argument OR default
-  # color is second argument
-  message=${1:-$default_msg}   # Defaults to default message.
-  color=${2:-$black}           # Defaults to black, if not specified.
-  printf "%s%s" "${color}${message}"
-  Reset                      # Reset to normal.
-} 
-
 #greps all "##" at the start of a line and displays it in the help text
 help() {
   grep "^##" "$0" | sed -e "s/^...//" -e "s/\$PROG/$PROG/g"; exit 0
@@ -135,8 +55,10 @@ version() {
 while [ $# -gt 0 ]; do
 
 #  CMD=$(grep -m 1 -Po "^## *$1, --\K[^= ]*|^##.* --\K${1#--}(?:[= ])" ${0} | tr - _)
-#         assign results of `grep | tr` to CMD
-#             searches through THIS file :
+#         assign results to CMD
+#         
+#         ${0}
+#           searches through THIS file : 
 # 
 #          grep -m 1, 
 #            stop after first occurance
@@ -171,6 +93,32 @@ while [ $# -gt 0 ]; do
   shift; 
   eval "$CMD" "$@" || shift $? 2> /dev/null
 done
+
+#=========================================================
+#            Colorization stuff
+#=========================================================
+black='\E[30;47m'
+red='\E[31;47m'
+green='\E[32;47m'
+yellow='\E[33;47m'
+# color
+alias Reset="tput sgr0"      #  Reset text attributes to normal
+                             #+ without clearing screen.
+cecho ()
+{
+  # Argument $1 = message
+  # Argument $2 = color
+  local default_msg="No message passed."
+  # Doesn't really need to be a local variable.
+  # Message is first argument OR default
+  # color is second argument
+  message=${1:-$default_msg}   # Defaults to default message.
+  color=${2:-$black}           # Defaults to black, if not specified.
+  printf "%s%s" "${color}" "${message}"
+  Reset                      # Reset to normal.
+} 
+
+
 ###############################################################################
 #Every bash script that uses the cd command with a relative path needs 
 # 
@@ -202,9 +150,41 @@ printf "self:  %s \n " "$SELFRELATIVE"
 SELF=$(realpath $0)
 printf "SELF: %s \n " "$SELF"
 
-#import lib
-source "${DIR}"/"${EXTRASLOCATION}"
-
+###############################################################################
+## Encryption/encoding examples
+###############################################################################
+# something for the hackers
+# set encpass in shell
+# > export ENCPASS=passwordstring
+# > # lol unset ENCPASS didnt work
+# > encbuffer ./asdf.sh > encrypted.sh.asdf; ENCPASS=""
+# now you have that
+###
+encbuffer()
+{
+  openssl aes-256-cbc -a -salt -pass pass:"${ENCPASS}" < "$1"
+}
+# give encrypted file
+decbuffer()
+{
+ openssl aes-256-cbc -d -a -pass pass:"${ENCPASS}" < "$1"
+}
+# returns a base64 encoded string or default value
+encodeb64()
+{
+# Argument1 == $1
+  local default_str="some text to encode"
+  # Doesn't really need to be a local variable.
+  # Message is first argument OR default
+  message=${1:-$default_str}
+  printf "%s" message | base64
+}
+decodeb64()
+{
+  local default_str="c29tZSB0ZXh0IHRvIGVuY29kZQo="
+  message=${1:-$default_str}
+  printf "%s" message | base64 -d -i
+}
 ###############################################################################
 ## SELF ARCHIVING FEATURES
 ###############################################################################
@@ -229,8 +209,7 @@ readselfarchive()
   #number of lines, then exit. When head exits, tail receives a SIGPIPE
   #if < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$(("${PAYLOAD_END}"-"${PAYLOAD_START}"+1))" | tar -zpvx -C "${INSTALLDIR}""${1}"; then
   if < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$(("${PAYLOAD_END}"-"${PAYLOAD_START}"+1))" | tar -zpvx -C ./sandboxy ; then
-    cecho "[+] SUCCESS! You should now be able to perform the next step!"
-    cecho "[+] Modify the .env file and make any changes you want then build the environment and run it"
+    cecho "[+] SUCCESS!"
   else
     cecho "[-] FAILED to Extract Archive Labeled ${1}"
     exit 1
@@ -291,39 +270,6 @@ listappendedsections()
 ###############################################################################
 ## FUNCTIONS GETTING USER INPUT
 ###############################################################################
-installprerequisites()
-{
-  while true; do
-    cecho "[!] This action is about use quite a bit of time and internet data." red
-    cecho "[!] Do you wish to use lots of data and time downloading and installing things?" red
-    cecho "[?]" red; cecho "y/N ?" yellow
-    read -r -e -i "n" yesno
-    cecho "[?] Are You Sure? (y/N)" yellow
-    read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
-    case $yesno in
-        [Yy]* ) installeverything;;
-        [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." red;;
-    esac
-  done
-}
-buildproject()
-{
-  while true; do
-    cecho "[!] This action will create multiple containers and volumes" red
-    cecho "[!] cleanup may be required if modifications are made while down" red
-    cecho "[!] Do you wish to continue?" red
-    cecho "[?]" red; cecho "y/N ?" yellow
-    read -e -i "n" yesno
-    cecho "[?] Are You Sure? (y/N)" yellow
-    read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
-    case $yesno in
-        [Yy]* ) composebuild;;
-        [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." red;;
-    esac
-  done
-}
 # first arg: filename or string data
 asktoappend()
 {
@@ -381,7 +327,7 @@ askforrecallfile()
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     case $archivelabel in
         [Yy]* ) asktorecall "${archivelabel}";;
-        [Nn]* ) exit;;
+        [Nn]* ) exit;; 
         * ) cecho "Please answer yes or no." red;;
     esac
   done
@@ -396,23 +342,9 @@ show_menus()
 {
 	clear
   cecho "## |-- BEGIN MESSAGE -- ////##################################################" green
-  cecho "## |   OPTIONS IN RED ARE EITHER NOT IMPLEMENTED YET OR OUTRIGHT DANGEROUS"
-  cecho "## | 1> Install Prerequisites" green
-  cecho "## | 2> Clone CTFd challenges" green
-  cecho "## | 3> Update Containers (docker-compose build)" green
-  cecho "## | 4> Run Project (docker-compose up)" green
-  cecho "## | 5> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" yellow
-  cecho "## | 6> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" red
-  cecho "## | 7> CTFd CLI (use after install only!)" green
   cecho "## | 8> List Data Sections/Files Appended to script" green
   cecho "## | 8> Append Data To Script (compresses project directory into start.sh)" red
   cecho "## | 9> Retrieve Data From Script (list sections to see the filenames)" red
-  cecho "## | 10> Install kctf" green
-  cecho "## | 11> Install GoogleCloud SDK" green
-  cecho "## | 12> Activate Cluster" green
-# cecho "## | 13> NOT IMPLEMENTED Build Cluster" red
-# cecho "## | 14> NOT IMPLEMENTED Run Cluster" red
-# cecho "## | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!)" red
   cecho "## | 16> Quit Program" red
   cecho "## |-- END MESSAGE -- ////#####################################################" green
 }
@@ -421,55 +353,18 @@ getselection()
   show_menus
   PS3="Choose your doom:"
   select option in install \
-cloner \
-build \
-run \
-clean \
-refresh \
-cli \
 listsections \
 append \
 recall \
-instkctf \
-installgcloud \
-clusteractivate \
 quit
-#clusterbuild \
-#clusterrun \
-#kctfcli \
-#quit
   do
 	  case $option in
-      install) 
-	  		installprerequisites;;
-      cloner)
-        cloneallchallengerepos;;
-      build)
-        composebuild;;
-      run)
-        composerun;;
-      clean) 
-        dockersoftrefresh;;
-      refresh)
-        dockerhardreset;;
-      cli)
-        ctfclifunction;;
       listsections)
         listappendedsections;;
       append)
         askforappendfile;;
       recall)
         askforrecallfile;;
-      instkctf)
-        installkctf;;
-      installgcloud)
-        installgooglecloudsdk;;
-      clusteractivate)
-        k8sclusterinit;;
-#      clusterbuild)
-#        placeholder;;
-#      clusterrun)
-#        placeholder;;
       quit)
         break;;
       esac

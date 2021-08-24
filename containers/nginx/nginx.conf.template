@@ -139,7 +139,7 @@ http {
 ###############################################################################
     server {
     listen 0.0.0.0:80;
-    server_name ${SERVER_NAME};
+    server_name moopboxen.local;
     return 301 http://$server_name$request_uri;
     #rewrite ^/(.*) /$1 last;
     }
@@ -148,10 +148,11 @@ http {
 ###############################################################################
     server {
     listen 80;
+    server_name ctfd.moopboxen.local;
     client_max_body_size 4G;
     # Handle Server Sent Events for Notifications
         location /events {
-            proxy_pass http://app_servers;
+            proxy_pass http://app_servers/;
             proxy_set_header Connection '';
             proxy_http_version 1.1;
             chunked_transfer_encoding off;
@@ -164,8 +165,8 @@ http {
             proxy_set_header X-Forwarded-Host $server_name;
         }
     # Proxy connections to the application servers
-        location / {
-            proxy_pass http://app_servers;
+        location /ctfd {
+            proxy_pass http://app_servers/;
             proxy_redirect off;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -179,13 +180,13 @@ http {
     server {
         listen 80;
         #listen 443 ;#ssl;
-        server_name bwapp;
+        server_name bwapp.moopboxen.local;
         index index.html index.htm index.php;
         default_type application/octet-stream;
         server_name_in_redirect off;
         #proxy_set_header Host $host:$server_port;
-        location ~ /$server_name/ {
-            proxy_pass http://docker-bwapp;
+        location ~ /bwapp/ {
+            proxy_pass http://docker-bwapp/;
             #proxy_redirect  http://docker-bwapp/ /;
             proxy_redirect off;
             proxy_set_header Host $host;
@@ -202,12 +203,12 @@ http {
     server {
         listen 80;
         #listen 443;#ssl;
-        server_name dvwa;
+        server_name dvwa.moopboxen.local;
         server_name_in_redirect off;
         #proxy_set_header Host $host:$server_port;
         index    index.html index.htm index.php;
-        location ~ / {
-            proxy_pass http://docker-dvwa;
+        location ~ /dvwa/ {
+            proxy_pass http://docker-dvwa/;
             #proxy_redirect http://docker-dvwa/ /;
             proxy_redirect off;
             proxy_set_header Host $host;
@@ -226,13 +227,13 @@ http {
     server {
         listen 80;
         #listen 443 ;#ssl;
-        server_name juiceshop;
+        server_name juiceshop.moopboxen.local;
         index index.html index.htm index.php;
         default_type application/octet-stream;
         server_name_in_redirect off;
         #proxy_set_header Host $host:$server_port;
-        location ~ / {
-            proxy_pass http://docker-juiceshop;
+        location ~ /juiceshop/ {
+            proxy_pass http://docker-juiceshop/;
             proxy_redirect  http://docker-juiceshop/ /;
             #proxy_redirect Default;
             proxy_set_header Host $host;
