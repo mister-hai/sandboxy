@@ -81,12 +81,12 @@
             - it will ask you for the url of the CTFd competition
             - it will then ask for an access token
                 - the token is found in the settings tab of the admin panel
-            - it will create an empty git repo with some random error
+            - it will create an empty git repo in that directory
 
         ctf challenge add https://github.com/sigpwny/UIUCTF-2021-Public.git
             - will show error, IGNORE IT, lines are added to the 
                 ./.ctf/config
-            ERROR: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
+            ERROR: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree. Working tree has modifications.  Cannot add.
 
         git clone https://github.com/sigpwny/UIUCTF-2021-Public.git
             - will add the data ctfcli does not download
@@ -94,9 +94,22 @@
         ctf challenge add https://github.com/csivitu/ctf-challenges.git
             - will show error, IGNORE IT, lines are added to the 
                 ./.ctf/config
-            ERROR: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
+            ERROR: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree. Working tree has modifications.  Cannot add.
 
         git clone https://github.com/csivitu/ctf-challenges.git
+
+    THEN YOU BEGIN INSTALLING THE CHALLENGES VIA THE YAML FILES
+     the bssides ones need modification
+        
+        ctf challenge install /path/to/chal/
+            - I am going to make a script to install them all at once
+    
+    EXAMPLE:
+        moop@Debian-1010-buster-64-minimal:~/challengedir$ ctf challenge install ./UIUCTF-2021-Public/jail/baby_python
+        Found UIUCTF-2021-Public/jail/baby_python/challenge.yml
+        Loaded baby_python
+        Installing baby_python
+        Success!
 
 # NETWORK LAYOUT 
 
