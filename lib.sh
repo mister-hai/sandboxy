@@ -15,6 +15,15 @@ source ./.env
 
 ###############################################################################
 ## SYSTEM PREP
+# How to setup FQDN in Linux?
+# First thing to be done is add FQDN to your hostname in /etc/hosts file.
+#   root@server #> cat /etc/hosts
+#   10.10.2.32 fightbiscuits.firewall-gateway.net
+# To confirm your FQDN, run below command :
+#   root@server12 # hostname -f
+#   server12.kerneltalks.com
+
+
 ###############################################################################
 # required for nsjail, kubernetes
 # run this before running 
@@ -237,9 +246,16 @@ listofinstalledpythonpackages()
   python.exe -c "import pip; sorted(['%s==%s' % (i.key, i.version) for i in pip.get_installed_distributions()])"
 }
 
-k8sclusterinit()
+k8sclusterinitlocal()
 {
   cecho "[+] TYPE THE FOLLOWING COMMANDS INTO THE SHELL AND PRESS ENTER" yellow
   cecho "source kctf/activate" yellow
   cecho "kctf cluster create local-cluster --start --type kind" yellow
 }
+
+snortconfig()
+{
+  sudo ldconfig
+  sudo ln -s /usr/local/bin/snort /usr/sbin/snort
+}
+

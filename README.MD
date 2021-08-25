@@ -16,6 +16,17 @@
 
 # Table Of Contents
 
+    until the start.sh script is finished, this is the official documentation
+    
+    important data
+    system prep
+    ctfdcli instructions
+    KCTF INSTRUCTIONS
+    NETWORK LAYOUT 
+
+
+## Important Information
+
     the important files to start with for development are 
         - main-compose.yaml
        
@@ -89,6 +100,23 @@
 
         How to setup your public hostname for letsencrypt to function
             https://kerneltalks.com/howto/how-to-setup-domain-name-in-linux-server/
+
+# SYSTEMPREP
+
+## How to setup FQDN in Linux?
+    
+    Change hostname to suit your desired naming schema and acquire a 
+    Domain name for your IP address
+        
+        root@server #> hostnamectl set-hostname fightbiscuits
+
+    add FQDN to your hostname in /etc/hosts file.
+        root@server #> cat /etc/hosts
+        10.10.2.32 fightbiscuits.firewall-gateway.net
+ 
+    To confirm your FQDN, run below command :
+        root@server12 # hostname -f
+        server12.kerneltalks.com
 
 # ctfdcli instructions
 

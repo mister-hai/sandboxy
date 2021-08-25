@@ -9,6 +9,7 @@ services:
 ##  NGINX ; proxies to the other containers
 # STATUS : SEMI-FUNCTIONAL
 # ISSUE  : cannot rewrite url properly without ssl for development
+# CAUSE  : SUPPOSED: I am not mounting volumes, I am trying to avoid that
 # proposed solution:
 #   I am going to host a domain name on the server for 
 #   certbot testing
@@ -29,6 +30,9 @@ services:
 #      volumes:
 #        - ${CERTBOTCONFVOLUMES}
 #        - ${CERTBOTDATAVOLUMES}
+#        - ${CTFDVOLUMES}
+#        - ${BWAPPVOLUMES}
+#        - ${JUICESHOPVOLUMES}
       #commands: >
       #  chmod +x /nginx_letsencrypt_init.sh;
       #  sudo /nginx_letsencrypt_init.sh;
