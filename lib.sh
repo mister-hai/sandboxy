@@ -1,4 +1,9 @@
 #!/bin/sh
+#https://linuxize.com/post/how-to-setup-a-firewall-with-ufw-on-debian-10/
+#https://www.calcomsoftware.com/your-first-5-steps-in-linux-server-hardening/
+#https://www.the-art-of-web.com/system/fail2ban/
+#https://github.com/trimstray/linux-hardening-checklist
+
 ###############################################################################
 # USER FUNCTIONS , THIS FILE must BE alongside START.SH
 # This file gets imported to the launcher for cleanlyness
@@ -109,7 +114,7 @@ installapt()
     ca-certificates \
     curl \
     gnupg \
-    lsb-release\
+    lsb-release ufw\
     xxd wget curl netcat
 }
 #requires sudo
@@ -122,6 +127,15 @@ installdockerdebian()
   echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
   sudo apt-get update
   sudo apt-get install docker-ce docker-ce-cli containerd.io
+  sudo groupadd docker
+  #sudo gpasswd -a pi docker
+  sudo usermod -aG docker ${USER}
+  sudo systemctl enable docker
+  docker run hello-world
+  sudo apt-get install libffi-dev libssl-dev
+  sudo apt-get install -y python python-pip
+  sudo pip install docker-compose
+  docker-compose build
 }
 
 installdockercompose()

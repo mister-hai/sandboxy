@@ -1,8 +1,29 @@
 # PENTEST SANDBOX
 
 # Table Of Contents
-    usage
-    info
+
+    the important files to start with are 
+        
+        dev
+        - main-compose.yaml
+        
+        for dev:
+            /config/nginx_template.conf
+        COPY TO:
+            /containers/nginx.conf.template
+        
+        finally:
+            ./.env
+
+        haxnet.yaml is for severe sandboxing
+        will contain
+            debian cnc
+            linux databases
+            possibly windows hosts?
+                must check legality
+
+        all of them exploitable
+
     this is an all in one setup script for a docker/kubernetes cluster
     specifically, it creates a pentesting sandbox
     
@@ -20,7 +41,16 @@
             docker-compose
             kubernetes
             nsjail
-
+            
+            kctf from Google
+                https://google.github.io/kctf/
+        
+            CTFd 
+                https://ctfd.io/ © Copyright CTFd LLC 2017 - 2020
+        
+            UIUCTF-2021-PUBLIC challenge set
+                https://github.com/sigpwny/UIUCTF-2021-Public
+        
         May I enable user namespaces?
             if a user manages to run code in the host namespace
             it will have an interesting UID/GID possibly

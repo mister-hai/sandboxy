@@ -21,28 +21,45 @@ services:
       restart: unless-stopped
       env_file:
         - ./.env
+      volumes:
+        - ./data/certbot/conf:/etc/letsencrypt
+        - ./data/certbot/www:/var/www/certbot
       ports:
         - 80:80
         - 443:443
       networks:
         net:
           ipv4_address: ${NGINXIP}
+################################################################
+## CERTBOT enables ssl for the backend
+################################################################
+    certbot:
+      image: certbot/certbot
+      hostname: certbot
+      depends_on:
+        - nginx
+      volumes:
+        - ./data/certbot/conf:/etc/letsencrypt
+        - ./data/certbot/www:/var/www/certbot
+      networks:
+        net:
+          ipv4_address: 172.18.0.4
 
 #################################################################
 ##  BWAPP   ; will be locked down for semi-private usage
 #################################################################
-    bwapp:
-      image: raesene/bwapp
-      hostname: bwapp
-      depends_on:
-        - nginx
-      expose:
-        - 80
-      ports:
-        - ${BWAPPPORT}:80
-      networks:
-        net:
-          ipv4_address: ${BWAPPIP}
+#    bwapp:
+#      image: raesene/bwapp
+#      hostname: bwapp
+#      depends_on:
+#        - nginx
+#      expose:
+#        - 80
+#      ports:
+#        - ${BWAPPPORT}:80
+#      networks:
+#        net:
+#          ipv4_address: ${BWAPPIP}
 
 #################################################################
 ##  Damn Vulnerable WEB APP ; will be locked down for semi-private usage
@@ -64,19 +81,19 @@ services:
 ## OWASP JUICESHOP  ; will be locked down for semi-private usage
 #################################################################
 #docker run --rm -p 3000:3000 bkimminich/juice-shop
-    juiceshop:
-      image: bkimminich/juice-shop
-      hostname: juiceshop
-      depends_on:
-        - nginx
-      expose:
-        - 3000
-      restart: unless-stopped
-      ports:
-        - ${JUICESHOPPORT}:3000
-      networks:
-        net:
-          ipv4_address: ${JUICESHOPIP}
+#    juiceshop:
+#      image: bkimminich/juice-shop
+#      hostname: juiceshop
+#      depends_on:
+#        - nginx
+#      expose:
+#        - 3000
+#      restart: unless-stopped
+#      ports:
+#        - ${JUICESHOPPORT}:3000
+#      networks:
+#        net:
+#          ipv4_address: ${JUICESHOPIP}
        
 #################################################################
 ##  Mutillidae2 ; will be locked down for semi-private usage
