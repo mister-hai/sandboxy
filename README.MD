@@ -17,7 +17,7 @@
 # Table Of Contents
 
     until the start.sh script is finished, this is the official documentation
-    
+
     important data
     system prep
     ctfdcli instructions
@@ -117,6 +117,22 @@
     To confirm your FQDN, run below command :
         root@server12 # hostname -f
         server12.kerneltalks.com
+
+    Add domain in /etc/resolv.conf. This file used for setting nameservers as well.
+        root@server12 # cat /etc/resolv.conf
+        search kerneltalks.com
+
+    Confirm that changes are working perfectly. Question is how to check the domain name of the Linux server?
+
+        root@server#> hostname
+        server12
+
+        root@server#> hostname -f
+        server12.kerneltalks.com
+
+        root@server#> dnsdomainname
+        kerneltalks.com
+
 
 # ctfdcli instructions
 

@@ -13,16 +13,6 @@
 # This line adds the .env variables to the environment... very danger
 source ./.env
 
-###############################################################################
-## SYSTEM PREP
-# How to setup FQDN in Linux?
-# First thing to be done is add FQDN to your hostname in /etc/hosts file.
-#   root@server #> cat /etc/hosts
-#   10.10.2.32 fightbiscuits.firewall-gateway.net
-# To confirm your FQDN, run below command :
-#   root@server12 # hostname -f
-#   server12.kerneltalks.com
-
 
 ###############################################################################
 # required for nsjail, kubernetes

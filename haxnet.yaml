@@ -1,5 +1,18 @@
 services:
 #################################################################
+##  Parrotsec/ParOS
+#################################################################
+#    parrot:
+#      image: parrotsec/security
+#      volumes:
+#        - "/run/docker.sock:/var/run/docker.sock"
+#      networks:
+#        net:
+#          ipv4_address: 172.18.0.2
+#      #volumes:
+#      #  -  /tmp/msf:/tmp/data:Z
+#      #network_mode: host
+#################################################################
 ##  target1 available for pwnage
 ################################################################
 #    cnc:
