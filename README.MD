@@ -1,6 +1,18 @@
 # PENTEST SANDBOX
     this is an all in one setup script for a docker/kubernetes cluster
     specifically, it creates a pentesting sandbox/ctfd instance
+    
+    There are two directories of concern
+        
+        -sandboxy
+            the docker-compose file directory containing the data created by
+            CTFd and the users of the platform (mysql,cache,etc) to be packed 
+            up and distributed to a replacment system in the event of a server change
+        
+        - the directory above that
+            will contain the kctf and challenge repositories that can be 
+            replaced by downloading from github
+
 
 # Table Of Contents
 
@@ -46,16 +58,21 @@
         
             CTFd 
                 https://ctfd.io/ © Copyright CTFd LLC 2017 - 2020
+                https://github.com/sigpwny/ctfd-discord-webhook-plugin.git
         
             UIUCTF-2021-PUBLIC challenge set
                 https://github.com/sigpwny/UIUCTF-2021-Public
 
             CSIVTU challenge set
                 https://github.com/csivitu/ctf-challenges.git
+                https://medium.com/csictf/automate-deployment-using-ci-cd-eeadd3d47ca7
 
         May I enable user namespaces?
             if a user manages to run code in the host namespace
             it will have an interesting UID/GID possibly
+        
+        May I enable umask a+rx
+            puts 666+x on all files created from that shell
 
         TODO:
             - add option to start.sh to include/build/init
@@ -111,6 +128,11 @@
         Installing baby_python
         Success!
 
+# KCTF INSTRUCTIONS
+    
+    After installing kctf through the start.sh script
+    in a terminal, in the main project directory
+    source kctf/activate
 # NETWORK LAYOUT 
 
     - parrotOS/security (development/learning version)
