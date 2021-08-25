@@ -1,7 +1,7 @@
 # PENTEST SANDBOX
     this is an all in one setup script for a docker/kubernetes cluster
     specifically, it creates a pentesting sandbox/ctfd instance
-    
+
     There are two directories of concern
         
         -sandboxy
@@ -89,6 +89,8 @@
 
 # ctfdcli instructions
 
+    THE CHALLENGES MUST BE UPLOADED TO CTFD FIRST BEFORE ACTIVATING THE KCTF ENVIRONMENT
+
     from anywhere:
         > pip3 install ctfcli
         - I needed to downgrade requests and pyyaml after pip install
@@ -116,7 +118,9 @@
         git clone https://github.com/csivitu/ctf-challenges.git
 
     THEN YOU BEGIN INSTALLING THE CHALLENGES VIA THE YAML FILES
-     the bssides ones need modification
+    THE CHALLENGES MUST BE UPLOADED TO CTFD FIRST BEFORE ACTIVATING THE KCTF ENVIRONMENT
+     
+    the bssides ones need modification
         
         ctf challenge install /path/to/chal/
             - I am going to make a script to install them all at once
@@ -132,7 +136,49 @@
     
     After installing kctf through the start.sh script
     in a terminal, in the main project directory
-    source kctf/activate
+    
+        source kctf/activate
+
+            - activates the kctf environment allowing you to upload
+                challenge.yaml files from kubernetes deployments
+
+        kctf cluster create local-cluster --start --type kind
+
+            - creates a "kind" cluster, kind is a docker driver
+                for kubernetes that has recently been deprecated
+                although will remain supporteted as a containerd 
+                abstraction
+    
+    FROM THE MAIN PROJECT DIRECTORY:
+        perform the following sort of commands to move the kubernetes 
+        challenges to the kctf templates folder
+    
+        cp -ar ./challengedir/UIUCTF-2021-Public/web/* ./kctf/challenge-templates/
+        cp -ar ./challengedir/UIUCTF-2021-Public/pwn/* ./kctf/challenge-templates/
+        cp -ar ./challengedir/UIUCTF-2021-Public/pwn/* ./kctf/challenge-templates/
+
+    Now you can create the challenges with kctf
+    THE CHALLENGES MUST BE UPLOADED TO CTFD FIRST BEFORE ACTIVATING THE ENVIRONMENT
+    This example uses ponydb from the UIUCTF-2021 challenge
+
+        kctf chal create --template ponydb ponydb && cd ponydb
+            - creates a folder in the main project directory, alongside kctf and 
+                sandboxy and the main repository for CTFd
+            - changes shell location to that challenge folder
+            - the challenge is created from the template
+    
+    in that folder run the following command:
+    
+        moop@Debian:~/pwnyide$ [KCTF PROMPT] kctf chal start
+
+    And you will see the following as output
+        [*] building image in "/home/moop/pwnyide/challenge"
+        [*] Image ID "8373f7b887b741ea6d2e8bda7ba2d26491f1689651ff36a34f016a98805549fe"
+        [*] building image in "/home/moop/pwnyide/healthcheck"
+        [*] Image ID "c0b07bb15de596b8fe0913ad16908a839294ccd2740383146075edaaf1337a36"
+        Image: "kind/challenge:8373f7b887b741ea6d2e8bda7ba2d26491f1689651ff36a34f016a98805549fe" with ID "sha256:8373f7b887b741ea6d2e8bda7ba2d26491f1689651ff36a34f016a98805549fe" not yet present on node "kctf-cluster-control-plane", loading...      
+        
+
 # NETWORK LAYOUT 
 
     - parrotOS/security (development/learning version)
