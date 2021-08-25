@@ -7,12 +7,21 @@
     the important files to start with for development are 
         - main-compose.yaml
        
-        for linting:
+       The "containers" directory has each folder as a seperate docker box
+       with its own dockerfile and everything necessary in that folder as 
+       the build dir
+
+        for linting/dev, you edit:
             /config/nginx_template.conf
-        COPY TO:
-            /containers/nginx.conf.template
-        finally:
+
+        then you copy that to:
+            /containers/nginx/nginx.conf.template
+
+        finally, this file is where you set configuration parameters for the 
+        environment:
             ./.env
+
+        ! letsencrypt should be used only if a domain name is available !
 
         haxnet.yaml is for severe sandboxing
         will contain
@@ -40,7 +49,10 @@
         
             UIUCTF-2021-PUBLIC challenge set
                 https://github.com/sigpwny/UIUCTF-2021-Public
-        
+
+            CSIVTU challenge set
+                https://github.com/csivitu/ctf-challenges.git
+
         May I enable user namespaces?
             if a user manages to run code in the host namespace
             it will have an interesting UID/GID possibly
@@ -55,10 +67,36 @@
 
             - oohhh shiny!
                 https://github.com/cliffe/SecGen
-                
+
         we need more https://asmen.icopy.site/awesome/awesome-ctf/
 
-# NETWORK LAYOUT
+# ctfdcli instructions
+
+    from anywhere:
+        > pip3 install ctfcli
+        - I needed to downgrade requests and pyyaml after pip install
+    
+    in a clean directory, above the sandbox repository:
+        ctf init
+            - it will ask you for the url of the CTFd competition
+            - it will then ask for an access token
+                - the token is found in the settings tab of the admin panel
+            - it will create an empty git repo with some random error
+
+        ctf add https://github.com/sigpwny/UIUCTF-2021-Public
+            - will show error, IGNORE IT, lines are added to the 
+                ./.ctf/config
+
+        git clone https://github.com/sigpwny/UIUCTF-2021-Public
+            - will add the data ctfcli does not download
+
+        ctf add https://github.com/csivitu/ctf-challenges.git
+            - will show error, IGNORE IT, lines are added to the 
+                ./.ctf/config
+
+        git clone https://github.com/csivitu/ctf-challenges.git
+
+# NETWORK LAYOUT 
 
     - parrotOS/security (development/learning version)
         172.18.0.2

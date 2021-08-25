@@ -21,12 +21,12 @@ services:
       restart: unless-stopped
       env_file:
         - ./.env
-      volumes:
-        - ./data/certbot/conf:/etc/letsencrypt
-        - ./data/certbot/www:/var/www/certbot
-      commands: >
-        chmod +x /nginx_letsencrypt_init.sh;
-        sudo /nginx_letsencrypt_init.sh;
+      #volumes:
+      #  - ./data/certbot/conf:/etc/letsencrypt
+      #  - ./data/certbot/www:/var/www/certbot
+      #commands: >
+      #  chmod +x /nginx_letsencrypt_init.sh;
+      #  sudo /nginx_letsencrypt_init.sh;
       ports:
         - 80:80
         - 443:443
@@ -36,17 +36,20 @@ services:
 ################################################################
 ## CERTBOT enables ssl for the backend
 ################################################################
-    certbot:
-      image: certbot/certbot
-      hostname: certbot
-      depends_on:
-        - nginx
-      volumes:
-        - ./data/certbot/conf:/etc/letsencrypt
-        - ./data/certbot/www:/var/www/certbot
-      networks:
-        net:
-          ipv4_address: ${CERTBOTIP}
+#    certbot:
+#      image: certbot/certbot
+#      hostname: certbot
+#      # checks for renewal every 12 hours
+#      entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+#      depends_on:
+#        - nginx
+#      volumes:
+#        - ./data/certbot/conf:/etc/letsencrypt
+#        - ./data/certbot/www:/var/www/certbot
+#      
+#      networks:
+#        net:
+#          ipv4_address: ${CERTBOTIP}
 
 #################################################################
 ##  BWAPP   ; will be locked down for semi-private usage

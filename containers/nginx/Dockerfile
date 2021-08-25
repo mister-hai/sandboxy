@@ -14,6 +14,8 @@ COPY fastcgi.conf /etc/nginx/fastcgi.conf
 COPY mime.types /etc/nginx/mime.types
 #COPY proxy.conf /etc/nginx/proxy.conf
 
+#auto create and remove dummy certs
+#COPY nginx_letsencrypt_init.sh /nginx_letsencrypt_init.sh 
 ####
 # No data if being used as proxy
 ####
