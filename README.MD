@@ -74,19 +74,19 @@ The setup will setup a:
     - parrotOS/security (development/learning version)
         172.18.0.2
     - nginx reverse proxy 
-        172.18.0.3
-            - redis
-                172.18.0.4
-            - mysql
-                172.18.0.5
-            - bwapp
-                172.18.0.5
-            - dvwa
-                172.18.0.6
+        172.18.0.2
             - ctfd
-                172.18.0.7
+                172.18.0.3
+            - redis
+                172.18.0.x
+            - mysql
+                172.18.0.x
+            - bwapp
+                172.18.0.x
+            - dvwa
+                172.18.0.x
             - JuiceShop
-                172.168.0.8
+                172.168.0.x
         NETWORKGAME
             192.168.0.1/24
                 - ponyDB UIUCTF 2021
@@ -110,6 +110,7 @@ The setup will setup a:
 we need more https://asmen.icopy.site/awesome/awesome-ctf/
 
 
+# start.sh --help
     #!/bin/bash
     ## $PROG SANDBOXY.SH v1.0
     ## |-- BEGIN MESSAGE -- ////##################################################
@@ -127,13 +128,6 @@ we need more https://asmen.icopy.site/awesome/awesome-ctf/
     ## |    
     ## |    
     ## |    EDIT THE .ENV FILE TO REFLECT YOUR CURRENT ENVIRONMENT/CHOICES
-    ## |    
-    ## |    
-    ## |    
-    ## |    
-    ## |    
-    ## |    
-    ## |
     ## | Usage: $PROG --flag1 value --flag2 value
     ## | Options:
     ## |
@@ -154,6 +148,28 @@ we need more https://asmen.icopy.site/awesome/awesome-ctf/
     ## | 
     ## |-- END MESSAGE -- ////#####################################################
 
+# START.SH
+
+    ## |-- BEGIN MESSAGE -- ////##################################################
+    ## | 1> Install Prerequisites" 
+    ## | 2> Clone CTFd challenges" 
+    ## | 3> Update Containers (docker-compose build)" 
+    ## | 4> Run Project (docker-compose up)" 
+    ## | 5> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" 
+    ## | 6> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" 
+    ## | 7> CTFd CLI (use after install only!)" 
+    ## | 8> List Data Sections/Files Appended to script" 
+    ## | 8> Append Data To Script (compresses project directory into start.sh)" 
+    ## | 9> Retrieve Data From Script (list sections to see the filenames)" 
+    ## | 10> Install kctf" 
+    ## | 11> Install GoogleCloud SDK" 
+    ## | 12> Activate Cluster" 
+    ## | 13> NOT IMPLEMENTED Build Cluster" 
+    ## | 14> NOT IMPLEMENTED Run Cluster" 
+    ## | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!)" 
+    ## | 16> Quit Program" ed
+    ## |-- END MESSAGE -- ////#####################################################" 
+
 ##Some Notes
 
     
@@ -167,18 +183,3 @@ we need more https://asmen.icopy.site/awesome/awesome-ctf/
 	clear
 
 
-	
-     "## |-- BEGIN MESSAGE -- ////##################################################" green
-     "## | 1> Install Prerequisites" green
-     "## | 2> Build Cluster" green
-     "## | 3> Run Cluster" green
-     "## | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" green
-     "## | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" green
-     "## | 6> Append Data To Script" yellow
-     "## | 7> Retrieve Data From Script" yellow
-     "## | 8> Activate Kubernetes Cluster" yellow
-     "## | 9> KCTF-google CLI (use after install only!)" green
-     "## | 10> CTFd CLI (use after install only!)" green
-     "## | 11> Quit Program" yellow      
-     "## | 12> Quit Program" RED
-     "## |-- END MESSAGE -- ////#####################################################" green
