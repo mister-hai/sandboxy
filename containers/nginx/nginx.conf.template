@@ -81,16 +81,22 @@ http {
         '"$http_user_agent" "$http_x_forwarded_for"';
     ##
     # Encryption stuff
-    ## LOL you have to generate the keys first!
+    ## you have to generate the keys first!
     # then uncomment!
+    
+    # THIS IS ONLY USED WHEN A DOMAIN NAME IS AVAILABLE
+
     #ssl_certificate /etc/letsencrypt/cert.crt;
     #ssl_certificate_key /etc/letsencrypt/keys/key.pem;
-
+    #ssl_certificate /etc/letsencrypt/live/example.org/fullchain.pem;
+    #ssl_certificate_key /etc/letsencrypt/live/example.org/privkey.pem;
+    #include /etc/letsencrypt/options-ssl-nginx.conf;
+    #ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
     ##
     # Logging Settings
     ##
-    #access_log /var/log/nginx/access.log;
-    #error_log /var/log/nginx/error.log;
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
 
     ##    
     # Gzip Settings
@@ -157,6 +163,10 @@ http {
     server_name $server_name;
     #why the fuck is this so large??
     client_max_body_size 4G;
+    # Entry for certbot
+    #    location /.well-known/acme-challenge/ {
+    #        root /var/www/certbot;
+    #    }
     # Handle Server Sent Events for Notifications
         location /events {
             #proxy_pass http://ctfd;

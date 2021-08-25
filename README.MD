@@ -83,16 +83,18 @@
                 - the token is found in the settings tab of the admin panel
             - it will create an empty git repo with some random error
 
-        ctf add https://github.com/sigpwny/UIUCTF-2021-Public
+        ctf challenge add https://github.com/sigpwny/UIUCTF-2021-Public.git
             - will show error, IGNORE IT, lines are added to the 
                 ./.ctf/config
+            ERROR: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
 
-        git clone https://github.com/sigpwny/UIUCTF-2021-Public
+        git clone https://github.com/sigpwny/UIUCTF-2021-Public.git
             - will add the data ctfcli does not download
 
-        ctf add https://github.com/csivitu/ctf-challenges.git
+        ctf challenge add https://github.com/csivitu/ctf-challenges.git
             - will show error, IGNORE IT, lines are added to the 
                 ./.ctf/config
+            ERROR: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
 
         git clone https://github.com/csivitu/ctf-challenges.git
 
