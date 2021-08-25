@@ -1,17 +1,16 @@
 # PENTEST SANDBOX
+    this is an all in one setup script for a docker/kubernetes cluster
+    specifically, it creates a pentesting sandbox/ctfd instance
 
 # Table Of Contents
 
-    the important files to start with are 
-        
-        dev
+    the important files to start with for development are 
         - main-compose.yaml
-        
-        for dev:
+       
+        for linting:
             /config/nginx_template.conf
         COPY TO:
             /containers/nginx.conf.template
-        
         finally:
             ./.env
 
@@ -23,16 +22,7 @@
                 must check legality
 
         all of them exploitable
-
-    this is an all in one setup script for a docker/kubernetes cluster
-    specifically, it creates a pentesting sandbox
     
-    on a :
-
-    cloud VM/docker environment
-        - urlrewriting acting funky, cant seem to scrub ports from url
-            EDIT THE .ENV FILE TO REFLECT YOUR CURRENT ENVIRONMENT/CHOICES
-
     QUESTIONS FOR THE ADMIN:
         Can I install the following softwares:
             vagrant
@@ -65,11 +55,10 @@
 
             - oohhh shiny!
                 https://github.com/cliffe/SecGen
-or 
+                
+        we need more https://asmen.icopy.site/awesome/awesome-ctf/
 
-    raspi4b(start.sh needs finishing to setup the environment)
-
-The setup will setup a:
+# NETWORK LAYOUT
 
     - parrotOS/security (development/learning version)
         172.18.0.2
@@ -93,22 +82,6 @@ The setup will setup a:
                     192.168.0.2
                 - miniponyDB UIUCTF 2021
                     192.168.0.3
-
-
-## sources :
-
-    OFFICIAL DOCS
-        kubernetes
-        docker
-        nginx
-
-    STACKOVERFLOW
-        lots
-        of
-        it
-    
-we need more https://asmen.icopy.site/awesome/awesome-ctf/
-
 
 # start.sh --help
     #!/bin/bash

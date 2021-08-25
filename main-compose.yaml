@@ -24,6 +24,9 @@ services:
       volumes:
         - ./data/certbot/conf:/etc/letsencrypt
         - ./data/certbot/www:/var/www/certbot
+      commands: >
+        chmod +x /nginx_letsencrypt_init.sh;
+        sudo /nginx_letsencrypt_init.sh;
       ports:
         - 80:80
         - 443:443
@@ -43,7 +46,7 @@ services:
         - ./data/certbot/www:/var/www/certbot
       networks:
         net:
-          ipv4_address: 172.18.0.4
+          ipv4_address: ${CERTBOTIP}
 
 #################################################################
 ##  BWAPP   ; will be locked down for semi-private usage
