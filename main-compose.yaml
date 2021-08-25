@@ -7,6 +7,11 @@ version: "3"
 services:
 #################################################################
 ##  NGINX ; proxies to the other containers
+# STATUS : SEMI-FUNCTIONAL
+# ISSUE  : cannot rewrite url properly without ssl for development
+# proposed solution:
+#   I am going to host a domain name on the server for 
+#   certbot testing
 #################################################################        
     nginx:
       build:
@@ -21,9 +26,9 @@ services:
       restart: unless-stopped
       env_file:
         - ./.env
-      #volumes:
-      #  - ./data/certbot/conf:/etc/letsencrypt
-      #  - ./data/certbot/www:/var/www/certbot
+#      volumes:
+#        - ${CERTBOTCONFVOLUMES}
+#        - ${CERTBOTDATAVOLUMES}
       #commands: >
       #  chmod +x /nginx_letsencrypt_init.sh;
       #  sudo /nginx_letsencrypt_init.sh;
@@ -35,6 +40,7 @@ services:
           ipv4_address: ${NGINXIP}
 ################################################################
 ## CERTBOT enables ssl for the backend
+# STATUS : NOT TESTED
 ################################################################
 #    certbot:
 #      image: certbot/certbot
@@ -44,8 +50,8 @@ services:
 #      depends_on:
 #        - nginx
 #      volumes:
-#        - ./data/certbot/conf:/etc/letsencrypt
-#        - ./data/certbot/www:/var/www/certbot
+#        - ${CERTBOTCONFVOLUMES}
+#        - ${CERTBOTDATAVOLUMES}
 #      
 #      networks:
 #        net:
@@ -53,6 +59,7 @@ services:
 
 #################################################################
 ##  BWAPP   ; will be locked down for semi-private usage
+# STATUS : FUNCTIONAL
 #################################################################
 #    bwapp:
 #      image: raesene/bwapp
@@ -69,6 +76,7 @@ services:
 
 #################################################################
 ##  Damn Vulnerable WEB APP ; will be locked down for semi-private usage
+# STATUS : FUNCTIONAL
 #################################################################
 #    dvwa:
 #      image: vulnerables/web-dvwa
@@ -85,6 +93,7 @@ services:
 #          ipv4_address: ${DVWAIP}
 ##################################################################
 ## OWASP JUICESHOP  ; will be locked down for semi-private usage
+# STATUS : FUNCTIONAL
 #################################################################
 #docker run --rm -p 3000:3000 bkimminich/juice-shop
 #    juiceshop:
@@ -103,6 +112,7 @@ services:
        
 #################################################################
 ##  Mutillidae2 ; will be locked down for semi-private usage
+# STATUS : FUNCTIONAL
 #################################################################
 #    mutillidae2:
 #      image: santosomar/mutillidae_2
@@ -115,6 +125,7 @@ services:
 #################################################################
 ## CTFD; 
 ## will use the builder script portion for production. 
+# STATUS : FUNCTIONAL
 #################################################################        
     ctfd:
       image: ctfd/ctfd

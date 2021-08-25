@@ -87,6 +87,9 @@
 
         we need more https://asmen.icopy.site/awesome/awesome-ctf/
 
+        How to setup your public hostname for letsencrypt to function
+            https://kerneltalks.com/howto/how-to-setup-domain-name-in-linux-server/
+
 # ctfdcli instructions
 
     THE CHALLENGES MUST BE UPLOADED TO CTFD FIRST BEFORE ACTIVATING THE KCTF ENVIRONMENT
@@ -169,15 +172,34 @@
     
     in that folder run the following command:
     
-        moop@Debian:~/pwnyide$ [KCTF PROMPT] kctf chal start
+        kctf chal start
 
-    And you will see the following as output
+    And you will see the following as output:
+
         [*] building image in "/home/moop/pwnyide/challenge"
-        [*] Image ID "8373f7b887b741ea6d2e8bda7ba2d26491f1689651ff36a34f016a98805549fe"
+        [*] Image ID "8373-----49fe"
         [*] building image in "/home/moop/pwnyide/healthcheck"
-        [*] Image ID "c0b07bb15de596b8fe0913ad16908a839294ccd2740383146075edaaf1337a36"
-        Image: "kind/challenge:8373f7b887b741ea6d2e8bda7ba2d26491f1689651ff36a34f016a98805549fe" with ID "sha256:8373f7b887b741ea6d2e8bda7ba2d26491f1689651ff36a34f016a98805549fe" not yet present on node "kctf-cluster-control-plane", loading...      
-        
+        [*] Image ID "c0b07bb15de------36"
+        Image: "kind/challenge:8373f7-----05549fe" with ID "sha256:8373f7b887b741ea-----549fe" not yet present on node "kctf-cluster-control-plane", loading...      
+        [*] Image pushed to "kind/challenge:8373f7------549fe"
+        Image: "kind/healthcheck:c0b07bb15----337a36" with ID "sha256:c0b----37a36" not yet present on node "kctf-cluster-control-plane", loading...
+        [*] Image pushed to "kind/healthcheck:c0b07----337a36"
+        challenge.kctf.dev/pwnyide created
+    
+    CONNECTING TO THE CHALLENGE:
+    
+    To connect to the challenge, run the following command:
+
+        kctf chal debug port-forward &
+    
+    You will see the followong output:
+
+        moop@Debian:~/pwnyide$ kctf chal debug port-forward &
+        [1] 131556
+        moop@Debian:~/pwnyide$ [*] starting port-forward, ctrl+c to exit
+        Forwarding from 127.0.0.1:42743 -> 1337
+
+
 
 # NETWORK LAYOUT 
 
@@ -264,7 +286,7 @@
     ## | 16> Quit Program" ed
     ## |-- END MESSAGE -- ////#####################################################" 
 
-##Some Notes
+## Some Notes
 
     
     Historically the security of user namespace was uncertain. eg: lwn.net/Articles/673597 . 
