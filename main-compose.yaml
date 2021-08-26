@@ -28,8 +28,8 @@ services:
       env_file:
         - ./.env
       volumes:
-      #used during development to look at data in the donf
-        - ./data/nginx/:/etc/nginx/
+        # you have to have a file already existing to copy from the compose file
+        - ${PWD}/containers/nginx/fightbiscuits.firewall-gateway.net.conf:/etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
         - ${CERTBOTCONFVOLUMES}
         - ${CERTBOTDATAVOLUMES}
         - ${CERTBOTLOGVOLUMES}

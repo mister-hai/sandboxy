@@ -15,6 +15,7 @@ COPY index.html /var/www/index.html
 RUN apk add certbot certbot-nginx
 
 # copy
+# this lets us mount the file as a volume for dev also
 COPY fightbiscuits.firewall-gateway.net.conf /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
 
 #copy the conf files over to the container
