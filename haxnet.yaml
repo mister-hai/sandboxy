@@ -15,14 +15,15 @@ services:
 #################################################################
 ##  target1 available for pwnage
 ################################################################
-#    cnc:
-#      image: debian:buster
-#      build:
-#        context: ./containers/cnc
-#        dockerfile: Dockerfile
-#      networks:
-#        net:
-#          ipv4_address: 172.18.0.2
+    cnc:
+      image: debian:buster
+      build:
+        context: ./containers/cnc
+        dockerfile: Dockerfile
+      networks:
+        hax:
+          external: true
+          ipv4_address: 172.18.0.2
 ###############################################################################
 ## miniaturehorsedb
 ###############################################################################
@@ -48,6 +49,7 @@ services:
       - ${MINIPONYDBPORT}:1337
     networks:
       hax:
+        external: true
         ipv4_address: ${MINIPONYDBIP}
 ###############################################################################
 ## ponydb
@@ -73,12 +75,84 @@ services:
     #and here we deviate
     networks:
       hax:
+        external: true
         ipv4_address: ${PONYDBIP}
+
 #################################################################
+##  BWAPP   ; will be locked down for semi-private usage
+# STATUS : FUNCTIONAL
+#################################################################
+    bwapp:
+      image: raesene/bwapp
+      hostname: bwapp
+      depends_on:
+        - nginx
+      expose:
+        - 80
+      ports:
+        - ${BWAPPPORT}:80
+      networks:
+        hax:
+          external: true
+          ipv4_address: ${BWAPPIP}
+
+#################################################################
+##  Damn Vulnerable WEB APP ; will be locked down for semi-private usage
+# STATUS : FUNCTIONAL
+#################################################################
+    dvwa:
+      image: vulnerables/web-dvwa
+      depends_on:
+        - nginx
+      hostname: dvwa
+      expose:
+        - 80
+      restart: unless-stopped
+      ports:
+        - ${DVWAPORT}:80
+      networks:
+        hax:
+          external: true
+          ipv4_address: ${DVWAIP}
+#################################################################
+## OWASP JUICESHOP  ; will be locked down for semi-private usage
+# STATUS : FUNCTIONAL
+#################################################################
+#docker run --rm -p 3000:3000 bkimminich/juice-shop
+    juiceshop:
+      image: bkimminich/juice-shop
+      hostname: juiceshop
+      depends_on:
+        - nginx
+      expose:
+        - 3000
+      restart: unless-stopped
+      ports:
+        - ${JUICESHOPPORT}:3000
+      networks:
+        hax:
+          external: true
+          ipv4_address: ${JUICESHOPIP}
+       
+#################################################################
+##  Mutillidae2 ; will be locked down for semi-private usage
+# STATUS : FUNCTIONAL
+#################################################################
+    mutillidae2:
+      image: santosomar/mutillidae_2
+      restart: unless-stopped
+      ports:
+        - ${MUTILLIDAE2PORT}:80
+      networks:
+        hax:
+          external: true
+          ipv4_address: ${MUTILLIDAE2IP}
+################################################################
 #     NETWORKS SECTION
 #################################################################      
 networks:
   hax:
+    external: true
     driver: bridge
     ipam:
       driver: default

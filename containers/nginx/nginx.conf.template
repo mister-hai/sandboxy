@@ -86,12 +86,12 @@ http {
     
     # THIS IS ONLY USED WHEN A DOMAIN NAME IS AVAILABLE
 
-    #ssl_certificate /etc/letsencrypt/cert.crt;
-    #ssl_certificate_key /etc/letsencrypt/keys/key.pem;
-    #ssl_certificate /etc/letsencrypt/live/example.org/fullchain.pem;
-    #ssl_certificate_key /etc/letsencrypt/live/example.org/privkey.pem;
-    #include /etc/letsencrypt/options-ssl-nginx.conf;
-    #ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    ssl_certificate /etc/letsencrypt/cert.crt;
+    ssl_certificate_key /etc/letsencrypt/keys/key.pem;
+    ssl_certificate /etc/letsencrypt/live/${DOMAINNAME}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAINNAME}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
     ##
     # Logging Settings
     ##
@@ -143,9 +143,7 @@ http {
 ###############################################################################
 ## DEFAULT CONFIGURATION
 ###############################################################################
-    # provided by ctfd
     #server {
-    #listen 0.0.0.0:80;
     #server_name $server_name;
     #return 301 http://$server_name$request_uri;
     #rewrite ^/(.*) /$1 last;
@@ -153,18 +151,20 @@ http {
 ###############################################################################
 ## CTFD CONIGURATION
 ###############################################################################
+    root /var/www/
     server {
-    listen 80;
+    listen 0.0.0.0:80;
+    listen 0.0.0.0:443;
     server_name $server_name;
     #why the fuck is this so large??
     client_max_body_size 4G;
     # Entry for certbot
-    #    location /.well-known/acme-challenge/ {
-    #        root /var/www/certbot;
-    #    }
+        location /.well-known/acme-challenge/ {
+            root /var/www/certbot;
+        }
     # Handle Server Sent Events for Notifications
         location /events {
-            proxy_pass http://ctfd;
+            proxy_pass http://ctfd/;
             #proxy_pass http://${CTFDIP}:${CTFDPORT};
             proxy_set_header Connection '';
             proxy_http_version 1.1;
@@ -173,8 +173,8 @@ http {
             proxy_cache off;
             proxy_redirect  off;
             #proxy_set_header Host $host;
-            proxy_set_header Host $host:$server_port;
-            proxy_set_header X-Real-IP $remote_addr;
+            #proxy_set_header Host $host:$server_port;
+            #proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Host $server_name;
         }
@@ -187,11 +187,11 @@ http {
     # you can switch proxy_pass comments to toggle
     # when doing so, comment out the upstream declaration
         location / {
-            proxy_pass http://ctfd;
+            proxy_pass http://ctfd/;
             #proxy_pass http://${CTFDIP}:${CTFDPORT};
             proxy_redirect off;
             #proxy_set_header Host $host;
-            proxy_set_header Host $host:$server_port;
+            #proxy_set_header Host $host:$server_port;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Host $server_name;
@@ -203,8 +203,8 @@ http {
             #proxy_redirect   http://localhost:${BWAPPPORT} /;
             proxy_redirect off;
             #proxy_set_header Host $host;
-            proxy_set_header Host $host:$server_port;
-            proxy_set_header X-Real-IP $remote_addr;
+            #proxy_set_header Host $host:$server_port;
+            #proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Host $server_name;            
 #           #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
@@ -218,8 +218,8 @@ http {
             #proxy_redirect Default;
             proxy_redirect off;
             #proxy_set_header Host $host;
-            proxy_set_header Host $host:$server_port;
-            proxy_set_header X-Real-IP $remote_addr;
+            #proxy_set_header Host $host:$server_port;
+            #proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Host $server_name;         
             #rewrite ^$scheme://$host$request_uri(.*) /$1 last;

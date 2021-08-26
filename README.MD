@@ -45,6 +45,8 @@
             ./.env
 
         ! letsencrypt should be used only if a domain name is available !
+                run init_letsencrypt.sh FIRST AND ONLY ONCE!
+        ! letsencrypt should be used only if a domain name is available !
 
         haxnet.yaml is for severe sandboxing
         will contain
@@ -100,8 +102,12 @@
 
         How to setup your public hostname for letsencrypt to function
             https://kerneltalks.com/howto/how-to-setup-domain-name-in-linux-server/
+            https://raw.githubusercontent.com/wmnnd/nginx-certbot/master/init-letsencrypt.sh
+
 
 # SYSTEMPREP
+
+        Instructions for setting up a server from scratch can be found here
 
         extras/ServerSetup.MD
 
@@ -145,7 +151,7 @@
             - I am going to make a script to install them all at once
     
     EXAMPLE:
-        moop@Debian-1010-buster-64-minimal:~/challengedir$ ctf challenge install ./UIUCTF-2021-Public/jail/baby_python
+        moop@fightbiscuits:~/challengedir$ ctf challenge install ./UIUCTF-2021-Public/jail/baby_python
         Found UIUCTF-2021-Public/jail/baby_python/challenge.yml
         Loaded baby_python
         Installing baby_python
@@ -153,7 +159,7 @@
 
 # KCTF INSTRUCTIONS
     
-    After installing kctf through the start.sh script
+    After installing kctf
     in a terminal, in the main project directory
     
         source kctf/activate
@@ -173,7 +179,6 @@
         challenges to the kctf templates folder
     
         cp -ar ./challengedir/UIUCTF-2021-Public/web/* ./kctf/challenge-templates/
-        cp -ar ./challengedir/UIUCTF-2021-Public/pwn/* ./kctf/challenge-templates/
         cp -ar ./challengedir/UIUCTF-2021-Public/pwn/* ./kctf/challenge-templates/
 
     Now you can create the challenges with kctf
@@ -210,9 +215,9 @@
     
     You will see the followong output:
 
-        moop@Debian:~/pwnyide$ kctf chal debug port-forward &
+        moop@fightbiscuits:~/pwnyide$ kctf chal debug port-forward &
         [1] 131556
-        moop@Debian:~/pwnyide$ [*] starting port-forward, ctrl+c to exit
+        moop@fightbiscuits:~/pwnyide$ [*] starting port-forward, ctrl+c to exit
         Forwarding from 127.0.0.1:42743 -> 1337
 
 

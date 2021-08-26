@@ -27,105 +27,39 @@ services:
       restart: unless-stopped
       env_file:
         - ./.env
-#      volumes:
-#        - ${CERTBOTCONFVOLUMES}
-#        - ${CERTBOTDATAVOLUMES}
-#        - ${CTFDVOLUMES}
+      volumes:
+        - ${CERTBOTCONFVOLUMES}
+        - ${CERTBOTDATAVOLUMES}
+        - ${CTFDVOLUMES}
 #        - ${BWAPPVOLUMES}
 #        - ${JUICESHOPVOLUMES}
-      #commands: >
-      #  chmod +x /nginx_letsencrypt_init.sh;
-      #  sudo /nginx_letsencrypt_init.sh;
       ports:
         - 80:80
         - 443:443
       networks:
+        hax:
+          external: true
         net:
           ipv4_address: ${NGINXIP}
 ################################################################
 ## CERTBOT enables ssl for the backend
 # STATUS : NOT TESTED
 ################################################################
-#    certbot:
-#      image: certbot/certbot
-#      hostname: certbot
-#      # checks for renewal every 12 hours
-#      entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-#      depends_on:
-#        - nginx
-#      volumes:
-#        - ${CERTBOTCONFVOLUMES}
-#        - ${CERTBOTDATAVOLUMES}
-#      
-#      networks:
-#        net:
-#          ipv4_address: ${CERTBOTIP}
+    certbot:
+      image: certbot/certbot
+      hostname: certbot
+      # checks for certbot renewal every 12 hours
+      #entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+      depends_on:
+        - nginx
+      volumes:
+        - ${CERTBOTCONFVOLUMES}
+        - ${CERTBOTDATAVOLUMES}
+      
+      networks:
+        net:
+          ipv4_address: ${CERTBOTIP}
 
-#################################################################
-##  BWAPP   ; will be locked down for semi-private usage
-# STATUS : FUNCTIONAL
-#################################################################
-#    bwapp:
-#      image: raesene/bwapp
-#      hostname: bwapp
-#      depends_on:
-#        - nginx
-#      expose:
-#        - 80
-#      ports:
-#        - ${BWAPPPORT}:80
-#      networks:
-#        net:
-#          ipv4_address: ${BWAPPIP}
-
-#################################################################
-##  Damn Vulnerable WEB APP ; will be locked down for semi-private usage
-# STATUS : FUNCTIONAL
-#################################################################
-#    dvwa:
-#      image: vulnerables/web-dvwa
-#      depends_on:
-#        - nginx
-#      hostname: dvwa
-#      expose:
-#        - 80
-#      restart: unless-stopped
-#      ports:
-#        - ${DVWAPORT}:80
-#      networks:
-#        net:
-#          ipv4_address: ${DVWAIP}
-##################################################################
-## OWASP JUICESHOP  ; will be locked down for semi-private usage
-# STATUS : FUNCTIONAL
-#################################################################
-#docker run --rm -p 3000:3000 bkimminich/juice-shop
-#    juiceshop:
-#      image: bkimminich/juice-shop
-#      hostname: juiceshop
-#      depends_on:
-#        - nginx
-#      expose:
-#        - 3000
-#      restart: unless-stopped
-#      ports:
-#        - ${JUICESHOPPORT}:3000
-#      networks:
-#        net:
-#          ipv4_address: ${JUICESHOPIP}
-       
-#################################################################
-##  Mutillidae2 ; will be locked down for semi-private usage
-# STATUS : FUNCTIONAL
-#################################################################
-#    mutillidae2:
-#      image: santosomar/mutillidae_2
-#      restart: unless-stopped
-#      ports:
-#        - ${MUTILLIDAE2PORT}:80
-#      networks:
-#        net:
-#          ipv4_address: ${MUTILLIDAE2IP}
 #################################################################
 ## CTFD; 
 ## will use the builder script portion for production. 
