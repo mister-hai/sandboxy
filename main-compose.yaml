@@ -32,11 +32,11 @@ services:
       volumes:
         # access to the nginx.conf configuration from the host
         - type: bind
-          source: ${PWD}/config/nginx
+          source: ${PWD}/containers/conf/nginx
           target: /etc/nginx
         # access to the fightbiscuits.firewall-gateway.net configuration from the host
         - type: bind
-          source: ${PWD}/config/nginx/conf.d
+          source: ${PWD}/containers/nginx/conf/conf.d
           target: /etc/nginx/conf.d
         #- ${PWD}/conf/nginx_template.conf:/etc/nginx/nginx.conf
         #- ${PWD}/containers/nginx/fightbiscuits.firewall-gateway.net.conf:/etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
