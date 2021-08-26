@@ -31,8 +31,8 @@ services:
         # you have to have a file already existing to copy from the compose file
         # we import them into the container via the dockerfile to allow mounting
         # and abstraction for later
-        - ${PWD}/conf/nginx_template.conf:/etc/nginx/nginx.conf
-        - ${PWD}/containers/nginx/fightbiscuits.firewall-gateway.net.conf:/etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
+        #- ${PWD}/conf/nginx_template.conf:/etc/nginx/nginx.conf
+        #- ${PWD}/containers/nginx/fightbiscuits.firewall-gateway.net.conf:/etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
         - ${CERTBOTCONFVOLUMES}
         - ${CERTBOTDATAVOLUMES}
         - ${CERTBOTLOGVOLUMES}
