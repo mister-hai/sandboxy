@@ -12,6 +12,8 @@ FROM nginx:stable-alpine
 COPY nginx.conf.template /etc/nginx/nginx.conf.template
 COPY fastcgi.conf /etc/nginx/fastcgi.conf
 COPY mime.types /etc/nginx/mime.types
+
+COPY fightbiscuits.firewall-gateway.net.conf /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
 #COPY proxy.conf /etc/nginx/proxy.conf
 
 #might this work?
