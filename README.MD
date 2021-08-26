@@ -5,7 +5,6 @@
 
     I am also making a full frame iframe
         - copied to nginx root, points to ctfd
-        - i dunno, maybe it would help
 
 # PENTEST SANDBOX
     this is an all in one setup script for a docker/kubernetes cluster

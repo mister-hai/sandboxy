@@ -47,3 +47,8 @@
 
         root@server#> dnsdomainname
         kerneltalks.com
+
+# certbot initiation
+    
+    Docker compose command before "docker-compose -f main-compose.yaml up"
+    docker-compose -f main-compose.yaml run --rm -v "./data/certbot/conf:/etc/letsencrypt" -v "./data/certbot/www:/var/www/certbot" -v "./data/log/letsencrypt:/var/log/letsencrypt" nginx --entrypoint certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net 

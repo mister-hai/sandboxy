@@ -21,7 +21,10 @@ COPY index.html /var/www/index.html
 RUN apk add certbot certbot-nginx
 # I saw this was required bvut I think it needs --nginx?
 # --webroot -w /var/www/
-RUN certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net
+
+# this needs to be run AFTER docker-compose build
+# this needs to be run BEFORE docker-compose up
+#RUN certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net
 
 #otherwise, this
 #auto create and remove dummy certs
