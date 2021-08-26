@@ -16,10 +16,6 @@
             the docker-compose file directory containing the data created by
             CTFd and the users of the platform (mysql,cache,etc) to be packed 
             up and distributed to a replacment system in the event of a server change
-
-            -conf/conf.d/
-                the files in /conf and /conf/conf.d are supposed to 
-                match the files in /containers/nginx
             
             -/containers
                 contains the folders holding dockerfiles and resources for each Container
