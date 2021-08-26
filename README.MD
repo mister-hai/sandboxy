@@ -103,35 +103,7 @@
 
 # SYSTEMPREP
 
-## How to setup FQDN in Linux?
-    
-    Change hostname to suit your desired naming schema and acquire a 
-    Domain name for your IP address
-        
-        root@server #> hostnamectl set-hostname fightbiscuits
-
-    add FQDN to your hostname in /etc/hosts file.
-        root@server #> cat /etc/hosts
-        10.10.2.32 fightbiscuits.firewall-gateway.net
- 
-    To confirm your FQDN, run below command :
-        root@server12 # hostname -f
-        server12.kerneltalks.com
-
-    Add domain in /etc/resolv.conf. This file used for setting nameservers as well.
-        root@server12 # cat /etc/resolv.conf
-        search kerneltalks.com
-
-    Confirm that changes are working perfectly. Question is how to check the domain name of the Linux server?
-
-        root@server#> hostname
-        server12
-
-        root@server#> hostname -f
-        server12.kerneltalks.com
-
-        root@server#> dnsdomainname
-        kerneltalks.com
+        extras/ServerSetup.MD
 
 
 # ctfdcli instructions
