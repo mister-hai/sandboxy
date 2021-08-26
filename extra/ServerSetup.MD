@@ -54,4 +54,7 @@
 
 docker exec -it sandboxy_nginx_1 /bin/sh -c certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net
 
+
+docker exec -it sandboxy_nginx_1 /bin/sh -c 
+
 docker-compose -f main-compose.yaml run --rm -v $(pwd)/data/certbot/conf:/etc/letsencrypt -v $(pwd)/data/certbot/www:/var/www/certbot -v $(pwd)/data/log/cert:/var/log/letsencrypt nginx /bin/sh -c certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net

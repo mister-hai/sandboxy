@@ -8,19 +8,22 @@ FROM nginx:stable-alpine
 # but we dont need all that if we have things being done
 # by nginx in the docker-compose file!
 
-#copy the conf files over to the container
-COPY nginx.conf.template /etc/nginx/nginx.conf.template
-COPY fastcgi.conf /etc/nginx/fastcgi.conf
-COPY mime.types /etc/nginx/mime.types
-
-COPY fightbiscuits.firewall-gateway.net.conf /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
-#COPY proxy.conf /etc/nginx/proxy.conf
-
 #might this work?
 # certbot, internally? set a cronjob!!!
 RUN mkdir /var/www
 COPY index.html /var/www/index.html
 RUN apk add certbot certbot-nginx
+
+# copy
+COPY fightbiscuits.firewall-gateway.net.conf /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
+
+#copy the conf files over to the container
+COPY nginx.conf.template /etc/nginx/nginx.conf.template
+COPY fastcgi.conf /etc/nginx/fastcgi.conf
+COPY mime.types /etc/nginx/mime.types
+
+#COPY proxy.conf /etc/nginx/proxy.conf
+
 # I saw this was required bvut I think it needs --nginx?
 # --webroot -w /var/www/
 
