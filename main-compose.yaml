@@ -27,12 +27,12 @@ services:
       restart: unless-stopped
       env_file:
         - ./.env
-      volumes:
-        - ${CERTBOTCONFVOLUMES}
-        - ${CERTBOTDATAVOLUMES}
-        - ${CTFDVOLUMES}
-#        - ${BWAPPVOLUMES}
-#        - ${JUICESHOPVOLUMES}
+      #volumes:
+      #  - ${CERTBOTCONFVOLUMES}
+      #  - ${CERTBOTDATAVOLUMES}
+      #  - ${CTFDVOLUMES}
+      #  - ${BWAPPVOLUMES}
+      #  - ${JUICESHOPVOLUMES}
       ports:
         - 80:80
         - 443:443
@@ -44,22 +44,23 @@ services:
 ################################################################
 ## CERTBOT enables ssl for the backend
 # STATUS : NOT TESTED
+# trying nginx internal certbot first, seems simpler... two commands
 ################################################################
-    certbot:
-      image: certbot/certbot
-      hostname: certbot
-      # checks for certbot renewal every 12 hours
-      #entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-      depends_on:
-        - nginx
-      volumes:
-        - ${CERTBOTCONFVOLUMES}
-        - ${CERTBOTDATAVOLUMES}
-      
-      networks:
-        net:
-          ipv4_address: ${CERTBOTIP}
-
+#    certbot:
+#      image: certbot/certbot
+#      hostname: certbot
+#      # checks for certbot renewal every 12 hours
+#      #entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+#      depends_on:
+#        - nginx
+#      volumes:
+#        - ${CERTBOTCONFVOLUMES}
+#        - ${CERTBOTDATAVOLUMES}
+#      
+#      networks:
+#        net:
+#          ipv4_address: ${CERTBOTIP}
+#
 #################################################################
 ## CTFD; 
 ## will use the builder script portion for production. 
@@ -98,7 +99,27 @@ services:
         internal:
         net:
           ipv4_address: ${CTFDIP}
-
+#################################################################
+## OWASP JUICESHOP  ; will be locked down for semi-private usage
+# STATUS : FUNCTIONAL
+#################################################################
+#docker run --rm -p 3000:3000 bkimminich/juice-shop
+    juiceshop:
+      image: bkimminich/juice-shop
+      hostname: juiceshop
+      depends_on:
+        - nginx
+      expose:
+        - 3000
+      restart: unless-stopped
+      ports:
+        - ${JUICESHOPPORT}:3000
+      networks:
+        net:
+#        hax:
+#          external: true
+          ipv4_address: ${JUICESHOPIP}
+       
 #################################################################
 #                   REDIS SERVER
 #################################################################

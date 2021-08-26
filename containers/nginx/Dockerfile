@@ -14,6 +14,9 @@ COPY fastcgi.conf /etc/nginx/fastcgi.conf
 COPY mime.types /etc/nginx/mime.types
 #COPY proxy.conf /etc/nginx/proxy.conf
 
+#might this work?
+RUN apk add certbot certbot-nginx
+RUN certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email --webroot -w /var/www/ -d fightbiscuits.firewall-gateway.net
 #auto create and remove dummy certs
 #COPY nginx_letsencrypt_init.sh /nginx_letsencrypt_init.sh 
 ####

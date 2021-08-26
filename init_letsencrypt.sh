@@ -37,8 +37,11 @@ docker-compose run --rm --entrypoint "\
 echo
 
 
-echo "### building ctfd/nginx/redis/mysql ..."
-docker-compose build -f 
+echo "### building ctfd/nginx/certbot/redis/mysql ..."
+docker-compose -f main-compose.yaml build
+echo
+echo "### starting ctfd/nginx/redis/mysql ..."
+docker-compose -f main-compose.yaml up -d
 echo
 
 echo "### Deleting dummy certificate for $domain ..."
@@ -51,10 +54,10 @@ echo
 
 echo "### Requesting Let's Encrypt certificate for $domain ..."
 #Join $domain to -d args
-domain_args=""
-for domain in "${domain[@]}"; do
-  domain_args="$domain_args -d $domain"
-done
+#domain_args=""
+#for domain in "${domain[@]}"; do
+ # domain_args="$domain_args -d $domain"
+#done
 
 # Select appropriate email arg
 #case "$email" in
@@ -65,12 +68,13 @@ done
 # Enable staging mode if needed
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
+domain_args="-d $domain"
 #$email_arg \
 docker-compose run -f ${COMPOSEFILE} --rm --entrypoint "\
   certbot certonly --webroot -w /var/www/certbot \
     $staging_arg \
     --register-unsafely-without-email \ 
-    $domain \
+    $domain_args \
     --rsa-key-size $rsa_key_size \
     --agree-tos \
     --force-renewal" certbot
