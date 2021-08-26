@@ -30,6 +30,7 @@ services:
       volumes:
         - ${CERTBOTCONFVOLUMES}
         - ${CERTBOTDATAVOLUMES}
+        - ${CERTBOTLOGVOLUMES}
       #  - ${CTFDVOLUMES}
       #  - ${BWAPPVOLUMES}
       #  - ${JUICESHOPVOLUMES}
