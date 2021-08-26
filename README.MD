@@ -1,10 +1,25 @@
-# PLAN
+# DAILY PLAN
 
     Today i am getting ssl enabled
         - internal certbot install on nginx container
 
+        PROGRESS:
+            WORKED
+            I am refactoring for cleanliness and organization
+
     I am also making a full frame iframe
         - copied to nginx root, points to ctfd
+        
+    
+    TOTAL PROGRESS:
+        certbot-letsencrypt worked pages were forced to https
+
+# WEEKLY PLAN
+
+
+    get all the beginner challenges seperated and a script to upload them all
+    
+    host a public test
 
 # PENTEST SANDBOX
     this is an all in one setup script for a docker/kubernetes cluster

@@ -1,12 +1,3 @@
-#TODO:
-# perform replacments to the following, converting to variables
-# STRING:
-#       HTTP://
-# REPLACE ALL:
-#       $scheme
-
-# set the user to run under
-# Default: nobody
 user ${USER};  
 #user www-data;
 pid /run/nginx.pid;
@@ -34,8 +25,7 @@ http {
     include /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf;
 
     #default_type application/octet-stream;
-    #root     /usr/share/nginx/html;
-    #index    index.html index.htm index.php;
+    index    index.html index.htm index.php;
 
     sendfile on;
     tcp_nopush on;
@@ -126,5 +116,5 @@ http {
     #upstream juiceshop {
     #    server ${DOMAINNAME}:${JUICESHOPPORT};
     #}
-
+    }
 }
