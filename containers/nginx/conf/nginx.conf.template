@@ -16,13 +16,13 @@ http {
     
     # server_name_in_redirect off;
     root /var/www/html;
-    server {
+    #server {
     #listen 0.0.0.0:80;
     #listen 0.0.0.0:443;
     #server_name firewall-gateway.net fightbiscuits.firewall-gateway.net;
     include /etc/nginx/mime.types;
     include /etc/nginx/fastcgi.conf;
-    include /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf;
+    #include /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf;
 
     #default_type application/octet-stream;
     index    index.html index.htm index.php;
@@ -102,19 +102,13 @@ http {
     # Virtual Host Configs
     ##
     #include /etc/nginx/sites-enabled/*;
-    ################################################################
-    ## UPSTREAM SERVERS
-    ################################################################
-    # upstream declarations. The server inside each of the upstreams represents 
-    # where to find each of the applications.
-    # The hostname must match the service/host name found in the docker-compose.yml 
-    # file. By default, NGINX and Apache web servers broadcast on port 80, but
-    # if you’ve changed it, make sure to update the upstream server port.
+    # up streams have to match container hostname
     #upstream ctfd {
     #    server ctfd:${CTFDPORT};
     #}
     #upstream juiceshop {
     #    server ${DOMAINNAME}:${JUICESHOPPORT};
     #}
-    }
+    #}
+    include /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf;
 }
