@@ -52,13 +52,22 @@
         root@server#> dnsdomainname
         kerneltalks.com
 
-# certbot initiation
+# CERTBOT SETUP
     
     Docker compose command before "docker-compose -f main-compose.yaml up"
 
-docker exec -it sandboxy_nginx_1 /bin/sh -c certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net
+    Run the command:
+        certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net
 
+    AFTER RUNNING :
+        docker exec -it sandboxy_nginx_1 /bin/sh 
 
-docker exec -it sandboxy_nginx_1 /bin/sh -c 
+    docker-compose -f main-compose.yaml run --rm -v $(pwd)/data/certbot/conf:/etc/letsencrypt -v $(pwd)/data/certbot/www:/var/www/certbot -v $(pwd)/data/log/cert:/var/log/letsencrypt nginx /bin/sh -c certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net
 
-docker-compose -f main-compose.yaml run --rm -v $(pwd)/data/certbot/conf:/etc/letsencrypt -v $(pwd)/data/certbot/www:/var/www/certbot -v $(pwd)/data/log/cert:/var/log/letsencrypt nginx /bin/sh -c certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net
+    Open the crontab file.
+        crontab -e
+
+    Add the certbot command to run daily. In this example, we run the command every day at noon. The command checks to see if the certificate on the server will expire within the next 30 days, and renews it if so. The --quiet directive tells certbot not to generate output.
+
+        0 12 * * * /usr/bin/certbot renew --quiet
+
