@@ -37,8 +37,8 @@ services:
         - 80:80
         - 443:443
       networks:
-        hax:
-          external: true
+        #hax:
+        #  external: true
         net:
           ipv4_address: ${NGINXIP}
 ################################################################
