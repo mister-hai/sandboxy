@@ -38,7 +38,7 @@ services:
         #- type: bind
         #  source: ${PWD}/containers/nginx/conf/conf.d
         #  target: /etc/nginx/conf.d
-        - ${PWD}/containers/conf/nginx:/etc/nginx/nginx.conf
+        - ${PWD}/containers/conf/nginx:/etc/nginx
         - ${PWD}/containers/nginx/conf/conf.d:/etc/nginx/conf.d
         - ${CERTBOTCONFVOLUMES}
         - ${CERTBOTDATAVOLUMES}
