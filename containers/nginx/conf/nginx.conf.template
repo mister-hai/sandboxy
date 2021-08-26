@@ -19,6 +19,7 @@ http {
     #server {
     #listen 0.0.0.0:80;
     #listen 0.0.0.0:443;
+    resolver 8.8.8.8
     #server_name firewall-gateway.net fightbiscuits.firewall-gateway.net;
     include /etc/nginx/mime.types;
     include /etc/nginx/fastcgi.conf;
