@@ -14,18 +14,15 @@ RUN mkdir /var/www
 COPY index.html /var/www/index.html
 RUN apk add certbot certbot-nginx
 
-# copy
+#copy the conf files over to the container
 # this lets us mount the file as a volume for dev also
 COPY fightbiscuits.firewall-gateway.net.conf /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
-
-#copy the conf files over to the container
 COPY nginx.conf.template /etc/nginx/nginx.conf.template
 COPY fastcgi.conf /etc/nginx/fastcgi.conf
 COPY mime.types /etc/nginx/mime.types
 
 #COPY proxy.conf /etc/nginx/proxy.conf
 
-# I saw this was required bvut I think it needs --nginx?
 # --webroot -w /var/www/
 
 # this needs to be run AFTER docker-compose build
