@@ -17,6 +17,10 @@
             ClientAliveCountMax 0
             UsePAM yes
 
+## install and configure snort
+
+    TODO
+
 
 ## Setup FQDN in Linux (debian Buster)
     

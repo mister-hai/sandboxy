@@ -22,12 +22,13 @@ http {
     ##
     # Basic Settings
     ##
+    
     # server_name_in_redirect off;
     root /var/www/html
     server {
-    listen 0.0.0.0:80;
-    listen 0.0.0.0:443;
-    server_name firewall-gateway.net fightbiscuits.firewall-gateway.net;
+    #listen 0.0.0.0:80;
+    #listen 0.0.0.0:443;
+    #server_name firewall-gateway.net fightbiscuits.firewall-gateway.net;
     include /etc/nginx/mime.types;
     include /etc/nginx/fastcgi.conf;
     #include /etc/nginx/conf.d/*.conf;
@@ -46,12 +47,6 @@ http {
     types_hash_max_size 2048;
     # server_tokens off;
 
-    ##
-    # SSL Settings
-    ##
-
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
-    ssl_prefer_server_ciphers on;
 
     ##
     #Choose your proxy settings
@@ -84,11 +79,11 @@ http {
         '"$request" $body_bytes_sent "$http_referer" '
         '"$http_user_agent" "$http_x_forwarded_for"';
     ##
-    # Encryption stuff
-    ## you have to generate the keys first!
-    # then uncomment!
-    
-    # THIS IS ONLY USED WHEN A DOMAIN NAME IS AVAILABLE
+    # SSL Settings
+    ##
+
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+    ssl_prefer_server_ciphers on;
 
     #ssl_certificate /etc/letsencrypt/cert.crt;
     #ssl_certificate_key /etc/letsencrypt/keys/key.pem;
@@ -96,6 +91,7 @@ http {
     #ssl_certificate_key /etc/letsencrypt/live/${DOMAINNAME}/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    
     ##
     # Logging Settings
     ##
@@ -118,109 +114,5 @@ http {
     ##
     #include /etc/nginx/sites-enabled/*;
 
-###############################################################################
-## UPSTREAM SERVERS
-###############################################################################
-# upstream declarations. The server inside each of the upstreams represents 
-# where to find each of the applications.
-# The hostname must match the service/host name found in the docker-compose.yml 
-# file. By default, NGINX and Apache web servers broadcast on port 80, but
-# if you’ve changed it, make sure to update the upstream server port.
-    
-    #upstream docker-login {
-    #    server login:${LOGINPORT};
-    #}
-      # Configuration containing list of application servers
-    upstream ctfd {
-        server ctfd:${CTFDPORT};
-    #}
-    #upstream bwapp {
-    #    server ${DOMAINNAME}:${BWAPPPORT};
-    #}
-    #testing param
-    upstream juiceshop {
-        server ${DOMAINNAME}:${JUICESHOPPORT};
-    }
-    #upstream docker-dvwa {
-    #   server dvwa:${DVWAPORT};
-    #}
 
-###############################################################################
-## DEFAULT CONFIGURATION
-###############################################################################
-    #server {
-    #server_name $server_name;
-    #return 301 http://$server_name$request_uri;
-    #rewrite ^/(.*) /$1 last;
-    #}
-###############################################################################
-## CTFD CONIGURATION
-###############################################################################
-    #why the fuck is this so large??
-    client_max_body_size 4G;
-    # Handle Server Sent Events for Notifications
-        location /events {
-            proxy_pass http://ctfd/;
-            #proxy_pass http://${CTFDIP}:${CTFDPORT};
-            proxy_set_header Connection '';
-            proxy_http_version 1.1;
-            chunked_transfer_encoding off;
-            proxy_buffering off;
-            proxy_cache off;
-            proxy_redirect  off;
-            #proxy_set_header Host $host;
-            #proxy_set_header Host $host:$server_port;
-            #proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Host $server_name;
-        }
-        # You may need this to prevent return 404 recursion.
-        location = /404.html {
-            internal;
-        }
-    # Proxy connections to the application servers
-    # upstream server testing for passing CTFd as root
-    # you can switch proxy_pass comments to toggle
-    # when doing so, comment out the upstream declaration
-        location / {
-            proxy_pass http://ctfd;
-            #proxy_pass http://${CTFDIP}:${CTFDPORT};
-            proxy_redirect off;
-            #proxy_set_header Host $host;
-            #proxy_set_header Host $host:$server_port;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Host $server_name;
-        }
-        location ~ /bwapp {
-            # for upstream
-            proxy_pass http://bwapp/;
-            #proxy_pass http://${BWAPPIP}:${BWAPPPORT}/;
-            #proxy_redirect   http://localhost:${BWAPPPORT} /;
-            proxy_redirect off;
-            #proxy_set_header Host $host;
-            #proxy_set_header Host $host:$server_port;
-            #proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Host $server_name;            
-#           #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
-            #proxy_redirect $scheme://docker-bwapp $scheme://$host$request_uri;
-        }
-        location ~ /juiceshop {
-            # for upstream
-            proxy_pass http://juiceshop/;
-            #proxy_pass http://${JUICESHOPIP}:${JUICESHOPPORT}/;
-            #proxy_redirect  http://localhost:${JUICESHOPPORT} /;
-            #proxy_redirect Default;
-            proxy_redirect off;
-            #testing param
-            proxy_set_header Host ${DOMAINNAME};
-            #proxy_set_header Host $host:$server_port;
-            #proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Host $server_name;         
-            #rewrite ^$scheme://$host$request_uri(.*) /$1 last;
-            #proxy_redirect $scheme://${JUICESHOPIP}:${JUICESHOPPORT} $scheme://$host$request_uri;
-        }
-    }
 }
