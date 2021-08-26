@@ -31,15 +31,15 @@ services:
         # we import them into the container via the dockerfile to allow mounting
       volumes:
         # access to the nginx.conf configuration from the host
-        - type: bind
-          source: ${PWD}/containers/conf/nginx
-          target: /etc/nginx
+        #- type: bind
+        #  source: ${PWD}/containers/conf/nginx
+        #  target: /etc/nginx
         # access to the fightbiscuits.firewall-gateway.net configuration from the host
-        - type: bind
-          source: ${PWD}/containers/nginx/conf/conf.d
-          target: /etc/nginx/conf.d
-        #- ${PWD}/conf/nginx_template.conf:/etc/nginx/nginx.conf
-        #- ${PWD}/containers/nginx/fightbiscuits.firewall-gateway.net.conf:/etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
+        #- type: bind
+        #  source: ${PWD}/containers/nginx/conf/conf.d
+        #  target: /etc/nginx/conf.d
+        - ${PWD}/containers/conf/nginx:/etc/nginx/nginx.conf
+        - ${PWD}/containers/nginx/conf/conf.d:/etc/nginx/conf.d
         - ${CERTBOTCONFVOLUMES}
         - ${CERTBOTDATAVOLUMES}
         - ${CERTBOTLOGVOLUMES}
