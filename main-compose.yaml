@@ -27,9 +27,9 @@ services:
       restart: unless-stopped
       env_file:
         - ./.env
-      #volumes:
-      #  - ${CERTBOTCONFVOLUMES}
-      #  - ${CERTBOTDATAVOLUMES}
+      volumes:
+        - ${CERTBOTCONFVOLUMES}
+        - ${CERTBOTDATAVOLUMES}
       #  - ${CTFDVOLUMES}
       #  - ${BWAPPVOLUMES}
       #  - ${JUICESHOPVOLUMES}

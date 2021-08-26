@@ -15,13 +15,14 @@ COPY mime.types /etc/nginx/mime.types
 #COPY proxy.conf /etc/nginx/proxy.conf
 
 #might this work?
+# certbot, internally? set a cronjob!!!
+RUN mkdir /var/www
+COPY index.html /var/www/index.html
 RUN apk add certbot certbot-nginx
 RUN certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email --webroot -w /var/www/ -d fightbiscuits.firewall-gateway.net
+
+#otherwise, this
 #auto create and remove dummy certs
 #COPY nginx_letsencrypt_init.sh /nginx_letsencrypt_init.sh 
-####
-# No data if being used as proxy
-####
-#COPY html /usr/share/nginx/html
 
 EXPOSE 80 443

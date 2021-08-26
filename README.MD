@@ -1,3 +1,12 @@
+# PLAN
+
+    Today i am getting ssl enabled
+        - internal certbot install on nginx container
+
+    I am also making a full frame iframe
+        - copied to nginx root, points to ctfd
+        - i dunno, maybe it would help
+
 # PENTEST SANDBOX
     this is an all in one setup script for a docker/kubernetes cluster
     specifically, it creates a pentesting sandbox/ctfd instance
