@@ -4,11 +4,6 @@ import subprocess
 import click
 import yaml
 
-from .config import generate_session
-
-def load_installed_challenges():
-    s = generate_session()
-    return s.get("/api/v1/challenges?view=admin", json=True).json()["data"]
 
 def sync_challenge(challenge, ignore=[]):
     data = {
@@ -40,13 +35,8 @@ def sync_challenge(challenge, ignore=[]):
             break
     else:
         return
-
-    s = generate_session()
-
-    original_challenge = s.get(f"/api/v1/challenges/{challenge_id}", json=data).json()[
-        "data"
-    ]
-
+    session = generate_session()
+    original_challenge = s.get(f"/api/v1/challenges/{challenge_id}", json=data).json()["data"]
     r = s.patch(f"/api/v1/challenges/{challenge_id}", json=data)
     r.raise_for_status()
 
@@ -72,25 +62,19 @@ def sync_challenge(challenge, ignore=[]):
     # Update topics
     if challenge.get("topics") and "topics" not in ignore:
         # Delete existing challenge topics
-        current_topics = s.get(
-            f"/api/v1/challenges/{challenge_id}/topics", json=""
-        ).json()["data"]
+        current_topics = s.get(f"/api/v1/challenges/{challenge_id}/topics", json="").json()["data"]
         for topic in current_topics:
             topic_id = topic["id"]
-            r = s.delete(
-                f"/api/v1/topics?type=challenge&target_id={topic_id}", json=True
-            )
+            r = s.delete(f"/api/v1/topics?type=challenge&target_id={topic_id}", json=True)
             r.raise_for_status()
         # Add new challenge topics
         for topic in challenge["topics"]:
-            r = s.post(
-                f"/api/v1/topics",
+            r = s.post(f"/api/v1/topics",
                 json={
                     "value": topic,
                     "type": "challenge",
                     "challenge_id": challenge_id,
-                },
-            )
+                },)
             r.raise_for_status()
 
     # Update tags

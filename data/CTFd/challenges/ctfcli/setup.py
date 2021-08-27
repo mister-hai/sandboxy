@@ -34,7 +34,6 @@ setup(
     zip_safe=False,
     install_requires=[
         "cookiecutter==1.6.0",
-        "click==7.0",
         "fire==0.2.1",
         "pyyaml==5.4",
         "Pygments==2.7.4",
