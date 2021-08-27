@@ -82,6 +82,15 @@ class SandBoxyCTFdLinkage():
         self.CTFD_URL = os.getenv("CTFD_URL", default=None)
         self.challengesfolder = os.path.join(self.DATAROOT, "challenges")
 
+        #TODO: make challenges.yaml
+        # a master list of challenges
+        self.challengelist = yaml.load("./challenges.yaml", Loader=yaml.FullLoader)
+        ####################################
+        #lambdas
+        ##############
+        # returns subdirectories , without . files/dirs
+        self.getsubdirs = lambda directory: [name for name in os.listdir(directory) if os.path.isdir(name) and not re.match(r'\..*', name)]
+
     def init(self):
         '''
         Initialize folder as repository with ctfcli using $CTFD_TOKEN and $CTFD_URL.
@@ -91,15 +100,122 @@ class SandBoxyCTFdLinkage():
         # run equivalent of  echo "$CTFD_URL\n$CTFD_TOKEN\ny" | ctf init 
         os.system(f"echo '{self.CTFD_URL}\n{self.CTFD_TOKEN}\ny' | ctf init")
     
-    def get_categories():
+    def get_categories(self,print:bool):
         '''
-     Each category is in it's own directory, 
-     get the names of all directories that do not begin with '.'.
+        Get the names of all Categories
+        Supply "print=True" to display to screen instead of return a variable
         '''
-        denylist_regex = r'\..*'
-        categories = [name for name in os.listdir(".") if os.path.isdir(name) and not re.match(denylist_regex, name)]
-        print("Categories: " + ", ".join(categories))
-        return categories
+        #old code
+        #denylist_regex = r'\..*'
+        #categories = [name for name in os.listdir(".") if os.path.isdir(name) and not re.match(denylist_regex, name)]
+        categories = self.getsubdirs(self.challengesfolder)
+        if print == True:
+            greenprint("Categories: " + ", ".join(categories))
+        else:
+            return categories
+    
+    def getchallengesbycategory(self, category, printscr:bool):
+        '''
+        Lists challenges in DB by category
+            Use this after getting a list of categories
+        '''
+        challenges = []
+        for category in self.get_categories():
+            pathtocategory = os.path.join(self.challengesfolder, category)
+            challengesbycategory = self.getsubdirs(pathtocategory)
+            for challenge in challengesbycategory:
+                challenges.append(challenge)
+            if printscr == True:
+                yellowboldprint("[+] Challenges in Category: {}".format(category))
+                print(challenge)
+            else:
+                return challenges
+
+    def getallchallenges(self):
+        '''
+        Indexes 
+            PROJECTROOT/data/CTFd/challenges/{category}/ 
+        for challenges and adds them to the master list
+        '''
+        challengelist = []
+        # itterate over all categories
+        for category in self.get_categories():
+            pathtocategory = os.path.join(self.challengesfolder, category)
+            # itterate over challenge subdirs
+            challengesbycategory = self.getsubdirs(pathtocategory)
+            for challenge in challengesbycategory:
+                #open the challenge.yaml file to get the name
+
+
+    def synccategory(category:str):
+        '''
+        Takes a category name
+
+        Synchronize all challenges in the given category
+        where each challenge is in it's own folder.
+        '''
+        challenges = [f"{category}/{name}" for name in os.listdir(f"./{category}") if os.path.isdir(f"{category}/{name}")]
+        for challenge in challenges:
+            if os.path.exists(f"{challenge}/challenge.yml"):
+                print(f"Syncing challenge: {challenge}")
+                os.system(f"ctf challenge sync '{challenge}'; ctf challenge install '{challenge}'")
+
+    def syncchallenge(challenge:str):
+        '''
+        Adds a challenge
+            Must be in its owwn folder, in a category that has been indexed
+        '''
+
+    def change_state(self, challenge:str, state:str):
+        '''
+        toggle challenge from visible to hidden
+        '''
+        visible = {}
+        hidden = {}
+        try:
+            if state not in ['visible', 'hidden']:
+            raise Exception
+        except Exception:
+            errorlogger("[-] INVALID INPUT: {} {}".format(challenge,state))
+        #challenge_waves = open('challenge-waves.yml').read()
+        #challenge_waves = yaml.load(challenge_waves, Loader=yaml.FullLoader)
+        categories = self.get_categories()
+        for category in categories:
+            visible[category] = []
+            hidden[category] = []
+        for wave in challenge_waves:
+            if wave in waves:
+                for category in challenge_waves[wave]:
+                    for challenge in challenge_waves[wave][category]:
+                        chall = open(f'{category}/{challenge}/challenge.yml', 'r')
+                        challenge_yml = yaml.load(chall, Loader=yaml.FullLoader)
+                        challenge_yml['state'] = state
+                        if state == 'visible':
+                            name = challenge_yml['name'].lower().replace(' ', '-')
+                            if 'expose' in challenge_yml:
+                                visible[category].append({'name': name, 'port': challenge_yml['expose'][0]['nodePort']})
+                            else:
+                                visible[category].append({'name': name, 'port': 0})
+                        else:
+                            if 'expose' in challenge_yml:
+                                hidden[category].append({'name': name, 'port': challenge_yml['expose'][0]['nodePort']})
+                            else:
+                                hidden[category].append({'name': name, 'port': 0})
+                        chall = open(f'{category}/{challenge}/challenge.yml', 'w')
+                        yaml.dump(challenge_yml, chall, sort_keys=False)
+            else:
+                for category in challenge_waves[wave]:
+                    for challenge in challenge_waves[wave][category]:
+                        chall = open(f'{category}/{challenge}/challenge.yml', 'r')
+
+                        challenge_yml = yaml.load(chall, Loader=yaml.FullLoader)
+                        challenge_yml['state'] = 'hidden'
+                        name = challenge_yml['name'].lower().replace(' ', '-')
+                        if 'expose' in challenge_yml:
+                            hidden[category].append({'name': name, 'port': challenge_yml['expose'][0]['nodePort']})
+                        else:
+                            hidden[category].append({'name': name, 'port': 0})
+        return visible, hidden
 
 
 ###############################################################################
@@ -109,31 +225,27 @@ class SandBoxyCTFdLinkage():
 ctfdserver = SandBoxyCTFdLinkage()
 #call the init funciton to connect
 ctfdserver.init()
+#danglies for nowsies
+ctfdserver.synccategory()
+ctfdserver.syncchallenge()
 
+def change_state(self, challenge:str, state:str):
+    '''
+    toggle challenge from visible to hidden
 
-# Synchronize all challenges in the given category, where each challenge is in it's own folder.
-def sync(category):
-    challenges = [f"{category}/{name}" for name in os.listdir(f"./{category}") if os.path.isdir(f"{category}/{name}")]
-
-    for challenge in challenges:
-        if os.path.exists(f"{challenge}/challenge.yml"):
-            print(f"Syncing challenge: {challenge}")
-            os.system(f"ctf challenge sync '{challenge}'; ctf challenge install '{challenge}'")
-
-
-# Change the state of certain waves of challenges
-def change_state(waves, state):
-    if state not in ['visible', 'hidden']:
-        raise Exception("state must be 'visible' or 'hidden'")
-
-    challenge_waves = open('challenge-waves.yml').read()
-    challenge_waves = yaml.load(challenge_waves, Loader=yaml.FullLoader)
-
+    '''
     visible = {}
     hidden = {}
+    try:
+        if state not in ['visible', 'hidden']:
+           raise Exception
 
-    categories = get_categories()
+    except Exception:
+        errorlogger("[-] INVALID INPUT: {} {}".format(challenge,state))
 
+    #challenge_waves = open('challenge-waves.yml').read()
+    #challenge_waves = yaml.load(challenge_waves, Loader=yaml.FullLoader)
+    categories = self.get_categories()
     for category in categories:
         visible[category] = []
         hidden[category] = []
