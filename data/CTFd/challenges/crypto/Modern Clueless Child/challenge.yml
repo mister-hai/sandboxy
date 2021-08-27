@@ -13,14 +13,12 @@ description: |
 value: 500
 type: dynamic
 
-decay: 450
-minimum: 100
-
 flags:
  - csictf{you_are_a_basic_person}
 
 tags:
  - crypto
 
-state: hidden
-version: "0.1"
+extra:
+  decay: 450
+  minimum: 100

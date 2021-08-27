@@ -16,14 +16,12 @@ description: |
 value: 500
 type: dynamic
 
-decay: 450
-minimum: 100
-
 flags:
   - csictf{h45t4d}
 
 tags:
   - crypto
 
-state: hidden
-version: "0.1"
+extra:
+  decay: 450
+  minimum: 100

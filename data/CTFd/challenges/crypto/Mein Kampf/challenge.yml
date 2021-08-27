@@ -24,11 +24,8 @@ flags:
 tags:
   - crypto
   - beginner
-#files:
 
 extra:
   decay: 450
   minimum: 100
-  
-state: hidden
-version: "0.1"
+

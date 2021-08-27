@@ -11,8 +11,13 @@ tags:
   - jail
   - python
   - beginner
-extra:
-  initial: 500
-  decay: 75
-  minimum: 50
+
+files:
+  - file.ext
+
 flags:
+   - someIdentifierIdontKnowTheFunctionOf{TheFlagYouInput}
+
+extra:
+  decay: 450
+  minimum: 100

@@ -7,9 +7,6 @@ description: These 3 guys encrypted my flag, but they didn't tell me how to decr
 value: 500
 type: dynamic
 
-decay: 450
-minimum: 100
-
 flags:
   - csictf{sh0uld'v3_t4k3n_b1gg3r_pr1m3s}
 
@@ -17,7 +14,8 @@ tags:
   - crypto
 
 files:
-  - "crypto/Rivest Shamir Adleman/enc.txt"
+  - enc.txt
 
-state: hidden
-version: "0.1"
+extra:
+  decay: 450
+  minimum: 100

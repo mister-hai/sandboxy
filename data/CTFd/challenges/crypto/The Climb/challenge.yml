@@ -7,9 +7,6 @@ description: We are not lost, we're right here somewhere on this little blue lin
 value: 500
 type: dynamic
 
-decay: 450
-minimum: 100
-
 flags:
   - csictf{hillshaveeyes}
 
@@ -17,8 +14,9 @@ tags:
   - crypto
 
 files:
-  - "crypto/The Climb/theclimb.txt"
-  - "crypto/The Climb/theclimb.java"
+  - theclimb.txt"
+  - theclimb.java"
 
-state: hidden
-version: "0.1"
+extra:
+  decay: 450
+  minimum: 100
