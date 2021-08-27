@@ -73,15 +73,17 @@ class SandBoxyCTFdLinkage():
     Uses ctfcli to upload challenges from the data directory in project root
     '''
     def __init__(self):
+        # set by .env and start.sh
         # reflects the directory you have sandboxy in, default is ~/sandboxy
         self.PROJECTROOT=  os.getenv("PROJECTROOT",default=None)
+        # set by .env and start.sh
         # reflects the data subdirectory in the project root
         self.DATAROOT= os.getenv("DATAROOT", default=None)
+        # set by .env and start.sh
         # ctfd command line access variables
         self.CTFD_TOKEN          = os.getenv("CTFD_TOKEN", default=None)
         self.CTFD_URL            = os.getenv("CTFD_URL", default=None)
 
-        #TODO: make challenges.yaml
         # folder expected to contain challenges
         self.challengesfolder    = os.path.join(self.DATAROOT, "challenges")
         # name of the yaml file expected to have the challenge data in each subfolder
@@ -90,35 +92,38 @@ class SandBoxyCTFdLinkage():
         self.listofchallenges    = "challengelist.yml"
         # filebuffer for challengelist.yaml
         self.challengelistbuffer = open(self.listofchallenges).read()
-        self.challengelistyaml   = yaml.load(self.challengelistbuffer, Loader=yaml.FullLoader)
-        
+        self.challengelistyaml   = yaml.load(self.challengelistbuffer, Loader=yaml.FullLoader)        
+
         ####################################
-        #lambdas
-        ##############
+        #lambdas, Still in __init__
+        ####################################
         # returns subdirectories , without . files/dirs
         self.getsubdirs = lambda directory: [name for name in os.listdir(directory) if os.path.isdir(name) and not re.match(r'\..*', name)]
-        self.loadchallengeyaml =  lambda category,challenge: open(os.path.join(category,challenge,self.basechallengeyaml), 'r')
+        #loads a challenge.yaml file into a buffer
+        self.loadchallengeyaml =  lambda category,challenge: yaml.load(open(os.path.join(category,challenge,self.basechallengeyaml), 'r'), Loader=yaml.FullLoader)
 
     def init(self):
         '''
         Initialize folder as repository with ctfcli using $CTFD_TOKEN and $CTFD_URL.
         '''
         if not self.CTFD_TOKEN or not self.CTFD_URL:
+            errorlogger("[-] NO INPUT, something is wrong")
             exit(1)
-        # run equivalent of  echo "$CTFD_URL\n$CTFD_TOKEN\ny" | ctf init 
-        os.system(f"echo '{self.CTFD_URL}\n{self.CTFD_TOKEN}\ny' | ctf init")
-    
+        try:
+            # run equivalent of  echo "$CTFD_URL\n$CTFD_TOKEN\ny" | ctf init 
+            os.system(f"echo '{self.CTFD_URL}\n{self.CTFD_TOKEN}\ny' | ctf init")
+        except Exception:
+            errorlogger("[-] INVALID INPUT: {} {}".format(self.CTFD_URL,self.CTFD_TOKEN))
+            exit(1)
+
     def get_categories(self,print:bool):
         '''
         Get the names of all Categories
         Supply "print=True" to display to screen instead of return a variable
         '''
-        #old code
-        #denylist_regex = r'\..*'
-        #categories = [name for name in os.listdir(".") if os.path.isdir(name) and not re.match(denylist_regex, name)]
         categories = self.getsubdirs(self.challengesfolder)
         if print == True:
-            greenprint("Categories: " + ", ".join(categories))
+            greenprint("Categories: " + ",  ".join(categories))
         else:
             return categories
     
@@ -172,8 +177,9 @@ class SandBoxyCTFdLinkage():
     def syncchallenge(challenge:str):
         '''
         Adds a challenge
-            Must be in its owwn folder, in a category that has been indexed
+            Must be in its own folder, in a category that has been indexed
         '''
+
     def change_state(self, challenge:str, state:str):
         '''
         toggle challenge from visible to hidden
