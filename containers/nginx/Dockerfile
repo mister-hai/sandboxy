@@ -18,8 +18,8 @@ RUN apk add certbot certbot-nginx
 # this lets us mount the file as a volume for dev also
 COPY conf/conf.d/fightbiscuits.firewall-gateway.net.conf /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
 COPY conf/nginx.conf.template /etc/nginx/nginx.conf.template
-COPY fastcgi.conf /etc/nginx/fastcgi.conf
-COPY mime.types /etc/nginx/mime.types
+COPY conf/fastcgi.conf /etc/nginx/fastcgi.conf
+COPY conf/mime.types /etc/nginx/mime.types
 
 #COPY proxy.conf /etc/nginx/proxy.conf
 
