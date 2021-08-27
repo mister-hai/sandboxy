@@ -1,9 +1,11 @@
-import os
+import os,
 import re
 import threading
 import yaml
 import json
 
+
+PROJECTROOT=
 # Initialize ctfcli with the CTFD_TOKEN and CTFD_URL.
 def init():
     CTFD_TOKEN = os.getenv("CTFD_TOKEN", default=None)

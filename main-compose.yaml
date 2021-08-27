@@ -24,10 +24,10 @@ services:
         dockerfile: Dockerfile
       image: nginx:latest
       hostname: nginx
-      #depends_on:
-      #  - bwapp
-      #  - dvwa
-      #  - ctfd
+      depends_on:
+        - bwapp
+        - dvwa
+        - ctfd
       restart: unless-stopped
       env_file:
         - ./.env
@@ -35,15 +35,10 @@ services:
         - ${CERTBOTCONFVOLUMES}
         - ${CERTBOTDATAVOLUMES}
         - ${CERTBOTLOGVOLUMES}
-      #  - ${CTFDVOLUMESINDEX}
-      #  - ${BWAPPVOLUMESINDEX}
-      #  - ${JUICESHOPVOLUMESINDEX}
       ports:
         - 80:80
         - 443:443
       networks:
-        #hax:
-        #  external: true
         net:
           ipv4_address: ${NGINXIP}
 ################################################################

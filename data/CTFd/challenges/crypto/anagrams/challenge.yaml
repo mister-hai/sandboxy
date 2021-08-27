@@ -7,7 +7,7 @@
 # - A solution/ folder with a working solution to the challenge (or a README.md
 #   file documenting the solution)
 
-version: beta1
+version: "0.1"
 name: anagrams
 author: matir
 flag: 'CTF{ONEFORANAGRAMS}'
