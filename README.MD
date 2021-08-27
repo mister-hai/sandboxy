@@ -10,7 +10,13 @@
 
     get all the beginner challenges seperated and a script to upload them all
     
-    host a public test
+    host a public test? maybe?
+
+    PROGRESS:
+        set of challenges seperated into data directory 
+        and organized somewhat, needs the yaml files modified
+
+        working on script to upload them easily according to ctfcli spec
 
 # PENTEST SANDBOX
     this is an all in one setup script for a docker/kubernetes cluster

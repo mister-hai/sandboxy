@@ -4,26 +4,42 @@ import threading
 import yaml
 import json
 
+class SandBoxyCTFdLinkage():
+    def __init__(self):
+        #reflects the directory name your appdata is stored in
+        self.datapathname = "data"
+        # reflects the directory you have sandboxy in, default is ~/sandboxy
+        self.PROJECTROOT=  os.getenv("PROJECTROOT", default="/home/{USER}/sandboxy")
+        # reflects the data subdirectory in the project root
+        self.DATAROOT= os.path.join(PROJECTROOT,"data")
+        self.CTFD_TOKEN = os.getenv("CTFD_TOKEN", default=None)
+        self.CTFD_URL = os.getenv("CTFD_URL", default=None)
 
-PROJECTROOT=
-# Initialize ctfcli with the CTFD_TOKEN and CTFD_URL.
-def init():
-    CTFD_TOKEN = os.getenv("CTFD_TOKEN", default=None)
-    CTFD_URL = os.getenv("CTFD_URL", default=None)
 
-    if not CTFD_TOKEN or not CTFD_URL:
-        exit(1)
+    def init(self):
+        '''
+        Initialize ctfcli with the CTFD_TOKEN and CTFD_URL.
+        '''
+        if not self.CTFD_TOKEN or not self.CTFD_URL:
+            exit(1)
+        # run equivalent of  echo "$CTFD_URL\n$CTFD_TOKEN\ny" | ctf init 
+        os.system(f"echo '{self.CTFD_URL}\n{self.CTFD_TOKEN}\ny' | ctf init")
+    
+    def get_categories():
+        '''
+     Each category is in it's own directory, 
+     get the names of all directories that do not begin with '.'.
+        
+        '''
+        denylist_regex = r'\..*'
+        categories = [name for name in os.listdir(".") if os.path.isdir(name) and not re.match(denylist_regex, name)]
+        print("Categories: " + ", ".join(categories))
+        return categories
 
-    os.system(f"echo '{CTFD_URL}\n{CTFD_TOKEN}\ny' | ctf init")
-
-
-# Each category is in it's own directory, get the names of all directories that do not begin with '.'.
-def get_categories():
-    denylist_regex = r'\..*'
-
-    categories = [name for name in os.listdir(".") if os.path.isdir(name) and not re.match(denylist_regex, name)]
-    print("Categories: " + ", ".join(categories))
-    return categories
+#start a linkage
+ctfdserver = SandBoxyCTFdLinkage()
+#call the init funciton to connect
+ctfdserver.init()
 
 
 # Synchronize all challenges in the given category, where each challenge is in it's own folder.
