@@ -78,18 +78,26 @@ class SandBoxyCTFdLinkage():
         # reflects the data subdirectory in the project root
         self.DATAROOT= os.getenv("DATAROOT", default=None)
         # ctfd command line access variables
-        self.CTFD_TOKEN = os.getenv("CTFD_TOKEN", default=None)
-        self.CTFD_URL = os.getenv("CTFD_URL", default=None)
-        self.challengesfolder = os.path.join(self.DATAROOT, "challenges")
+        self.CTFD_TOKEN          = os.getenv("CTFD_TOKEN", default=None)
+        self.CTFD_URL            = os.getenv("CTFD_URL", default=None)
 
         #TODO: make challenges.yaml
-        # a master list of challenges
-        self.challengelist = yaml.load("./challenges.yaml", Loader=yaml.FullLoader)
+        # folder expected to contain challenges
+        self.challengesfolder    = os.path.join(self.DATAROOT, "challenges")
+        # name of the yaml file expected to have the challenge data in each subfolder
+        self.basechallengeyaml = "challenge.yml"
+        # filename for the full challenge index
+        self.listofchallenges    = "challengelist.yml"
+        # filebuffer for challengelist.yaml
+        self.challengelistbuffer = open(self.listofchallenges).read()
+        self.challengelistyaml   = yaml.load(self.challengelistbuffer, Loader=yaml.FullLoader)
+        
         ####################################
         #lambdas
         ##############
         # returns subdirectories , without . files/dirs
         self.getsubdirs = lambda directory: [name for name in os.listdir(directory) if os.path.isdir(name) and not re.match(r'\..*', name)]
+        self.loadchallengeyaml =  lambda category,challenge: open(os.path.join(category,challenge,self.basechallengeyaml), 'r')
 
     def init(self):
         '''
@@ -131,7 +139,7 @@ class SandBoxyCTFdLinkage():
             else:
                 return challenges
 
-    def getallchallenges(self):
+    def populateallchallenges(self):
         '''
         Indexes 
             PROJECTROOT/data/CTFd/challenges/{category}/ 
@@ -145,7 +153,8 @@ class SandBoxyCTFdLinkage():
             challengesbycategory = self.getsubdirs(pathtocategory)
             for challenge in challengesbycategory:
                 #open the challenge.yaml file to get the name
-
+                self.challengelistyaml
+            danglies
 
     def synccategory(category:str):
         '''
@@ -165,30 +174,36 @@ class SandBoxyCTFdLinkage():
         Adds a challenge
             Must be in its owwn folder, in a category that has been indexed
         '''
-
     def change_state(self, challenge:str, state:str):
         '''
         toggle challenge from visible to hidden
+            This is obviously after the main list has been generated
         '''
         visible = {}
         hidden = {}
         try:
             if state not in ['visible', 'hidden']:
-            raise Exception
+                raise Exception
         except Exception:
             errorlogger("[-] INVALID INPUT: {} {}".format(challenge,state))
-        #challenge_waves = open('challenge-waves.yml').read()
-        #challenge_waves = yaml.load(challenge_waves, Loader=yaml.FullLoader)
+
         categories = self.get_categories()
+        # maybe this would be better with dicts?
         for category in categories:
             visible[category] = []
             hidden[category] = []
-        for wave in challenge_waves:
-            if wave in waves:
-                for category in challenge_waves[wave]:
-                    for challenge in challenge_waves[wave][category]:
-                        chall = open(f'{category}/{challenge}/challenge.yml', 'r')
-                        challenge_yml = yaml.load(chall, Loader=yaml.FullLoader)
+
+        for challenges in self.challengelistyaml:
+            #filter empties
+            if challenge in challenges:
+                # get category of challenge
+                for category in self.challengelistyaml[challenge]:
+                    # for each challenge in that category
+                    for challenge in self.challengelistyaml[challenge][category]:
+                        # read the challenge.yml file into a buffer
+                        chall = self.loadchallengeyaml(category,challenge)
+
+                        #challenge_yml = yaml.load(chall, Loader=yaml.FullLoader)
                         challenge_yml['state'] = state
                         if state == 'visible':
                             name = challenge_yml['name'].lower().replace(' ', '-')
@@ -204,8 +219,8 @@ class SandBoxyCTFdLinkage():
                         chall = open(f'{category}/{challenge}/challenge.yml', 'w')
                         yaml.dump(challenge_yml, chall, sort_keys=False)
             else:
-                for category in challenge_waves[wave]:
-                    for challenge in challenge_waves[wave][category]:
+                for category in self.challengelistyaml[wave]:
+                    for challenge in self.challengelistyaml[wave][category]:
                         chall = open(f'{category}/{challenge}/challenge.yml', 'r')
 
                         challenge_yml = yaml.load(chall, Loader=yaml.FullLoader)
@@ -243,17 +258,17 @@ def change_state(self, challenge:str, state:str):
     except Exception:
         errorlogger("[-] INVALID INPUT: {} {}".format(challenge,state))
 
-    #challenge_waves = open('challenge-waves.yml').read()
-    #challenge_waves = yaml.load(challenge_waves, Loader=yaml.FullLoader)
+    #self.challengelistyaml = open('challenge-waves.yml').read()
+    #self.challengelistyaml = yaml.load(self.challengelistyaml, Loader=yaml.FullLoader)
     categories = self.get_categories()
     for category in categories:
         visible[category] = []
         hidden[category] = []
 
-    for wave in challenge_waves:
+    for wave in self.challengelistyaml:
         if wave in waves:
-            for category in challenge_waves[wave]:
-                for challenge in challenge_waves[wave][category]:
+            for category in self.challengelistyaml[wave]:
+                for challenge in self.challengelistyaml[wave][category]:
                     chall = open(f'{category}/{challenge}/challenge.yml', 'r')
 
                     challenge_yml = yaml.load(chall, Loader=yaml.FullLoader)
@@ -275,8 +290,8 @@ def change_state(self, challenge:str, state:str):
 
                     yaml.dump(challenge_yml, chall, sort_keys=False)
         else:
-            for category in challenge_waves[wave]:
-                for challenge in challenge_waves[wave][category]:
+            for category in self.challengelistyaml[wave]:
+                for challenge in self.challengelistyaml[wave][category]:
                     chall = open(f'{category}/{challenge}/challenge.yml', 'r')
 
                     challenge_yml = yaml.load(chall, Loader=yaml.FullLoader)
