@@ -2,71 +2,8 @@
 import os,re,sys
 import threading
 import yaml
-import json
-import gzip
 import pathlib
-import logging
-import threading
-import traceback
-import subprocess
-try:
-    import colorama
-    from colorama import init
-    init()
-    from colorama import Fore, Back, Style
-    COLORMEQUALIFIED = True
-except ImportError as derp:
-    print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
-    COLORMEQUALIFIED = False
 
-################################################################################
-##############               LOGGING AND ERRORS                #################
-################################################################################
-LOGLEVEL            = 'DEV_IS_DUMB'
-LOGLEVELS           = [1,2,3,'DEV_IS_DUMB']
-log_file            = 'logfile'
-logging.basicConfig(filename=log_file, format='%(asctime)s %(message)s', filemode='w')
-logger              = logging.getLogger()
-launchercwd         = pathlib.Path().absolute()
-
-
-redprint          = lambda text: print(Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-blueprint         = lambda text: print(Fore.BLUE + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-greenprint        = lambda text: print(Fore.GREEN + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-yellowboldprint = lambda text: print(Fore.YELLOW + Style.BRIGHT + ' {} '.format(text) + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-makeyellow        = lambda text: Fore.YELLOW + ' ' +  text + ' ' + Style.RESET_ALL if (COLORMEQUALIFIED == True) else text
-makered           = lambda text: Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL if (COLORMEQUALIFIED == True) else None
-makegreen         = lambda text: Fore.GREEN + ' ' +  text + ' ' + Style.RESET_ALL if (COLORMEQUALIFIED == True) else None
-makeblue          = lambda text: Fore.BLUE + ' ' +  text + ' ' + Style.RESET_ALL if (COLORMEQUALIFIED == True) else None
-debuglog     = lambda message: logger.debug(message) 
-infolog      = lambda message: logger.info(message)   
-warninglog   = lambda message: logger.warning(message) 
-errorlog     = lambda message: logger.error(message) 
-criticallog  = lambda message: logger.critical(message)
-
-################################################################################
-##############             ERROR HANDLING FUNCTIONS            #################
-################################################################################
-def errorlogger(message):
-    '''
-    prints line number and traceback
-    TODO: save stack trace to error log
-            only print linenumber and function failure
-    '''
-    exc_type, exc_value, exc_tb = sys.exc_info()
-    trace = traceback.TracebackException(exc_type, exc_value, exc_tb) 
-    try:
-        errormesg = message + ''.join(trace.format_exception_only())
-        #traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
-        lineno = 'LINE NUMBER >>>' + str(exc_tb.tb_lineno)
-        errorlog(lineno+errormesg)
-    except Exception:
-        print("EXCEPTION IN ERROR HANDLER!!!")
-        print(message + ''.join(trace.format_exception_only()))
-
-###############################################################################
-#  CTFCLI HANDLING CLASS
-###############################################################################
 
 class SandBoxyCTFdLinkage():
     '''
@@ -99,12 +36,17 @@ class SandBoxyCTFdLinkage():
         ####################################
         # returns subdirectories , without . files/dirs
         self.getsubdirs = lambda directory: [name for name in os.listdir(directory) if os.path.isdir(name) and not re.match(r'\..*', name)]
+        # open with read operation
+        self.challengeyamlbufferr = lambda category,challenge: open(os.path.join(category,challenge,self.basechallengeyaml),'r')
+        # open with write operation
+        self.challengeyamlbufferw = lambda category,challenge: open(os.path.join(category,challenge,self.basechallengeyaml),'r')
         #loads a challenge.yaml file into a buffer
-        self.loadchallengeyaml =  lambda category,challenge: yaml.load(open(os.path.join(category,challenge,self.basechallengeyaml), 'r'), Loader=yaml.FullLoader)
+        self.loadchallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferr(category,challenge), Loader=yaml.FullLoader)
+        self.writechallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferw(category,challenge), Loader=yaml.FullLoader)
 
     def init(self):
         '''
-        Initialize folder as repository with ctfcli using $CTFD_TOKEN and $CTFD_URL.
+        Initialize PWD as repository with ctfcli using $CTFD_TOKEN and $CTFD_URL.
         '''
         if not self.CTFD_TOKEN or not self.CTFD_URL:
             errorlogger("[-] NO INPUT, something is wrong")
@@ -116,7 +58,7 @@ class SandBoxyCTFdLinkage():
             errorlogger("[-] INVALID INPUT: {} {}".format(self.CTFD_URL,self.CTFD_TOKEN))
             exit(1)
 
-    def get_categories(self,print:bool):
+    def getcategories(self,print:bool):
         '''
         Get the names of all Categories
         Supply "print=True" to display to screen instead of return a variable
@@ -159,26 +101,34 @@ class SandBoxyCTFdLinkage():
             for challenge in challengesbycategory:
                 #open the challenge.yaml file to get the name
                 self.challengelistyaml
-            danglies
+            #danglies
 
-    def synccategory(category:str):
+    def synccategory(self, category:str):
         '''
         Takes a category name
 
         Synchronize all challenges in the given category
         where each challenge is in it's own folder.
         '''
-        challenges = [f"{category}/{name}" for name in os.listdir(f"./{category}") if os.path.isdir(f"{category}/{name}")]
-        for challenge in challenges:
-            if os.path.exists(f"{challenge}/challenge.yml"):
-                print(f"Syncing challenge: {challenge}")
+        try:
+            greenprint("[+] Syncing Category: {}". format(category))
+            challenges = self.getchallengesbycategory(category)
+            for challenge in challenges:
+                greenprint(f"Syncing challenge: {challenge}")
                 os.system(f"ctf challenge sync '{challenge}'; ctf challenge install '{challenge}'")
+        except Exception:
+            errorlogger("[-] Failure, INPUT: {}".format(challenge))
 
     def syncchallenge(challenge:str):
         '''
         Adds a challenge
             Must be in its own folder, in a category that has been indexed
         '''
+        greenprint(f"Syncing challenge: {challenge}")
+        try:
+            os.system(f"ctf challenge sync '{challenge}'; ctf challenge install '{challenge}'")
+        except Exception:
+            errorlogger("[-] Failure, INPUT: {}".format(challenge))
 
     def change_state(self, challenge:str, state:str):
         '''
@@ -207,12 +157,12 @@ class SandBoxyCTFdLinkage():
                     # for each challenge in that category
                     for challenge in self.challengelistyaml[challenge][category]:
                         # read the challenge.yml file into a buffer
-                        chall = self.loadchallengeyaml(category,challenge)
-
-                        #challenge_yml = yaml.load(chall, Loader=yaml.FullLoader)
-                        challenge_yml['state'] = state
+                        challengeyaml = self.loadchallengeyaml(category,challenge)
+                        # obtain state of the challenge
+                        challengeyaml['state'] = state
+                        # toggle to invisible
                         if state == 'visible':
-                            name = challenge_yml['name'].lower().replace(' ', '-')
+                            name = challengeyaml['name'].lower().replace(' ', '-')
                             if 'expose' in challenge_yml:
                                 visible[category].append({'name': name, 'port': challenge_yml['expose'][0]['nodePort']})
                             else:
@@ -222,8 +172,8 @@ class SandBoxyCTFdLinkage():
                                 hidden[category].append({'name': name, 'port': challenge_yml['expose'][0]['nodePort']})
                             else:
                                 hidden[category].append({'name': name, 'port': 0})
-                        chall = open(f'{category}/{challenge}/challenge.yml', 'w')
-                        yaml.dump(challenge_yml, chall, sort_keys=False)
+                        chall = self.readchallengeintobuffer(category,challenge)
+                        yaml.dump(challengeyaml, chall, sort_keys=False)
             else:
                 for category in self.challengelistyaml[wave]:
                     for challenge in self.challengelistyaml[wave][category]:
