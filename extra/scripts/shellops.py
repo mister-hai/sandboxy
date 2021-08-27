@@ -21,7 +21,7 @@ import argparse
 import subprocess
 import configparser
 from git import Repo
-from extra.shellops import *
+#from extra.shellops import *
 
 __name__ = "SANDBOXENV"
 
