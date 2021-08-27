@@ -1,4 +1,3 @@
-version: beta1
 name: config-me
 author: iagox86
 flag: 'CTF{my_rust_is_rusty}'

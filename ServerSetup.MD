@@ -52,6 +52,10 @@
         root@server#> dnsdomainname
         kerneltalks.com
 
+# NGINX SETUP
+
+    https://dev.to/danielkun/nginx-everything-about-proxypass-2ona
+
 # CERTBOT SETUP
     
     Run these commands before "docker-compose -f main-compose.yaml up"
