@@ -15,9 +15,16 @@ class GitOperations():
 
     def addchallengerepo(self, repo:str):
         """
-        Create a git repository with a ``master`` branch and ``README``.
+Create a git repository with a ``master`` branch and ``README``.
+    This function will replicate the actions of the following sequence of commands
 
-        :param test_case: The ``TestCase`` calling this.
+>>> cd <localdir>
+>>> git init
+>>> git add .
+>>> git commit -m 'message'
+>>> git remote add origin <url>
+>>> git push -u origin master
+
         """
         try:
             # the user indicates a remote repo, by supplying a url
@@ -32,7 +39,4 @@ class GitOperations():
                 repository.create_head('master')
         except Exception:
             errorprinter()
-
-        #config = load_config()
-        #config["challenges"][self.challengesfolder] = repo
 

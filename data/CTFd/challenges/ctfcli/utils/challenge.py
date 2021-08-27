@@ -6,27 +6,9 @@ import yaml
 
 from .config import generate_session
 
-
-class Yaml(dict):
-    def __init__(self, data, file_path=None):
-        super().__init__(data)
-        self.file_path = Path(file_path)
-        self.directory = self.file_path.parent
-
-
-def load_challenge(path):
-    try:
-        with open(path) as f:
-            return Yaml(data=yaml.safe_load(f.read()), file_path=path)
-    except FileNotFoundError:
-        click.secho(f"No challenge.yml was found in {path}", fg="red")
-        return
-
-
 def load_installed_challenges():
     s = generate_session()
     return s.get("/api/v1/challenges?view=admin", json=True).json()["data"]
-
 
 def sync_challenge(challenge, ignore=[]):
     data = {

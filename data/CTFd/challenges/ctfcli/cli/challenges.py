@@ -1,10 +1,8 @@
 import os, re
 import subprocess
+import git, click, yaml
 from pathlib import Path
 from urllib.parse import urlparse
-import git
-import click
-import yaml
 from cookiecutter.main import cookiecutter
 
 from utils.challenge import (
@@ -14,12 +12,7 @@ from utils.challenge import (
     load_installed_challenges,
     sync_challenge,
 )
-from utils.config import (
-    get_base_path,
-    get_config_path,
-    get_project_path,
-    load_config,
-)
+
 from utils.deploy import DEPLOY_HANDLERS
 from utils.spec import CHALLENGE_SPEC_DOCS, blank_challenge_spec
 from utils.templates import get_template_dir
@@ -53,29 +46,44 @@ class ChallengeCategory():
 
 class Yaml(dict):
     '''
-    Represents a challange.yaml
+    Represents a challange.yml
+    Give Path to challenge.yaml
     '''
-    def __init__(self, data, file_path=None):
-        super().__init__(data)
-        self.file_path = Path(file_path)
-        self.directory = self.file_path.parent
+    def __init__(self,data, filepath):
+        #set the base values
+        self.type = str
+        #get path of file
+        self.filepath = Path(filepath)
+        #set working dir of file
+        self.directory = self.filepath.parent
+        #if its a kubernetes config
+        if self.filepath.endswith(".yaml"):
+            redprint("[!] File is .yaml! Presuming to be kubernetes config!")
+            self.type = "kubernetes"
+        else:
+            greenprint("[+] Challenge File presumed (.yml)")
+            try:
+                #open the yml file
+                with open(filepath) as f:
+                    filedata = yaml.safe_load(f.read(), filepath=filepath)
+                    #assign data to self
+                    #previous
+                    #super().__init__(filedata)
+                    setattr(self,"data",filedata)
+            except FileNotFoundError:
+                print("No challenge.yml was found in {}".format(filepath))
+
+        
 
 class ChallengeEntry():
     '''
     Represents the challenge as exists in the folder for that specific challenge
     '''
-    def __init__(self,name, filepath):
-        try:
-            with open(filepath) as f:
-                challengeyaml = yaml.safe_load(f.read(), filepath=filepath)
-        except FileNotFoundError:
-            print("No challenge.yml was found in {}".format(path))
-        
-        #dat of the file
-        self.challengeyaml = Yaml(challengeyaml,filepath=filepath)
+    def __init__(self,filepath):
+        #get a representation of the challenge.yaml file
+        self.challengeyaml = Yaml(filepath=filepath)
         # name of the challenge
-        self.name = name
-
+        self.name = self.challengeyaml
 
 class ChallengeFolder():
     '''

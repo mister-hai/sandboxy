@@ -1,24 +1,28 @@
-import os
-import subprocess
-
-import click
-from pygments import highlight
-from pygments.formatters import TerminalFormatter
-from pygments.lexers import IniLexer, JsonLexer
-
-from ctfcli.utils.config import get_config_path, preview_config
-
-
 class Config(object):
     def edit(self):
+        '''
+        ctfcli config edit
+
+            Edit config with $EDITOR
+        '''
         editor = os.getenv("EDITOR", "vi")
         command = editor, get_config_path()
         subprocess.call(command)
 
     def path(self):
+        '''
+        ctfcli config path
+
+            Show config path
+        '''
         click.echo(get_config_path())
 
     def view(self, color=True, json=False):
+        '''
+        ctfcli config view
+
+            view the config
+        '''
         config = get_config_path()
         with open(config) as f:
             if json is True:

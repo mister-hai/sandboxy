@@ -1,5 +1,24 @@
 # instructions
 
+    This directory is your repository of challenges
+        You place challenges here according to this structure
+
+    
+    challenges
+        category1
+            challenge1
+                challenge.yml
+            challenge2
+            challenge3
+            challenge4
+        category2
+            challenge1
+            challenge2
+        category3
+            challenge1
+            challenge2
+            challenge3
+
     cd to this directory on the command line and Run the command :
         python3 ./ctfd.py --list-categories
     
