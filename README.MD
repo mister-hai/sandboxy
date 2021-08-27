@@ -1,15 +1,6 @@
 # DAILY PLAN
 
-    Today i am getting ssl enabled
-        - internal certbot install on nginx container
-
-        PROGRESS:
-            WORKED
-            I am refactoring for cleanliness and organization
-
-    I am also making a full frame iframe
-        - copied to nginx root, points to ctfd
-        
+    Work on organizing challenges into beginner / intermediate sections
     
     TOTAL PROGRESS:
         certbot-letsencrypt worked pages were forced to https

@@ -1,0 +1,37 @@
+name: "pwn intended 0x2"
+author: "roerohan"
+category: Pwn
+
+description: |
+  Travelling through spacetime!
+
+  nc chall.csivit.com 30007
+
+value: 500
+type: dynamic
+
+decay: 450
+minimum: 100
+
+flags:
+  - csictf{c4n_y0u_re4lly_telep0rt?}
+
+files:
+  - "pwn/pwn intended 0x2/bin/pwn-intended-0x2"
+
+tags:
+  - pwn
+
+state: hidden
+version: "0.1"
+
+replicas: 2
+containers:
+  server:
+    build: .
+    ports:
+      - containerPort: 9999
+
+expose:
+- containerPort: 9999
+  nodePort: 30007

@@ -54,16 +54,19 @@
 
 # CERTBOT SETUP
     
-    Docker compose command before "docker-compose -f main-compose.yaml up"
+    Run these commands before "docker-compose -f main-compose.yaml up"
 
-    Run the command:
+    While down, to run only the nginx service
+        docker-compose -f main-compose.yaml run --rm -v $(pwd)/data/certbot/conf:/etc/letsencrypt -v $(pwd)/data/certbot/www:/var/www/certbot -v $(pwd)/data/log/cert:/var/log/letsencrypt nginx /bin/sh 
+    
+    Then :
         certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net
-
-    AFTER RUNNING :
+    
+    OR, If the project is already running, run the command:
         docker exec -it sandboxy_nginx_1 /bin/sh 
-    OR, while down
-        docker-compose -f main-compose.yaml run --rm nginx /bin/sh -c COMMAND
-    docker-compose -f main-compose.yaml run --rm -v $(pwd)/data/certbot/conf:/etc/letsencrypt -v $(pwd)/data/certbot/www:/var/www/certbot -v $(pwd)/data/log/cert:/var/log/letsencrypt nginx /bin/sh -c certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net
+
+    Then, run the command:
+        certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net
 
     Open the crontab file.
         crontab -e

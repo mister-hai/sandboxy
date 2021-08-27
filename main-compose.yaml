@@ -6,13 +6,17 @@ version: "3"
 #################################################################
 services:
 #################################################################
-##  NGINX ; proxies to the other containers
+## NGINX ; proxies to the other containers
 # STATUS : SEMI-FUNCTIONAL
 # ISSUE  : cannot rewrite url properly without ssl for development
-# CAUSE  : SUPPOSED: I am not mounting volumes, I am trying to avoid that
+# SUPPOSED CAUSE: I'm not mounting volumes, I'm trying to avoid that
 # proposed solution:
 #   I am going to host a domain name on the server for 
 #   certbot testing
+#
+# PROGRESS: - url rewriting working as expected with new config
+#           - I seem to have some sort of local SSL issue?
+#             PR_END_OF_FILE and {forgot, give me moment}
 #################################################################        
     nginx:
       build:
@@ -27,19 +31,7 @@ services:
       restart: unless-stopped
       env_file:
         - ./.env
-        # you have to have a file already existing to copy from the compose file
-        # we import them into the container via the dockerfile to allow mounting
       volumes:
-        # access to the nginx.conf configuration from the host
-        #- type: bind
-        #  source: ${PWD}/containers/conf/nginx
-        #  target: /etc/nginx
-        # access to the fightbiscuits.firewall-gateway.net configuration from the host
-        #- type: bind
-        #  source: ${PWD}/containers/nginx/conf/conf.d
-        #  target: /etc/nginx/conf.d
-        #- ${PWD}/containers/conf/nginx:/etc/nginx
-        #- ${PWD}/containers/nginx/conf/conf.d:/etc/nginx/conf.d
         - ${CERTBOTCONFVOLUMES}
         - ${CERTBOTDATAVOLUMES}
         - ${CERTBOTLOGVOLUMES}
@@ -57,7 +49,9 @@ services:
 ################################################################
 ## CERTBOT enables ssl for the backend
 # STATUS : NOT TESTED
-# trying nginx internal certbot first, seems simpler... two commands
+#           trying nginx internal certbot first
+#           seems simpler... two commands
+# PROGRESS: nginx + certbot/internal seems to work ok
 ################################################################
 #    certbot:
 #      image: certbot/certbot

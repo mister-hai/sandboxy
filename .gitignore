@@ -8,3 +8,6 @@ data/CTFd/logs/*
 data/redis/*
 data/UIUCTF-2021-Public/*
 !data/UIUCTF-2021-Public/README.md
+extra/ctf-challenges-master
+extra/ctf-2019-release-master
+extra/ctf-2020-release-master
