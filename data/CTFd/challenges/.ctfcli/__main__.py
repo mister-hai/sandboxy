@@ -2,6 +2,7 @@ import re
 import git
 import fire
 import json
+import requests
 import yaml
 import click
 import os, sys
@@ -257,7 +258,6 @@ class SandBoxyCTFdLinkage():
         # create config file
         config = configparser.ConfigParser()
         config["config"] = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
-        config["challenges"] = {}
         config.write()
 
         #generate a list of categories
@@ -265,7 +265,12 @@ class SandBoxyCTFdLinkage():
         for challenge_category in CATEGORIES:
             #put the cats in the bag
             cat_bag.append(Category(challenge_category))
-   
+        
+        # add the challenges in each category folder to the category class
+        # while also writing them to masterlist
+        for category in cat_bag:
+            pass
+
 
     def getcategories(self,print=True):
         '''
@@ -337,105 +342,56 @@ class SandBoxyCTFdLinkage():
         except Exception:
             errorlogger("[-] Failure, INPUT: {}".format(challenge))
 
-    def syncchallenge(self,challenge:str):
+    def syncchallenge(self,challenge:dict):
         '''
         Adds a challenge
             Must be in its own folder, in a category that has been indexed
         '''
         greenprint(f"Syncing challenge: {challenge}")
+        #TOTO SET CHALLENGE ID
         challenge_id = str
         try:
-            # load yaml into dict
-            newchallenge = Challengeyaml(challenge)
+            #assign data fields to json
+            challengevalue       = int(challenge["value"]) if challenge["value"] else challenge["value"],challenge.get("extra", {})
+            challengetype        = challenge.get("type", "standard")
+            challengedescription = challenge["description"]
+            challengecategory    = challenge["category"]
+            challengename        = challenge["name"]
+            challengeauthor      = challenge["author"]
             data = {
-            "name": challenge["name"],
-            "category": challenge["category"],
-            "description": challenge["description"],
-            "type": challenge.get("type", "standard"),
-            "value": int(challenge["value"]) if challenge["value"] else challenge["value"],
-            **challenge.get("extra", {}),
-            }
-            session = APISession(prefix_url=self.CTFD_URL)
-            session.headers.update({"Authorization": "Token {}".format(session.AUTHTOKEN)})
-            apisess = session.get("/api/v1/challenges/{}".format(challenge_id), json=data).json()["data"]
+                "name":         challengename,
+                "category":     challengecategory,
+                "description":  challengedescription,
+                "type":         challengetype,
+                "value" :       challengevalue,
+                "author" :      challengeauthor
+                }
+            
+            #make API call
+            apicall = APISession(prefix_url=self.CTFD_URL)
+            apicall.headers.update({"Authorization": "Token {}".format(apicall.AUTHTOKEN)})
+            apisess = apicall.get("/api/v1/challenges/{}".format(challenge_id), json=data).json()["data"]
             response = apisess.patch(f"/api/v1/challenges/{challenge_id}", json=data)
             response.raise_for_status()
+            
             # Create new flags
-            if challenge.get("flags") and "flags" not in ignore:
-                # Delete existing flags
-                current_flags = s.get(f"/api/v1/flags", json=data).json()["data"]
-                for flag in current_flags:
-                    if flag["challenge_id"] == challenge_id:
-                        flag_id = flag["id"]
-                        r = s.delete(f"/api/v1/flags/{flag_id}", json=True)
-                        r.raise_for_status()
-                for flag in challenge["flags"]:
-                    if type(flag) == str:
-                        data = {"content": flag, "type": "static", "challenge_id": challenge_id}
-                        r = s.post(f"/api/v1/flags", json=data)
-                        r.raise_for_status()
-                    elif type(flag) == dict:
-                        flag["challenge_id"] = challenge_id
-                        r = s.post(f"/api/v1/flags", json=flag)
-                        r.raise_for_status()
+            if challenge.get("flags"):
+                apicall.processflags(challenge,challenge_id,data)
+ 
             # Update topics
-            if challenge.get("topics") and "topics" not in ignore:
-                # Delete existing challenge topics
-                current_topics = s.get(f"/api/v1/challenges/{challenge_id}/topics", json="").json()["data"]
-                for topic in current_topics:
-                    topic_id = topic["id"]
-                    r = s.delete(f"/api/v1/topics?type=challenge&target_id={topic_id}", json=True)
-                    r.raise_for_status()
-                # Ad    d new challenge topics
-                for topic in challenge["topics"]:
-                    r = s.post(f"/api/v1/topics",
-                        json={
-                            "value": topic,
-                            "type": "challenge",
-                            "challenge_id": challenge_id,
-                        },)
-                    r.raise_for_status()
+            if challenge.get("topics"):
+                apicall.processtopics(challenge,challenge_id,data)
+
             # Update tags
-            if challenge.get("tags") and "tags" not in ignore:
-                # Delete existing tags
-                current_tags = s.get(f"/api/v1/tags", json=data).json()["data"]
-                for tag in current_tags:
-                    if tag["challenge_id"] == challenge_id:
-                        tag_id = tag["id"]
-                        r = s.delete(f"/api/v1/tags/{tag_id}", json=True)
-                        r.raise_for_status()
-                for tag in challenge["tags"]:
-                    r = s.post(
-                        f"/api/v1/tags", json={"challenge_id": challenge_id, "value": tag}
-                    )
-                    r.raise_for_status()
+            if challenge.get("tags"):
+                apicall.processtopics(challenge,challenge_id,data)
+
             # Upload files
-            if challenge.get("files") and "files" not in ignore:
-                # Delete existing files
-                all_current_files = s.get(f"/api/v1/files?type=challenge", json=data).json()[
-                    "data"
-                ]
-                for f in all_current_files:
-                    for used_file in original_challenge["files"]:
-                        if f["location"] in used_file:
-                            file_id = f["id"]
-                            r = s.delete(f"/api/v1/files/{file_id}", json=True)
-                            r.raise_for_status()
-                files = []
-                for f in challenge["files"]:
-                    file_path = Path(challenge.directory, f)
-                    if file_path.exists():
-                        file_object = ("file", file_path.open(mode="rb"))
-                        files.append(file_object)
-                    else:
-                        click.secho(f"File {file_path} was not found", fg="red")
-                        raise Exception(f"File {file_path} was not found")
-                data = {"challenge_id": challenge_id, "type": "challenge"}
-            # Sp    ecifically use data= here instead of json= to send multipart/form-data
-                r = s.post(f"/api/v1/files", files=files, data=data)
-                r.raise_for_status()
+            if challenge.get("files"):
+                apicall.uploadfiles(challenge,challenge_id,data)
+
             # Create hints
-            if challenge.get("hints") and "hints" not in ignore:
+            if challenge.get("hints"):
                 # Delete existing hints
                 current_hints = s.get(f"/api/v1/hints", json=data).json()["data"]
                 for hint in current_hints:
