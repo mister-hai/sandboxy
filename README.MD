@@ -1,9 +1,13 @@
 # DAILY PLAN
 
     Work on organizing challenges into beginner / intermediate sections
+    Work on repository/ctfd interface script
+    Work on trial run of current process and publically deploy for a day
     
     TOTAL PROGRESS:
         certbot-letsencrypt worked pages were forced to https
+        backend messages show requests are forwarded and urlrewriting works
+        but I still get SSL errors.
 
 # WEEKLY PLAN
 
@@ -17,6 +21,7 @@
         and organized somewhat, needs the yaml files modified
 
         working on script to upload them easily according to ctfcli spec
+
 
 # PENTEST SANDBOX
     this is an all in one setup script for a docker/kubernetes cluster
