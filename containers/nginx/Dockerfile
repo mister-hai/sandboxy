@@ -10,8 +10,8 @@ FROM nginx:stable-alpine
 
 #might this work?
 # certbot, internally? set a cronjob!!!
-RUN mkdir /var/www
-COPY index.html /var/www/index.html
+RUN mkdir /var/www/html
+COPY index.html /var/www/html/index.html
 RUN apk add certbot certbot-nginx
 
 #copy the conf files over to the container

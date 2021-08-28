@@ -34,15 +34,21 @@
             CTFd and the users of the platform (mysql,cache,etc) to be packed 
             up and distributed to a replacment system in the event of a server change
             
-            -/containers
+            /containers
                 contains the folders holding dockerfiles and resources for each Container
+
+                /CTFd
+                    Contains the build data for the ctfd docker container
+                
+                /nginx
+                    ditto
+
+            /data 
+                where the portable data is placed (mysql/redis/ctfd/nginx/etc)
+
+                /CTFd/Challenges
+                    The challenge repository, managed by a rewrite of ctfcli
             
-            -/data 
-                where the created data is placed (mysql/redis/ctfd/nginx/etc)
-        
-        - the directory above that
-            will contain the kctf and challenge repositories that can be 
-            replaced by downloading from github
 
 
 # Table Of Contents
