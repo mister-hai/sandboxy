@@ -155,6 +155,15 @@ def get_exposed_ports(challenge):
             return None
     else:
         return None
+CATEGORIES = [
+    "Exploitation",
+    "Reversing",
+    "Web",
+    "Forensics",
+    "Scripting",
+    "Cryptography",
+    "Networking",
+    ]
 
 CTFd_API_v1 = ["/challenges",
               "/tags", 

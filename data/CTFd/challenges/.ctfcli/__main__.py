@@ -14,85 +14,38 @@ from urllib.parse import urljoin
 from urllib.parse import urlparse
 from cookiecutter.main import cookiecutter
 
-from pygments import highlight
-from pygments.formatters import TerminalFormatter
-from pygments.lexers import IniLexer, JsonLexer
-from utils.utils import redprint,greenprint,yellowboldprint
+
+from utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
 from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS, blank_challenge_spec
-from utils.Yaml import Yaml, KubernetesYaml, Challengeyaml
+from utils.Yaml import Yaml, KubernetesYaml, Challengeyaml, Config
 
 from utils.utils import errorlogger
+from utils.apicalls import APISession
 
-
-class APISession(Session):
-    '''
-    Represents a connection to the CTFd API
-    '''
-    def __init__(self, prefix_url:str, authtoken:str, *args, **kwargs):
-        super(APISession, self).__init__(*args, **kwargs)
-        # Strip out ending slashes and append a singular one so we generate
-        # clean base URLs for both main deployments and subdir deployments
-        self.prefix_url = prefix_url.rstrip("/") + "/"
-        self.AUTHTOKEN = str
-    def request(self, method, url, *args, **kwargs):
-        # Strip out the preceding / so that urljoin creates the right url
-        # considering the appended / on the prefix_url
-        url = urljoin(self.prefix_url, url.lstrip("/"))
-        return super(APISession, self).request(method, url, *args, **kwargs)
-
-class Config():
-    '''
-Config class
-Maps to the command
-host@server$> ctfcli challenge config <command>
-    '''
-    def __init__(self):
-        pass
-    def loadconfig(self):
-        '''
-        loads.config.ini
-        '''
-
-    def edit(self):
-        '''
-        ctfcli config edit
-            Edit config with $EDITOR
-        '''
-        editor = os.getenv("EDITOR", "vi")
-        command = editor, get_config_path()
-        subprocess.call(command)
-
-    def path(self):
-        '''
-        ctfcli config path
-            Show config path
-        '''
-        click.echo(get_config_path())
-
-    def view(self, color=True, json=False):
-        '''
-        ctfcli config view
-            view the config
-        '''
-        config = get_config_path()
-        with open(config) as f:
-            if json is True:
-                config = preview_config(as_string=True)
-                if color:
-                    config = highlight(config, JsonLexer(), TerminalFormatter())
-            else:
-                config = f.read()
-                if color:
-                    config = highlight(config, IniLexer(), TerminalFormatter())
-            print(config)
 
 class SandboxyCTFdRepository():
     '''
     backend to GitOperations
+
+    Git interactivity class, Maps to the command
+>>> host@server$> ctfcli gitoperations <command>
+
+Available Commands:
+    - createrepo
+        initiates a new repository in the challenges folder
+        adds all files in challenges folder to repo
+    - 
+    - 
     '''
-    def __init__(self, repo, clone=False):
-        self.MASTERLIST = 
-        self.repo = repo
+    def __init__(self):
+        ''''''
+        #self.MASTERLIST = str
+        #self.repo = repo
+
+    def createrepo(self,clone=False):
+        '''
+        
+        '''
         if clone == True:
             try:
                 # the user indicates a remote repo, by supplying a url
@@ -118,6 +71,14 @@ class SandboxyCTFdRepository():
         self.repository.index.commit('Initial commit')
         self.repository.create_head('master')
     
+    def init(self):
+        '''
+        Creates a masterlist of challenges in the repository
+        '''
+        cat_bag = []
+        for challenge_category in CATEGORIES:
+            cat_bag.append(Category(challenge_category))
+
     def cloneremote(self,repourl):
         '''
         Clones Remote Repository into challenge directory
@@ -132,37 +93,11 @@ class SandboxyCTFdRepository():
         '''
         removes a challenge from the master list
         '''
-    
-
-class GitOperations():
-    ''' Added to FIREPL
-Git interactivity class, Maps to the command
->>> host@server$> ctfcli gitoperations <command>
-
-Available Commands:
-    - createrepo
-        initiates a new repository in the challenges folder
-        adds all files in challenges folder to repo
-    - 
-    - 
-    '''
-    def __init__(self):
-        pass
-
-    def createrepo(self, repo:str):
-        """
-    Maps to the command:
-    user@server$> ctfcli gitoperations createrepo
-    
-    Create a git repository with a ``master`` branch and ``README``.
-        This function will create a new local repository
-    """
-        newrepo = SandboxyCTFdRepository()
 
 ###############################################################################
 #  CTFCLI HANDLING CLASS
 ###############################################################################
-class ChallengeCategory(): #folder
+class Category(): #folder
     '''
     use getattr(),setattr() to add/query Challenge Entries
     this is used for keeping track internally
@@ -172,17 +107,9 @@ class ChallengeCategory(): #folder
       ChallengeEntry:
         represents a challenge.yaml
         name: thing
-      ChallengeEntry:
-        represents a challenge.yaml
-        name: thing
-      ChallengeEntry:
-        represents a challenge.yaml
-        name: thing
-
     '''
     def __init__(self,category):
         self.name = category
-        self.testchallenge = setattr(self,Challenge("test.yaml"))
     
     def updaterepository(self, challenge):
         '''
@@ -271,38 +198,47 @@ class SandBoxyCTFdLinkage():
         projectroot: Absolute path to project directory
         ctfd url:    Url of ctfd instance
         ctfdtoken:   Auth token as given by settings page
+        configname:  Name of the configfile to use
+
+        / not yet/
+        loadconfig:  Loads from configuration file
+            DEFAULT: True
+            INFO:    if False, ignores repository config
+        / not yet/
     '''
-    def __init__(self, projectroot, ctfdurl, ctfdtoken):
+    def __init__(self, projectroot, 
+                       ctfdurl, 
+                       ctfdtoken, 
+                       configname = "ctfcli.ini", 
+                       challengelist="challengelist.yml",
+                       challengefilename="challenge.yml"
+                       ):
         try:
             greenprint("[+] Instancing a SandboxyCTFdLinkage()")
-            self.PROJECTROOT         =  projectroot
+            self.PROJECTROOT         = projectroot
             self.CTFD_TOKEN          = ctfdtoken
             self.CTFD_URL            = ctfdurl
-            # reflects the data subdirectory in the project root
-            self.DATAROOT            =  Path(self.PROJECTROOT,"/data")
-            # represents the ctfd data folder
-            self.CTFDDATAROOT        = os.path.join(self.DATAROOT, "/ctfd")
-            # folder expected to contain challenges
-            self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "/challenges")
-            # template challenges
-            self.TEMPLATESDIR = os.path.join(self.challengesfolder, "/ctfcli", "/templates")
+            self.configname          = configname
             # name of the yaml file expected to have the challenge data in each subfolder
-            self.basechallengeyaml   = "challenge.yml"
+            self.basechallengeyaml   = challengefilename
             # filename for the full challenge index
-            self.listofchallenges    = "challengelist.yml"
+            self.listofchallenges    = challengelist
+            # reflects the data subdirectory in the project root
+            self.DATAROOT            =  os.path.join(self.PROJECTROOT,"/data/")
+            # represents the ctfd data folder
+            self.CTFDDATAROOT        = os.path.join(self.DATAROOT, "/ctfd/")
+            # folder expected to contain challenges
+            self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "/challenges/")
+            # template challenges
+            self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "/ctfcli", "/templates/")
+            #config stuff
+            self.SCRIPTDIR           = os.path.join(self.CTFDDATAROOT,"/.ctfcli/")
+            self.CONFIGDIR           = os.path.join(self.CTFDDATAROOT,"/.ctfcli/")
+            self.CONFIGFILE          = os.path.join(self.CONFIGDIR, self.configname)
+            self.config              = Config(self.COPNFIGFILE)
             # filebuffer for challengelist.yaml
             self.challengelistbuffer = open(self.listofchallenges).read()
             self.challengelistyaml   = yaml.load(self.challengelistbuffer, Loader=yaml.FullLoader) 
-            #######################################################################
-            # PLUGINS
-            #######################################################################
-            #   These are the files in "cli" folder
-            # /home/moop/sandboxy/data/ctfd/ctfcli/plugins
-            self.PLUGINDIRECTORY = os.path.join(self.CTFDDATAROOT,"ctfcli", "cli")
-            self.loadplugins()
-            ####################################
-            #lambdas, Still in __init__
-            ####################################
             # returns subdirectories , without . files/dirs
             self.getsubdirs = lambda directory: [name for name in os.listdir(directory) if os.path.isdir(name) and not re.match(r'\..*', name)]
             # open with read operation
@@ -313,19 +249,6 @@ class SandBoxyCTFdLinkage():
             self.loadchallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferr(category,challenge), Loader=yaml.FullLoader)
             self.writechallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferw(category,challenge), Loader=yaml.FullLoader)
 
-            ###################################################################
-            ## Variables
-            ###################################################################
-            categories = [
-                "Exploitation",
-                "Reversing",
-                "Web",
-                "Forensics",
-                "Scripting",
-                "Cryptography",
-                "Networking",
-                ]
-
         except Exception:
             errorlogger("[-] SandBoxyCTFdLinkage.__init__ Failed")
 
@@ -335,9 +258,6 @@ class SandBoxyCTFdLinkage():
     host@server$> ctfcli init
     Link to CTFd instance with token and URI
         '''
-        #if not self.CTFD_TOKEN or not self.CTFD_URL:
-        #    errorlogger("[-] NO INPUT, something is wrong")
-        #    exit(1)
         try:
             ctf_url = click.prompt("Please enter CTFd instance URL")
             ctf_token = click.prompt("Please enter CTFd Admin Access Token")
@@ -456,7 +376,7 @@ class SandBoxyCTFdLinkage():
             "value": int(challenge["value"]) if challenge["value"] else challenge["value"],
             **challenge.get("extra", {}),
             }
-            session = APISession(prefix_url=url)
+            session = APISession(prefix_url=self.CTFD_URL)
             session.headers.update({"Authorization": "Token {}".format(session.AUTHTOKEN)})
             apisess = session.get("/api/v1/challenges/{}".format(challenge_id), json=data).json()["data"]
             response = apisess.patch(f"/api/v1/challenges/{challenge_id}", json=data)
