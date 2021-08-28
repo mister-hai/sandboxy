@@ -18,10 +18,10 @@ from pygments import highlight
 from pygments.formatters import TerminalFormatter
 from pygments.lexers import IniLexer, JsonLexer
 from utils.utils import redprint,greenprint,yellowboldprint
+from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS, blank_challenge_spec
+from utils.Yaml import Yaml, KubernetesYaml, Challengeyaml
 
-from utils.deploy import DEPLOY_HANDLERS
-from utils.spec import CHALLENGE_SPEC_DOCS, blank_challenge_spec
-
+from utils.utils import errorlogger
 
 
 class APISession(Session):
@@ -91,6 +91,7 @@ class SandboxyCTFdRepository():
     backend to GitOperations
     '''
     def __init__(self, repo, clone=False):
+        self.MASTERLIST = 
         self.repo = repo
         if clone == True:
             try:
@@ -120,7 +121,18 @@ class SandboxyCTFdRepository():
     def cloneremote(self,repourl):
         '''
         Clones Remote Repository into challenge directory
+        This is not an expected action yet
         '''
+    def addchallenge(self):
+        '''
+        Adds a challenge to the repository master list
+        '''
+    
+    def removechallenge():
+        '''
+        removes a challenge from the master list
+        '''
+    
 
 class GitOperations():
     ''' Added to FIREPL
@@ -225,28 +237,12 @@ class Challenge(): #folder
                         break
             else:  # If we don't break because of duplicated challenge names
                 print(f'Installing {challenge["name"]}', fg="yellow")
-                create_challenge(challenge=challenge, ignore=ignore)
+                GitOperations.addchallenge(challenge=challenge, ignore=ignore)
                 print("Success!", fg="green")
 
     def sync(self, challenge=None, ignore=()):
-        if challenge is None:
-            # Get all challenges if not specifying a challenge
-            challenges = dict(config["challenges"]).keys()
-        else:
-            challenges = [challenge]
-
-        if isinstance(ignore, str):
-            ignore = (ignore,)
-
-        for challenge in challenges:
-            path = Path(challenge)
-
-            if path.name.endswith(".yml") is False:
-                path = path / "challenge.yml"
-
-            print("Found {path}")
-            challenge = load_challenge(path)
-            print(f'Loaded {challenge["name"]}', fg="yellow")
+            challenge = self.load_challenge(challenge)
+            greenprint('Loaded {}'.format(challenge["name"]))
 
             installed_challenges = load_installed_challenges()
             for c in installed_challenges:
@@ -262,83 +258,6 @@ class Challenge(): #folder
 
 
 
-    def finalize(self, challenge=None):
-        if challenge is None:
-            challenge = os.getcwd()
-
-        path = Path(challenge)
-        spec = blank_challenge_spec()
-        for k in spec:
-            q = CHALLENGE_SPEC_DOCS.get(k)
-            fields = q._asdict()
-
-            ask = False
-            required = fields.pop("required", False)
-            if required is False:
-                try:
-                    ask = click.confirm(f"Would you like to add the {k} field?")
-                    if ask is False:
-                        continue
-                except click.Abort:
-                    click.echo("\n")
-                    continue
-
-            if ask is True:
-                fields["text"] = "\t" + fields["text"]
-
-            multiple = fields.pop("multiple", False)
-            if multiple:
-                fields["text"] += " (Ctrl-C to continue)"
-                spec[k] = []
-                try:
-                    while True:
-                        r = click.prompt(**fields)
-                        spec[k].append(r)
-                except click.Abort:
-                    click.echo("\n")
-            else:
-                try:
-                    r = click.prompt(**fields)
-                    spec[k] = r
-                except click.Abort:
-                    click.echo("\n")
-        with open(path / "challenge.yml", "w+") as f:
-            yaml.dump(spec, stream=f, default_flow_style=False, sort_keys=False)
-        print("challenge.yml written to", path / "challenge.yml")
-
-    def lint(self, challenge=None):
-        path = Path(challenge)
-        lint_challenge(path)
-
-    def deploy(self, challenge, host=None):
-        if challenge is None:
-            challenge = os.getcwd()
-
-        path = Path(challenge)
-
-        if path.name.endswith(".yml") is False:
-            path = path / "challenge.yml"
-
-        challenge = load_challenge(path)
-        image = challenge.get("image")
-        target_host = host or challenge.get("host") or input("Target host URI: ")
-        if image is None:
-            print("This challenge can't be deployed because it doesn't have an associated image")
-            return
-        if bool(target_host) is False:
-            print("This challenge can't be deployed because there is no target host to deploy to")
-            return
-        url = urlparse(target_host)
-
-        if bool(url.netloc) is False:
-            print("Provided host has no URI scheme. Provide a URI scheme like ssh:// or registry://")
-            return
-
-        status, domain, port = DEPLOY_HANDLERS[url.scheme](challenge=challenge, host=target_host)
-        if status:
-            greenprint("[+] Challenge deployed at {}:{}".format(domain,port))
-        else:
-            redprint("[-] ERROR: deployment failed! Check the logfile!")
 
 #class CTFCLI():
 class SandBoxyCTFdLinkage():
@@ -346,27 +265,27 @@ class SandBoxyCTFdLinkage():
     Maps to the command
     host@server$> ctfcli
     Uses ctfcli to upload challenges from the data directory in project root
+
+    parameters are as follows:
+
+        projectroot: Absolute path to project directory
+        ctfd url:    Url of ctfd instance
+        ctfdtoken:   Auth token as given by settings page
     '''
-    def __init__(self):
+    def __init__(self, projectroot, ctfdurl, ctfdtoken):
         try:
             greenprint("[+] Instancing a SandboxyCTFdLinkage()")
-            # set by .env and start.sh
-            # reflects the directory you have sandboxy in, default is ~/sandboxy
-            self.PROJECTROOT         =  os.getenv("PROJECTROOT",default=None)
-            # set by .env and start.sh
+            self.PROJECTROOT         =  projectroot
+            self.CTFD_TOKEN          = ctfdtoken
+            self.CTFD_URL            = ctfdurl
             # reflects the data subdirectory in the project root
-            self.DATAROOT            = os.getenv("DATAROOT", default=None)
+            self.DATAROOT            =  Path(self.PROJECTROOT,"/data")
             # represents the ctfd data folder
-            self.CTFDDATAROOT        = os.path.join(self.DATAROOT, "ctfd")
-            # set by .env and start.sh
-            # ctfd command line access variables
-            self.CTFD_TOKEN          = os.getenv("CTFD_TOKEN", default=None)
-            self.CTFD_URL            = os.getenv("CTFD_URL", default=None)
-
+            self.CTFDDATAROOT        = os.path.join(self.DATAROOT, "/ctfd")
             # folder expected to contain challenges
-            self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
+            self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "/challenges")
             # template challenges
-            self.TEMPLATESDIR = os.path.join(self.challengesfolder, "ctfcli", "templates")
+            self.TEMPLATESDIR = os.path.join(self.challengesfolder, "/ctfcli", "/templates")
             # name of the yaml file expected to have the challenge data in each subfolder
             self.basechallengeyaml   = "challenge.yml"
             # filename for the full challenge index
