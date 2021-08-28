@@ -246,7 +246,7 @@ appendtoselfasbase64()
   # add the contents of the current directory
   # minus the start.sh and lib.sh scripts
   # " - " is the "dummy" or "pipe to stdout" operator for tar 
-  if tar --exclude="${SELF}" --exclude="${EXTRANAME}" -zcv - ./* | base64 >> "$SELF"; then
+  if tar --exclude="${SELF}" --exclude="${EXTRANAME}" -czvf - ./* | base64 >> "$SELF"; then
     cecho "[+] Project packed into archive!"
     # seal with an ending token
   else
@@ -260,7 +260,35 @@ appendtoselfasbase64()
     exit 1
   fi
 }
-
+appenddatafolder()
+{
+  currentdatetime=getepochseconds
+  cecho "[+] APPENDING: ${currentdatetime}" yellow
+  # add token with filename for identifier
+  printf "%s" "==${TOKEN}==${currentdatetime}==START==" >> "$SELF"
+  # add the contents of the current directory
+  # minus the start.sh and lib.sh scripts
+  # " - " is the "dummy" or "pipe to stdout" operator for tar 
+  #from above projectroot
+  unset CDPATH
+  cd "$DIR"
+  cd ../
+  if sudo tar -czvf - ./sandboxy/data | base64 >> "$SELF"; then
+    cecho "[+] Project packed into archive!"
+    # seal with an ending token
+  else
+    cecho "[-] Failed to tar directory into archive"
+  fi
+  cecho "[+] Sealing archive"
+  if printf "%s" "==${TOKEN}==${currentdatetime}==END==" >> "$SELF"; then
+    cecho "[+] Sealed! Modifications saved as ${currentdatetime}"
+  else
+    cecho "[-] Failed to seal archive, this shouldn't happen, the file might have dissappeared"
+    exit 1
+  fi
+  unset CDPATH
+  cd "$DIR"
+}
 # First arg: section
 #   ==${TOKEN}START==${1}==
 #       DATA AS BASE64

@@ -25,8 +25,8 @@ services:
       image: nginx:latest
       hostname: nginx
       depends_on:
-        - bwapp
-        - dvwa
+#        - bwapp
+#        - dvwa
         - ctfd
       restart: unless-stopped
       env_file:
@@ -90,7 +90,7 @@ services:
         - ./data/CTFd/uploads:${UPLOAD_FOLDER}
       depends_on:
         - db
-        - nginx
+#        - nginx
       expose:
         - 8000
       restart: unless-stopped
@@ -143,8 +143,8 @@ services:
 #################################################################
     db:
       image: mariadb:10.4.12
-      depends_on:
-        - nginx
+#      depends_on:
+#        - nginx
       restart: always
       environment:
         - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
