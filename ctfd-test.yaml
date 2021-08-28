@@ -37,7 +37,6 @@ services:
         - ./data/CTFd/uploads:${UPLOAD_FOLDER}
       depends_on:
         - db
-#        - nginx
       expose:
         - 8000
       ports:
@@ -54,7 +53,7 @@ services:
     cache:
       image: redis
       depends_on:
-        - nginx
+        - ctfd
       hostname: cache
       #command: redis-server --appendonly yes
       ports:
