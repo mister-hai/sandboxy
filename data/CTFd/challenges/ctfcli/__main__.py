@@ -3,6 +3,7 @@ import git
 import fire
 import json
 import yaml
+import click
 import os, sys
 import importlib
 import subprocess
@@ -16,100 +17,35 @@ from cookiecutter.main import cookiecutter
 from pygments import highlight
 from pygments.formatters import TerminalFormatter
 from pygments.lexers import IniLexer, JsonLexer
-
-from utils.config import get_config_path, preview_config
-
-from utils.challenge import (
-    create_challenge,
-    lint_challenge,
-    load_challenge,
-    load_installed_challenges,
-    sync_challenge,
-)
+from utils.utils import redprint,greenprint,yellowboldprint
 
 from utils.deploy import DEPLOY_HANDLERS
 from utils.spec import CHALLENGE_SPEC_DOCS, blank_challenge_spec
-# move to this file
-#from .utils.plugins import get_plugin_dir
-import logging
-import threading
-import traceback
-import subprocess
-import pathlib
-import sys
-
-try:
-    import colorama
-    from colorama import init
-    init()
-    from colorama import Fore, Back, Style
-    COLORMEQUALIFIED = True
-except ImportError as derp:
-    print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
-    COLORMEQUALIFIED = False
-
-################################################################################
-##############               LOGGING AND ERRORS                #################
-################################################################################
-LOGLEVEL            = 'DEV_IS_DUMB'
-LOGLEVELS           = [1,2,3,'DEV_IS_DUMB']
-log_file            = 'logfile'
-logging.basicConfig(filename=log_file, format='%(asctime)s %(message)s', filemode='w')
-logger              = logging.getLogger()
-launchercwd         = pathlib.Path().absolute()
 
 
-redprint          = lambda text: print(Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-blueprint         = lambda text: print(Fore.BLUE + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-greenprint        = lambda text: print(Fore.GREEN + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-yellowboldprint = lambda text: print(Fore.YELLOW + Style.BRIGHT + ' {} '.format(text) + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-makeyellow        = lambda text: Fore.YELLOW + ' ' +  text + ' ' + Style.RESET_ALL if (COLORMEQUALIFIED == True) else text
-makered           = lambda text: Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL if (COLORMEQUALIFIED == True) else None
-makegreen         = lambda text: Fore.GREEN + ' ' +  text + ' ' + Style.RESET_ALL if (COLORMEQUALIFIED == True) else None
-makeblue          = lambda text: Fore.BLUE + ' ' +  text + ' ' + Style.RESET_ALL if (COLORMEQUALIFIED == True) else None
-debuglog     = lambda message: logger.debug(message) 
-infolog      = lambda message: logger.info(message)   
-warninglog   = lambda message: logger.warning(message) 
-errorlog     = lambda message: logger.error(message) 
-criticallog  = lambda message: logger.critical(message)
 
-################################################################################
-##############             ERROR HANDLING FUNCTIONS            #################
-################################################################################
-def errorlogger(message):
-    '''
-    prints line number and traceback
-    TODO: save stack trace to error log
-            only print linenumber and function failure
-    '''
-    exc_type, exc_value, exc_tb = sys.exc_info()
-    trace = traceback.TracebackException(exc_type, exc_value, exc_tb) 
-    try:
-        errormesg = message + ''.join(trace.format_exception_only())
-        #traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
-        lineno = 'LINE NUMBER >>>' + str(exc_tb.tb_lineno)
-        errorlog(lineno+errormesg)
-    except Exception:
-        print("EXCEPTION IN ERROR HANDLER!!!")
-        print(message + ''.join(trace.format_exception_only()))
 class APISession(Session):
-    def __init__(self, prefix_url=None, *args, **kwargs):
+    '''
+    Represents a connection to the CTFd API
+    '''
+    def __init__(self, prefix_url:str, authtoken:str, *args, **kwargs):
         super(APISession, self).__init__(*args, **kwargs)
         # Strip out ending slashes and append a singular one so we generate
         # clean base URLs for both main deployments and subdir deployments
         self.prefix_url = prefix_url.rstrip("/") + "/"
-
+        self.AUTHTOKEN = str
     def request(self, method, url, *args, **kwargs):
         # Strip out the preceding / so that urljoin creates the right url
         # considering the appended / on the prefix_url
         url = urljoin(self.prefix_url, url.lstrip("/"))
         return super(APISession, self).request(method, url, *args, **kwargs)
-###############################################################################
-## Config class
-## Maps to the command
-## host@server$> ctfcli challenge config <command>
-###############################################################################
+
 class Config():
+    '''
+Config class
+Maps to the command
+host@server$> ctfcli challenge config <command>
+    '''
     def __init__(self):
         pass
     def loadconfig(self):
@@ -150,12 +86,9 @@ class Config():
                     config = highlight(config, IniLexer(), TerminalFormatter())
             print(config)
 
-###############################################################################
-## Git interactivity class
-###############################################################################
 class SandboxyCTFdRepository():
     '''
-    
+    backend to GitOperations
     '''
     def __init__(self, repo, clone=False):
         self.repo = repo
@@ -206,16 +139,18 @@ Available Commands:
 
     def createrepo(self, repo:str):
         """
-Create a git repository with a ``master`` branch and ``README``.
-    This function will create a new local repository
-        """
+    Maps to the command:
+    user@server$> ctfcli gitoperations createrepo
+    
+    Create a git repository with a ``master`` branch and ``README``.
+        This function will create a new local repository
+    """
         newrepo = SandboxyCTFdRepository()
-
 
 ###############################################################################
 #  CTFCLI HANDLING CLASS
 ###############################################################################
-class ChallengeCategory():
+class ChallengeCategory(): #folder
     '''
     use getattr(),setattr() to add/query Challenge Entries
     this is used for keeping track internally
@@ -233,70 +168,33 @@ class ChallengeCategory():
         name: thing
 
     '''
-    def __init__(self,name):
-        self.name = name
+    def __init__(self,category):
+        self.name = category
         self.testchallenge = setattr(self,Challenge("test.yaml"))
     
-    def addchallenge(self, challenge):
+    def updaterepository(self, challenge):
         '''
-        Adds a challenge to the category
+    Updates the repository with any new content added to the category given
+    if it doesnt fit the spec, it will issue an error    
+    Try not to let your repo get cluttered
         '''
 
-class Yaml(dict):
-    '''
-    Represents a challange.yml
-    Give Path to challenge.yaml
-    '''
-    def __init__(self,data, filepath):
-        #set the base values
-        self.type = str
-        #get path of file
-        self.filepath = Path(filepath)
-        #set working dir of file
-        self.directory = self.filepath.parent
-        #if its a kubernetes config
-        if self.filepath.endswith(".yaml"):
-            redprint("[!] File is .yaml! Presuming to be kubernetes config!")
-            self.type = "kubernetes"
-        else:
-            greenprint("[+] Challenge File presumed (.yml)")
-            try:
-                #open the yml file
-                with open(filepath) as f:
-                    filedata = yaml.safe_load(f.read(), filepath=filepath)
-                    #assign data to self
-                    #previous
-                    #super().__init__(filedata)
-                    setattr(self,"data",filedata)
-            except FileNotFoundError:
-                print("No challenge.yml was found in {}".format(filepath))
+    def synccategory(self):
+        '''
+    Updates all challenges in CTFd with the versions in the repository
+    Operates on the entire category 
+        '''
 
-class KubernetesSpec():
-    '''
-    Represents a Kubernetes specification
-    '''
-    def __init__(self):
-        pass
 
-class Challenge():
-    '''
-    Represents the challenge as exists in the folder for that specific challenge
-    '''
-    def __init__(self,yamlfile:Yaml):
-        #get a representation of the challenge.yaml file
-        self.challengeyaml = yamlfile
-        self.yamldata = self.challengeyaml.data
-        # name of the challenge
-        self.name        = self.challengeyaml['name']
-        self.author      = self.challengeyaml['author']
-        self.category    = self.challengeyaml['category']
-        self.description = self.challengeyaml['description']
-        self.value       = self.challengeyaml['value']
-        self.type        = self.challengeyaml['type']
 
-class ChallengeFolder():
+
+class Challenge(): #folder
     '''
+    Maps to the command:
+    user@server$> ctfcli challenge
+
     Represents the Challenge folder
+    not loaded into fire
     '''
     def __init__(self, templatesdir):
         pass
@@ -362,17 +260,7 @@ class ChallengeFolder():
             sync_challenge(challenge=challenge, ignore=ignore)
             print("Success!", fg="green")
 
-#    def update(self, challenge=None):
-#        for folder, url in challenges.items():
-#            if url.endswith(".git"):
-#                click.echo(f"Pulling latest {url} to {folder}")
-#                head_branch = get_git_repo_head_branch(url)
-#                subprocess.call(["git","subtree","pull","--prefix",folder,url,head_branch,"--squash",],cwd=self.CH,)
-#                subprocess.call(["git", "mergetool"], cwd=folder)
-#                subprocess.call(["git", "clean", "-f"], cwd=folder)
-#                subprocess.call(["git", "commit", "--no-edit"], cwd=folder)
-#            else:
-#                click.echo(f"Skipping {url} - {folder}")
+
 
     def finalize(self, challenge=None):
         if challenge is None:
@@ -452,17 +340,11 @@ class ChallengeFolder():
         else:
             redprint("[-] ERROR: deployment failed! Check the logfile!")
 
-
-
-###############################################################################
-## MAIN class
-## Maps to the command
-## host@server$> ctfcli
-# run on it's own to produce help text
-###############################################################################
-#class CTFCLI(object):
+#class CTFCLI():
 class SandBoxyCTFdLinkage():
     '''
+    Maps to the command
+    host@server$> ctfcli
     Uses ctfcli to upload challenges from the data directory in project root
     '''
     def __init__(self):
@@ -528,28 +410,11 @@ class SandBoxyCTFdLinkage():
         except Exception:
             errorlogger("[-] SandBoxyCTFdLinkage.__init__ Failed")
 
-    #def loadplugins(self):
-    #    '''
-    #    Loads Plugins from cli directory
-    #        files must end in .py and have simple, descriptive names
-    #        settattr is being used, no funny business!
-    #    '''
-    #    #loads files from the /ctfcli/cli directory for use as
-    #    # REPL interface objects
-    #    greenprint("[+] Loading Plugins from {}".format(self.PLUGINDIRECTORY))
-    #    # for each of the files in the plugin directory
-    #    for replimport in sorted(os.listdir(self.PLUGINDIRECTORY)):
-    #        # get an absolute path to the file
-    #        filepath = os.path.join(self.PLUGINDIRECTORY, replimport)
-    #        greenprint("Loading {}".format(replimport))
-    #        #import that file
-    #        importedmodule = importlib.import_module(filepath)
-    #        # add specified modules into class
-    #        setattr(self,replimport,importedmodule)
-
     def init(self):
         '''
-        Link to CTFd instance with token and URI
+    Maps to the command
+    host@server$> ctfcli init
+    Link to CTFd instance with token and URI
         '''
         #if not self.CTFD_TOKEN or not self.CTFD_URL:
         #    errorlogger("[-] NO INPUT, something is wrong")
@@ -584,21 +449,26 @@ class SandBoxyCTFdLinkage():
             errorlogger("[-] INVALID INPUT: {} {}".format(self.CTFD_URL,self.CTFD_TOKEN))
             exit(1)
 
-    def getcategories(self,print:bool):
+    def getcategories(self,print=True):
         '''
-        Get the names of all Categories
-        Supply "print=True" to display to screen instead of return a variable
+    Maps to the command
+    host@server$> ctfcli getcategories
+    
+    Get the names of all Categories
+    Supply "print=False" to return a variable instead of display to screen 
         '''
         categories = self.getsubdirs(self.challengesfolder)
         if print == True:
             greenprint("Categories: " + ",  ".join(categories))
         else:
             return categories
-    
+
     def getchallengesbycategory(self, category, printscr=True):
         '''
-        Lists challenges in DB by category
-            Use this after getting a list of categories
+    Maps to the command
+    host@server$> ctfcli init
+    Lists challenges in repo by category        
+    Supply "print=False" to return a variable instead of utf-8 
         '''
         challenges = []
         for category in self.get_categories():
@@ -614,9 +484,11 @@ class SandBoxyCTFdLinkage():
 
     def populatechallengelist(self):
         '''
-        Indexes 
-            PROJECTROOT/data/CTFd/challenges/{category}/ 
-        for challenges and adds them to the master list
+    Maps to the command
+    host@server$> ctfcli populatechallengelist
+    Indexes 
+        PROJECTROOT/data/CTFd/challenges/{category}/ 
+    for challenges and adds them to the master list
         '''
         challengelist = []
         # itterate over all categories
@@ -632,10 +504,10 @@ class SandBoxyCTFdLinkage():
 
     def synccategory(self, category:str):
         '''
-        Takes a category name
+    Maps to the command
+    host@server$> ctfcli synccategory <categoryname>
 
-        Synchronize all challenges in the given category
-        where each challenge is in it's own folder.
+    Synchronize all challenges in the given category
         '''
         try:
             greenprint("[+] Syncing Category: {}". format(category))
@@ -643,32 +515,153 @@ class SandBoxyCTFdLinkage():
             for challenge in challenges:
                 greenprint(f"Syncing challenge: {challenge}")
                 #old code
-                danglies
-                #os.system(f"ctf challenge sync '{challenge}'; ctf challenge install '{challenge}'")
+                #danglies
         except Exception:
             errorlogger("[-] Failure, INPUT: {}".format(challenge))
 
-    def syncchallenge(challenge:str):
+    def syncchallenge(self,challenge:str):
         '''
         Adds a challenge
             Must be in its own folder, in a category that has been indexed
         '''
         greenprint(f"Syncing challenge: {challenge}")
+        challenge_id = str
         try:
-            #old code
-            danglies
-            #os.system(f"ctf challenge sync '{challenge}'; ctf challenge install '{challenge}'")
+            # load yaml into dict
+            newchallenge = Challengeyaml(challenge)
+            data = {
+            "name": challenge["name"],
+            "category": challenge["category"],
+            "description": challenge["description"],
+            "type": challenge.get("type", "standard"),
+            "value": int(challenge["value"]) if challenge["value"] else challenge["value"],
+            **challenge.get("extra", {}),
+            }
+            session = APISession(prefix_url=url)
+            session.headers.update({"Authorization": "Token {}".format(session.AUTHTOKEN)})
+            apisess = session.get("/api/v1/challenges/{}".format(challenge_id), json=data).json()["data"]
+            response = apisess.patch(f"/api/v1/challenges/{challenge_id}", json=data)
+            response.raise_for_status()
+            # Create new flags
+            if challenge.get("flags") and "flags" not in ignore:
+                # Delete existing flags
+                current_flags = s.get(f"/api/v1/flags", json=data).json()["data"]
+                for flag in current_flags:
+                    if flag["challenge_id"] == challenge_id:
+                        flag_id = flag["id"]
+                        r = s.delete(f"/api/v1/flags/{flag_id}", json=True)
+                        r.raise_for_status()
+                for flag in challenge["flags"]:
+                    if type(flag) == str:
+                        data = {"content": flag, "type": "static", "challenge_id": challenge_id}
+                        r = s.post(f"/api/v1/flags", json=data)
+                        r.raise_for_status()
+                    elif type(flag) == dict:
+                        flag["challenge_id"] = challenge_id
+                        r = s.post(f"/api/v1/flags", json=flag)
+                        r.raise_for_status()
+            # Update topics
+            if challenge.get("topics") and "topics" not in ignore:
+                # Delete existing challenge topics
+                current_topics = s.get(f"/api/v1/challenges/{challenge_id}/topics", json="").json()["data"]
+                for topic in current_topics:
+                    topic_id = topic["id"]
+                    r = s.delete(f"/api/v1/topics?type=challenge&target_id={topic_id}", json=True)
+                    r.raise_for_status()
+                # Ad    d new challenge topics
+                for topic in challenge["topics"]:
+                    r = s.post(f"/api/v1/topics",
+                        json={
+                            "value": topic,
+                            "type": "challenge",
+                            "challenge_id": challenge_id,
+                        },)
+                    r.raise_for_status()
+            # Update tags
+            if challenge.get("tags") and "tags" not in ignore:
+                # Delete existing tags
+                current_tags = s.get(f"/api/v1/tags", json=data).json()["data"]
+                for tag in current_tags:
+                    if tag["challenge_id"] == challenge_id:
+                        tag_id = tag["id"]
+                        r = s.delete(f"/api/v1/tags/{tag_id}", json=True)
+                        r.raise_for_status()
+                for tag in challenge["tags"]:
+                    r = s.post(
+                        f"/api/v1/tags", json={"challenge_id": challenge_id, "value": tag}
+                    )
+                    r.raise_for_status()
+            # Upload files
+            if challenge.get("files") and "files" not in ignore:
+                # Delete existing files
+                all_current_files = s.get(f"/api/v1/files?type=challenge", json=data).json()[
+                    "data"
+                ]
+                for f in all_current_files:
+                    for used_file in original_challenge["files"]:
+                        if f["location"] in used_file:
+                            file_id = f["id"]
+                            r = s.delete(f"/api/v1/files/{file_id}", json=True)
+                            r.raise_for_status()
+                files = []
+                for f in challenge["files"]:
+                    file_path = Path(challenge.directory, f)
+                    if file_path.exists():
+                        file_object = ("file", file_path.open(mode="rb"))
+                        files.append(file_object)
+                    else:
+                        click.secho(f"File {file_path} was not found", fg="red")
+                        raise Exception(f"File {file_path} was not found")
+                data = {"challenge_id": challenge_id, "type": "challenge"}
+            # Sp    ecifically use data= here instead of json= to send multipart/form-data
+                r = s.post(f"/api/v1/files", files=files, data=data)
+                r.raise_for_status()
+            # Create hints
+            if challenge.get("hints") and "hints" not in ignore:
+                # Delete existing hints
+                current_hints = s.get(f"/api/v1/hints", json=data).json()["data"]
+                for hint in current_hints:
+                    if hint["challenge_id"] == challenge_id:
+                        hint_id = hint["id"]
+                        r = s.delete(f"/api/v1/hints/{hint_id}", json=True)
+                        r.raise_for_status()
+                for hint in challenge["hints"]:
+                    if type(hint) == str:
+                        data = {"content": hint, "cost": 0, "challenge_id": challenge_id}
+                    else:
+                        data = {
+                            "content": hint["content"],
+                            "cost": hint["cost"],
+                            "challenge_id": challenge_id,
+                        }
+                    r = s.post(f"/api/v1/hints", json=data)
+                    r.raise_for_status()
+            # Update requirements
+            if challenge.get("requirements") and "requirements" not in ignore:
+                installed_challenges = load_installed_challenges()
+                required_challenges = []
+                for r in challenge["requirements"]:
+                    if type(r) == str:
+                        for c in installed_challenges:
+                            if c["name"] == r:
+                                required_challenges.append(c["id"])
+                    elif type(r) == int:
+                        required_challenges.append(r)
+                required_challenges = list(set(required_challenges))
+                data = {"requirements": {"prerequisites": required_challenges}}
+                r = s.patch(f"/api/v1/challenges/{challenge_id}", json=data)
+                r.raise_for_status()
+            # Unhide challenge depending upon the value of "state" in spec
+            if "state" not in ignore:
+                data = {"state": "visible"}
+                if challenge.get("state"):
+                    if challenge["state"] in ["hidden", "visible"]:
+                        data["state"] = challenge["state"]
+                r = s.patch(f"/api/v1/challenges/{challenge_id}", json=data)
+                r.raise_for_status()
         except Exception:
             errorlogger("[-] Failure, INPUT: {}".format(challenge))
 
-
-    def generate_session(self):
-        config = load_config()
-        url = config["config"]["url"]
-        access_token = config["config"]["access_token"]
-        s = APISession(prefix_url=url)
-        s.headers.update({"Authorization": f"Token {access_token}"})
-        return s
 
     def load_installed_challenges(self):
         s = self.generate_session()

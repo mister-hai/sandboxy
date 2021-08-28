@@ -7,7 +7,7 @@ version: "3"
 services:
 #################################################################
 ## CTFD; 
-## Testing nginx on ctfd / two nginx reverse proxies ?
+## Testing nginx on ctfd
 # STATUS : FUNCTIONAL
 #################################################################        
     ctfd:

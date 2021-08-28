@@ -35,7 +35,7 @@
  
     To confirm your FQDN, run below command :
         root@server12 # hostname -f
-        server12.kerneltalks.com
+        fightbiscuits.firewall-gateway.net
 
     Add domain in /etc/resolv.conf. This file used for setting nameservers as well.
         root@server12 # cat /etc/resolv.conf
