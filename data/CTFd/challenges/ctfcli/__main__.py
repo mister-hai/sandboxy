@@ -511,6 +511,20 @@ class SandBoxyCTFdLinkage():
             #loads a challenge.yaml file into a buffer
             self.loadchallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferr(category,challenge), Loader=yaml.FullLoader)
             self.writechallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferw(category,challenge), Loader=yaml.FullLoader)
+
+            ###################################################################
+            ## Variables
+            ###################################################################
+            categories = [
+                "Exploitation",
+                "Reversing",
+                "Web",
+                "Forensics",
+                "Scripting",
+                "Cryptography",
+                "Networking",
+                ]
+
         except Exception:
             errorlogger("[-] SandBoxyCTFdLinkage.__init__ Failed")
 
@@ -581,7 +595,7 @@ class SandBoxyCTFdLinkage():
         else:
             return categories
     
-    def getchallengesbycategory(self, category, printscr:bool):
+    def getchallengesbycategory(self, category, printscr=True):
         '''
         Lists challenges in DB by category
             Use this after getting a list of categories

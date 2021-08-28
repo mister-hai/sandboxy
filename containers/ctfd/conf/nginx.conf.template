@@ -18,16 +18,9 @@ http {
     
     # server_name_in_redirect off;
     root /var/www/html;
-    #server {
-    #listen 0.0.0.0:80;
-    #listen 0.0.0.0:443;
-    #server_name firewall-gateway.net fightbiscuits.firewall-gateway.net;
+    index    index.html index.htm index.php;
     include /etc/nginx/mime.types;
     include /etc/nginx/fastcgi.conf;
-    #include /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf;
-
-    #default_type application/octet-stream;
-    index    index.html index.htm index.php;
 
     sendfile on;
     tcp_nopush on;
@@ -103,14 +96,8 @@ http {
     ##
     # Virtual Host Configs
     ##
-    #include /etc/nginx/sites-enabled/*;
-    # up streams have to match container hostname
-    #upstream ctfd {
-    #    server ctfd:${CTFDPORT};
-    #}
-    #upstream juiceshop {
-    #    server ${DOMAINNAME}:${JUICESHOPPORT};
-    #}
-    #}
+    upstream ctfd {
+        server ctfd:${CTFDPORT};
+    }
     include /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf;
 }
