@@ -5,6 +5,7 @@ FROM ctfd/ctfd
 COPY ./config.ini /opt/CTFd/CTFd/config.ini
 
 #in stall certbot and pip
+USER root
 RUN apt-get update
 RUN apt-get install -y nginx certbot python3-pip
 RUN pip3 install certbot-nginx
@@ -13,6 +14,7 @@ RUN pip3 install certbot-nginx
 RUN mkdir /var/www/
 RUN mkdir /var/www/html/
 COPY index.html /var/www/html/index.html
+RUN chmod 666 /var/www/html/index.http
 
 #copy the conf files over to the container
 # this lets us mount the file as a volume for dev also
