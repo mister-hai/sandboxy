@@ -42,48 +42,29 @@ Available Commands:
         #self.MASTERLIST = str
         #self.repo = repo
 
-    def createrepo(self,clone=False):
+    def clonerepo(self,clone=False):
         '''
-        
+        ctfcli gitoperations clonerepo <remoterepository>
         '''
-        if clone == True:
-            try:
-                # the user indicates a remote repo, by supplying a url
-                if re.match(r'^(?:http|https)?://', self.repo) or repo.endswith(".git"):
-                    self.repository = git.Repo.clone(self.repo)
-                    # get remote references to sync repos
-                    self.heads = self.repository.heads
-                    # get reference for master branch
-                    # lists can be accessed by name for convenience
-                    self.master = self.heads.master
-                    # Get latest coommit
-                    # the commit pointed to by head called master
-                    self.mastercommit = self.master.commit
-                #the user indicates the challenge folder is to be the repository
-                # this is the expected action
-                elif clone == False:
-                    self.repository = git.Repo.init(path=self.repo)
-            except Exception:
-                errorlogger("[-] ERROR: Could not create Git repository in the challenges folder")
-
-        #all all files in challenge folder to local repository
-        self.repository.index.add()
-        self.repository.index.commit('Initial commit')
-        self.repository.create_head('master')
-    
-    def init(self):
-        '''
-        Creates a masterlist of challenges in the repository
-        '''
-        cat_bag = []
-        for challenge_category in CATEGORIES:
-            cat_bag.append(Category(challenge_category))
-
-    def cloneremote(self,repourl):
-        '''
-        Clones Remote Repository into challenge directory
-        This is not an expected action yet
-        '''
+        try:
+            # the user indicates a remote repo, by supplying a url
+            if re.match(r'^(?:http|https)?://', self.repo) or repo.endswith(".git"):
+                self.repository = git.Repo.clone(self.repo)
+                # get remote references to sync repos
+                self.heads = self.repository.heads
+                # get reference for master branch
+                # lists can be accessed by name for convenience
+                self.master = self.heads.master
+                # Get latest coommit
+                # the commit pointed to by head called master
+                self.mastercommit = self.master.commit
+            #the user indicates the challenge folder is to be the repository
+            # this is the expected action
+            elif clone == False:
+                self.repository = git.Repo.init(path=self.repo)
+        except Exception:
+            errorlogger("[-] ERROR: Could not create Git repository in the challenges folder")
+ 
     def addchallenge(self):
         '''
         Adds a challenge to the repository master list
@@ -196,7 +177,7 @@ class SandBoxyCTFdLinkage():
     parameters are as follows:
 
         projectroot: Absolute path to project directory
-        ctfd url:    Url of ctfd instance
+        ctfdurl:    Url of ctfd instance
         ctfdtoken:   Auth token as given by settings page
         configname:  Name of the configfile to use
 
@@ -255,38 +236,36 @@ class SandBoxyCTFdLinkage():
     def init(self):
         '''
     Maps to the command
-    host@server$> ctfcli init
+    host@server$> ctfcli --ctfdtoken <token> --ctfdurl <url> init
+    
     Link to CTFd instance with token and URI
+        - Creates a masterlist of challenges in the repository
+        - Creates a git repository and adds all the files
+
         '''
-        try:
-            ctf_url = click.prompt("Please enter CTFd instance URL")
-            ctf_token = click.prompt("Please enter CTFd Admin Access Token")
-            if (
-                click.confirm(f"Do you want to continue with {ctf_url} and {ctf_token}")
-                is False
-                ):
-                click.echo("Aborted!")
-                return
+        cat_bag = []
+        for challenge_category in CATEGORIES:
+            cat_bag.append(Category(challenge_category))
+        
+        #create repo
+        self.repository = git.Repo.init(path=self.repo)
+        #add all files in challenge folder to local repository
+        self.repository.index.add(".")
+        self.repository.index.commit('Initial commit')
+        self.repository.create_head('master')
 
-            # check if .ctf repo folder already exists
-            if Path(".ctf").exists():
-                click.secho(".ctf/ folder already exists. Aborting!", fg="red")
-                return
-            else:
-                os.mkdir(".ctf")
+        # create config file
+        config = configparser.ConfigParser()
+        config["config"] = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
+        config["challenges"] = {}
+        config.write()
 
-            config = configparser.ConfigParser()
-            config["config"] = {"url": ctf_url, "access_token": ctf_token}
-            config["challenges"] = {}
-
-            with open(".ctf/config", "a+") as f:
-                config.write(f)
-
-            subprocess.call(["git", "init"])
-
-        except Exception:
-            errorlogger("[-] INVALID INPUT: {} {}".format(self.CTFD_URL,self.CTFD_TOKEN))
-            exit(1)
+        #generate a list of categories
+        cat_bag = []
+        for challenge_category in CATEGORIES:
+            #put the cats in the bag
+            cat_bag.append(Category(challenge_category))
+   
 
     def getcategories(self,print=True):
         '''
