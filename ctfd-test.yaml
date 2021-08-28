@@ -13,7 +13,7 @@ services:
     ctfd:
       image: ctfd/ctfd
       build:
-        context: ./containers/CTFd
+        context: ./containers/ctfd
         dockerfile: Dockerfile
       hostname: ctfd
       user: root
