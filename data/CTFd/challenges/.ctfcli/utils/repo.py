@@ -1,4 +1,6 @@
+from pathlib import Path
 from utils import errorlogger
+from Yaml import Yaml
 import git, re
 class SandboxyCTFdRepository():
     '''
@@ -14,10 +16,10 @@ Available Commands:
     - 
     - 
     '''
-    def __init__(self):
+    def __init__(self,masterlist):
         '''
         '''
-        self.MASTERLIST = str
+        self.MASTERLIST = Yaml(masterlist)
         self.repo = str
 
     def clonerepo(self,repo):

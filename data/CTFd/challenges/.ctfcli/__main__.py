@@ -93,21 +93,22 @@ class SandBoxyCTFdLinkage():
             self.configname          = configname
             # name of the yaml file expected to have the challenge data in each subfolder
             self.basechallengeyaml   = challengefilename
-            # filename for the full challenge index
-            self.listofchallenges    = challengelist
             # reflects the data subdirectory in the project root
-            self.DATAROOT            =  os.path.join(self.PROJECTROOT,"/data/")
+            self.DATAROOT            =  os.path.join(self.PROJECTROOT,"data")
             # represents the ctfd data folder
-            self.CTFDDATAROOT        = os.path.join(self.DATAROOT, "/ctfd/")
+            self.CTFDDATAROOT        = os.path.join(self.DATAROOT, "ctfd")
             # folder expected to contain challenges
             # categories in here
                 # then individual challenges
-            self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "/challenges/")
+            self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
+            # filename for the full challenge index
+            self.masterlist          = challengelist
+            self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlist)
             # template challenges
-            self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "/ctfcli", "/templates/")
+            self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "ctfcli", "templates")
             #config stuff
-            self.SCRIPTDIR           = os.path.join(self.CTFDDATAROOT,"/.ctfcli/")
-            self.CONFIGDIR           = os.path.join(self.CTFDDATAROOT,"/.ctfcli/")
+            self.SCRIPTDIR           = os.path.join(self.CTFDDATAROOT,".ctfcli")
+            self.CONFIGDIR           = os.path.join(self.CTFDDATAROOT,".ctfcli")
             self.CONFIGFILE          = os.path.join(self.CONFIGDIR, self.configname)
             self.config              = Config(self.COPNFIGFILE)
             # filebuffer for challengelist.yaml
@@ -144,45 +145,52 @@ class SandBoxyCTFdLinkage():
         # get list of all folders in challenges repo
         categoryfolders = self.getsubdirs(self.challengesfolder)
         # itterate over folders in challenge directory
-        for categoryfolder in categoryfolders:
+        for category in categoryfolders:
             # if its a repository category folder
-            if categoryfolder in CATEGORIES:
+            if category in CATEGORIES:
+                # add a new category to the bag of cats
+                # dont forget to stick your head in and ROTATE >:3
+                cat_bag.append(Category(challenge_category))
                 # track location change to subdir
-                pwd = self.location(self.challengesfolder, categoryfolder)
+                pwd = self.location(self.challengesfolder, category)
                 #get subfolder names in category directory, wreprweswenting indivwidual chwallenges yippyippyippyipp
-                challengefolders = self.getsubdirs(pwd)
+                challenges = self.getsubdirs(pwd)
                 # itterate over the individual challenges
-                for challengefolder in challengefolders:
+                for challengefolder in challenges:
                     # track location change to individual challenge subdir
-                    pwd = self.location(challengefolders, challengefolder)
-                    # get the data
+                    pwd = self.location(challenges, challengefolder)
+                    # list files and folders
                     challengefolderdata = os.listdir(pwd)
-                    for challengedata in challengefolder:
+                    # itterate over them
+                    for challengedata in challengefolderdata:
                         # set location to challenge subfolder
                         challengelocation = self.location(pwd, challengefolder)
-                        # get solutions
+                        # get solutions path
                         if challengedata == "solution":
                             solution = os.path.join(pwd, challengedata)
-                        # get handouts
+                        # get handouts path
                         if challengedata == "handout":
                             handout        = os.path.join(pwd, challengedata)
-                        # get challenge file
+                        # get challenge file contents
                         if challengedata == self.basechallengeyaml:
                             # get path to challenge file
                             challengefile  = os.path.join(pwd, challengedata)
                             # load the yml describing the challenge
                             challengeyaml = Yaml(challengefile)
+                            # get the name of the challenge
                             name = challengeyaml['name']
                         # for challenges with a server side component
                         #if challenge_data == "serverside":
+                        # files for the server to host for safer challenges 
                         #    challengesrc = os.path.join(pwd, challenge_data)
                         #if challenge_data == "deployment":
+                        # kubernetes deployment with nsjail
                         #    deployment = os.path.join(pwd, challenge_data)
 
                 # generate challenge for that category
                 newchallenge = Challenge(
-                        name,
-                        category = categoryfolder,
+                        name = name,
+                        category = category,
                         location = challengelocation, 
                         challengefile = challengefile,
                         #challengesrc=challengesrc,
@@ -190,7 +198,10 @@ class SandBoxyCTFdLinkage():
                         handout= handout,
                         solution=solution
                         )
-        
+                
+                #add the new challenge to the category as 
+                # its own named child
+                setattr(cat_bag[category],name,newchallenge)
         #create repo
         self.repository = git.Repo.init(path=self.repo)
         #add all files in challenge folder to local repository
@@ -202,17 +213,6 @@ class SandBoxyCTFdLinkage():
         config = configparser.ConfigParser()
         config["config"] = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
         config.write()
-
-        #generate a list of categories
-        cat_bag = []
-        for challenge_category in CATEGORIES:
-            #put the cats in the bag
-            cat_bag.append(Category(challenge_category))
-        
-        # add the challenges in each category folder to the category class
-        # while also writing them to masterlist
-        for category in cat_bag:
-            pass
 
 
     def getcategories(self,print=True):
