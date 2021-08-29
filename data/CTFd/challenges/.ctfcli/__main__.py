@@ -156,6 +156,7 @@ class SandBoxyCTFdLinkage():
             if category in CATEGORIES:
                 # add a new category to the bag of cats
                 # dont forget to stick your head in and ROTATE >:3
+                self.config['categories']
                 cat_bag.append(Category(challenge_category))
                 # track location change to subdir
                 pwd = self.location(self.challengesfolder, category)
@@ -176,15 +177,16 @@ class SandBoxyCTFdLinkage():
                             solution = os.path.join(pwd, challengedata)
                         # get handouts path
                         if challengedata == "handout":
-                            handout        = os.path.join(pwd, challengedata)
-                        # get challenge file contents
+                            handout = os.path.join(pwd, challengedata)
+                        # get challenge file 
+                        # self.basechallengeyaml == "challenge.yml"
                         if challengedata == self.basechallengeyaml:
                             # get path to challenge file
                             challengefile  = os.path.join(pwd, challengedata)
                             # load the yml describing the challenge
-                            challengeyaml = Yaml(challengefile)
+                            #challengeyaml = Yaml(challengefile)
+                            challengeyaml = Challengeyaml(challengefile)
                             # get the name of the challenge
-                            name = challengeyaml['name']
                         # for challenges with a server side component
                         #if challenge_data == "serverside":
                         # files for the server to host for safer challenges 
@@ -195,25 +197,25 @@ class SandBoxyCTFdLinkage():
 
                 # generate challenge for that category
                 newchallenge = Challenge(
-                        name = name,
-                        category = category,
-                        location = challengelocation, 
-                        challengefile = challengefile,
-                        #challengesrc=challengesrc,
-                        #deployment = deployment,
+                        name = challengeyaml.name,
+                        category = challengeyaml.category,
+                        location = challengeyaml.challengelocation, 
+                        challengefile = challengeyaml,
+                        #challengesrc= challengeyaml.challengesrc,
+                        #deployment = challengeyaml.deployment,
                         handout= handout,
-                        solution=solution
+                        solution= solution
                         )
                 
                 #add the new challenge to the category as 
                 # its own named child
-                setattr(cat_bag[category],name,newchallenge)
+                setattr(cat_bag[category],challengeyaml['name'],newchallenge)
 
         SandboxyCTFdRepository.createprojectrepo()
 
         # itterate over category classes containing challenge children
         for category in cat_bag:
-            
+
             self.masterlist[]
 
 

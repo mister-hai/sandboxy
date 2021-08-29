@@ -41,7 +41,7 @@ class Yaml(): #filetype
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
 
-class KubernetesYaml(): #file
+class KubernetesYaml(Yaml): #file
     '''
     Represents a Kubernetes specification
     future
