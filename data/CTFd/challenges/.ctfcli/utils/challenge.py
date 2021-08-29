@@ -27,8 +27,11 @@ class Challenge(): #folder
         self.category           = category
         self.challengelocation  = location
         self.challengefile      = challengefile
+        # folder
         self.solutiondir        = solution
+        # folder
         self.handout            = handout
+        # folder
         self.challengesrc       = challengesrc
 
     def load_challenge(self,path):

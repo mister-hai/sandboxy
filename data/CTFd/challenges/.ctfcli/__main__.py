@@ -122,7 +122,7 @@ class SandBoxyCTFdLinkage():
             #loads a challenge.yaml file into a buffer
             self.loadchallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferr(category,challenge), Loader=yaml.FullLoader)
             self.writechallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferw(category,challenge), Loader=yaml.FullLoader)
-
+            self.location = lambda currentdirectory,childorsibling: os.path.join(currentdirectory,childorsibling)
         except Exception:
             errorlogger("[-] SandBoxyCTFdLinkage.__init__ Failed")
 
@@ -136,34 +136,45 @@ class SandBoxyCTFdLinkage():
         - Creates a git repository and adds all the files
 
         '''
+        # need an array to carry data around
         cat_bag = []
-        #statefulness, now we have ourselves in a spot
-        self.location = self.challengesfolder
+        # make a new category for every category allowed
         for challenge_category in CATEGORIES:
             cat_bag.append(Category(challenge_category))
+        # get list of all folders in challenges repo
+        categoryfolders = self.getsubdirs(self.challengesfolder)
         # itterate over folders in challenge directory
-        for categoryfolder in cat_bag:
-            # get new location
-            location = os.path.join(location, categoryfolder)
+        for categoryfolder in categoryfolders:
             # if its a repository category folder
             if categoryfolder in CATEGORIES:
-                #get subfolder names
-                challengefolders = self.getsubdirs(location)
+                # track location change to subdir
+                pwd = self.location(self.challengesfolder, categoryfolder)
+                #get subfolder names in category directory, wreprweswenting indivwidual chwallenges
+                challengefolders = self.getsubdirs(pwd)
+                # itterate over the individual challenges
                 for challengefolder in challengefolders:
-                    location = os.path.join(location, challenge)
+                    # track location change to individual challenge subdir
+                    pwd = self.location(challengefolders, challengefolder)
                     # get the data
-                    challenge_subfolders = self.getsubdirs(location) 
+                    #challenge_subfolders = self.getsubdirs(location)
+                    for challenge_data in challengefolder:
+                        # set location to challenge subfolder
+                        pwd = self.location(pwd, challengefolder)
+                        # get solutions
+                        if challenge_data == "solution":
+                            solutionfolder = os.path.join(pwd, challengefolder)
                     # load the yml describing the challenge
                     self.loadchallengeyaml(categoryfolder,challenge)
-                    
-                    # generate challenge
-                    newchallenge = Challenge(category = categoryfolder, 
-                                         location = location,
-                                         challengefile = challengefile
-                                         )
-                    #load challenge.yml
-                    newchallenge.load_challenge()
-                pass
+                # generate challenge
+                newchallenge = Challenge(category = categoryfolder, 
+                                        location = location,
+                                        challengefile = challengefile,
+                                        challengesrc=challengesrc,
+                                        handout= handout,
+                                        solution=solutionfolder
+                                        )
+                #load challenge.yml
+                newchallenge.load_challenge()
         
         #create repo
         self.repository = git.Repo.init(path=self.repo)
