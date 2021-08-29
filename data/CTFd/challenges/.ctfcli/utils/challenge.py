@@ -2,6 +2,7 @@ from apicalls import APISession
 from pathlib import Path
 import subprocess
 from utils import errorlogger,yellowboldprint,greenprint
+from repo import SandboxyCTFdRepository
 
 import click
 import yaml
@@ -15,8 +16,12 @@ class Challenge(): #folder
     Represents the Challenge folder
     not loaded into fire
     '''
-    def __init__(self, templatesdir):
-        pass
+    def __init__(self, category,location, challengefile):
+        self.name               = str
+        self.category           = category
+        self.challengelocation  = location
+        self.challengefile      = challengefile
+
 
     def load_challenge(self,path):
         try:
@@ -28,12 +33,13 @@ class Challenge(): #folder
 
     def install(self, challenge:str, force=False, ignore=()):
         '''
-        Installs a challenge from a folder
+        Installs a challenge from a folder into the repository
+        to add it to the ctfd server, use "sync"
         takes a path to a challenge.yml
         '''
         challenge = self.load_challenge(challenge)
-        print(f'Loaded {challenge["name"]}', fg="yellow")
-        installed_challenges = loadinstalledchallenges()
+        print(f'Loaded {challenge["name"]}')
+        installed_challenges = SandboxyCTFdRepository.listinstalledchallenges()
         for chall in installed_challenges:
             if chall["name"] == challenge["name"]:
                 yellowboldprint("Already found existing challenge with same name \
@@ -41,9 +47,9 @@ class Challenge(): #folder
                 if force is True:
                     yellowboldprint("Ignoring existing challenge because of --force")
                 else:
-                        break
+                    break
             else:  # If we don't break because of duplicated challenge names
-                print(f'Installing {challenge["name"]}', fg="yellow")
+                print(f'Installing {challenge["name"]}')
                 GitOperations.addchallenge(challenge=challenge, ignore=ignore)
                 print("Success!", fg="green")
 
@@ -61,8 +67,10 @@ class Challenge(): #folder
                 continue  # Go to the next challenge in the overall list
 
             print(f'Syncing {challenge["name"]}', fg="yellow")
-            sync_challenge(challenge=challenge, ignore=ignore)
-                def syncchallenge(self,challenge:dict):
+            self.syncchallenge(challenge=challenge)
+
+
+    def syncchallenge(self,challenge:dict):
         '''
         Adds a challenge
             Must be in its own folder, in a category that has been indexed
@@ -83,7 +91,11 @@ class Challenge(): #folder
             challengecategory    = challenge["category"]
             challengename        = challenge["name"]
             challengeauthor      = challenge["author"]
-            data = {
+            # Some challenge types (e.g. dynamic) override value.
+            # We can't send it to CTFd because we don't know the current value
+            if challenge["value"] is None:
+                del challenge["value"]
+                data = {
                 "name":         challengename,
                 "category":     challengecategory,
                 "description":  challengedescription,
@@ -91,75 +103,42 @@ class Challenge(): #folder
                 "value" :       challengevalue,
                 "author" :      challengeauthor
                 }
-            
+            if challenge.get("attempts"):
+                data["max_attempts"] = challenge.get("attempts")
+            if challenge.get("connection_info"):
+                data["connection_info"] = challenge.get("connection_info")
+
             #make API call
             apicall = APISession(prefix_url=self.CTFD_URL)
+            # auth to server
             apicall.headers.update({"Authorization": "Token {}".format(apicall.AUTHTOKEN)})
+            # check for challenge install
             apisess = apicall.get("/api/v1/challenges/{}".format(challenge_id), json=data).json()["data"]
+            # use requests.patch() to modify the value of a specific field on an existing APIcall.
+            # why are they patching the challenge ID?
             response = apisess.patch(f"/api/v1/challenges/{challenge_id}", json=data)
             response.raise_for_status()
-            
             # Create new flags
             if challenge.get("flags"):
                 apicall.processflags(challenge,challenge_id,data)
- 
             # Update topics
             if challenge.get("topics"):
                 apicall.processtopics(challenge,challenge_id,data)
-
             # Update tags
             if challenge.get("tags"):
                 apicall.processtopics(challenge,challenge_id,data)
-
             # Upload files
             if challenge.get("files"):
                 apicall.uploadfiles(challenge,challenge_id,data)
-
             # Create hints
             if challenge.get("hints"):
-                # Delete existing hints
-                current_hints = s.get(f"/api/v1/hints", json=data).json()["data"]
-                for hint in current_hints:
-                    if hint["challenge_id"] == challenge_id:
-                        hint_id = hint["id"]
-                        r = s.delete(f"/api/v1/hints/{hint_id}", json=True)
-                        r.raise_for_status()
-                for hint in challenge["hints"]:
-                    if type(hint) == str:
-                        data = {"content": hint, "cost": 0, "challenge_id": challenge_id}
-                    else:
-                        data = {
-                            "content": hint["content"],
-                            "cost": hint["cost"],
-                            "challenge_id": challenge_id,
-                        }
-                    r = s.post(f"/api/v1/hints", json=data)
-                    r.raise_for_status()
+                apicall.processhints(challenge,challenge_id,data)
             # Update requirements
-            if challenge.get("requirements") and "requirements" not in ignore:
-                installed_challenges = load_installed_challenges()
-                required_challenges = []
-                for r in challenge["requirements"]:
-                    if type(r) == str:
-                        for c in installed_challenges:
-                            if c["name"] == r:
-                                required_challenges.append(c["id"])
-                    elif type(r) == int:
-                        required_challenges.append(r)
-                required_challenges = list(set(required_challenges))
-                data = {"requirements": {"prerequisites": required_challenges}}
-                r = s.patch(f"/api/v1/challenges/{challenge_id}", json=data)
-                r.raise_for_status()
-            # Unhide challenge depending upon the value of "state" in spec
-            if "state" not in ignore:
-                data = {"state": "visible"}
-                if challenge.get("state"):
-                    if challenge["state"] in ["hidden", "visible"]:
-                        data["state"] = challenge["state"]
-                r = s.patch(f"/api/v1/challenges/{challenge_id}", json=data)
-                r.raise_for_status()
-        except Exception:
-            errorlogger("[-] Failure, INPUT: {}".format(challenge))
+            if challenge.get("requirements"):
+                apicall.processrequirements(challenge,challenge_id,data)
+
+            #if challenge.get["state"] =="visible":
+
 
 
 def sync_challenge(challenge, ignore=[]):
@@ -177,10 +156,10 @@ def sync_challenge(challenge, ignore=[]):
     if challenge["value"] is None:
         del challenge["value"]
 
-    if challenge.get("attempts") and "attempts" not in ignore:
+    if challenge.get("attempts"):
         data["max_attempts"] = challenge.get("attempts")
 
-    if challenge.get("connection_info") and "connection_info" not in ignore:
+    if challenge.get("connection_info"):
         data["connection_info"] = challenge.get("connection_info")
 
     data["state"] = "hidden"

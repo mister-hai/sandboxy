@@ -19,7 +19,7 @@ from cookiecutter.main import cookiecutter
 from utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
 from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS, blank_challenge_spec
 from utils.Yaml import Yaml, KubernetesYaml, Challengeyaml, Config
-
+from utils.challenge import Challenge
 from utils.utils import errorlogger
 from utils.apicalls import APISession
 
@@ -99,6 +99,8 @@ class SandBoxyCTFdLinkage():
             # represents the ctfd data folder
             self.CTFDDATAROOT        = os.path.join(self.DATAROOT, "/ctfd/")
             # folder expected to contain challenges
+            # categories in here
+                # then individual challenges
             self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "/challenges/")
             # template challenges
             self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "/ctfcli", "/templates/")
@@ -134,8 +136,32 @@ class SandBoxyCTFdLinkage():
 
         '''
         cat_bag = []
+        #statefulness, now we have ourselves in a spot
+        self.location = self.challengesfolder
         for challenge_category in CATEGORIES:
             cat_bag.append(Category(challenge_category))
+        # itterate over folders in challenge directory
+        for categoryfolder in cat_bag:
+            # get new location
+            location = os.path.join(location, categoryfolder)
+            # if its a repository category folder
+            if categoryfolder in CATEGORIES:
+                #get subfolder names
+                challenges = self.getsubdirs(location)
+                for challenge in challenges:
+                    location = os.path.join(location, challenge)
+                    challenge_packages = self.getsubdirs(location) 
+                    # load the yml describing the challenge
+                    self.loadchallengeyaml(categoryfolder,challenge)
+
+                    # generate challenge
+                    newchallenge = Challenge(category = categoryfolder, 
+                                         location = location,
+                                         challengefile = challengefile
+                                         )
+                #load  challenge.yml
+                newchallenge.load_challenge()
+                pass
         
         #create repo
         self.repository = git.Repo.init(path=self.repo)
@@ -178,7 +204,7 @@ class SandBoxyCTFdLinkage():
     def getchallengesbycategory(self, category, printscr=True):
         '''
     Maps to the command
-    host@server$> ctfcli init
+    host@server$> ctfcli getchallengesbycategory
     Lists challenges in repo by category        
     Supply "print=False" to return a variable instead of utf-8 
         '''
@@ -226,74 +252,9 @@ class SandBoxyCTFdLinkage():
             challenges = self.getchallengesbycategory(category)
             for challenge in challenges:
                 greenprint(f"Syncing challenge: {challenge}")
-                #old code
-                #danglies
+                challenge.syncinstalled()
         except Exception:
-            errorlogger("[-] Failure, INPUT: {}".format(challenge))
-
-    def syncchallenge(self,challenge:dict):
-        '''
-        Adds a challenge
-            Must be in its own folder, in a category that has been indexed
-        
-        This command is to be run on single cchallenge folders
-        This command is called RECURSIVELY by other code, referece its input and output
-        '''
-        greenprint(f"Syncing challenge: {challenge}")
-        getchallengebyname(challenge)
-
-        #TOTO SET CHALLENGE ID
-        challenge_id = str
-        try:
-            #assign data fields to json
-            challengevalue       = int(challenge["value"]) if challenge["value"] else challenge["value"],challenge.get("extra", {})
-            challengetype        = challenge.get("type", "standard")
-            challengedescription = challenge["description"]
-            challengecategory    = challenge["category"]
-            challengename        = challenge["name"]
-            challengeauthor      = challenge["author"]
-            data = {
-                "name":         challengename,
-                "category":     challengecategory,
-                "description":  challengedescription,
-                "type":         challengetype,
-                "value" :       challengevalue,
-                "author" :      challengeauthor
-                }
-            
-            #make API call
-            apicall = APISession(prefix_url=self.CTFD_URL)
-            apicall.headers.update({"Authorization": "Token {}".format(apicall.AUTHTOKEN)})
-            apisess = apicall.get("/api/v1/challenges/{}".format(challenge_id), json=data).json()["data"]
-            response = apisess.patch(f"/api/v1/challenges/{challenge_id}", json=data)
-            response.raise_for_status()
-            
-            # Create new flags
-            if challenge.get("flags"):
-                apicall.processflags(challenge,challenge_id,data)
- 
-            # Update topics
-            if challenge.get("topics"):
-                apicall.processtopics(challenge,challenge_id,data)
-
-            # Update tags
-            if challenge.get("tags"):
-                apicall.processtopics(challenge,challenge_id,data)
-
-            # Upload files
-            if challenge.get("files"):
-                apicall.uploadfiles(challenge,challenge_id,data)
-
-            # Create hints
-            if challenge.get("hints"):
-                apicall.processhints(challenge,challenge_id,data)
-            
-            # Update requirements
-            if challenge.get("requirements") and "requirements" not in ignore:
-                apicall.processrequirements(challenge,challenge_id,data)
-
-            #if challenge.get["state"] =="visible":
-
+            errorlogger("[-] Failure to sync category! {}".format(challenge))
 
     def load_installed_challenges(self):
         s = self.generate_session()
@@ -317,18 +278,19 @@ class SandBoxyCTFdLinkage():
 ## Maps to the command
 ## host@server$> ctfcli --interactive
 ###############################################################################
-#class Menu():
-#    '''
-#    Shows a useful menu for the users to operate with on the commmand line
-#    '''
-#    def __init__(self):
-#        pass
-#    def main(self):
-#        pass
+class Menu():
+    '''
+    Shows a useful menu for the users to operate with on the commmand line
+    '''
+    def __init__(self):
+        self.ctfcli = SandBoxyCTFdLinkage
+    #def main(self):
+    #   pass
 
 
 if __name__ == "__main__":
-    menu = Menu()
-    menu.main()
+    #menu = Menu()
+    #menu.main()
+    
     # Load CLI
-    fire.Fire(SandBoxyCTFdLinkage)
+    fire.Fire(Menu)
