@@ -38,6 +38,8 @@ class Challenge(): #folder
         #self.challengesrc       = challengesrc
         #self.deployment         = deployment
 
+
+class ChallengeActions(Challenge):
     def install(self, challenge:str, force=False, ignore=()):
         '''
         Installs a challenge from a folder into the repository

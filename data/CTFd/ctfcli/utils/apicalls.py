@@ -1,8 +1,6 @@
-from pathlib import Path
 import requests
-from requests import Session
-from urllib import urljoin
 from pathlib import Path
+from requests import Session
 from utils import errorlogger,blueprint,yellowboldprint,redprint
 from repo import SandboxyCTFdRepository
 

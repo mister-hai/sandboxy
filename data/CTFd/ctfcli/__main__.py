@@ -78,17 +78,18 @@ class SandBoxyCTFdLinkage():
             INFO:    if False, ignores repository config
         / not yet/
     '''
-    def __init__(self, projectroot, 
-                       ctfdurl, 
-                       ctfdtoken, 
-                       configname = "ctfcli.ini", 
-                       #loadconfig=True,
-                       challengelist="challengelist.yml",
-                       challengefilename="challenge.yml"
-                       ):
+    def __init__(self, 
+                    #projectroot, 
+                    #ctfdtoken, 
+                    ctfdurl = "127.0.0.1:8000", 
+                    configname = "ctfcli.ini", 
+                    #challengelist="challengelist.yml",
+                    #challengefilename="challenge.yml"
+                    #loadconfig=True,
+                    ):
         try:
             greenprint("[+] Instancing a SandboxyCTFdLinkage()")
-            self.PROJECTROOT         = projectroot
+            self.PROJECTROOT         = os.getenv("PROJECT_ROOT")
             self.CTFD_TOKEN          = ctfdtoken
             self.CTFD_URL            = ctfdurl
             self.configname          = configname
@@ -211,7 +212,9 @@ class SandBoxyCTFdLinkage():
                 #add the new challenge to the category as 
                 # its own named child
                 setattr(cat_bag[category],challengeyaml['name'],newchallenge)
-
+                # now, we take the classes, and subclasses in the Category().Challenge()
+                # schema and setattr() to apply them to the current class as 
+                # SandBoxyCTFdLinkage.Category().Challenge
         SandboxyCTFdRepository.createprojectrepo()
 
         # itterate over category classes containing challenge children
