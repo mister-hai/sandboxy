@@ -1,23 +1,21 @@
 import importlib
-import os
-import sys
-import fire
-
+import os,sys,fire
+from ctfcli.__main__ import SandBoxyCTFdLinkage
+from ctfcli.__main__ import SandboxyCTFdRepository
 ###############################################################################
 ## Menu
 ## Maps to the command
-## host@server$> ctfcli --interactive
+## host@server$> ctfd.py ctfcli 
+## host@server$> ctfd.py gitops
+## host@server$> ctfd.py 
 ###############################################################################
 class Ctfcli():
     '''
-    Shows a useful menu for the users to operate with on the commmand line
+    Provides Commandline usage of the ctfd scripts
     '''
     def __init__(self):
-        self.pwd = os.getcwd()
-        self.location(self.)
-        #get subfolder names in category directory, wreprweswenting indivwidual chwallenges yippyippyippyipp
-        challenges = self.getsubdirs(pwd)
         self.ctfcli = SandBoxyCTFdLinkage()
+        self.gitops = SandboxyCTFdRepository
     #def main(self):
     #   pass
 
@@ -27,5 +25,5 @@ if __name__ == "__main__":
     #menu.main()
     
     # Load CLI
-    fire.Fire(Menu)
+    fire.Fire(Ctfcli)
 
