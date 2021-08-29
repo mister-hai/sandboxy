@@ -3,7 +3,7 @@ from pathlib import Path
 import subprocess
 from utils import errorlogger,yellowboldprint,greenprint
 from repo import SandboxyCTFdRepository
-
+import requests
 import click
 import yaml
 from Yaml import Yaml
@@ -37,7 +37,21 @@ class Challenge(): #folder
         # folder
         #self.challengesrc       = challengesrc
         #self.deployment         = deployment
-
+        self.CHALLENGETEMPLATE = {
+            "success": "true",
+            "data": [{
+                "id": 1,
+                "type": "standard",
+                "name": "The Lost Park",
+                "value": 50,
+                "solves": 3,
+                "solved_by_me": "false",
+                "category": "Forensics",
+                "tags": [],
+                "template": "/plugins/challenges/assets/view.html",
+                "script": "/plugins/challenges/assets/view.js"
+            }]
+        }
 
 class ChallengeActions(Challenge):
     def install(self, challenge:str, force=False, ignore=()):
@@ -84,7 +98,7 @@ class ChallengeActions(Challenge):
         Adds a challenge to CTFD
             Must be in its own folder, in a category that has been indexed
         
-        This command is to be run on single cchallenge folders
+        This command is to be run on single challenge folders
         This command is called RECURSIVELY by other code, referece its input and output
         '''
         greenprint(f"Syncing challenge: {challenge}")
@@ -116,17 +130,25 @@ class ChallengeActions(Challenge):
                 json_payload["max_attempts"] = challenge.get("attempts")
             if challenge.get("connection_info"):
                 json_payload["connection_info"] = challenge.get("connection_info")
-
-            #make API call
-            apicall = APISession(prefix_url=self.CTFD_URL)
-            # auth to server
-            apicall.headers.update({"Authorization": "Token {}".format(apicall.AUTHTOKEN)})
-            # check for challenge install
-            apisess = apicall.get("/api/v1/challenges/{}".format(challenge_id), json=json_payload).json()["data"]
-            # use requests.patch() to modify the value of a specific field on an existing APIcall.
-            # why are they patching the challenge ID?
-            response = apisess.patch(f"/api/v1/challenges/{challenge_id}", json=json_payload)
-            response.raise_for_status()
+            try:
+                #make API call
+                apicall = APISession(prefix_url=self.CTFD_URL)
+                # auth to server
+                apicall.headers.update({"Authorization": "Token {}".format(apicall.AUTHTOKEN)})
+                # check for challenge install
+                apisess = apicall.get("/api/v1/challenges/{}".format(challenge_id), json=json_payload).json()["data"]
+                # use requests.patch() to modify the value of a specific field on an existing APIcall.
+                # why are they patching the challenge ID?
+                response = apisess.patch(f"/api/v1/challenges/{challenge_id}", json=json_payload)
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as errh:
+                print(errh)
+            except requests.exceptions.ConnectionError as errc:
+                print(errc)
+            except requests.exceptions.Timeout as errt:
+                print(errt)
+            except requests.exceptions.RequestException as err:
+                print(err)
             # Create new flags
             if challenge.get("flags"):
                 apicall.processflags(challenge,challenge_id,json_payload)
@@ -179,25 +201,23 @@ def create_challenge(challenge, ignore=[]):
     # Create topics
     if challenge.get("topics"):
         apicall.processtopics(challenge, challenge_id, json_payload)
-    # Create tags
+        # Create tags
     if challenge.get("tags"):
         apicall.processtags(challenge,challenge_id,json_payload)
-    # Upload files
+        # Upload files
     if challenge.get("files"):
+        apicall.uploadfiles(challenge,challenge_id,json_payload)
     # Add hints
     if challenge.get("hints"):
         apicall.processhints()
     # Add requirements
     if challenge.get("requirements") and "requirements" not in ignore:
-        apicall.processrequirements(challenge,challenge_id,data)
+        apicall.processrequirements(challenge,challenge_id,json_payload)
     # Set challenge state
     if challenge.get("state"):
-        json_payload = {"state": "hidden"}
-        if challenge["state"] in ["hidden", "visible"]:
             json_payload["state"] = challenge["state"]
-
-        r =session.patch(f"/api/v1/challenges/{challenge_id}", json=json_payload))
-        r.raise_for_status()
+            apicall. challenge_id}", json=json_payload))
+            r.raise_for_status()
 
 
     def lint_challenge(self, challengefilepath):

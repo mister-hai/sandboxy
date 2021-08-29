@@ -3,7 +3,59 @@ from pathlib import Path
 from requests import Session
 from utils import errorlogger,blueprint,yellowboldprint,redprint
 from repo import SandboxyCTFdRepository
+import yaml
+import getpass
 
+class CtfdAuth():
+    '''do I need this?'''
+    def do_auth(self, args: argparse.Namespace):
+        """ Authenticate and write a new .ctfd-auth file """
+
+        url = args.url.rstrip("/")
+
+        session = requests.Session()
+
+        r = session.get(f"{url}/login", allow_redirects=False)
+        if r.status_code == 302 and r.headers["Location"].endswith("/setup"):
+            print(
+                f"[red]error[/red]: this ctfd installation has not been setup yet (hint: run `install`)"
+            )
+            return
+
+        # Grab the nonce
+        nonce = r.text.split("csrfNonce': \"")[1].split('"')[0]
+
+        username = input("CTFd Username: ")
+        password = getpass.getpass("CTFd Password: ")
+
+        r = session.post(
+            f"{url}/login",
+            data={
+                "name": username,
+                "password": password,
+                "_submit": "Submit",
+                "nonce": nonce,
+            },
+            allow_redirects=False,
+        )
+        if r.status_code != 302 or not r.headers["Location"].endswith("/challenges"):
+            print("[red]error[/red]: invalid login credentials")
+            return
+
+        r = session.get(f"{args.url}/settings")
+        nonce = r.text.split("csrfNonce': \"")[1].split('"')[0]
+
+        r = session.post(
+            f"{url}/api/v1/tokens", json={}, headers={"CSRF-Token": nonce}
+        )
+        if r.status_code != 200 or not r.json()["success"]:
+            print("[red]error[/red]: token generation failed")
+            return
+
+        print("writing ctfd auth configuration")
+        token = r.json()["data"]["value"]
+        with open(".ctfd-auth", "w") as filp:
+            yaml.dump({"url": args.url, "token": token}, filp)
 
 class APISession(Session):
     '''
@@ -16,22 +68,38 @@ class APISession(Session):
         #self.prefix_url = prefix_url.rstrip("/") + "/"
         self.CTFDURL = self.prefix_url
         self.AUTHTOKEN = authtoken
+        self.endpoints = ["/challenges", "/tags", "/topics", "/awards", "/hints", 
+    "/flags", "/submissions", "/scoreboard", "/teams", "/users", "/statistics",
+    "/files", "/notifications", "/configs", "/pages", "/unlocks", "/tokens", "/comments"]
 
     #def request(self, method, url, *args, **kwargs):
         # Strip out the preceding / so that urljoin creates the right url
         # considering the appended / on the prefix_url
         #url = urljoin(self.prefix_url, url.lstrip("/"))
         #return super(APISession, self).request(method, url, *args, **kwargs)
-    
-    def getvisibilitystate(self, challenge, challenge_id):
-        json_payload = {"state": "hidden"}
-        if challenge["state"] in ["hidden", "visible"]:
-            json_payload["state"] = challenge["state"]
+        self.USERTEMPLATE = {"name":"foobar",
+                             "email":"foo@bar.com",
+                             "password":"123",
+                             "type":"user",
+                             "verified":"false",
+                             "hidden":"false",
+                             "banned":"false"
+                             }
+    def getusers(self):
+        ''' gets a list of all users'''
 
+    def getvisibility(self, challenge, challenge_id):
+        '''
+        Gets the visibility of a challenge
+        Hidden , Visible
+        '''
         response = self.get(f"/api/v1/challenges/{challenge_id}", json=json_payload)
         response.raise_for_status()
 
-    def togglechallengevisibility(self, challenge):
+    def togglevisibility(self, challenge):
+        '''
+        Toggles a Challenge between hidden and visible
+        '''
         try:
             challenge_id = challenge['challenge_id']
             if challenge.get("state") =="hidden":
@@ -47,6 +115,9 @@ class APISession(Session):
             errorlogger("[-] Failure To toggle challenge Visibility! Check the Logfiles!")
 
     def processrequirements(self, challenge,challenge_id,data):
+        '''
+        Use a PATCH request to modify the Challenge Requirements
+        '''
         installed_challenges = SandboxyCTFdRepository.listinstalledchallenges()
         required_challenges = []
         for requirements in challenge["requirements"]:
@@ -101,6 +172,14 @@ class APISession(Session):
     def uploadfiles(self,challenge,challenge_id,data):
         '''
         uploads files to the ctfd server
+        SAW ELSEWHERE IT HAD THIS
+## Upload a file to a challenge.  You need to use a nonce from the admin page of the challenge you're editing.
+nonce=$(curl -s http://127.0.0.1:8000/admin/challenges/1 -b cookie | grep nonce | cut -d'"' -f2)
+curl -X POST "http://127.0.0.1:8000/api/v1/files" -b cookie  \
+-F "file=@some-local-file.png" \
+-F "nonce=$nonce" \
+-F "challenge=1" \
+-F "type=challenge"
         '''
 
         files = []

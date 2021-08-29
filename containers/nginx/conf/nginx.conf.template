@@ -25,7 +25,7 @@ http {
     include /etc/nginx/mime.types;
     include /etc/nginx/fastcgi.conf;
     #include /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf;
-
+    include /etc/nginx/conf.d/moopboxen.local.conf
     #default_type application/octet-stream;
     index    index.html index.htm index.php;
 

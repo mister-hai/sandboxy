@@ -2,7 +2,7 @@ from pathlib import Path
 from utils import errorlogger
 from Yaml import Yaml
 import git, re
-
+#https://www.devdungeon.com/content/working-git-repositories-python
 class SandboxyCTFdRepository():
     '''
     backend to GitOperations
@@ -22,7 +22,63 @@ Available Commands:
         '''
         self.MASTERLIST = Yaml(masterlist)
         self.repo = str
+        self.username = str
 
+    def setauth(self):
+        with repo.config_writer() as git_config:
+            git_config.set_value('user', 'email', 'someone@example.com')
+            git_config.set_value('user', 'name', 'John Doe')
+
+    def checkauth(self):
+        # To check configuration values, use `config_reader()`
+        with repo.config_reader() as git_config:
+            print(git_config.get_value('user', 'email'))
+            print(git_config.get_value('user', 'name'))
+    
+    def checkifremotechanged(self):
+        my_repo = git.Repo('some_repo')
+        if my_repo.is_dirty(untracked_files=True):
+            print('Changes detected.')
+    
+    def createremoterepo(self):
+        '''Create a new remote repository on github'''
+        try:
+            remote = repo.create_remote('origin', url='git@github.com:{}/testrepo'.format(self.username))
+        except git.exc.GitCommandError as error:
+            print(f'Error creating remote: {error}')
+        # Reference a remote by its name as part of the object
+        print(f'Remote name: {repo.remotes.origin.name}')
+        print(f'Remote URL: {repo.remotes.origin.url}')
+
+    def deleteremoterepo(self, repo):
+        '''Delete a remote'''
+        repo.delete_remote(repo)
+
+    def pullfromremote(self):
+        '''Pull from remote repo'''
+        print(repo.remotes.origin.pull())
+
+    def pushtoremote(self):
+        '''Push changes'''
+        print(repo.remotes.origin.push())
+    
+    def listallbranches(self):
+        '''List all branches'''
+        for branch in repo.branches:
+            print(branch)
+
+    def createremotebranch(self):
+        '''Create a new branch'''
+        repo.git.branch('my_new_branch')
+
+    def checkoutremotebranch(self):
+        # You need to check out the branch after creating it if you want to use it
+        repo.git.checkout('my_new_branch3')
+
+    def checkoutmasterbranch(self):
+        '''To checkout master again:'''
+        repo.git.checkout('master')
+    
     def createprojectrepo(self):        
         #create repo
         self.repository = git.Repo.init(path=self.repo)
@@ -30,11 +86,6 @@ Available Commands:
         self.repository.index.add(".")
         self.repository.index.commit('Initial commit')
         self.repository.create_head('master')
-
-    def clonerepo(self,repo):
-        '''
-        ctfcli gitoperations clonerepo <remoterepository>
-        '''
         try:
             # the user indicates a remote repo, by supplying a url
             if re.match(r'^(?:http|https)?://', self.repo) or repo.endswith(".git"):

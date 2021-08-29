@@ -79,22 +79,16 @@ class SandBoxyCTFdLinkage():
         / not yet/
     '''
     def __init__(self, 
-                    #projectroot, 
-                    #ctfdtoken, 
-                    ctfdurl = "127.0.0.1:8000", 
                     configname = "ctfcli.ini", 
-                    #challengelist="challengelist.yml",
-                    #challengefilename="challenge.yml"
-                    #loadconfig=True,
                     ):
         try:
             greenprint("[+] Instancing a SandboxyCTFdLinkage()")
             self.PROJECTROOT         = os.getenv("PROJECT_ROOT")
-            self.CTFD_TOKEN          = ctfdtoken
-            self.CTFD_URL            = ctfdurl
+            self.CTFD_TOKEN          = os.getenv("CTFD_TOKEN")
+            self.CTFD_URL            = os.getenv("CTFD_URL")
             self.configname          = configname
             # name of the yaml file expected to have the challenge data in each subfolder
-            self.basechallengeyaml   = challengefilename
+            self.basechallengeyaml   = "challenge.yml"
             # reflects the data subdirectory in the project root
             self.DATAROOT            =  os.path.join(self.PROJECTROOT,"data")
             # represents the ctfd data folder
@@ -104,7 +98,7 @@ class SandBoxyCTFdLinkage():
                 # then individual challenges
             self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
             # filename for the full challenge index
-            self.challengelist       = challengelist
+            self.challengelist       = "challengelist.yml"
             self.masterlistlocation  = os.path.join(self.challengesfolder, self.challengelist)
             self.masterlist          = Yaml(self.masterlistlocation)
             # template challenges

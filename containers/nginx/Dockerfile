@@ -17,7 +17,9 @@ RUN apk add certbot certbot-nginx
 
 #copy the conf files over to the container
 # this lets us mount the file as a volume for dev also
-COPY conf/conf.d/fightbiscuits.firewall-gateway.net.conf /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
+#COPY conf/conf.d/fightbiscuits.firewall-gateway.net.conf /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf
+#testing
+COPY conf/conf.d/moopboxen.local.conf /etc/nginx/conf.d/moopboxen.local.conf
 COPY conf/nginx.conf.template /etc/nginx/nginx.conf.template
 COPY conf/fastcgi.conf /etc/nginx/fastcgi.conf
 COPY conf/mime.types /etc/nginx/mime.types

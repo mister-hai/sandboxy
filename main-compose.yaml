@@ -93,7 +93,6 @@ services:
 #        - nginx
       expose:
         - 8000
-      restart: unless-stopped
       ports:
         - ${CTFDPORT}:8000
       networks:
@@ -171,7 +170,6 @@ networks:
     internal: true
 
   net:
-    ipam:
-      config:
-        - subnet: "172.18.0.0/24"
-    #external: true
+    external: true
+    config:
+      - subnet: "172.18.0.0/24"

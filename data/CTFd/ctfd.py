@@ -35,7 +35,7 @@ USAGE:
 >>> host@server$> ctfd.py ctfcli --ctfdurl <URL> --ctfdtoken <TOKEN> init
 
     This will initialize the repository, from there, you can either:
-    Pull a remote repository:
+    Pull a remote repository ( not supported yet ):
 
 >>> host@server$> ctfd.py gitops clonerepo https://REMOTE_REPO_URL.git
 
