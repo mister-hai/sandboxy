@@ -149,32 +149,47 @@ class SandBoxyCTFdLinkage():
             if categoryfolder in CATEGORIES:
                 # track location change to subdir
                 pwd = self.location(self.challengesfolder, categoryfolder)
-                #get subfolder names in category directory, wreprweswenting indivwidual chwallenges
+                #get subfolder names in category directory, wreprweswenting indivwidual chwallenges yippyippyippyipp
                 challengefolders = self.getsubdirs(pwd)
                 # itterate over the individual challenges
                 for challengefolder in challengefolders:
                     # track location change to individual challenge subdir
                     pwd = self.location(challengefolders, challengefolder)
                     # get the data
-                    #challenge_subfolders = self.getsubdirs(location)
-                    for challenge_data in challengefolder:
+                    challengefolderdata = os.listdir(pwd)
+                    for challengedata in challengefolder:
                         # set location to challenge subfolder
-                        pwd = self.location(pwd, challengefolder)
+                        challengelocation = self.location(pwd, challengefolder)
                         # get solutions
-                        if challenge_data == "solution":
-                            solutionfolder = os.path.join(pwd, challengefolder)
-                    # load the yml describing the challenge
-                    self.loadchallengeyaml(categoryfolder,challenge)
-                # generate challenge
-                newchallenge = Challenge(category = categoryfolder, 
-                                        location = location,
-                                        challengefile = challengefile,
-                                        challengesrc=challengesrc,
-                                        handout= handout,
-                                        solution=solutionfolder
-                                        )
-                #load challenge.yml
-                newchallenge.load_challenge()
+                        if challengedata == "solution":
+                            solution = os.path.join(pwd, challengedata)
+                        # get handouts
+                        if challengedata == "handout":
+                            handout        = os.path.join(pwd, challengedata)
+                        # get challenge file
+                        if challengedata == self.basechallengeyaml:
+                            # get path to challenge file
+                            challengefile  = os.path.join(pwd, challengedata)
+                            # load the yml describing the challenge
+                            challengeyaml = Yaml(challengefile)
+                            name = challengeyaml['name']
+                        # for challenges with a server side component
+                        #if challenge_data == "serverside":
+                        #    challengesrc = os.path.join(pwd, challenge_data)
+                        #if challenge_data == "deployment":
+                        #    deployment = os.path.join(pwd, challenge_data)
+
+                # generate challenge for that category
+                newchallenge = Challenge(
+                        name,
+                        category = categoryfolder,
+                        location = challengelocation, 
+                        challengefile = challengefile,
+                        #challengesrc=challengesrc,
+                        #deployment = deployment,
+                        handout= handout,
+                        solution=solution
+                        )
         
         #create repo
         self.repository = git.Repo.init(path=self.repo)

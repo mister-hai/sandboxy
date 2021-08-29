@@ -16,13 +16,16 @@ class Challenge(): #folder
     Represents the Challenge folder
     not loaded into fire
     '''
-    def __init__(self, category,
-                       location, 
-                       challengefile, 
-                       challengesrc,
-                       handout,
-                       solution
-                       ):
+    def __init__(self, 
+            name,
+            category,
+            location, 
+            challengefile, 
+            #challengesrc,
+            #deployment,
+            handout,
+            solution
+            ):
         self.name               = str
         self.category           = category
         self.challengelocation  = location
@@ -32,15 +35,8 @@ class Challenge(): #folder
         # folder
         self.handout            = handout
         # folder
-        self.challengesrc       = challengesrc
-
-    def load_challenge(self,path):
-        try:
-            with open(path) as f:
-                return Yaml(data=yaml.safe_load(f.read()), file_path=path)
-        except FileNotFoundError:
-            errorlogger("No challenge.yml was found in {}".format(path))
-            return
+        #self.challengesrc       = challengesrc
+        #self.deployment         = deployment 
 
     def install(self, challenge:str, force=False, ignore=()):
         '''
