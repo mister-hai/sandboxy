@@ -1,6 +1,9 @@
+from pathlib import Path
 import requests
-from requests import session
+from requests import Session
 from urllib import urljoin
+from pathlib import Path
+from utils import errorlogger
 
 class APISession(Session):
     '''
@@ -19,29 +22,78 @@ class APISession(Session):
         url = urljoin(self.prefix_url, url.lstrip("/"))
         return super(APISession, self).request(method, url, *args, **kwargs)
     
-    def uploadfiles(self,challenge,challenge_id,data):
-        # Delete existing files
-        all_current_files =self.get(f"/api/v1/files?type=challenge", json=data).json()["data"]
-        for f in all_current_files:
-            for used_file in original_challenge["files"]:
-                if f["location"] in used_file:
-                    file_id = f["id"]
-                    r =self.delete(f"/api/v1/files/{file_id}", json=True)
-                    r.raise_for_status()
-        files = []
-        for f in challenge["files"]:
-            file_path = Path(challenge.directory, f)
-            if file_path.exists():
-                file_object = ("file", file_path.open(mode="rb"))
-                files.append(file_object)
-            else:
-                click.secho(f"File {file_path} was not found", fg="red")
-                raise Exception(f"File {file_path} was not found")
-        data = {"challenge_id": challenge_id, "type": "challenge"}
-    # Sp    ecifically use data= here instead of json= to send multipart/form-data
-        r =self.post(f"/api/v1/files", files=files, data=data)
+    def togglechallengevisibility(self, challenge):
+        try:
+            challenge_id = challenge['challenge_id']
+            if challenge.get("state") =="hidden":
+                data = {"state": "visible"}
+            if challenge.get("state") == "visible":
+                data = {"state": "hidden"}
+            response = self.patch(f"/api/v1/challenges/{challenge_id}", json=data)
+            response.raise_for_status()
+        except Exception:
+            errorlogger("[-] Failure To toggle challenge Visibility! Check the Logfiles!")
+
+    def processrequirements(self, challenge,challenge_id,data):
+        installed_challenges = load_installed_challenges()
+        required_challenges = []
+        for r in challenge["requirements"]:
+            if type(r) == str:
+                for c in installed_challenges:
+                    if c["name"] == r:
+                        required_challenges.append(c["id"])
+            elif type(r) == int:
+                required_challenges.append(r)
+        required_challenges = list(set(required_challenges))
+        data = {"requirements": {"prerequisites": required_challenges}}
+        r = self.patch(f"/api/v1/challenges/{challenge_id}", json=data)
         r.raise_for_status()
-        
+
+    def processhints(self, challenge,challenge_id,data):
+        # Delete existing hints
+        current_hints = self.get(f"/api/v1/hints", json=data).json()["data"]
+        for hint in current_hints:
+            if hint["challenge_id"] == challenge_id:
+                hint_id = hint["id"]
+                r = self.delete(f"/api/v1/hints/{hint_id}", json=True)
+                r.raise_for_status()
+        for hint in challenge["hints"]:
+            if type(hint) == str:
+                data = {"content": hint, "cost": 0, "challenge_id": challenge_id}
+            else:
+                data = {
+                    "content": hint["content"],
+                    "cost": hint["cost"],
+                    "challenge_id": challenge_id,
+                }
+            r = self.post(f"/api/v1/hints", json=data)
+            r.raise_for_status()
+
+    def uploadfiles(self,challenge,challenge_id,data):
+        try:
+            # Delete existing files
+            all_current_files =self.get(f"/api/v1/files?type=challenge", json=data).json()["data"]
+            for file in all_current_files:
+                for used_file in original_challenge["files"]:
+                    if file["location"] in used_file:
+                        file_id = file["id"]
+                        r =self.delete(f"/api/v1/files/{file_id}", json=True)
+                        r.raise_for_status()
+            files = []
+            for file in challenge["files"]:
+                file_path = Path(challenge.directory, file)
+                if file_path.exists():
+                    file_object = ("file", file_path.open(mode="rb"))
+                    files.append(file_object)
+                else:
+                    raise Exception
+            data = {"challenge_id": challenge_id, "type": "challenge"}
+            # Specifically use data= here instead of json= to send multipart/form-data
+            r =self.post(f"/api/v1/files", files=files, data=data)
+            r.raise_for_status()
+        except Exception:
+            errorlogger(f"File {file_path} was not found")
+
     def processtopics(self,challenge,challenge_id,data):
         # Delete existing tags
         current_tags = self.get(f"/api/v1/tags", json=data).json()["data"]

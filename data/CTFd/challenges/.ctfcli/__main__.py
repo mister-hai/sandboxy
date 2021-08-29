@@ -24,59 +24,6 @@ from utils.utils import errorlogger
 from utils.apicalls import APISession
 
 
-class SandboxyCTFdRepository():
-    '''
-    backend to GitOperations
-
-    Git interactivity class, Maps to the command
->>> host@server$> ctfcli gitoperations <command>
-
-Available Commands:
-    - createrepo
-        initiates a new repository in the challenges folder
-        adds all files in challenges folder to repo
-    - 
-    - 
-    '''
-    def __init__(self):
-        '''
-        '''
-        #self.MASTERLIST = str
-        #self.repo = repo
-
-    def clonerepo(self,clone=False):
-        '''
-        ctfcli gitoperations clonerepo <remoterepository>
-        '''
-        try:
-            # the user indicates a remote repo, by supplying a url
-            if re.match(r'^(?:http|https)?://', self.repo) or repo.endswith(".git"):
-                self.repository = git.Repo.clone(self.repo)
-                # get remote references to sync repos
-                self.heads = self.repository.heads
-                # get reference for master branch
-                # lists can be accessed by name for convenience
-                self.master = self.heads.master
-                # Get latest coommit
-                # the commit pointed to by head called master
-                self.mastercommit = self.master.commit
-            #the user indicates the challenge folder is to be the repository
-            # this is the expected action
-            elif clone == False:
-                self.repository = git.Repo.init(path=self.repo)
-        except Exception:
-            errorlogger("[-] ERROR: Could not create Git repository in the challenges folder")
- 
-    def addchallenge(self):
-        '''
-        Adds a challenge to the repository master list
-        '''
-    
-    def removechallenge():
-        '''
-        removes a challenge from the master list
-        '''
-
 ###############################################################################
 #  CTFCLI HANDLING CLASS
 ###############################################################################
@@ -114,17 +61,17 @@ class SandBoxyCTFdLinkage():
     '''
     Maps to the command
     host@server$> ctfcli
-    Uses ctfcli to upload challenges from the data directory in project root
+    Used to upload challenges from the data directory in project root
 
     parameters are as follows:
 
         projectroot: Absolute path to project directory
-        ctfdurl:    Url of ctfd instance
-        ctfdtoken:   Auth token as given by settings page
+        ctfdurl:     Url of ctfd instance
+        ctfdtoken:   Auth token as given by settings page in CTFd
         configname:  Name of the configfile to use
 
         / not yet/
-        loadconfig:  Loads from configuration file
+        loadconfig:  Loads from alternate configuration file
             DEFAULT: True
             INFO:    if False, ignores repository config
         / not yet/
@@ -133,6 +80,7 @@ class SandBoxyCTFdLinkage():
                        ctfdurl, 
                        ctfdtoken, 
                        configname = "ctfcli.ini", 
+                       #loadconfig=True,
                        challengelist="challengelist.yml",
                        challengefilename="challenge.yml"
                        ):
@@ -338,49 +286,13 @@ class SandBoxyCTFdLinkage():
 
             # Create hints
             if challenge.get("hints"):
-                # Delete existing hints
-                current_hints = s.get(f"/api/v1/hints", json=data).json()["data"]
-                for hint in current_hints:
-                    if hint["challenge_id"] == challenge_id:
-                        hint_id = hint["id"]
-                        r = s.delete(f"/api/v1/hints/{hint_id}", json=True)
-                        r.raise_for_status()
-                for hint in challenge["hints"]:
-                    if type(hint) == str:
-                        data = {"content": hint, "cost": 0, "challenge_id": challenge_id}
-                    else:
-                        data = {
-                            "content": hint["content"],
-                            "cost": hint["cost"],
-                            "challenge_id": challenge_id,
-                        }
-                    r = s.post(f"/api/v1/hints", json=data)
-                    r.raise_for_status()
+                apicall.processhints(challenge,challenge_id,data)
+            
             # Update requirements
             if challenge.get("requirements") and "requirements" not in ignore:
-                installed_challenges = load_installed_challenges()
-                required_challenges = []
-                for r in challenge["requirements"]:
-                    if type(r) == str:
-                        for c in installed_challenges:
-                            if c["name"] == r:
-                                required_challenges.append(c["id"])
-                    elif type(r) == int:
-                        required_challenges.append(r)
-                required_challenges = list(set(required_challenges))
-                data = {"requirements": {"prerequisites": required_challenges}}
-                r = s.patch(f"/api/v1/challenges/{challenge_id}", json=data)
-                r.raise_for_status()
-            # Unhide challenge depending upon the value of "state" in spec
-            if "state" not in ignore:
-                data = {"state": "visible"}
-                if challenge.get("state"):
-                    if challenge["state"] in ["hidden", "visible"]:
-                        data["state"] = challenge["state"]
-                r = s.patch(f"/api/v1/challenges/{challenge_id}", json=data)
-                r.raise_for_status()
-        except Exception:
-            errorlogger("[-] Failure, INPUT: {}".format(challenge))
+                apicall.processrequirements(challenge,challenge_id,data)
+
+            #if challenge.get["state"] =="visible":
 
 
     def load_installed_challenges(self):

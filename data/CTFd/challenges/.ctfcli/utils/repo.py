@@ -17,8 +17,8 @@ Available Commands:
     def __init__(self):
         '''
         '''
-        #self.MASTERLIST = str
-        #self.repo = repo
+        self.MASTERLIST = str
+        self.repo = str
 
     def clonerepo(self,repo):
         '''
@@ -45,8 +45,14 @@ Available Commands:
         '''
         Adds a challenge to the repository master list
         '''
+
     
     def removechallenge():
         '''
         removes a challenge from the master list
+        '''
+
+    def listinstalledchallenges(self):
+        '''
+        returns the contents of the masterlist in a dict
         '''
