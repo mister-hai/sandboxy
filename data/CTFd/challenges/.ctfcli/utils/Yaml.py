@@ -51,7 +51,7 @@ class KubernetesYaml(Yaml): #file
 
 class Challengeyaml(): #file
     '''
-    Represents the challenge as exists in the folder for that specific challenge
+    Represents the challenge.yml as exists in the folder for that specific challenge
     '''
     def __init__(self,yamlfile):
         #get a representation of the challenge.yaml file

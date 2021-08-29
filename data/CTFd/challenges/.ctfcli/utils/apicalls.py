@@ -51,14 +51,14 @@ class APISession(Session):
             elif type(requirements) == int:
                 required_challenges.append(requirements)
         required_challenges = list(set(required_challenges))
-        data = {
-                "requirements": 
-                    {
-                    "prerequisites": required_challenges
-                    }
-                }
+        data = {"requirements": {"prerequisites": required_challenges}}
         respopnse = self.patch(f"/api/v1/challenges/{challenge_id}", json=data)
         respopnse.raise_for_status()
+
+    def processtags(self, challenge,challenge_id,data):
+        for tag in challenge["tags"]:
+            response =self.post("/api/v1/tags", json={"challenge_id": challenge_id, "value": tag})
+            response.raise_for_status()
 
     def deleteexistinghints(self, challenge_id,data):
         '''
@@ -146,7 +146,7 @@ class APISession(Session):
     # which it appends to the body of the request.
     # If you don’t use the json keyword argument to supply the JSON data, then you 
     # need to set Content-Type accordingly and serialize the JSON manually.
-            response = self.post(f"/api/v1/topics",json={"value": topic,"type": "challenge","challenge_id": challenge_id,},)
+            response =self.post(f"/api/v1/topics",json={"value": topic,"type": "challenge","challenge_id": challenge_id,})
             response.raise_for_status()
 
     def processflags(self, challenge:dict, challenge_id, data):
@@ -164,7 +164,7 @@ class APISession(Session):
                 flag["challenge_id"] = challenge_id
                 response = self.post(f"/api/v1/flags", json=flag)
                 response.raise_for_status()
-    
+   
     def was_there_was_an_error(self, responsecode):
         ''' Returns False if no error'''
         # server side error]

@@ -37,7 +37,6 @@ class Challenge(): #folder
         # folder
         #self.challengesrc       = challengesrc
         #self.deployment         = deployment 
-
     def install(self, challenge:str, force=False, ignore=()):
         '''
         Installs a challenge from a folder into the repository
@@ -147,233 +146,40 @@ class Challenge(): #folder
             #if challenge.get["state"] =="visible":
 
 
-
-def sync_challenge(challenge, ignore=[]):
-    data = {
-        "name": challenge["name"],
-        "category": challenge["category"],
-        "description": challenge["description"],
-        "type": challenge.get("type", "standard"),
-        "value": int(challenge["value"]) if challenge["value"] else challenge["value"],
-        **challenge.get("extra", {}),
-    }
-
-    # Some challenge types (e.g. dynamic) override value.
-    # We can't send it to CTFd because we don't know the current value
-    if challenge["value"] is None:
-        del challenge["value"]
-
-    if challenge.get("attempts"):
-        data["max_attempts"] = challenge.get("attempts")
-
-    if challenge.get("connection_info"):
-        data["connection_info"] = challenge.get("connection_info")
-
-    data["state"] = "hidden"
-
-    installed_challenges = load_installed_challenges()
-    for c in installed_challenges:
-        if c["name"] == challenge["name"]:
-            challenge_id = c["id"]
-            break
-    else:
-        return
-    session = APISession()
-    original_challenge =session.get(f"/api/v1/challenges/{challenge_id}", json=data).json()["data"]
-    r =session.patch(f"/api/v1/challenges/{challenge_id}", json=data)
-
-    # Create new flags
-    if challenge.get("flags") and "flags" not in ignore:
-        # Delete existing flags
-        current_flags =session.get(f"/api/v1/flags", json=data).json()["data"]
-        for flag in current_flags:
-            if flag["challenge_id"] == challenge_id:
-                flag_id = flag["id"]
-                r =session.delete(f"/api/v1/flags/{flag_id}", json=True)
-                r.raise_for_status()
-        for flag in challenge["flags"]:
-            if type(flag) == str:
-                data = {"content": flag, "type": "static", "challenge_id": challenge_id}
-                r =session.post(f"/api/v1/flags", json=data)
-                r.raise_for_status()
-            elif type(flag) == dict:
-                flag["challenge_id"] = challenge_id
-                r =session.post(f"/api/v1/flags", json=flag)
-                r.raise_for_status()
-
-    # Update topics
-    if challenge.get("topics") and "topics" not in ignore:
-        # Delete existing challenge topics
-        current_topics =session.get(f"/api/v1/challenges/{challenge_id}/topics", json="").json()["data"]
-        for topic in current_topics:
-            topic_id = topic["id"]
-            r =session.delete(f"/api/v1/topics?type=challenge&target_id={topic_id}", json=True)
-            r.raise_for_status()
-        # Add new challenge topics
-        for topic in challenge["topics"]:
-            r =session.post(f"/api/v1/topics",
-                json={
-                    "value": topic,
-                    "type": "challenge",
-                    "challenge_id": challenge_id,
-                },)
-            r.raise_for_status()
-
-    # Update tags
-    if challenge.get("tags") and "tags" not in ignore:
-        # Delete existing tags
-        current_tags =session.get(f"/api/v1/tags", json=data).json()["data"]
-        for tag in current_tags:
-            if tag["challenge_id"] == challenge_id:
-                tag_id = tag["id"]
-                r =session.delete(f"/api/v1/tags/{tag_id}", json=True)
-                r.raise_for_status()
-        for tag in challenge["tags"]:
-            r =session.post(
-                f"/api/v1/tags", json={"challenge_id": challenge_id, "value": tag}
-            )
-            r.raise_for_status()
-
-    # Upload files
-    if challenge.get("files") and "files" not in ignore:
-        # Delete existing files
-        all_current_files =session.get(f"/api/v1/files?type=challenge", json=data).json()[
-            "data"
-        ]
-        for f in all_current_files:
-            for used_file in original_challenge["files"]:
-                if f["location"] in used_file:
-                    file_id = f["id"]
-                    r =session.delete(f"/api/v1/files/{file_id}", json=True)
-                    r.raise_for_status()
-        files = []
-        for f in challenge["files"]:
-            file_path = Path(challenge.directory, f)
-            if file_path.exists():
-                file_object = ("file", file_path.open(mode="rb"))
-                files.append(file_object)
-            else:
-                click.secho(f"File {file_path} was not found", fg="red")
-                raise Exception(f"File {file_path} was not found")
-
-        data = {"challenge_id": challenge_id, "type": "challenge"}
-        # Specifically use data= here instead of json= to send multipart/form-data
-        r =session.post(f"/api/v1/files", files=files, data=data)
-        r.raise_for_status()
-
-    # Create hints
-    if challenge.get("hints") and "hints" not in ignore:
-        # Delete existing hints
-        current_hints =session.get(f"/api/v1/hints", json=data).json()["data"]
-        for hint in current_hints:
-            if hint["challenge_id"] == challenge_id:
-                hint_id = hint["id"]
-                r =session.delete(f"/api/v1/hints/{hint_id}", json=True)
-                r.raise_for_status()
-
-        for hint in challenge["hints"]:
-            if type(hint) == str:
-                data = {"content": hint, "cost": 0, "challenge_id": challenge_id}
-            else:
-                data = {
-                    "content": hint["content"],
-                    "cost": hint["cost"],
-                    "challenge_id": challenge_id,
-                }
-
-            r =session.post(f"/api/v1/hints", json=data)
-            r.raise_for_status()
-
-    # Update requirements
-    if challenge.get("requirements") and "requirements" not in ignore:
-        installed_challenges = load_installed_challenges()
-        required_challenges = []
-        for r in challenge["requirements"]:
-            if type(r) == str:
-                for c in installed_challenges:
-                    if c["name"] == r:
-                        required_challenges.append(c["id"])
-            elif type(r) == int:
-                required_challenges.append(r)
-
-        required_challenges = list(set(required_challenges))
-        data = {"requirements": {"prerequisites": required_challenges}}
-        r =session.patch(f"/api/v1/challenges/{challenge_id}", json=data)
-        r.raise_for_status()
-
-    # Unhide challenge depending upon the value of "state" in spec
-    if "state" not in ignore:
-        data = {"state": "visible"}
-        if challenge.get("state"):
-            if challenge["state"] in ["hidden", "visible"]:
-                data["state"] = challenge["state"]
-
-        r =session.patch(f"/api/v1/challenges/{challenge_id}", json=data)
-        r.raise_for_status()
-
-
 def create_challenge(challenge, ignore=[]):
     data = {
-        "name": challenge["name"],
-        "category": challenge["category"],
-        "description": challenge["description"],
-        "type": challenge.get("type", "standard"),
-        "value": int(challenge["value"]) if challenge["value"] else challenge["value"],
-        **challenge.get("extra", {}),
-    }
-
+            "name":         challenge["name"],
+            "category":     challenge["category"],
+            "description":  challenge["description"],
+            "type":         challenge.get("type", "standard"),
+            "value":        int(challenge["value"]) if challenge["value"] else challenge["value"],
+            **challenge.get("extra", {})
+            }
     # Some challenge types (e.g. dynamic) override value.
     # We can't send it to CTFd because we don't know the current value
     if challenge["value"] is None:
         del challenge["value"]
-
-    if challenge.get("attempts") and "attempts" not in ignore:
+    if challenge.get("attempts"):
         data["max_attempts"] = challenge.get("attempts")
-
-    if challenge.get("connection_info") and "connection_info" not in ignore:
+    if challenge.get("connection_info"):
         data["connection_info"] = challenge.get("connection_info")
-
-    s = generate_session()
-
-    r =session.post("/api/v1/challenges", json=data)
-    r.raise_for_status()
+    
+    apicall = APISession()
+    response = apicall.post("/api/v1/challenges", json=data)
+    response.raise_for_status()
 
     challenge_data = r.json()
     challenge_id = challenge_data["data"]["id"]
 
     # Create flags
-    if challenge.get("flags") and "flags" not in ignore:
-        for flag in challenge["flags"]:
-            if type(flag) == str:
-                data = {"content": flag, "type": "static", "challenge_id": challenge_id}
-                r =session.post(f"/api/v1/flags", json=data)
-                r.raise_for_status()
-            elif type(flag) == dict:
-                flag["challenge"] = challenge_id
-                r =session.post(f"/api/v1/flags", json=flag)
-                r.raise_for_status()
-
+    if challenge.get("flags"):
+        apicall.processflags(challenge, challenge_id, json_payload)
     # Create topics
-    if challenge.get("topics") and "topics" not in ignore:
-        for topic in challenge["topics"]:
-            r =session.post(
-                f"/api/v1/topics",
-                json={
-                    "value": topic,
-                    "type": "challenge",
-                    "challenge_id": challenge_id,
-                },
-            )
-            r.raise_for_status()
-
+    if challenge.get("topics"):
+        apicall.processtopics(challenge, challenge_id, json_payload)
     # Create tags
     if challenge.get("tags") and "tags" not in ignore:
-        for tag in challenge["tags"]:
-            r =session.post(
-                f"/api/v1/tags", json={"challenge_id": challenge_id, "value": tag}
-            )
-            r.raise_for_status()
-
+        apicall.processtags(challenge,challenge_id,json_payload)
     # Upload files
     if challenge.get("files") and "files" not in ignore:
         files = []
@@ -386,7 +192,7 @@ def create_challenge(challenge, ignore=[]):
                 click.secho(f"File {file_path} was not found", fg="red")
                 raise Exception(f"File {file_path} was not found")
 
-        data = {"challenge_id": challenge_id, "type": "challenge"}
+        json_payload = {"challenge_id": challenge_id, "type": "challenge"}
         # Specifically use data= here instead of json= to send multipart/form-data
         r =session.post(f"/api/v1/files", files=files, data=data)
         r.raise_for_status()
