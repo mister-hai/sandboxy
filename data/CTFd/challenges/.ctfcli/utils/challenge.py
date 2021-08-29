@@ -1,9 +1,165 @@
-from data.CTFd.challenges.ctfcli.__main__ import APISession
+from apicalls import APISession
 from pathlib import Path
 import subprocess
+from utils import errorlogger,yellowboldprint,greenprint
 
 import click
 import yaml
+from Yaml import Yaml
+
+class Challenge(): #folder
+    '''
+    Maps to the command:
+    user@server$> ctfcli challenge
+
+    Represents the Challenge folder
+    not loaded into fire
+    '''
+    def __init__(self, templatesdir):
+        pass
+
+    def load_challenge(self,path):
+        try:
+            with open(path) as f:
+                return Yaml(data=yaml.safe_load(f.read()), file_path=path)
+        except FileNotFoundError:
+            errorlogger("No challenge.yml was found in {}".format(path))
+            return
+
+    def install(self, challenge:str, force=False, ignore=()):
+        '''
+        Installs a challenge from a folder
+        takes a path to a challenge.yml
+        '''
+        challenge = self.load_challenge(challenge)
+        print(f'Loaded {challenge["name"]}', fg="yellow")
+        installed_challenges = loadinstalledchallenges()
+        for chall in installed_challenges:
+            if chall["name"] == challenge["name"]:
+                yellowboldprint("Already found existing challenge with same name \
+                    ({}). Perhaps you meant sync instead of install?".format(challenge['name']))
+                if force is True:
+                    yellowboldprint("Ignoring existing challenge because of --force")
+                else:
+                        break
+            else:  # If we don't break because of duplicated challenge names
+                print(f'Installing {challenge["name"]}', fg="yellow")
+                GitOperations.addchallenge(challenge=challenge, ignore=ignore)
+                print("Success!", fg="green")
+
+    def sync(self, challenge=None, ignore=()):
+            challenge = self.load_challenge(challenge)
+            greenprint('Loaded {}'.format(challenge["name"]))
+
+            #get list of all challenges
+            installed_challenges = load_installed_challenges()
+            for c in installed_challenges:
+                if c["name"] == challenge["name"]:
+                    break
+            else:
+                print(f'Couldn\'t find existing challenge {c["name"]}. Perhaps you meant install instead of sync?')
+                continue  # Go to the next challenge in the overall list
+
+            print(f'Syncing {challenge["name"]}', fg="yellow")
+            sync_challenge(challenge=challenge, ignore=ignore)
+                def syncchallenge(self,challenge:dict):
+        '''
+        Adds a challenge
+            Must be in its own folder, in a category that has been indexed
+        
+        This command is to be run on single cchallenge folders
+        This command is called RECURSIVELY by other code, referece its input and output
+        '''
+        greenprint(f"Syncing challenge: {challenge}")
+        getchallengebyname(challenge)
+
+        #TOTO SET CHALLENGE ID
+        challenge_id = str
+        try:
+            #assign data fields to json
+            challengevalue       = int(challenge["value"]) if challenge["value"] else challenge["value"],challenge.get("extra", {})
+            challengetype        = challenge.get("type", "standard")
+            challengedescription = challenge["description"]
+            challengecategory    = challenge["category"]
+            challengename        = challenge["name"]
+            challengeauthor      = challenge["author"]
+            data = {
+                "name":         challengename,
+                "category":     challengecategory,
+                "description":  challengedescription,
+                "type":         challengetype,
+                "value" :       challengevalue,
+                "author" :      challengeauthor
+                }
+            
+            #make API call
+            apicall = APISession(prefix_url=self.CTFD_URL)
+            apicall.headers.update({"Authorization": "Token {}".format(apicall.AUTHTOKEN)})
+            apisess = apicall.get("/api/v1/challenges/{}".format(challenge_id), json=data).json()["data"]
+            response = apisess.patch(f"/api/v1/challenges/{challenge_id}", json=data)
+            response.raise_for_status()
+            
+            # Create new flags
+            if challenge.get("flags"):
+                apicall.processflags(challenge,challenge_id,data)
+ 
+            # Update topics
+            if challenge.get("topics"):
+                apicall.processtopics(challenge,challenge_id,data)
+
+            # Update tags
+            if challenge.get("tags"):
+                apicall.processtopics(challenge,challenge_id,data)
+
+            # Upload files
+            if challenge.get("files"):
+                apicall.uploadfiles(challenge,challenge_id,data)
+
+            # Create hints
+            if challenge.get("hints"):
+                # Delete existing hints
+                current_hints = s.get(f"/api/v1/hints", json=data).json()["data"]
+                for hint in current_hints:
+                    if hint["challenge_id"] == challenge_id:
+                        hint_id = hint["id"]
+                        r = s.delete(f"/api/v1/hints/{hint_id}", json=True)
+                        r.raise_for_status()
+                for hint in challenge["hints"]:
+                    if type(hint) == str:
+                        data = {"content": hint, "cost": 0, "challenge_id": challenge_id}
+                    else:
+                        data = {
+                            "content": hint["content"],
+                            "cost": hint["cost"],
+                            "challenge_id": challenge_id,
+                        }
+                    r = s.post(f"/api/v1/hints", json=data)
+                    r.raise_for_status()
+            # Update requirements
+            if challenge.get("requirements") and "requirements" not in ignore:
+                installed_challenges = load_installed_challenges()
+                required_challenges = []
+                for r in challenge["requirements"]:
+                    if type(r) == str:
+                        for c in installed_challenges:
+                            if c["name"] == r:
+                                required_challenges.append(c["id"])
+                    elif type(r) == int:
+                        required_challenges.append(r)
+                required_challenges = list(set(required_challenges))
+                data = {"requirements": {"prerequisites": required_challenges}}
+                r = s.patch(f"/api/v1/challenges/{challenge_id}", json=data)
+                r.raise_for_status()
+            # Unhide challenge depending upon the value of "state" in spec
+            if "state" not in ignore:
+                data = {"state": "visible"}
+                if challenge.get("state"):
+                    if challenge["state"] in ["hidden", "visible"]:
+                        data["state"] = challenge["state"]
+                r = s.patch(f"/api/v1/challenges/{challenge_id}", json=data)
+                r.raise_for_status()
+        except Exception:
+            errorlogger("[-] Failure, INPUT: {}".format(challenge))
 
 
 def sync_challenge(challenge, ignore=[]):

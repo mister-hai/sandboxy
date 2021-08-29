@@ -39,7 +39,8 @@ Available Commands:
     - 
     '''
     def __init__(self):
-        ''''''
+        '''
+        '''
         #self.MASTERLIST = str
         #self.repo = repo
 
@@ -105,67 +106,7 @@ class Category(): #folder
     Updates all challenges in CTFd with the versions in the repository
     Operates on the entire category 
         '''
-
-
-
-
-class Challenge(): #folder
-    '''
-    Maps to the command:
-    user@server$> ctfcli challenge
-
-    Represents the Challenge folder
-    not loaded into fire
-    '''
-    def __init__(self, templatesdir):
-        pass
-
-    def load_challenge(self,path):
-        try:
-            with open(path) as f:
-                return Yaml(data=yaml.safe_load(f.read()), file_path=path)
-        except FileNotFoundError:
-            errorlogger("No challenge.yml was found in {}".format(path))
-            return
-
-    def install(self, challenge:str, force=False, ignore=()):
-        '''
-        Installs a challenge from a folder
-        takes a path to a challenge.yml
-        '''
-        challenge = self.load_challenge(challenge)
-        print(f'Loaded {challenge["name"]}', fg="yellow")
-        installed_challenges = load_installed_challenges()
-        for chall in installed_challenges:
-            if chall["name"] == challenge["name"]:
-                yellowboldprint("Already found existing challenge with same name \
-                    ({}). Perhaps you meant sync instead of install?".format(challenge['name']))
-                if force is True:
-                    yellowboldprint("Ignoring existing challenge because of --force")
-                else:
-                        break
-            else:  # If we don't break because of duplicated challenge names
-                print(f'Installing {challenge["name"]}', fg="yellow")
-                GitOperations.addchallenge(challenge=challenge, ignore=ignore)
-                print("Success!", fg="green")
-
-    def sync(self, challenge=None, ignore=()):
-            challenge = self.load_challenge(challenge)
-            greenprint('Loaded {}'.format(challenge["name"]))
-
-            installed_challenges = load_installed_challenges()
-            for c in installed_challenges:
-                if c["name"] == challenge["name"]:
-                    break
-            else:
-                print(f'Couldn\'t find existing challenge {c["name"]}. Perhaps you meant install instead of sync?')
-                continue  # Go to the next challenge in the overall list
-
-            print(f'Syncing {challenge["name"]}', fg="yellow")
-            sync_challenge(challenge=challenge, ignore=ignore)
-            print("Success!", fg="green")
-
-
+            #call 
 
 
 #class CTFCLI():
@@ -346,8 +287,13 @@ class SandBoxyCTFdLinkage():
         '''
         Adds a challenge
             Must be in its own folder, in a category that has been indexed
+        
+        This command is to be run on single cchallenge folders
+        This command is called RECURSIVELY by other code, referece its input and output
         '''
         greenprint(f"Syncing challenge: {challenge}")
+        getchallengebyname(challenge)
+
         #TOTO SET CHALLENGE ID
         challenge_id = str
         try:
