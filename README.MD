@@ -1,26 +1,24 @@
 # DAILY PLAN
 
-    Work on organizing challenges into beginner / intermediate sections
-    Work on repository/ctfd interface script
-    Work on trial run of current process and publically deploy for a day
-    
-    TOTAL PROGRESS:
-        certbot-letsencrypt worked pages were forced to https
-        backend messages show requests are forwarded and urlrewriting works
-        but I still get SSL errors.
+    Rewriting the entirety of ctfcli to not look like garbage and maybe be actually extensible?
+        
 
 # WEEKLY PLAN
-
-
-    get all the beginner challenges seperated and a script to upload them all
     
-    host a public test? maybe?
+    well gee golly am I glad all those tutorials had THIS laying around!
+    https://docs.docker.com/network/proxy/#configure-the-docker-client
+    but really no, they didnt... proxy issues solved?
+
+    start.sh is a bootstrapper right? so make it call python and hand over the 
+    env to the REPL with "fire" after it installs, yeah?
 
     PROGRESS:
         set of challenges seperated into data directory 
         and organized somewhat, needs the yaml files modified
 
         working on script to upload them easily according to ctfcli spec
+
+        byte-banging the API on CTFd to make sure the fields are correct
 
 
 # PENTEST SANDBOX
@@ -45,6 +43,9 @@
 
             /data 
                 where the portable data is placed (mysql/redis/ctfd/nginx/etc)
+
+                /certbot/conf/live
+                    This is where your certs are, keep an eye on this folder!
 
                 /CTFd/Challenges
                     The challenge repository, managed by a rewrite of ctfcli

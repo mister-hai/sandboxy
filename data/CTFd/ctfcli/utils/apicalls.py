@@ -25,6 +25,14 @@ class APISession(Session):
         #url = urljoin(self.prefix_url, url.lstrip("/"))
         #return super(APISession, self).request(method, url, *args, **kwargs)
     
+    def getvisibilitystate(self, challenge, challenge_id):
+        json_payload = {"state": "hidden"}
+        if challenge["state"] in ["hidden", "visible"]:
+            json_payload["state"] = challenge["state"]
+
+        response = self.get(f"/api/v1/challenges/{challenge_id}", json=json_payload)
+        response.raise_for_status()
+
     def togglechallengevisibility(self, challenge):
         try:
             challenge_id = challenge['challenge_id']
@@ -50,17 +58,17 @@ class APISession(Session):
                         required_challenges.append(installedchallenge["id"])
             elif type(requirements) == int:
                 required_challenges.append(requirements)
-        required_challenges = list(set(required_challenges))
+                required_challenges = list(set(required_challenges))
         data = {"requirements": {"prerequisites": required_challenges}}
-        respopnse = self.patch(f"/api/v1/challenges/{challenge_id}", json=data)
-        respopnse.raise_for_status()
+        response = self.patch(f"/api/v1/challenges/{challenge_id}", json=data)
+        response.raise_for_status()
 
     def processtags(self, challenge,challenge_id,data):
         for tag in challenge["tags"]:
             response =self.post("/api/v1/tags", json={"challenge_id": challenge_id, "value": tag})
             response.raise_for_status()
 
-    def deleteexistinghints(self, challenge_id,data):
+    def deleteremotehints(self, challenge_id,data):
         '''
         deletes all hints from ctfd
         HARD MODE: ON
@@ -93,6 +101,28 @@ class APISession(Session):
             response.raise_for_status()
 
     def uploadfiles(self,challenge,challenge_id,data):
+        '''
+        uploads files to the ctfd server
+        '''
+
+        files = []
+        for file in challenge["files"]:
+            file_path = Path(challenge.directory, f)
+            if file_path.exists():
+                file_object = ("file", file_path.open(mode="rb"))
+                files.append(file_object)
+            else:
+                raise Exception
+
+        json_payload = {"challenge_id": challenge_id, "type": "challenge"}
+        # Specifically use data= here instead of json= to send multipart/form-data
+        r = self.post(f"/api/v1/files", files=files, data=json_payload)
+        r.raise_for_status()
+
+    def deleteremotefiles(self,file_path,data):
+        '''
+        deletes files from ctfd server
+        '''
         try:
             # Delete existing files
             all_current_files =self.get(f"/api/v1/files?type=challenge", json=data).json()["data"]
@@ -102,18 +132,6 @@ class APISession(Session):
                         file_id = file["id"]
                         r =self.delete(f"/api/v1/files/{file_id}", json=True)
                         r.raise_for_status()
-            files = []
-            for file in challenge["files"]:
-                file_path = Path(challenge.directory, file)
-                if file_path.exists():
-                    file_object = ("file", file_path.open(mode="rb"))
-                    files.append(file_object)
-                else:
-                    raise Exception
-            data = {"challenge_id": challenge_id, "type": "challenge"}
-            # Specifically use data= here instead of json= to send multipart/form-data
-            r =self.post(f"/api/v1/files", files=files, data=data)
-            r.raise_for_status()
         except Exception:
             errorlogger(f"File {file_path} was not found")
 
