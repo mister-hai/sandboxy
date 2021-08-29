@@ -22,6 +22,14 @@ Available Commands:
         self.MASTERLIST = Yaml(masterlist)
         self.repo = str
 
+    def createprojectrepo(self):        
+        #create repo
+        self.repository = git.Repo.init(path=self.repo)
+        #add all files in challenge folder to local repository
+        self.repository.index.add(".")
+        self.repository.index.commit('Initial commit')
+        self.repository.create_head('master')
+
     def clonerepo(self,repo):
         '''
         ctfcli gitoperations clonerepo <remoterepository>
@@ -43,6 +51,7 @@ Available Commands:
         except Exception:
             errorlogger("[-] ERROR: Could not create Git repository in the challenges folder")
  
+    
     def addchallenge(self):
         '''
         Adds a challenge to the repository master list

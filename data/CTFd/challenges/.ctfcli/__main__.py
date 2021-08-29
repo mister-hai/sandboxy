@@ -102,8 +102,9 @@ class SandBoxyCTFdLinkage():
                 # then individual challenges
             self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
             # filename for the full challenge index
-            self.masterlist          = challengelist
-            self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlist)
+            self.challengelist       = challengelist
+            self.masterlistlocation  = os.path.join(self.challengesfolder, self.challengelist)
+            self.masterlist          = Yaml(self.masterlistlocation)
             # template challenges
             self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "ctfcli", "templates")
             #config stuff
@@ -111,6 +112,11 @@ class SandBoxyCTFdLinkage():
             self.CONFIGDIR           = os.path.join(self.CTFDDATAROOT,".ctfcli")
             self.CONFIGFILE          = os.path.join(self.CONFIGDIR, self.configname)
             self.config              = Config(self.COPNFIGFILE)
+            # store url and token in config
+            self.config["apiaccess"] = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
+            self.config.write()
+
+            ###############################################
             # filebuffer for challengelist.yaml
             self.challengelistbuffer = open(self.listofchallenges).read()
             self.challengelistyaml   = yaml.load(self.challengelistbuffer, Loader=yaml.FullLoader) 
@@ -202,17 +208,13 @@ class SandBoxyCTFdLinkage():
                 #add the new challenge to the category as 
                 # its own named child
                 setattr(cat_bag[category],name,newchallenge)
-        #create repo
-        self.repository = git.Repo.init(path=self.repo)
-        #add all files in challenge folder to local repository
-        self.repository.index.add(".")
-        self.repository.index.commit('Initial commit')
-        self.repository.create_head('master')
 
-        # create config file
-        config = configparser.ConfigParser()
-        config["config"] = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
-        config.write()
+        SandboxyCTFdRepository.createprojectrepo()
+
+        # itterate over category classes containing challenge children
+        for category in cat_bag:
+            
+            self.masterlist[]
 
 
     def getcategories(self,print=True):
@@ -223,7 +225,7 @@ class SandBoxyCTFdLinkage():
     Get the names of all Categories
     Supply "print=False" to return a variable instead of display to screen 
         '''
-        categories = self.getsubdirs(self.challengesfolder)
+        categories = self.masterlist['categories']
         if print == True:
             greenprint("Categories: " + ",  ".join(categories))
         else:
@@ -248,7 +250,7 @@ class SandBoxyCTFdLinkage():
             else:
                 return challenges
 
-    def populatechallengelist(self):
+    def populatechallengelist(self, categories:Category):
         '''
     Maps to the command
     host@server$> ctfcli populatechallengelist
@@ -264,9 +266,8 @@ class SandBoxyCTFdLinkage():
             challengesbycategory = self.getsubdirs(pathtocategory)
             for challenge in challengesbycategory:
                 #open the challenge.yaml file to get the name
-                self.challengelistyaml
-            # TODO: write list of challenges to yaml with tags
-                danglies
+                self.challengelistbuffer = open(self.listofchallenges).read()
+                self.challengelistyaml   = yaml.load(self.challengelistbuffer, Loader=yaml.FullLoader) 
 
     def synccategory(self, category:str):
         '''

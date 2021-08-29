@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import yaml,os,subprocess
 from pygments import highlight
-from utils.utils import greenprint, redprint
+from utils.utils import greenprint, redprint, errorlogger
 from pygments.formatters import TerminalFormatter
 from pygments.lexers import IniLexer, JsonLexer
 import configparser
@@ -10,10 +10,11 @@ import configparser
 class Yaml(): #filetype
     '''
     Represents a challange.yml
-    Give Path to challenge.yaml
+    Give Path to challenge.yml
     '''
     def __init__(self, filepath):
         #set the base values
+        # kubernetes or ctfd
         self.type = str
         #get path of file
         self.filepath = Path(filepath)
@@ -23,18 +24,22 @@ class Yaml(): #filetype
         if self.filepath.endswith(".yaml"):
             redprint("[!] File is .yaml! Presuming to be kubernetes config!")
             self.type = "kubernetes"
-        else:
+        elif self.filepath.endswith(".yml"):
             greenprint("[+] Challenge File presumed (.yml)")
-            try:
-                #open the yml file
-                with open(filepath) as f:
-                    filedata = yaml.safe_load(f.read(), filepath=filepath)
-                    #assign data to self
-                    #previous
-                    #super().__init__(filedata)
-                    setattr(self,"data",filedata)
-            except FileNotFoundError:
-                print("No challenge.yml was found in {}".format(filepath))
+        
+        self.loadyaml(filepath)
+
+    def loadyaml(self, filepath):
+        try:
+            #open the yml file
+            with open("./challenge-example.yml") as f:
+                filedata = yaml.safe_load(f.read())#, filepath=filepath)
+                #assign data to self
+                #previous
+                #super().__init__(filedata)
+                self.data = filedata
+        except Exception:
+            errorlogger("[-] ERROR: Could not load .yml file")
 
 class KubernetesYaml(): #file
     '''
