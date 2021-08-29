@@ -19,6 +19,7 @@ from cookiecutter.main import cookiecutter
 from utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
 from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS, blank_challenge_spec
 from utils.Yaml import Yaml, KubernetesYaml, Challengeyaml, Config
+from utils.repo import SandboxyCTFdRepository
 from utils.challenge import Challenge
 from utils.utils import errorlogger
 from utils.apicalls import APISession
@@ -147,20 +148,21 @@ class SandBoxyCTFdLinkage():
             # if its a repository category folder
             if categoryfolder in CATEGORIES:
                 #get subfolder names
-                challenges = self.getsubdirs(location)
-                for challenge in challenges:
+                challengefolders = self.getsubdirs(location)
+                for challengefolder in challengefolders:
                     location = os.path.join(location, challenge)
-                    challenge_packages = self.getsubdirs(location) 
+                    # get the data
+                    challenge_subfolders = self.getsubdirs(location) 
                     # load the yml describing the challenge
                     self.loadchallengeyaml(categoryfolder,challenge)
-
+                    
                     # generate challenge
                     newchallenge = Challenge(category = categoryfolder, 
                                          location = location,
                                          challengefile = challengefile
                                          )
-                #load  challenge.yml
-                newchallenge.load_challenge()
+                    #load challenge.yml
+                    newchallenge.load_challenge()
                 pass
         
         #create repo
@@ -245,7 +247,8 @@ class SandBoxyCTFdLinkage():
     Maps to the command
     host@server$> ctfcli synccategory <categoryname>
 
-    Synchronize all challenges in the given category
+    Synchronize all challenges in the given category, this uploads 
+    the challenge data to CTFd
         '''
         try:
             greenprint("[+] Syncing Category: {}". format(category))
@@ -256,14 +259,26 @@ class SandBoxyCTFdLinkage():
         except Exception:
             errorlogger("[-] Failure to sync category! {}".format(challenge))
 
-    def load_installed_challenges(self):
-        s = self.generate_session()
-        return s.get("/api/v1/challenges?view=admin", json=True).json()["data"]
+    def load_installed_challenges(self, remote=False):
+        '''
+        Lists the challenges installed to the server
+        Use 
+        
+            --remote=False 
+        
+        to check the LOCAL repository
+        '''
+        if remote == True:
+            apicall = APISession.generate_session()
+            return apicall.get("/api/v1/challenges?view=admin", json=True).json()["data"]
+        elif remote == False:
+            SandboxyCTFdRepository.listinstalledchallenges()
 
     def newfromtemplate(self, type=""):
         '''
         Creates a new CTFd Challenge from template
-            If no repo is present, uploads the DEFAULT template to CTFd
+
+        If no repo is present, uploads the DEFAULT template to CTFd
         '''
         # if no repo is present, uploads a template
         if type == "":

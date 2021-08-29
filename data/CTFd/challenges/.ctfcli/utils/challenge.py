@@ -16,12 +16,20 @@ class Challenge(): #folder
     Represents the Challenge folder
     not loaded into fire
     '''
-    def __init__(self, category,location, challengefile):
+    def __init__(self, category,
+                       location, 
+                       challengefile, 
+                       challengesrc,
+                       handout,
+                       solution
+                       ):
         self.name               = str
         self.category           = category
         self.challengelocation  = location
         self.challengefile      = challengefile
-
+        self.solutiondir        = solution
+        self.handout            = handout
+        self.challengesrc       = challengesrc
 
     def load_challenge(self,path):
         try:
