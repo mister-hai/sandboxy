@@ -183,6 +183,7 @@ CTFd_API_v1 = ["/challenges",
               "/unlocks", 
               "/tokens", 
               "/comments"]
+              
 
 CHALLENGE_SPEC_DOCS = {
     "name": Prompt(

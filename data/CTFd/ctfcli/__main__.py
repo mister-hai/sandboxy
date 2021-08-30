@@ -25,37 +25,6 @@ from utils.utils import errorlogger
 from utils.apicalls import APISession
 
 
-###############################################################################
-#  CTFCLI HANDLING CLASS
-###############################################################################
-class Category(): #folder
-    '''
-    use getattr(),setattr() to add/query Challenge Entries
-    this is used for keeping track internally
-
-    ChallengeCategory:
-        represents a folder in the PROJECTDIRECTORY/data/CTFd/challenges/ dir
-      ChallengeEntry:
-        represents a challenge.yaml
-        name: thing
-    '''
-    def __init__(self,category):
-        self.name = category
-    
-    def updaterepository(self, challenge):
-        '''
-    Updates the repository with any new content added to the category given
-    if it doesnt fit the spec, it will issue an error    
-    Try not to let your repo get cluttered
-        '''
-
-    def synccategory(self):
-        '''
-    Updates all challenges in CTFd with the versions in the repository
-    Operates on the entire category 
-        '''
-            #call 
-
 
 #class CTFCLI():
 class SandBoxyCTFdLinkage():
@@ -209,12 +178,13 @@ class SandBoxyCTFdLinkage():
                 # now, we take the classes, and subclasses in the Category().Challenge()
                 # schema and setattr() to apply them to the current class as 
                 # SandBoxyCTFdLinkage.Category().Challenge
+            
         SandboxyCTFdRepository.createprojectrepo()
 
         # itterate over category classes containing challenge children
         for category in cat_bag:
-
-            self.masterlist[]
+            pass
+            #self.masterlist[]
 
 
     def getcategories(self,print=True):
@@ -227,7 +197,7 @@ class SandBoxyCTFdLinkage():
         '''
         categories = self.masterlist['categories']
         if print == True:
-            greenprint("Categories: " + ",  ".join(categories))
+            greenprint("Categories: {}".format(categories))
         else:
             return categories
 

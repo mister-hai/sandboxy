@@ -2,6 +2,39 @@ from pathlib import Path
 from utils import errorlogger
 from Yaml import Yaml
 import git, re
+
+###############################################################################
+#  CTFCLI HANDLING CLASS
+###############################################################################
+class Category(): #folder
+    '''
+    use getattr(),setattr() to add/query Challenge Entries
+    this is used for keeping track internally
+
+    ChallengeCategory:
+        represents a folder in the PROJECTDIRECTORY/data/CTFd/challenges/ dir
+      ChallengeEntry:
+        represents a challenge.yaml
+        name: thing
+    '''
+    def __init__(self,category):
+        self.name = category
+    
+    def updaterepository(self, challenge):
+        '''
+    Updates the repository with any new content added to the category given
+    if it doesnt fit the spec, it will issue an error    
+    Try not to let your repo get cluttered
+        '''
+
+    def synccategory(self):
+        '''
+    Updates all challenges in CTFd with the versions in the repository
+    Operates on the entire category 
+        '''
+            #call 
+
+
 #https://www.devdungeon.com/content/working-git-repositories-python
 class SandboxyCTFdRepository():
     '''
@@ -17,15 +50,16 @@ Available Commands:
     - 
     - 
     '''
-    def __init__(self,masterlist):
+    def __init__(self,repo:str):
         '''
+        --repo https://github.com/misterhai/sandboxy
+            downloads the repository given
         '''
-        self.MASTERLIST = Yaml(masterlist)
-        self.repo = str
+        #self.MASTERLIST = Yaml(masterlist)
         self.username = str
 
     def setauth(self):
-        with repo.config_writer() as git_config:
+        with git.repo.config_writer() as git_config:
             git_config.set_value('user', 'email', 'someone@example.com')
             git_config.set_value('user', 'name', 'John Doe')
 
@@ -79,16 +113,22 @@ Available Commands:
         '''To checkout master again:'''
         repo.git.checkout('master')
     
-    def createprojectrepo(self):        
+    def createprojectrepo(self):
+        '''
+    internal method to create a git repo out of event,
+    admins should be managing that using thier preferred git workflow
+        '''        
         #create repo
         self.repository = git.Repo.init(path=self.repo)
         #add all files in challenge folder to local repository
         self.repository.index.add(".")
         self.repository.index.commit('Initial commit')
         self.repository.create_head('master')
+    
+    def clonerepo(self):
         try:
             # the user indicates a remote repo, by supplying a url
-            if re.match(r'^(?:http|https)?://', self.repo) or repo.endswith(".git"):
+            if re.match(r'^(?:http|https)?://', self.repo) or self.repo.endswith(".git"):
                 self.repository = git.Repo.clone(self.repo)
                 # get remote references to sync repos
                 self.heads = self.repository.heads

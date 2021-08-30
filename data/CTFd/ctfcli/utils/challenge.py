@@ -37,6 +37,7 @@ class Challenge(): #folder
         # folder
         #self.challengesrc       = challengesrc
         #self.deployment         = deployment
+        # use for api calls
         self.CHALLENGETEMPLATE = {
             "success": "true",
             "data": [{

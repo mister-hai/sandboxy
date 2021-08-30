@@ -68,9 +68,6 @@ class APISession(Session):
         #self.prefix_url = prefix_url.rstrip("/") + "/"
         self.CTFDURL = self.prefix_url
         self.AUTHTOKEN = authtoken
-        self.endpoints = ["/challenges", "/tags", "/topics", "/awards", "/hints", 
-    "/flags", "/submissions", "/scoreboard", "/teams", "/users", "/statistics",
-    "/files", "/notifications", "/configs", "/pages", "/unlocks", "/tokens", "/comments"]
 
     #def request(self, method, url, *args, **kwargs):
         # Strip out the preceding / so that urljoin creates the right url
