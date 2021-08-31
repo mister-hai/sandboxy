@@ -103,14 +103,14 @@ http {
     ##
     #include /etc/nginx/sites-enabled/*;
     # up streams have to match container hostname
-# This file is copied as is, from this spot
+    # This file is copied as is, from this spot
     upstream ctfd {
-        server ctfd:${CTFDPORT};
+        #server ${CTFDIP}:${CTFDPORT}/$request_uri;
+        server ctfd:${CTFDPORT}
     }
-    #upstream juiceshop {
-    #    server ${DOMAINNAME}:${JUICESHOPPORT};
-    #}
-    #}
+    upstream juiceshop {
+        server ${DOMAINNAME}:${JUICESHOPPORT};
+    }
     #include /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf;
     include /etc/nginx/conf.d/moopboxen.local.conf;
 }
