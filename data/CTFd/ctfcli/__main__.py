@@ -19,8 +19,8 @@ from cookiecutter.main import cookiecutter
 from utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
 from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS, blank_challenge_spec
 from utils.Yaml import Yaml, KubernetesYaml, Challengeyaml, Config
-from utils.gitrepo import SandboxyCTFdRepository, Category
-from utils.ctfdrepo import Category,Repo
+from utils.gitrepo import SandboxyGitRepository
+from utils.ctfdrepo import Category,SandboxyCTFdRepository
 from utils.challenge import Challenge
 from utils.utils import errorlogger
 from utils.apicalls import APISession
@@ -114,69 +114,15 @@ class SandBoxyCTFdLinkage():
     TODO: Add Oauth via discord
         '''
         # need an array to carry data around
-        cat_bag = []
-        # make a new category for every category allowed
-        for challenge_category in CATEGORIES:
-            cat_bag.append(Category(challenge_category))
-        # get list of all folders in challenges repo
-        categoryfolders = self.getsubdirs(self.challengesfolder)
-        # itterate over folders in challenge directory
-        for category in categoryfolders:
-            # if its a repository category folder
-            if category in CATEGORIES:
-                # add a new category to the bag of cats
-                cat_bag.append(Category(challenge_category))
-                # track location change to subdir
-                pwd = self.location(self.challengesfolder, category)
-                #get subfolder names in category directory, wreprweswenting indivwidual chwallenges yippyippyippyipp
-                challenges = self.getsubdirs(pwd)
-                # itterate over the individual challenges
-                for challengefolder in challenges:
-                    # track location change to individual challenge subdir
-                    pwd = self.location(challenges, challengefolder)
-                    # list files and folders
-                    challengefolderdata = os.listdir(pwd)
-                    # itterate over them
-                    for challengedata in challengefolderdata:
-                        # set location to challenge subfolder
-                        challengelocation = self.location(pwd, challengefolder)
-                        # get solutions path
-                        if challengedata == "solution":
-                            solution = os.path.join(pwd, challengedata)
-                        # get handouts path
-                        if challengedata == "handout":
-                            handout = os.path.join(pwd, challengedata)
-                        # get challenge file 
-                        if challengedata == self.basechallengeyaml:
-                            # get path to challenge file
-                            challengefile  = os.path.join(pwd, challengedata)
-                            # load the yml describing the challenge
-                            challengeyaml = Challengeyaml(challengefile)
-                            # get the name of the challenge
-
-                # generate challenge for that category
-                newchallenge = Challenge(
-                        name = challengeyaml.name,
-                        category = challengeyaml.category,
-                        location = challengeyaml.challengelocation, 
-                        challengefile = challengeyaml,
-                        #challengesrc= challengeyaml.challengesrc,
-                        #deployment = challengeyaml.deployment,
-                        handout= handout,
-                        solution= solution
-                        )
-                
-                #add the new challenge to the category as 
-                # its own named child
-                setattr(cat_bag[category],challengeyaml['name'],newchallenge)
+        #the init function will do the thing and return the data
+        cat_bag = SandboxyGitRepository.createprojectrepo()
         # now we make the master list by adding all the data from the challenges 
         # to the yaml file and then write to disk
-        for category in cat_bag:
-            self.masterlist.data = category
-            #try to only append to the file
-            # TODO: TIMESTAMPS AND IDS!!!
-            self.masterlist.writemasteryaml(self.masterlistfile, filemode="a")
-
+        #for category in cat_bag:
+            #self.masterlist.data = category
+        self.masterlist = cat_bag
+        # TODO: TIMESTAMPS AND IDS!!!
+        self.masterlist.writemasteryaml(self.masterlistfile, filemode="a")
         # we do this last so we can add all the created files to the git repo        
         SandboxyCTFdRepository.createprojectrepo()
 
