@@ -2,7 +2,10 @@ version: "3"
 #################################################################
 ##
 ## THIS FILE CONTAINS THE ENTRIES FOR THE INFRASTRUCTURE
-##
+# To create the network you run the following:
+## docker network create net --gateway 192.168.0.1 --subnet 192.168.0.1/24
+##    ALSO: --gateway --ip-range and --aux-address can be used
+# https://docs.docker.com/engine/reference/commandline/network_create/
 #################################################################
 services:
 #################################################################
@@ -38,6 +41,9 @@ services:
       ports:
         - 80:80
         - 443:443
+      extra_hosts:
+        - "ctfd:${CTFDIP}"
+        #- "<name here>:<ip here>"
       networks:
         net:
           ipv4_address: ${NGINXIP}
@@ -95,6 +101,10 @@ services:
         - 8000
       ports:
         - ${CTFDPORT}:8000
+      extra_hosts:
+        - "nginx:${NGINXIP}"
+      # I have been trying to avoid this
+      #network_mod: host
       networks:
         internal:
         net:
@@ -104,22 +114,20 @@ services:
 # STATUS : FUNCTIONAL
 #################################################################
 #docker run --rm -p 3000:3000 bkimminich/juice-shop
-#    juiceshop:
-#      image: bkimminich/juice-shop
-#      hostname: juiceshop
-#      depends_on:
-#        - nginx
-#      expose:
-#        - 3000
-#      restart: unless-stopped
-#      ports:
-#        - ${JUICESHOPPORT}:3000
-#      networks:
-#        net:
-#        hax:
-#          external: true
-#          ipv4_address: ${JUICESHOPIP}
-#       
+    juiceshop:
+      image: bkimminich/juice-shop
+      hostname: juiceshop
+      depends_on:
+        - nginx
+      expose:
+        - 3000
+      restart: unless-stopped
+      ports:
+        - ${JUICESHOPPORT}:3000
+      networks:
+        net:
+          ipv4_address: ${JUICESHOPIP}
+       
 #################################################################
 #                   REDIS SERVER
 #################################################################
@@ -161,6 +169,20 @@ services:
 #################################################################   
 
 
+#################################################################
+##  Parrotsec/ParOS
+#################################################################
+    parrot:
+      image: parrotsec/security
+      volumes:
+        - "/run/docker.sock:/var/run/docker.sock"
+      networks:
+        net:
+          ipv4_address: ${PARROTOSIP}
+      #volumes:
+      #  -  /tmp/msf:/tmp/data:Z
+      #network_mode: host
+
 
 #################################################################
 #     NETWORKS SECTION
@@ -171,5 +193,3 @@ networks:
 
   net:
     external: true
-    config:
-      - subnet: "172.18.0.0/24"

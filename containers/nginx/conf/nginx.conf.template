@@ -1,116 +1,94 @@
-# This file is used for linting, copy the contents to 
-# nginx.conf.template for envsubst
-user ${USER};  
-#user www-data;
-pid /run/nginx.pid;
-include /etc/nginx/modules-enabled/*.conf;
-# Default: 1
-worker_processes  5;
-worker_rlimit_nofile 8192;
+# This file is copied as is, from this spot
+    upstream ctfd {
+        server ctfd:${CTFDPORT};
+    }
+server {
+    ##############
+    # RUN THE FOLLOWING COMMAND TO POPULATE THIS CONF WITH CERTBOT ENTRIES
+    # certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d DOMAIN NAME
+    ###########
 
-events {
-  worker_connections  ${WORKER_CONNECTIONS};  
-}
-http {
-    ##
-    # Basic Settings
-    ##
-    
-    # server_name_in_redirect off;
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    #resolver 8.8.8.8;
+    resolver 127.0.0.11;
+    #resolver 127.0.0.53;
     root /var/www/html;
-    #server {
-    #listen 0.0.0.0:80;
-    #listen 0.0.0.0:443;
-    #server_name firewall-gateway.net fightbiscuits.firewall-gateway.net;
-    include /etc/nginx/mime.types;
-    include /etc/nginx/fastcgi.conf;
-    #include /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf;
-    include /etc/nginx/conf.d/moopboxen.local.conf
-    #default_type application/octet-stream;
+    default_type application/octet-stream;
     index    index.html index.htm index.php;
+    server_name moopboxen.local;
 
-    sendfile on;
-    tcp_nopush on;
-    tcp_nodelay on;
-    keepalive_timeout 65;
-    types_hash_max_size 2048;
-    # server_tokens off;
+   # Entry for certbot
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
 
+    # Redirect non-https traffic to https
+    #if ($scheme != "https") {
+    #    return 301 https://$host$request_uri;
+    #} # managed by Certbot
 
-    ##
-    #Choose your proxy settings
-    # Load from file or inline style
-    ##
-    #include    /etc/nginx/proxy.conf;
-    #proxy_redirect          off;
-    proxy_ssl_session_reuse off;
-    proxy_set_header        Host              $host;
-    proxy_set_header        X-Real-IP         $remote_addr;
-    proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
-    proxy_set_header        Referer           $http_referer;
-    proxy_set_header        X-Forwarded-Proto $scheme;
-    # DISABLED DURING DEVELOPMENT
-    #proxy_cache_bypass $http_upgrade;
-    #proxy_set_header X-NginX-Proxy true;
-    client_max_body_size    10m;
-    client_body_buffer_size 128k;
-    proxy_connect_timeout   90;
-    proxy_send_timeout      90;
-    proxy_read_timeout      90;
-    proxy_buffers           32 4k;
-
-    ##
-    # Logging Settings
-    ##
-    access_log /var/log/nginx/access.log;
-    error_log /var/log/nginx/error.log;
-
-    log_format   main '$remote_addr - $remote_user [$time_local]  $status '
-        '"$request" $body_bytes_sent "$http_referer" '
-        '"$http_user_agent" "$http_x_forwarded_for" "$server_name"';
-
-    ##
-    # SSL Settings
-    ##
-
-    #ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
-    #ssl_prefer_server_ciphers on;
-
-    #ssl_certificate /etc/letsencrypt/cert.crt;
-    #ssl_certificate_key /etc/letsencrypt/keys/key.pem;
-    #ssl_certificate /etc/letsencrypt/live/${DOMAINNAME}/fullchain.pem;
-    #ssl_certificate_key /etc/letsencrypt/live/${DOMAINNAME}/privkey.pem;
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-    
-    ##
-    # Logging Settings
-    ##
-    access_log /var/log/nginx/access.log;
-    error_log /var/log/nginx/error.log;
-
-    ##    
-    # Gzip Settings
-    ##    
-    gzip on;
-    gzip_vary on;
-    gzip_proxied any;
-    gzip_comp_level 6;
-    gzip_buffers 16 8k;
-    gzip_http_version 1.1;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
-
-    ##
-    # Virtual Host Configs
-    ##
-    #include /etc/nginx/sites-enabled/*;
-    # up streams have to match container hostname
-    #upstream ctfd {
-    #    server ctfd:${CTFDPORT};
+    ######################################################################
+    ## CTFD CONIGURATION
+    ######################################################################
+    #why the fuck is this so large??
+    client_max_body_size 4G;
+    # Handle Server Sent Events for Notifications
+    location /events {
+        #proxy_pass $scheme://ctfd/;
+        proxy_pass $scheme://localhost:8000;
+        #proxy_pass $scheme://${CTFDIP}:${CTFDPORT};
+        proxy_set_header Connection '';
+        proxy_http_version 1.1;
+        chunked_transfer_encoding off;
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_redirect  off;
+        proxy_set_header Host $host;
+        #proxy_set_header Host $host:$server_port;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $server_name;
+    }
+    #    # You may need this to prevent return 404 recursion.
+    #location = /404.html {
+    #    internal;
     #}
-    #upstream juiceshop {
-    #    server ${DOMAINNAME}:${JUICESHOPPORT};
+    # Proxy connections to the application servers
+    # upstream server testing for passing CTFd as root
+    # you can switch proxy_pass comments to toggle
+    # when doing so, comment out the upstream declaration
+    location / {
+        #proxy_pass $scheme://ctfd;
+        # to use hostname, use local resolver
+        proxy_pass $scheme://localhost:8000; #${CTFDPORT};
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        #proxy_set_header Host $host:$server_port;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $server_name;
+    }
+    #location ~ /bwapp {
+        # for upstream
+        #proxy_pass $scheme://bwapp/;
+    #    proxy_pass $scheme://${BWAPPIP}:${BWAPPPORT}/;
+    #    proxy_redirect off;
+    #    proxy_set_header Host $host;
+    #    #proxy_set_header Host $host:$server_port;
+    #    proxy_set_header X-Real-IP $remote_addr;
+    #    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    #    proxy_set_header X-Forwarded-Host $server_name;            
     #}
+    #location ~ /juiceshop {
+    #    #proxy_pass $scheme://juiceshop/;
+    #    proxy_pass $scheme://$host:${JUICESHOPPORT}/;
+    #    proxy_redirect off;
+    #    proxy_set_header Host ${DOMAINNAME};
+    #    proxy_set_header Host $host:$server_port;
+    #    proxy_set_header X-Real-IP $remote_addr;
+    #    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    #    proxy_set_header X-Forwarded-Host $server_name;         
     #}
-    include /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf;
 }

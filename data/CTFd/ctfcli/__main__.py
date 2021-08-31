@@ -178,13 +178,16 @@ class SandBoxyCTFdLinkage():
                 # now, we take the classes, and subclasses in the Category().Challenge()
                 # schema and setattr() to apply them to the current class as 
                 # SandBoxyCTFdLinkage.Category().Challenge
-            
-        SandboxyCTFdRepository.createprojectrepo()
 
+        # now we make the master list by adding all the data from the challenges 
+        # to the yaml file and the nwrite to disk
         # itterate over category classes containing challenge children
         for category in cat_bag:
             pass
             #self.masterlist[]
+
+        # we do this last so we can add all the created files to the git repo        
+        SandboxyCTFdRepository.createprojectrepo()
 
 
     def getcategories(self,print=True):
