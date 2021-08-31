@@ -109,7 +109,7 @@ http {
         server ctfd:${CTFDPORT};
     }
     upstream juiceshop {
-        server ${DOMAINNAME}:${JUICESHOPPORT};
+        server juiceshop:${JUICESHOPPORT};
     }
     #include /etc/nginx/conf.d/fightbiscuits.firewall-gateway.net.conf;
     include /etc/nginx/conf.d/moopboxen.local.conf;
