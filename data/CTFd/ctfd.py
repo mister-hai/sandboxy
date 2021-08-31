@@ -1,7 +1,8 @@
 import importlib
 import os,sys,fire
 from ctfcli.__main__ import SandBoxyCTFdLinkage
-from ctfcli.__main__ import SandboxyCTFdRepository
+from ctfcli.utils.ctfdrepo import SandboxyCTFdRepository
+from ctfcli.utils.gitrepo import SandboxyGitRepository
 from ctfcli.utils.utils import CATEGORIES
 from dotenv import load_dotenv
 from pathlib import Path
@@ -56,7 +57,8 @@ IN START.SH, PERFORM THE FOLLOWING ACTIONS/COMMANDS
     '''
     def __init__(self):
         self.ctfcli = SandBoxyCTFdLinkage()
-        self.gitops = SandboxyCTFdRepository()
+        self.ctfdops = SandboxyCTFdRepository()
+        self.gitops = SandboxyGitRepository()
     #def main(self):
     #   pass
 

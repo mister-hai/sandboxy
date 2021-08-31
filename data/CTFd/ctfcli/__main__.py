@@ -49,13 +49,15 @@ class SandBoxyCTFdLinkage():
         / not yet/
     '''
     def __init__(self, 
+                    ctfdtoken,
+                    ctfdurl,
                     configname = "ctfcli.ini", 
                     ):
         try:
             greenprint("[+] Instancing a SandboxyCTFdLinkage()")
             self.PROJECTROOT         = os.getenv("PROJECT_ROOT")
-            self.CTFD_TOKEN          = os.getenv("CTFD_TOKEN")
-            self.CTFD_URL            = os.getenv("CTFD_URL")
+            self.CTFD_TOKEN          = ctfdtoken #os.getenv("CTFD_TOKEN")
+            self.CTFD_URL            = ctfdurl #os.getenv("CTFD_URL")
             self.configname          = configname
             # name of the yaml file expected to have the challenge data in each subfolder
             self.basechallengeyaml   = "challenge.yml"
@@ -101,9 +103,6 @@ class SandBoxyCTFdLinkage():
 
     def init(self):
         '''
-    Maps to the command: ctfdcli
-    Main control flow
-
     Link to CTFd instance with token and URI
 
 >>> host@server$> ctfcli --ctfdtoken <token> --ctfdurl <url> init
@@ -170,14 +169,8 @@ class SandBoxyCTFdLinkage():
                 #add the new challenge to the category as 
                 # its own named child
                 setattr(cat_bag[category],challengeyaml['name'],newchallenge)
-                # now, we take the classes, and subclasses in the Category().Challenge()
-                # schema 
-                # setattr() to apply them to the current class as 
-                # SandBoxyCTFdLinkage.Category().Challenge
-
         # now we make the master list by adding all the data from the challenges 
         # to the yaml file and then write to disk
-        # itterate over category classes containing challenge children
         for category in cat_bag:
             self.masterlist.data = category
             #try to only append to the file

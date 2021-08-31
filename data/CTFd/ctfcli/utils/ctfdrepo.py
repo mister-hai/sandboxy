@@ -38,7 +38,7 @@ class Category(): #folder
 ###############################################################################
 #  CTFd REPOSIROTY: representation of folder in repository
 ###############################################################################
-class Repo(): #folder
+class SandboxyCTFdRepository(): #folder
     '''
     Backend to CTFd Repository
     Companion to the SandboxyCTFdRepository

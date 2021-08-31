@@ -6,7 +6,7 @@ import git, re
 
 
 #https://www.devdungeon.com/content/working-git-repositories-python
-class SandboxyCTFdRepository():
+class SandboxyGitRepository():
     '''
     backend to GitOperations
 
