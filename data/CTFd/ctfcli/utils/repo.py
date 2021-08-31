@@ -65,7 +65,7 @@ Available Commands:
 
     def checkauth(self):
         # To check configuration values, use `config_reader()`
-        with repo.config_reader() as git_config:
+        with git.repo.config_reader() as git_config:
             print(git_config.get_value('user', 'email'))
             print(git_config.get_value('user', 'name'))
     
@@ -77,41 +77,41 @@ Available Commands:
     def createremoterepo(self):
         '''Create a new remote repository on github'''
         try:
-            remote = repo.create_remote('origin', url='git@github.com:{}/testrepo'.format(self.username))
+            remote = git.repo.create_remote('origin', url='git@github.com:{}/testrepo'.format(self.username))
         except git.exc.GitCommandError as error:
             print(f'Error creating remote: {error}')
         # Reference a remote by its name as part of the object
-        print(f'Remote name: {repo.remotes.origin.name}')
-        print(f'Remote URL: {repo.remotes.origin.url}')
+        print(f'Remote name: {git.repo.remotes.origin.name}')
+        print(f'Remote URL: {git.repo.remotes.origin.url}')
 
     def deleteremoterepo(self, repo):
         '''Delete a remote'''
-        repo.delete_remote(repo)
+        git.repo.delete_remote(repo)
 
     def pullfromremote(self):
         '''Pull from remote repo'''
-        print(repo.remotes.origin.pull())
+        print(git.repo.remotes.origin.pull())
 
     def pushtoremote(self):
         '''Push changes'''
-        print(repo.remotes.origin.push())
+        print(git.repo.remotes.origin.push())
     
     def listallbranches(self):
         '''List all branches'''
-        for branch in repo.branches:
+        for branch in git.repo.branches:
             print(branch)
 
     def createremotebranch(self):
         '''Create a new branch'''
-        repo.git.branch('my_new_branch')
+        git.repo.git.branch('my_new_branch')
 
     def checkoutremotebranch(self):
         # You need to check out the branch after creating it if you want to use it
-        repo.git.checkout('my_new_branch3')
+        git.repo.git.checkout('my_new_branch3')
 
     def checkoutmasterbranch(self):
         '''To checkout master again:'''
-        repo.git.checkout('master')
+        git.repo.git.checkout('master')
     
     def createprojectrepo(self):
         '''
@@ -119,7 +119,7 @@ Available Commands:
     admins should be managing that using thier preferred git workflow
         '''        
         #create repo
-        self.repository = git.Repo.init(path=self.repo)
+        self.repository = git.git.repo.init(path=self.repo)
         #add all files in challenge folder to local repository
         self.repository.index.add(".")
         self.repository.index.commit('Initial commit')

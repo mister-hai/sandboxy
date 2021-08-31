@@ -11,9 +11,19 @@
 # you should modify this to suit your preferences
 #
 # This line adds the .env variables to the environment... very danger
-source ./.env
+#source ./.env
 
-
+#this is from the development environment
+#set this to whatever
+PROJECT_ROOT=/home/moop/sandboxy
+PROJECTFILE=./main-compose.yaml
+DATAROOT=/home/moop/sandboxy/data
+CHALLENGEREPOROOT=/home/moop/sandboxy/data/CTFd
+CTFD_TOKEN=ASDFJKLOL.BN64.AES420.PIZZA.LOL
+CTFD_URL=http://127.0.0.1:8000
+CERTBOTCONFVOLUMES=$DATAROOT/certbot/conf
+CERTBOTDATAVOLUMES=$DATAROOT/certbot/www
+CERTBOTLOGVOLUMES=$DATAROOT/log/certbot
 ###############################################################################
 # required for nsjail, kubernetes
 # run this before running 

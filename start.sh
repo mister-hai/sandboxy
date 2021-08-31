@@ -45,7 +45,7 @@
 #
 
 # import env variables
-source ./.env
+source .env
 #set program name
 PROG=${0##*/}
 #set logfile name
@@ -191,9 +191,12 @@ unset CDPATH
 ## IMPORT USER DEFINED FUNCTIONS FROM SCRIPT DIR AND SET LOCATION
 ###############################################################################
 # gets pwd
-DIR=$( cd -P "$( dirname "$SOURCE" )" && pwd )
-printf "pwd: %s \n" "$DIR"
-
+if [ DIR=$( cd -P "$( dirname "$SOURCE" )" && pwd ) ]; then
+  cecho "[+] pwd: ${DIR} \n DEVS NEED TO ADD CHECKS FOR RELEVANT FILES" red;
+else
+  cecho "%s" "[-] COULD NOT SET PWD, SOMETING SERIOUS IS WRONG" red;
+printf "[+] Setting project root in ${DIR}"
+PROJECT_ROOT = $DIR
 #./start.sh
 SELFRELATIVE=$0
 printf "self:  %s \n " "$SELFRELATIVE"
@@ -271,7 +274,7 @@ appenddatafolder()
   # " - " is the "dummy" or "pipe to stdout" operator for tar 
   #from above projectroot
   unset CDPATH
-  cd "$DIR"
+  cd "$DIR" || { printf "%s" $! && exit ;}
   cd ../
   if sudo tar -czvf - ./sandboxy/data | base64 >> "$SELF"; then
     cecho "[+] Project packed into archive!"
@@ -287,7 +290,7 @@ appenddatafolder()
     exit 1
   fi
   unset CDPATH
-  cd "$DIR"
+  cd "$DIR" || { printf "%s" "could not change directory to " && exit ;}
 }
 # First arg: section
 #   ==${TOKEN}START==${1}==
@@ -413,6 +416,14 @@ askforrecallfile()
         * ) cecho "Please answer yes or no." red;;
     esac
   done
+}
+
+# CTFCLI tool
+# the .env file should be setting all these
+ctfclifunction()
+{
+cd $CHALLENGEREPOROOT
+python3 ctfd.py --help
 }
 ###############################################################################
 # MAIN LOOP, CONTAINS MENU THEN INFINITE LOOP, AFTER THAT IS DATA SECTION
