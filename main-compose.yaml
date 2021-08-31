@@ -172,13 +172,13 @@ services:
 #################################################################
 ##  Parrotsec/ParOS
 #################################################################
-    parrot:
-      image: parrotsec/security
-      volumes:
-        - "/run/docker.sock:/var/run/docker.sock"
-      networks:
-        net:
-          ipv4_address: ${PARROTOSIP}
+    #parrot:
+    #  image: parrotsec/security
+    #  volumes:
+    #    - "/run/docker.sock:/var/run/docker.sock"
+    #  networks:
+    #    net:
+    #      ipv4_address: ${PARROTOSIP}
       #volumes:
       #  -  /tmp/msf:/tmp/data:Z
       #network_mode: host

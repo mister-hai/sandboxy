@@ -176,7 +176,8 @@ class SandBoxyCTFdLinkage():
                 # its own named child
                 setattr(cat_bag[category],challengeyaml['name'],newchallenge)
                 # now, we take the classes, and subclasses in the Category().Challenge()
-                # schema and setattr() to apply them to the current class as 
+                # schema 
+                # setattr() to apply them to the current class as 
                 # SandBoxyCTFdLinkage.Category().Challenge
 
         # now we make the master list by adding all the data from the challenges 
