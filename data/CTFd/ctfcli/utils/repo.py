@@ -4,7 +4,7 @@ from Yaml import Yaml
 import git, re
 
 ###############################################################################
-#  CTFCLI HANDLING CLASS
+#  CTFd CATEGORY: representation of folder in repository
 ###############################################################################
 class Category(): #folder
     '''
@@ -34,6 +34,23 @@ class Category(): #folder
         '''
             #call 
 
+
+###############################################################################
+#  CTFd REPOSIROTY: representation of folder in repository
+###############################################################################
+class Repo(): #folder
+    '''
+    Backend to CTFd Repository
+    Companion to the SandboxyCTFdRepository
+    '''
+    def __init__(self):
+        pass
+    
+    def addcategory(self, category:Category):
+        '''
+        Adds a Category to the repository
+        '''
+        setattr(self, category.name, category)
 
 #https://www.devdungeon.com/content/working-git-repositories-python
 class SandboxyCTFdRepository():

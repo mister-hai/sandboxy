@@ -174,7 +174,8 @@ class SandBoxyCTFdLinkage():
         # now we make the master list by adding all the data from the challenges 
         # to the yaml file and then write to disk
         # itterate over category classes containing challenge children
-        self.masterlist.data = 
+        self.masterlist.data = asdf
+        self.masterlist.writemasteryaml()
         #for category in cat_bag:
         #    for challenge in category:
 
@@ -259,6 +260,8 @@ class SandBoxyCTFdLinkage():
             --remote=False 
         
         to check the LOCAL repository
+
+        For git operations, use gitoperations or your preferred terminal workflow
         '''
         if remote == True:
             apicall = APISession.generate_session()

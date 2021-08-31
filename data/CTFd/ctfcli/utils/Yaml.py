@@ -58,16 +58,19 @@ and store the contents of whole classes
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
 
-    def writenamedyaml(self,name:str):
-        '''
+    def writemasteryaml(self,name:str, filemode="a"):
+        '''Special function to write the master yaml for the ctfd side of the repository
         remember to assign data to the file with
 >>> thing = Yaml(filepath)
 >>> thing.data = Category()
 >>> thing.writeyaml()
+
+File mode is set to append by default so you can manually fix the repo list
+
         '''
         try:
             #open the yml file pointed to by the load operation
-            with open(self.filepath) as file:
+            with open(self.filepath, filemode) as file:
                 filedata = yaml.safe_dump(file)
                 file.write
         except Exception:
