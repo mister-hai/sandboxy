@@ -16,7 +16,8 @@ class Yaml(): #filetype
         #set the base values
         # kubernetes or ctfd
         self.type = str
-        self.name =
+        # sets name of Yaml() to name of file
+        self.name = os.path.basename(filepath)
         #get path of file
         self.filepath = Path(filepath)
         #set working dir of file

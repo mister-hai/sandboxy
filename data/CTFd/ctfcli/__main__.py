@@ -19,7 +19,8 @@ from cookiecutter.main import cookiecutter
 from utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
 from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS, blank_challenge_spec
 from utils.Yaml import Yaml, KubernetesYaml, Challengeyaml, Config
-from utils.repo import SandboxyCTFdRepository, Category
+from utils.gitrepo import SandboxyCTFdRepository, Category
+from utils.ctfdrepo import Category,Repo
 from utils.challenge import Challenge
 from utils.utils import errorlogger
 from utils.apicalls import APISession
@@ -100,13 +101,18 @@ class SandBoxyCTFdLinkage():
 
     def init(self):
         '''
-    Maps to the command
-    host@server$> ctfcli --ctfdtoken <token> --ctfdurl <url> init
-    
-    Link to CTFd instance with token and URI
-        - Creates a masterlist of challenges in the repository
-        - Creates a git repository and adds all the files
+    Maps to the command: ctfdcli
+    Main control flow
 
+    Link to CTFd instance with token and URI
+
+>>> host@server$> ctfcli --ctfdtoken <token> --ctfdurl <url> init
+
+    - Creates a masterlist of challenges in the repository
+    - Creates a git repository and adds all the files
+    - links repository with CTFd instance via disposable token
+
+    TODO: Add Oauth via discord
         '''
         # need an array to carry data around
         cat_bag = []
@@ -120,8 +126,6 @@ class SandBoxyCTFdLinkage():
             # if its a repository category folder
             if category in CATEGORIES:
                 # add a new category to the bag of cats
-                # dont forget to stick your head in and ROTATE >:3
-                self.config['categories']
                 cat_bag.append(Category(challenge_category))
                 # track location change to subdir
                 pwd = self.location(self.challengesfolder, category)

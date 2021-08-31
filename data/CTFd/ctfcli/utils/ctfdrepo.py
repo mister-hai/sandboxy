@@ -49,6 +49,13 @@ class Repo(): #folder
     def addcategory(self, category:Category):
         '''
         Adds a Category to the repository
+        We are adding classes to this class with "setattr"
+        You can now access that category via
+        rofl = Category()
+        asdf = Repo().init
+        asdf.addcategory(category= categoryname)
+        asdf.categoryname
+
         '''
         setattr(self, category.name, category)
         #TODO: add entry to masterlist.yaml
