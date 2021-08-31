@@ -165,24 +165,25 @@ CATEGORIES = [
     "Networking",
     ]
 
-CTFd_API_v1 = ["/challenges",
-              "/tags", 
-              "/topics", 
-              "/awards", 
-              "/hints", 
-              "/flags", 
-              "/submissions", 
-              "/scoreboard", 
-              "/teams", 
-              "/users", 
-              "/statistics",
-              "/files", 
-              "/notifications", 
-              "/configs", 
-              "/pages", 
-              "/unlocks", 
-              "/tokens", 
-              "/comments"]
+APIPREFIX = "/api/v1/"
+CTFd_API_ROUTES = {"challenges": f"{APIPREFIX}challenges",
+              "tags":f"{APIPREFIX}tags", 
+              "topics":f"{APIPREFIX}topics", 
+              "awards":f"{APIPREFIX}awards", 
+              "hints":f"{APIPREFIX}hints", 
+              "flags":f"{APIPREFIX}flags", 
+              "submissions":f"{APIPREFIX}submissions", 
+              "scoreboard":f"{APIPREFIX}scoreboard", 
+              "teams":f"{APIPREFIX}teams", 
+              "users":f"{APIPREFIX}users", 
+              "statistics":f"{APIPREFIX}statistics",
+              "files":f"{APIPREFIX}files", 
+              "notifications":f"{APIPREFIX}notifications", 
+              "configs":f"{APIPREFIX}configs", 
+              "pages":f"{APIPREFIX}pages", 
+              "unlocks":f"{APIPREFIX}unlocks", 
+              "tokens":f"{APIPREFIX}tokens", 
+              "comments":f"{APIPREFIX}comments"}
               
 
 CHALLENGE_SPEC_DOCS = {

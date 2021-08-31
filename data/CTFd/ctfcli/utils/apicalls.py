@@ -1,3 +1,4 @@
+import json
 import requests
 from pathlib import Path
 from requests import Session
@@ -82,6 +83,7 @@ class APISession(Session):
                              "hidden":"false",
                              "banned":"false"
                              }
+
     def getusers(self):
         ''' gets a list of all users'''
 
@@ -89,6 +91,7 @@ class APISession(Session):
         '''
         Gets the visibility of a challenge
         Hidden , Visible
+        TODO: make it work
         '''
         response = self.get(f"/api/v1/challenges/{challenge_id}", json=json_payload)
         response.raise_for_status()
@@ -187,10 +190,8 @@ curl -X POST "http://127.0.0.1:8000/api/v1/files" -b cookie  \
                 files.append(file_object)
             else:
                 raise Exception
-
-        json_payload = {"challenge_id": challenge_id, "type": "challenge"}
         # Specifically use data= here instead of json= to send multipart/form-data
-        r = self.post(f"/api/v1/files", files=files, data=json_payload)
+        r = self.post(f"/api/v1/files", files=files, data=self.json_payload)
         r.raise_for_status()
 
     def deleteremotefiles(self,file_path,data):

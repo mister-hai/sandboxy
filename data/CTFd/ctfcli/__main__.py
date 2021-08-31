@@ -61,14 +61,6 @@ class SandBoxyCTFdLinkage():
             self.configname          = configname
             # name of the yaml file expected to have the challenge data in each subfolder
             self.basechallengeyaml   = "challenge.yml"
-            # reflects the data subdirectory in the project root
-            self.DATAROOT            =  os.path.join(self.PROJECTROOT,"data")
-            # represents the ctfd data folder
-            self.CTFDDATAROOT        = os.path.join(self.DATAROOT, "ctfd")
-            # folder expected to contain challenges
-            # categories in here
-                # then individual challenges
-            self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
             # filename for the full challenge index
             self.masterlistfile      = "challengelist.yml"
             self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
@@ -113,18 +105,16 @@ class SandBoxyCTFdLinkage():
 
     TODO: Add Oauth via discord
         '''
-        # need an array to carry data around
         #the init function will do the thing and return the data
-        cat_bag = SandboxyGitRepository.createprojectrepo()
-        # now we make the master list by adding all the data from the challenges 
-        # to the yaml file and then write to disk
+        self.masterlist.data = SandboxyCTFdRepository.createprojectrepo()
         #for category in cat_bag:
             #self.masterlist.data = category
-        self.masterlist = cat_bag
+            #self.masterlist.writemasteryaml(self.masterlistfile, filemode="a")
+        setattr(self,self.masterlist,"Repo")
         # TODO: TIMESTAMPS AND IDS!!!
         self.masterlist.writemasteryaml(self.masterlistfile, filemode="a")
         # we do this last so we can add all the created files to the git repo        
-        SandboxyCTFdRepository.createprojectrepo()
+        SandboxyGitRepository.createprojectrepo()
 
 
     def getcategories(self,print=True):

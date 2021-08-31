@@ -45,7 +45,15 @@ class SandboxyCTFdRepository(): #folder
     Companion to the SandboxyCTFdRepository
     '''
     def __init__(self):
-        pass
+        # reflects the data subdirectory in the project root
+        #self.DATAROOT            =  os.path.join(self.PROJECTROOT,"data")
+        # represents the ctfd data folder
+        self.CTFDDATAROOT        = Path(os.getenv("CHALLENGEREPOROOT"))
+        # folder expected to contain challenges
+        # categories in here
+        # then individual challenges
+        self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
+        self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
     
     def createprojectrepo(self,categories):
         cat_bag = []
