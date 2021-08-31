@@ -16,6 +16,7 @@ class Yaml(): #filetype
         #set the base values
         # kubernetes or ctfd
         self.type = str
+        self.name =
         #get path of file
         self.filepath = Path(filepath)
         #set working dir of file
@@ -26,7 +27,7 @@ class Yaml(): #filetype
             self.type = "kubernetes"
         elif self.filepath.endswith(".yml"):
             greenprint("[+] Challenge File presumed (.yml)")
-        
+        # finally, load the file    
         self.loadyaml(filepath)
 
     def loadyaml(self):

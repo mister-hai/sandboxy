@@ -174,10 +174,11 @@ class SandBoxyCTFdLinkage():
         # now we make the master list by adding all the data from the challenges 
         # to the yaml file and then write to disk
         # itterate over category classes containing challenge children
-        self.masterlist.data = asdf
-        self.masterlist.writemasteryaml()
-        #for category in cat_bag:
-        #    for challenge in category:
+        for category in cat_bag:
+            self.masterlist.data = category
+            #try to only append to the file
+            # TODO: TIMESTAMPS AND IDS!!!
+            self.masterlist.writemasteryaml(self.masterlistfile, filemode="a")
 
         # we do this last so we can add all the created files to the git repo        
         SandboxyCTFdRepository.createprojectrepo()
