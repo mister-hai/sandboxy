@@ -8,10 +8,6 @@ except ImportError:
     from distutils.core import setup, find_packages
 
 
-with open("ctfcli/__init__.py") as f:
-    version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
-
-
 def read(fname):
     try:
         with open(os.path.join(os.path.dirname(__file__), fname), "r") as fp:
@@ -22,11 +18,11 @@ def read(fname):
 
 setup(
     name="SandboxyCTFCLI",
-    version=version,
-    author="Kevin Chung, MRHAI",
+    version="wat",
+    author="Kevin Chung (original author), MRHAI (rewrite)",
     author_email="kchung@ctfd.io",
     license="Apache 2.0",
-    description="Tool for creating and running Capture The Flag competitions WITH SANDBOXY",
+    description="Tool for creating and running Capture The Flag competitions && WITH SANDBOXY",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     keywords=["ctf"],

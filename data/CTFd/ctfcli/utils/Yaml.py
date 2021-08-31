@@ -29,10 +29,10 @@ class Yaml(): #filetype
         
         self.loadyaml(filepath)
 
-    def loadyaml(self, filepath):
+    def loadyaml(self):
         try:
             #open the yml file
-            with open("./challenge-example.yml") as f:
+            with open(self.filepath) as f:
                 filedata = yaml.safe_load(f.read())#, filepath=filepath)
                 #assign data to self
                 #previous
@@ -40,6 +40,38 @@ class Yaml(): #filetype
                 self.data = filedata
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
+    
+    def writeyaml(self):
+        '''
+        remember to assign data to the file with
+>>> thing = Yaml(filepath)
+>>> thing.data['key'] = value
+OR... you can assign python objects
+and store the contents of whole classes
+>>> thing.data = Category()
+>>> thing.writeyaml()
+        '''
+        try:
+            #open the yml file pointed to by the load operation
+            with open(self.filepath) as file:
+                filedata = yaml.safe_dump(file)
+        except Exception:
+            errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
+
+    def writenamedyaml(self,name:str):
+        '''
+        remember to assign data to the file with
+>>> thing = Yaml(filepath)
+>>> thing.data = Category()
+>>> thing.writeyaml()
+        '''
+        try:
+            #open the yml file pointed to by the load operation
+            with open(self.filepath) as file:
+                filedata = yaml.safe_dump(file)
+                file.write
+        except Exception:
+            errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
 
 class KubernetesYaml(Yaml): #file
     '''

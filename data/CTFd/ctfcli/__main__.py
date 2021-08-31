@@ -67,8 +67,8 @@ class SandBoxyCTFdLinkage():
                 # then individual challenges
             self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
             # filename for the full challenge index
-            self.challengelist       = "challengelist.yml"
-            self.masterlistlocation  = os.path.join(self.challengesfolder, self.challengelist)
+            self.masterlistfile      = "challengelist.yml"
+            self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
             self.masterlist          = Yaml(self.masterlistlocation)
             # template challenges
             self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "ctfcli", "templates")
@@ -144,21 +144,12 @@ class SandBoxyCTFdLinkage():
                         if challengedata == "handout":
                             handout = os.path.join(pwd, challengedata)
                         # get challenge file 
-                        # self.basechallengeyaml == "challenge.yml"
                         if challengedata == self.basechallengeyaml:
                             # get path to challenge file
                             challengefile  = os.path.join(pwd, challengedata)
                             # load the yml describing the challenge
-                            #challengeyaml = Yaml(challengefile)
                             challengeyaml = Challengeyaml(challengefile)
                             # get the name of the challenge
-                        # for challenges with a server side component
-                        #if challenge_data == "serverside":
-                        # files for the server to host for safer challenges 
-                        #    challengesrc = os.path.join(pwd, challenge_data)
-                        #if challenge_data == "deployment":
-                        # kubernetes deployment with nsjail
-                        #    deployment = os.path.join(pwd, challenge_data)
 
                 # generate challenge for that category
                 newchallenge = Challenge(
@@ -181,11 +172,11 @@ class SandBoxyCTFdLinkage():
                 # SandBoxyCTFdLinkage.Category().Challenge
 
         # now we make the master list by adding all the data from the challenges 
-        # to the yaml file and the nwrite to disk
+        # to the yaml file and then write to disk
         # itterate over category classes containing challenge children
-        for category in cat_bag:
-            pass
-            #self.masterlist[]
+        self.masterlist.data = 
+        #for category in cat_bag:
+        #    for challenge in category:
 
         # we do this last so we can add all the created files to the git repo        
         SandboxyCTFdRepository.createprojectrepo()
@@ -288,82 +279,6 @@ class SandBoxyCTFdLinkage():
         else:
             cookiecutter(os.path.join(self.TEMPLATESDIR,type))
 
-    def change_state(self, challenge:str, state:str):
-        '''
-        toggle challenge from visible to hidden
-                This is obviously after the main list has been generated
-        '''
-        visible = {}
-        hidden = {}
-        try:
-            if state not in ['visible', 'hidden']:
-                raise Exception
-        except Exception:
-                errorlogger("[-] INVALID INPUT: {} {}".format(challenge,state))
 
-        for challenges in self.challengelistyaml:
-            #filter empties
-            if challenge in challenges:
-                # get category of challenge
-                for category in self.challengelistyaml[challenge]:
-                    # for each challenge in that category
-                    for challenge in self.challengelistyaml[challenge][category]:
-                        # read the challenge.yml file into a buffer
-                        challengeyaml = self.loadchallengeyaml(category,challenge)
-                        # obtain state of the challenge
-                        challengeyaml['state'] = state
-                        # toggle to invisible
-                        if state == 'visible':
-                            name = challengeyaml['name'].lower().replace(' ', '-')
-                            if 'expose' in challenge_yml:
-                                visible[category].append({'name': name, 'port': challenge_yml['expose'][0]['nodePort']})
-                            else:
-                                visible[category].append({'name': name, 'port': 0})
-                        else:
-                            if 'expose' in challenge_yml:
-                                hidden[category].append({'name': name, 'port': challenge_yml['expose'][0]['nodePort']})
-                            else:
-                                hidden[category].append({'name': name, 'port': 0})
-                        chall = self.readchallengeintobuffer(category,challenge)
-                        yaml.dump(challengeyaml, chall, sort_keys=False)
-            else:
-                for category in self.challengelistyaml[wave]:
-                    for challenge in self.challengelistyaml[wave][category]:
-                        chall = open(f'{category}/{challenge}/challenge.yml', 'r')
-                        challenge_yml = yaml.load(chall, Loader=yaml.FullLoader)
-                        challenge_yml['state'] = 'hidden'
-                        name = challenge_yml['name'].lower().replace(' ', '-')
-                        if 'expose' in challenge_yml:
-                            hidden[category].append({'name': name, 'port': challenge_yml['expose'][0]['nodePort']})
-                        else:
-                            hidden[category].append({'name': name, 'port': 0})
-        return visible, hidden
 
-# Firewall rules for visible challenges
-    def firewall(visible, hidden):
-        rules = os.popen('gcloud compute firewall-rules --format=json list').read()
-
-        for category in visible:
-            for challenge in visible[category]:
-                if challenge['port'] and challenge['name'] not in rules:
-                    os.system(
-                        f"""
-                            gcloud compute firewall-rules create {challenge['name']} \
-                                --allow tcp:{challenge['port']} \
-                                --priority 1000 \
-                                --target-tags challs
-                        """
-                    )
-                    print('Created firewall rules for:')
-                    print(challenge['name'])    
-        for category in hidden:
-            for challenge in hidden[category]:
-                if challenge['port'] and challenge['name'] in rules:
-                    os.system(
-                        f"""
-                            echo -e "Y\n" | gcloud compute firewall-rules delete {challenge['name']}
-                        """
-                    )
-                    print('Deleted firewall rules for:')
-                    print(challenge['name'])    
 
