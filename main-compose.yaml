@@ -28,7 +28,7 @@ services:
       image: nginx:latest
       hostname: nginx
       depends_on:
-#        - bwapp
+        - juiceshop
 #        - dvwa
         - ctfd
       restart: unless-stopped
@@ -43,7 +43,7 @@ services:
         - 443:443
       extra_hosts:
         - "ctfd:${CTFDIP}"
-        #- "<name here>:<ip here>"
+        - "juiceshop:${JUICESHOPIP}"
       networks:
         net:
           ipv4_address: ${NGINXIP}
@@ -117,8 +117,8 @@ services:
     juiceshop:
       image: bkimminich/juice-shop
       hostname: juiceshop
-      depends_on:
-        - nginx
+      #depends_on:
+        #- nginx
       expose:
         - 3000
       restart: unless-stopped
