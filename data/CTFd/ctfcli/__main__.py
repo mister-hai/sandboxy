@@ -1,6 +1,6 @@
 import importlib
 import os,sys,fire
-from ctfcli.__main__ import SandBoxyCTFdLinkage
+from ctfcli.linkage import SandBoxyCTFdLinkage
 from ctfcli.utils.ctfdrepo import SandboxyCTFdRepository
 from ctfcli.utils.gitrepo import SandboxyGitRepository
 from ctfcli.utils.utils import CATEGORIES
