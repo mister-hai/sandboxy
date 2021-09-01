@@ -93,6 +93,7 @@ class Challengeyaml(): #file
     def __init__(self,yamlfile):
         #get a representation of the challenge.yaml file
         self.challengeyaml = Yaml(yamlfile)
+        self.challengeyamllocation = str
         self.yamldata = self.challengeyaml.data
         # name of the challenge
         self.name        = self.challengeyaml['name']

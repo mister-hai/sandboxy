@@ -47,45 +47,6 @@ class Challenge(): #folder
     
 
 class ChallengeActions(Challenge):
-    def install(self, challenge:str, force=False, ignore=()):
-        '''
-        Installs a challenge from a folder into the repository
-        to add it to the ctfd server, use "sync"
-        takes a path to a challenge.yml
-        '''
-        challenge = self.load_challenge(challenge)
-        print(f'Loaded {challenge["name"]}')
-        installed_challenges = SandboxyCTFdRepository.listinstalledchallenges()
-        for chall in installed_challenges:
-            if chall["name"] == challenge["name"]:
-                yellowboldprint("Already found existing challenge with same name \
-                    ({}). Perhaps you meant sync instead of install?".format(challenge['name']))
-                if force is True:
-                    yellowboldprint("Ignoring existing challenge because of --force")
-                else:
-                    break
-            else:  # If we don't break because of duplicated challenge names
-                print(f'Installing {challenge["name"]}')
-                SandboxyCTFdRepository.addchallenge(challenge=challenge, ignore=ignore)
-                print("Success!", fg="green")
-
-    def sync(self): #, challenge=None, ignore=()):
-            #challenge = self.load_challenge(challenge)
-            #greenprint('Loaded {}'.format(challenge["name"]))
-
-            #get list of all challenges
-            installedchallenges = SandboxyCTFdRepository.loadinstalledchallenges()
-            for challenge in installedchallenges:
-                #check if challenge is synced
-                if challenge.synced == True:
-                    danglies
-                    pass
-            else:
-                print(f'Couldn\'t find existing challenge {c["name"]}. Perhaps you meant install instead of sync?')
-
-            print(f'Syncing {challenge["name"]}', fg="yellow")
-            self.syncchallenge(challenge=challenge)
-
 
     def syncchallenge(self,challenge:dict):
         '''

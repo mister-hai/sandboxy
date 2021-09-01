@@ -109,7 +109,7 @@ class SandboxyCTFdRepository(): #folder
                 
                 #add the new challenge to the category as 
                 # its own named child
-                setattr(cat_bag[category],challengeyaml['name'],newchallenge)
+                self.addchallenge(cat_bag[challenge_category],newchallenge)
         return cat_bag
 
     def addcategory(self, category:Category):
@@ -139,4 +139,10 @@ class SandboxyCTFdRepository(): #folder
         '''
 
     def loadsyncedchallenges(self):
+        '''
         
+        '''
+
+    def addchallenge(self, challenge:Challenge):
+        '''Adds a challenge to the repository'''
+        setattr(category,challenge.name,challenge)

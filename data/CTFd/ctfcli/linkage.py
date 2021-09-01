@@ -22,16 +22,22 @@ class SandBoxyCTFdLinkage():
 
     parameters are as follows:
 
-        projectroot: Absolute path to project directory
-        ctfdurl:     Url of ctfd instance
-        ctfdtoken:   Auth token as given by settings page in CTFd
-        configname:  Name of the configfile to use
-
         / not yet/
-        loadconfig:  Loads from alternate configuration file
+        loadconfig (bool):  Loads from alternate configuration file
             DEFAULT: True
             INFO:    if False, ignores repository config
         / not yet/
+
+
+    Args:
+        projectroot (str): Absolute path to project directory
+        ctfdurl (str):     Url of ctfd instance
+        ctfdtoken (str):   Auth token as given by settings page in CTFd
+        configname (str):  Name of the configfile to use
+
+    Attributes:
+        arg (str): This is where we store arg,
+
     '''
     def __init__(self, 
                     ctfdtoken,

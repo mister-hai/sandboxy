@@ -5,10 +5,10 @@ from utils import errorlogger,blueprint,yellowboldprint,redprint
 from ctfdrepo import SandboxyCTFdRepository
 
 class APISession(Session):
-    '''
-    Represents a connection to the CTFd API
-    '''
     def __init__(self, prefix_url:str, authtoken:str, *args, **kwargs):
+        '''
+        Represents a connection to the CTFd API
+        '''
         #super(APISession, self).__init__(*args, **kwargs)
         # Strip out ending slashes and append a singular one so we generate
         # clean base URLs for both main deployments and subdir deployments
