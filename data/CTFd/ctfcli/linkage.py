@@ -4,13 +4,14 @@ from utils.challenge import Challenge
 
 from cookiecutter.main import cookiecutter
 
-from utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
-from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
-from utils.Yaml import Yaml, Config
-from utils.gitrepo import SandboxyGitRepository
-from utils.ctfdrepo import Category,SandboxyCTFdRepository
+from utils.Yaml import Yaml
+from utils.utils import loadchallengeyaml
 from utils.utils import errorlogger
 from utils.apicalls import APISession
+from utils.gitrepo import SandboxyGitRepository
+from utils.ctfdrepo import Category,SandboxyCTFdRepository
+from utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
+from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
 
 
 
@@ -44,18 +45,14 @@ class SandBoxyCTFdLinkage():
     def __init__(self, 
                     ctfdtoken,
                     ctfdurl,
-                    configname = "ctfcli.ini", 
+                    #configname = "ctfcli.ini", 
                     ):
         try:
             greenprint("[+] Instancing a SandboxyCTFdLinkage()")
             self.PROJECTROOT         = os.getenv("PROJECT_ROOT")
             self.CTFD_TOKEN          = ctfdtoken #os.getenv("CTFD_TOKEN")
             self.CTFD_URL            = ctfdurl #os.getenv("CTFD_URL")
-            self.configname          = configname
-            # filename for the full challenge index
-            self.masterlistfile      = "masterlist.yml"
-            self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
-            self.masterlist          = Yaml(self.masterlistlocation)
+            #self.configname          = configname
             # template challenges
             self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "ctfcli", "templates")
             # store url and token in config
@@ -63,10 +60,9 @@ class SandBoxyCTFdLinkage():
             #check for an existance of the master list
             if self.checkmasterlist():
                 greenprint("[+] Loading masterlist.yaml")
-                self.masterlist = Yaml(self.masterlistlocation)
+                self.loadmasterlist()
             else:
-                redprint("[-] Masterlist Not Found! You need to run 'ctfcli init'!! ")
-                sys.exit()
+                raise Exception
         except Exception:
             errorlogger("[-] SandBoxyCTFdLinkage.__init__ Failed")
     
@@ -76,9 +72,23 @@ class SandBoxyCTFdLinkage():
         TODO: add integrety checks, currently just checks if it exists
         '''
         if isfile(self.masterlistlocation):
+            greenprint("[+] Masterlist Located!")
             return True
         else:
+            redprint("[-] Masterlist Not Found! You need to run 'ctfcli init'!! ")
             return False
+
+    def loadmasterlist(self, masterlistfile =  "masterlist.yml"):
+        '''
+        Loads the masterlist.yaml
+
+        Args:
+            masterlistfile (str): The file to load as masterlist, defaults to masterlist.yaml
+        '''
+        # filename for the full challenge index
+        self.masterlistfile      = masterlistfile
+        self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
+        self.masterlist          = Yaml(self.masterlistlocation)
 
     def init(self):
         '''
@@ -92,8 +102,6 @@ class SandBoxyCTFdLinkage():
 
     TODO: Add Oauth via discord
         '''
-        # assign to self as Repo for code usage
-        # repo.category.challenge
         # TODO: TIMESTAMPS AND IDS!!!
         self.masterlist.data = SandboxyCTFdRepository.createprojectrepo()
         setattr(self,self.masterlist.data,"Repo")
