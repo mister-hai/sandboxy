@@ -58,19 +58,10 @@ class SandBoxyCTFdLinkage():
             self.masterlist          = Yaml(self.masterlistlocation)
             # template challenges
             self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "ctfcli", "templates")
-            #config stuff
-            self.SCRIPTDIR           = os.path.join(self.CTFDDATAROOT,"ctfcli")
-            self.CONFIGDIR           = os.path.join(self.CTFDDATAROOT,"ctfcli")
-            self.CONFIGFILE          = os.path.join(self.CONFIGDIR, self.configname)
-            self.config              = Config(self.COPNFIGFILE)
             # store url and token in config
-            self.config["apiaccess"] = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
-            self.config.write()
+            self.ctfdauth = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
 
             ###############################################
-            # filebuffer for challengelist.yaml
-            self.challengelistbuffer = open(self.listofchallenges).read()
-            self.challengelistyaml   = yaml.load(self.challengelistbuffer, Loader=yaml.FullLoader) 
             # returns subdirectories , without . files/dirs
             self.getsubdirs = lambda directory: [name for name in os.listdir(directory) if os.path.isdir(name) and not re.match(r'\..*', name)]
             # open with read operation
@@ -97,15 +88,15 @@ class SandBoxyCTFdLinkage():
     TODO: Add Oauth via discord
         '''
         #the init function will do the thing and return the data
-        self.masterlist.data = SandboxyCTFdRepository.createprojectrepo()
-        #for category in cat_bag:
-            #self.masterlist.data = category
-            #self.masterlist.writemasteryaml(self.masterlistfile, filemode="a")
+        # the return type is the class itself with the schema
+        # repo.category.challenge
         # assign to self as Repo for code usage
-        setattr(self,self.masterlist,"Repo")
         # TODO: TIMESTAMPS AND IDS!!!
+        self.masterlist.data = SandboxyCTFdRepository.createprojectrepo()
+        setattr(self,self.masterlist.data,"Repo")
         self.masterlist.writemasteryaml(self.Repo, filemode="a")
         # we do this last so we can add all the created files to the git repo        
+        # this is the git backend, operate this seperately
         SandboxyGitRepository.createprojectrepo()
 
 

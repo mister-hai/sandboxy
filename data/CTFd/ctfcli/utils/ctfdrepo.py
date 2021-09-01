@@ -51,9 +51,6 @@ class SandboxyCTFdRepository(): #folder
             if category in CATEGORIES:
                 # track location change to subdir
                 pwd = self.location(self.challengesfolder, category)
-                #create a new Category and assign name based on folder
-                newcategory = Category()
-                newcategory.name = category
                 #get subfolder names in category directory, wreprweswenting indivwidual chwallenges yippyippyippyipp
                 challenges = self.getsubdirs(pwd)
                 # itterate over the individual challenges
@@ -91,21 +88,20 @@ class SandboxyCTFdRepository(): #folder
                         solution= solution
                         )
                 #create a new Category and assign name based on folder
-                newcategory = Category()
-                newcategory.name = category
                 # check for an inconsistancy i spotted
+                newcategory = Category(category)
                 if challengeyaml.category != category:
                     errorlogger("[-] Inconsistancy in challenge.yml, \
                         This field should be a Category in approved list {}".format(category))
-                
-                # add a new category based on that challenge files category
-                cat = self.getcategory(newcategory.name)
-                #cat_bag.append(Category(category, pwd))
+                else:
+                    # add a new category based on that challenge files category
+                    self.addcategory(newcategory)
                 #add the new challenge to the category as 
                 # its own named child
-                #self.addchallenge(cat_bag[category],newchallenge)
+                cat = self.getcategory(newcategory.name)
                 self.addchallenge(cat,newchallenge)
-        return self #cat_bag
+        # return this class to the upper level scope
+        return self
 
     def addcategory(self, category:Category):
         '''
