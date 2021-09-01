@@ -17,7 +17,7 @@ from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
 
 #class CTFCLI():
 class SandBoxyCTFdLinkage():
-    '''
+    """
     Maps to the command
     host@server$> ctfcli
     Used to upload challenges from the data directory in project root
@@ -41,7 +41,7 @@ class SandBoxyCTFdLinkage():
     Attributes:
         arg (str): This is where we store arg,
 
-    '''
+    """
     def __init__(self, 
                     ctfdtoken,
                     ctfdurl,
@@ -67,10 +67,10 @@ class SandBoxyCTFdLinkage():
             errorlogger("[-] SandBoxyCTFdLinkage.__init__ Failed")
     
     def checkmasterlist(self):
-        '''
+        """
         checks for existance and integrety of master list
         TODO: add integrety checks, currently just checks if it exists
-        '''
+        """
         if isfile(self.masterlistlocation):
             greenprint("[+] Masterlist Located!")
             return True
@@ -79,19 +79,19 @@ class SandBoxyCTFdLinkage():
             return False
 
     def loadmasterlist(self, masterlistfile =  "masterlist.yml"):
-        '''
+        """
         Loads the masterlist.yaml
 
         Args:
-            masterlistfile (str): The file to load as masterlist, defaults to masterlist.yaml
-        '''
+            masterlistfile (str): The file to load as masterlist, defaults to masterlist.yamlw
+        """
         # filename for the full challenge index
         self.masterlistfile      = masterlistfile
         self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
         self.masterlist          = Yaml(self.masterlistlocation)
 
     def init(self):
-        '''
+        """
     Link to CTFd instance with token and URI
 
 >>> host@server$> ctfcli --ctfdtoken <token> --ctfdurl <url> init
@@ -101,7 +101,7 @@ class SandBoxyCTFdLinkage():
     - links repository with CTFd instance via disposable token
 
     TODO: Add Oauth via discord
-        '''
+        """
         # TODO: TIMESTAMPS AND IDS!!!
         self.masterlist.data = SandboxyCTFdRepository.createprojectrepo()
         setattr(self,self.masterlist.data,"Repo")
@@ -111,38 +111,38 @@ class SandBoxyCTFdLinkage():
         SandboxyGitRepository.createprojectrepo()
 
 
-    def listcategories(self,print=True)-> Category:
-        '''
+    def listcategories(self,print=True):
+        """
     Maps to the command
     host@server$> ctfcli getcategories
     
     Get the names of all Categories
     Supply "print=False" to return a variable instead of display to screen 
-        '''
+        """
         
 
     def getchallengesbycategory(self, category, printscr=True):
-        '''
+        """
     Maps to the command
     host@server$> ctfcli getchallengesbycategory
     Lists challenges in repo by category        
     Supply "print=False" to return a variable instead of utf-8 
-        '''
+        """
 
     def syncchallenge(self, challenge:Challenge):
-        '''
+        """
         Syncs a challenge with the CTFd server
-        '''
+        """
         challenge.sync()
 
     def synccategory(self, category:str):
-        '''
+        """
     Maps to the command
     host@server$> ctfcli synccategory <categoryname>
 
     Synchronize all challenges in the given category, this uploads 
     the challenge data to CTFd
-        '''
+        """
         try:
             greenprint("[+] Syncing Category: {}". format(category))
             challenges = self.getchallengesbycategory(category)
@@ -153,7 +153,7 @@ class SandBoxyCTFdLinkage():
             errorlogger("[-] Failure to sync category! {}".format(challenge))
 
     def listsyncedchallenges(self, remote=False):
-        '''
+        """
         Lists the challenges installed to the server
         Use 
             --remote=False 
@@ -161,7 +161,7 @@ class SandBoxyCTFdLinkage():
         to check the LOCAL repository
 
         For git operations, use gitoperations or your preferred terminal workflow
-        '''
+        """
         if remote == True:
             apicall = APISession.generate_session()
             return apicall.get("/api/v1/challenges?view=admin", json=True).json()["data"]
@@ -169,13 +169,13 @@ class SandBoxyCTFdLinkage():
             SandboxyCTFdRepository.listsyncedchallenges()
 
     def newfromtemplate(self, type=""):
-        '''
+        """
         Creates a new CTFd Challenge from template
 
         If no repo is present, uploads the DEFAULT template to CTFd
 
         NOT IMPLEMENTED YET
-        '''
+        """
         # if no repo is present, uploads a template
         if type == "":
             type = "default"

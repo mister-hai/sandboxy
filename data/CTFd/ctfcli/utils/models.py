@@ -1,9 +1,9 @@
 
 def usertemplate():
-    '''
+    """
     returns a json template for api calls to
     /api/v1/users
-    '''
+    """
     #USERTEMPLATE = {
     return {
             "name":"foobar",
@@ -16,10 +16,10 @@ def usertemplate():
             }
 
 def challengetemplate():
-    '''
+    """
     Returns a json template for api calls to 
     /api/v1/challenge
-    '''
+    """
     #CHALLENGETEMPLATE = {
     return {
             "success": "true",

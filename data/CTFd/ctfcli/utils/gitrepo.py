@@ -5,7 +5,7 @@ import git, re
 
 #https://www.devdungeon.com/content/working-git-repositories-python
 class SandboxyGitRepository():
-    '''
+    """
     backend to GitOperations
 
     Git interactivity class, Maps to the command
@@ -17,12 +17,12 @@ Available Commands:
         adds all files in challenges folder to repo
     - 
     - 
-    '''
+    """
     def __init__(self,repo:str):
-        '''
+        """
         --repo https://github.com/misterhai/sandboxy
             downloads the repository given
-        '''
+        """
         #self.MASTERLIST = Yaml(masterlist)
         self.username = str
 
@@ -43,7 +43,7 @@ Available Commands:
             print('Changes detected.')
     
     def createremoterepo(self):
-        '''Create a new remote repository on github'''
+        """Create a new remote repository on github"""
         try:
             remote = git.repo.create_remote('origin', url='git@github.com:{}/testrepo'.format(self.username))
         except git.exc.GitCommandError as error:
@@ -53,24 +53,24 @@ Available Commands:
         print(f'Remote URL: {git.repo.remotes.origin.url}')
 
     def deleteremoterepo(self, repo):
-        '''Delete a remote'''
+        """Delete a remote"""
         git.repo.delete_remote(repo)
 
     def pullfromremote(self):
-        '''Pull from remote repo'''
+        """Pull from remote repo"""
         print(git.repo.remotes.origin.pull())
 
     def pushtoremote(self):
-        '''Push changes'''
+        """Push changes"""
         print(git.repo.remotes.origin.push())
     
     def listallbranches(self):
-        '''List all branches'''
+        """List all branches"""
         for branch in git.repo.branches:
             print(branch)
 
     def createremotebranch(self):
-        '''Create a new branch'''
+        """Create a new branch"""
         git.repo.git.branch('my_new_branch')
 
     def checkoutremotebranch(self):
@@ -78,14 +78,14 @@ Available Commands:
         git.repo.git.checkout('my_new_branch3')
 
     def checkoutmasterbranch(self):
-        '''To checkout master again:'''
+        """To checkout master again:"""
         git.repo.git.checkout('master')
     
     def createprojectrepo(self):
-        '''
+        """
     internal method to create a git repo out of event,
     admins should be managing that using thier preferred git workflow
-        '''        
+        """        
         #create repo
         self.repository = git.git.repo.init(path=self.repo)
         #add all files in challenge folder to local repository
@@ -113,17 +113,17 @@ Available Commands:
  
     
     def addchallenge(self):
-        '''
+        """
         Adds a challenge to the repository master list
-        '''
+        """
 
     
     def removechallenge():
-        '''
+        """
         removes a challenge from the master list
-        '''
+        """
 
     def listinstalledchallenges(self):
-        '''
+        """
         returns the contents of the masterlist in a dict
-        '''
+        """

@@ -65,11 +65,11 @@ location = lambda currentdirectory,childorsibling: os.path.join(currentdirectory
 ##############             ERROR HANDLING FUNCTIONS            #################
 ################################################################################
 def errorlogger(message):
-    '''
+    """
     prints line number and traceback
     TODO: save stack trace to error log
             only print linenumber and function failure
-    '''
+    """
     exc_type, exc_value, exc_tb = sys.exc_info()
     trace = traceback.TracebackException(exc_type, exc_value, exc_tb) 
     try:

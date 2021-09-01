@@ -36,6 +36,14 @@ ctfcli.utils.challenge module
    :undoc-members:
    :show-inheritance:
 
+ctfcli.utils.checks module
+--------------------------
+
+.. automodule:: ctfcli.utils.checks
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 ctfcli.utils.ctfdrepo module
 ----------------------------
 

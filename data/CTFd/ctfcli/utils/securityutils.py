@@ -1,7 +1,7 @@
 # Firewall rules for visible challenges
 # with google cloud
     def firewall(visible, hidden):
-        '''
+        """
         NOT IMPLEMENTED YET
 
         turn visible into ON
@@ -9,7 +9,7 @@
         
         FIRST PARAM shall be state to set firewall to
         SECOND PARAM shall be the challenge to generate a firewall rule for
-        '''
+        """
         rules = os.popen('gcloud compute firewall-rules --format=json list').read()
 
         for category in visible:

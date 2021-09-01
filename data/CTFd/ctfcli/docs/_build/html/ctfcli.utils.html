@@ -14,7 +14,6 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Welcome to SandboxyCTFdManager’s documentation!" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -48,6 +47,9 @@
 <div class="section" id="ctfcli-utils-challenge-module">
 <h2>ctfcli.utils.challenge module<a class="headerlink" href="#ctfcli-utils-challenge-module" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="ctfcli-utils-checks-module">
+<h2>ctfcli.utils.checks module<a class="headerlink" href="#ctfcli-utils-checks-module" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="ctfcli-utils-ctfdrepo-module">
 <h2>ctfcli.utils.ctfdrepo module<a class="headerlink" href="#ctfcli-utils-ctfdrepo-module" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -59,7 +61,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="ctfcli.utils.models.challengetemplate">
 <span class="sig-prename descclassname"><span class="pre">ctfcli.utils.models.</span></span><span class="sig-name descname"><span class="pre">challengetemplate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.models.challengetemplate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a json template for api calls to 
+<dd><p>Returns a json template for api calls to
 /api/v1/challenge</p>
 </dd></dl>
 
@@ -128,6 +130,16 @@
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ctfcli.utils.utils.challengeyamlbufferr">
+<span class="sig-prename descclassname"><span class="pre">ctfcli.utils.utils.</span></span><span class="sig-name descname"><span class="pre">challengeyamlbufferr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">challenge</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.utils.challengeyamlbufferr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ctfcli.utils.utils.challengeyamlbufferw">
+<span class="sig-prename descclassname"><span class="pre">ctfcli.utils.utils.</span></span><span class="sig-name descname"><span class="pre">challengeyamlbufferw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">challenge</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.utils.challengeyamlbufferw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ctfcli.utils.utils.criticallog">
 <span class="sig-prename descclassname"><span class="pre">ctfcli.utils.utils.</span></span><span class="sig-name descname"><span class="pre">criticallog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.utils.criticallog" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -163,6 +175,11 @@ TODO: save stack trace to error log</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ctfcli.utils.utils.getsubdirs">
+<span class="sig-prename descclassname"><span class="pre">ctfcli.utils.utils.</span></span><span class="sig-name descname"><span class="pre">getsubdirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.utils.getsubdirs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ctfcli.utils.utils.greenprint">
 <span class="sig-prename descclassname"><span class="pre">ctfcli.utils.utils.</span></span><span class="sig-name descname"><span class="pre">greenprint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.utils.greenprint" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -170,6 +187,16 @@ TODO: save stack trace to error log</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="ctfcli.utils.utils.infolog">
 <span class="sig-prename descclassname"><span class="pre">ctfcli.utils.utils.</span></span><span class="sig-name descname"><span class="pre">infolog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.utils.infolog" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ctfcli.utils.utils.loadchallengeyaml">
+<span class="sig-prename descclassname"><span class="pre">ctfcli.utils.utils.</span></span><span class="sig-name descname"><span class="pre">loadchallengeyaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">challenge</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.utils.loadchallengeyaml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ctfcli.utils.utils.location">
+<span class="sig-prename descclassname"><span class="pre">ctfcli.utils.utils.</span></span><span class="sig-name descname"><span class="pre">location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">currentdirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">childorsibling</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.utils.location" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -220,6 +247,11 @@ TODO: Good enough but probably needs to be more conformant with docker</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ctfcli.utils.utils.writechallengeyaml">
+<span class="sig-prename descclassname"><span class="pre">ctfcli.utils.utils.</span></span><span class="sig-name descname"><span class="pre">writechallengeyaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">challenge</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.utils.writechallengeyaml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ctfcli.utils.utils.yellowboldprint">
 <span class="sig-prename descclassname"><span class="pre">ctfcli.utils.utils.</span></span><span class="sig-name descname"><span class="pre">yellowboldprint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.utils.yellowboldprint" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -247,28 +279,11 @@ TODO: Good enough but probably needs to be more conformant with docker</p>
 
 
 <h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ctfcli.utils package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ctfcli-utils-yaml-module">ctfcli.utils.Yaml module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ctfcli-utils-apicalls-module">ctfcli.utils.apicalls module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ctfcli-utils-auth-module">ctfcli.utils.auth module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ctfcli-utils-challenge-module">ctfcli.utils.challenge module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ctfcli-utils-ctfdrepo-module">ctfcli.utils.ctfdrepo module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ctfcli-utils-gitrepo-module">ctfcli.utils.gitrepo module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-ctfcli.utils.models">ctfcli.utils.models module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ctfcli-utils-securityutils-module">ctfcli.utils.securityutils module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-ctfcli.utils.utils">ctfcli.utils.utils module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-ctfcli.utils">Module contents</a></li>
-</ul>
-</li>
-</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Welcome to SandboxyCTFdManager’s documentation!</a></li>
   </ul></li>
 </ul>
 </div>

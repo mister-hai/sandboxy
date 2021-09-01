@@ -1,11 +1,11 @@
 import requests
 import subprocess
-from Yaml import Yaml
 from pathlib import Path
 
-from apicalls import APISession
-from ctfdrepo import SandboxyCTFdRepository
-from utils import errorlogger,yellowboldprint,greenprint
+from utils.Yaml import Yaml
+from utils.apicalls import APISession
+from utils.ctfdrepo import SandboxyCTFdRepository
+from utils.utils import errorlogger,yellowboldprint,greenprint,CATEGORIES
 
 class Challenge(): #folder
     '''
@@ -25,7 +25,11 @@ class Challenge(): #folder
                 solution
                 ):
         self.name               = str
-        self.category           = category
+        if category not in CATEGORIES:
+            errorlogger("[-] Inconsistancy in challenge.yml, \
+                This field should be a Category in approved list {}".format(category))
+        else:
+            self.category           = category
         # path to challenge folder
         self.challengelocation  = location
         # path to challenge.yml file
@@ -40,10 +44,17 @@ class Challenge(): #folder
         self.id = 1
         self.type = str
         self.name = str
-        #if its a dynamic scoring
-        self.dynamic = bool
         self.description = str
         self.value = int
+        #if its a dynamic scoring
+        self.dynamic = bool
+        #self.extra = {
+        #            'extra':{
+        #                    'initial':500,
+        #                    'decay'  :100,
+        #                    'minimum':50
+        #                    }
+        #            }
         self.solves = int
         self.solved_by_me = "false"
         self.category = str
@@ -87,7 +98,7 @@ class ChallengeActions(Challenge):
                 jsonpayload["connection_info"] = self.connection_info
             try:
                 #make API call
-                apicall = APISession(prefix_url=self.CTFD_URL)
+                apicall = APISession()
                 # auth to server
                 apicall.headers.update({"Authorization": "Token {}".format(apicall.AUTHTOKEN)})
                 # check for challenge install
@@ -106,22 +117,22 @@ class ChallengeActions(Challenge):
                 print(err)
             # Create new flags
             if self.flags:
-                apicall.processflags(challenge,self.id,jsonpayload)
+                apicall.processflags(self,self.id,jsonpayload)
             # Update topics
             if self.topics:
-                apicall.processtopics(challenge,self.id,jsonpayload)
+                apicall.processtopics(self,self.id,jsonpayload)
             # Update tags
             if self.tags:
-                apicall.processtopics(challenge,self.id,jsonpayload)
+                apicall.processtopics(self,self.id,jsonpayload)
             # Upload files
             if self.files:
-                apicall.uploadfiles(challenge,self.id,jsonpayload)
+                apicall.uploadfiles(self,self.id,jsonpayload)
             # Create hints
             if self.hints:
-                apicall.processhints(challenge,self.id,jsonpayload)
+                apicall.processhints(self,self.id,jsonpayload)
             # Update requirements
             if self.requirements:
-                apicall.processrequirements(challenge,self.id,jsonpayload)
+                apicall.processrequirements(self,self.id,jsonpayload)
 
             #if challenge.get["state"] =="visible":
         except Exception:
@@ -134,7 +145,7 @@ class ChallengeActions(Challenge):
                 "description":  self.description,
                 "type":         {self.type, "standard"},
                 "value":        self.value,
-                **challenge.get("extra", {})
+                "extra":        self.extra
                 }
         # Some challenge types (e.g. dynamic) override value.
         # We can't send it to CTFd because we don't know the current value
