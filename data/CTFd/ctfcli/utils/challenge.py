@@ -3,7 +3,8 @@ import subprocess
 from pathlib import Path
 
 from utils.Yaml import Yaml
-from utils.apicalls import APISession
+from utils.apisession import APISession
+from utils.apisession import APIHandler
 from utils.ctfdrepo import SandboxyCTFdRepository
 from utils.utils import errorlogger,yellowboldprint,greenprint,CATEGORIES
 
@@ -61,7 +62,34 @@ class Challenge(): #folder
         self.tags = []
         self.template = str
         self.script =  str
-    
+        self.attempts = int
+        self.connection_info = str
+        jsonpayload = {}
+        if self.attempts:
+            jsonpayload["max_attempts"] = self.attempts
+        if self.connection_info:
+            jsonpayload["connection_info"] = self.connection_info
+        # Some challenge types (e.g. dynamic) override value.
+        # We can't send it to CTFd because we don't know the current value
+        if self.dynamic == True:
+            scorepayload = {
+                        'extra': {
+                            'initial': 500,
+                            'decay'  : 100,
+                            'minimum': 50
+                            }
+                        }
+        elif self.dynamic == False:
+            scorepayload = {'value':self.value}
+            jsonpayload = {
+                "name":         self.name,
+                "category":     self.category,
+                "description":  self.description,
+                "type":         self.type,
+                **scorepayload,
+                "author" :      self.author
+                }
+
 
 class ChallengeActions(Challenge):
 
@@ -71,70 +99,29 @@ class ChallengeActions(Challenge):
         
         '''
         greenprint(f"Syncing challenge: {self.name}")
-
         try:
-            # Some challenge types (e.g. dynamic) override value.
-            # We can't send it to CTFd because we don't know the current value
-            if self.dynamic == True:
-                scorepayload = {
-                        'extra': {
-                            'initial': 500,
-                            'decay'  : 100,
-                            'minimum': 50
-                            }
-                        }
-
-                jsonpayload = {
-                "name":         self.name,
-                "category":     self.category,
-                "description":  self.description,
-                "type":         self.type,
-                "value" :       self.value,
-                "author" :      self.author
-                }
-            if self.attempts:
-                jsonpayload["max_attempts"] = self.attempts
-            if self.connection_info:
-                jsonpayload["connection_info"] = self.connection_info
-            try:
-                #make API call
-                apicall = APISession()
-                # auth to server
-                apicall.headers.update({"Authorization": "Token {}".format(apicall.AUTHTOKEN)})
-                # check for challenge install
-                apisess = apicall.get("/api/v1/challenges/{}".format(self.id), json=jsonpayload).json()["data"]
-                # use requests.patch() to modify the value of a specific field on an existing APIcall.
-                # why are they patching the challenge ID?
-                response = apisess.patch(f"/api/v1/challenges/{self.id}", json=jsonpayload)
-                response.raise_for_status()
-            except requests.exceptions.HTTPError as errh:
-                print(errh)
-            except requests.exceptions.ConnectionError as errc:
-                print(errc)
-            except requests.exceptions.Timeout as errt:
-                print(errt)
-            except requests.exceptions.RequestException as err:
-                print(err)
+            #make API call
+            apihandler = APIHandler()
+    
+    def processchallenge(self,apihandler:APIHandler,jsonpayload:dict):
             # Create new flags
             if self.flags:
-                apicall.processflags(self,self.id,jsonpayload)
+                apihandler.processflags(self,self.id,jsonpayload)
             # Update topics
             if self.topics:
-                apicall.processtopics(self,self.id,jsonpayload)
+                apihandler.processtopics(self,self.id,jsonpayload)
             # Update tags
             if self.tags:
-                apicall.processtopics(self,self.id,jsonpayload)
+                apihandler.processtopics(self,self.id,jsonpayload)
             # Upload files
             if self.files:
-                apicall.uploadfiles(self,self.id,jsonpayload)
+                apihandler.uploadfiles(self,self.id,jsonpayload)
             # Create hints
             if self.hints:
-                apicall.processhints(self,self.id,jsonpayload)
+                apihandler.processhints(self,self.id,jsonpayload)
             # Update requirements
             if self.requirements:
-                apicall.processrequirements(self,self.id,jsonpayload)
-
-            #if challenge.get["state"] =="visible":
+                apihandler.processrequirements(self,self.id,jsonpayload)
         except Exception:
             errorlogger("[-] ERROR! FAILED TO SYNCRONIZE CHALLENGE WITH SERVER")
 
@@ -156,33 +143,33 @@ class ChallengeActions(Challenge):
         if self.connection_info:
             jsonpayload["connection_info"] = self.connection_info
     
-        apicall = APISession()
-        response = apicall.post("/api/v1/challenges", json=jsonpayload)
+        apihandler = APISession()
+        response = apihandler.post("/api/v1/challenges", json=jsonpayload)
         response.raise_for_status()
         challenge_data = response.json()
         self.id = challenge_data["data"]["id"]
         # Create flags
         if self.flags:
-            apicall.processflags(challenge, challenge_id, jsonpayload)
+            apihandler.processflags(jsonpayload)
         # Create topics
         if self.topics:
-            apicall.processtopics(challenge, challenge_id, jsonpayload)
+            apihandler.processtopics(jsonpayload)
             # Create tags
         if self.tags:
-            apicall.processtags(challenge,challenge_id,jsonpayload)
+            apihandler.processtags(jsonpayload)
             # Upload files
         if self.files:
-            apicall.uploadfiles(challenge,challenge_id,jsonpayload)
+            apihandler.uploadfiles(jsonpayload)
         # Add hints
         if self.hints:
-            apicall.processhints()
+            apihandler.processhints()
         # Add requirements
-        if self.requirements and "requirements" not in ignore:
-            apicall.processrequirements(challenge,challenge_id,jsonpayload)
+        if self.requirements:
+            apihandler.processrequirements(jsonpayload)
         # Set challenge state
-        if self.state:
-                jsonpayload["state"] = challenge["state"]
-                apicall.makevisible(challenge)
-                response.raise_for_status()
+        #if self.state:
+        #        jsonpayload["state"] = challenge["state"]
+        #        apihandler.makevisible(challenge)
+        #        response.raise_for_status()
 
 

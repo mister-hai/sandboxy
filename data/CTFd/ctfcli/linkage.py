@@ -7,7 +7,7 @@ from cookiecutter.main import cookiecutter
 from utils.Yaml import Yaml
 from utils.utils import loadchallengeyaml
 from utils.utils import errorlogger
-from utils.apicalls import APISession
+from utils.apisession import APISession
 from utils.gitrepo import SandboxyGitRepository
 from utils.ctfdrepo import Category,SandboxyCTFdRepository
 from utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES

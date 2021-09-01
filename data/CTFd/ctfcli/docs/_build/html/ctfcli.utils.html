@@ -35,11 +35,116 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="ctfcli-utils-yaml-module">
-<h2>ctfcli.utils.Yaml module<a class="headerlink" href="#ctfcli-utils-yaml-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ctfcli.utils.Yaml">
+<span id="ctfcli-utils-yaml-module"></span><h2>ctfcli.utils.Yaml module<a class="headerlink" href="#module-ctfcli.utils.Yaml" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ctfcli.utils.Yaml.Challengeyaml">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ctfcli.utils.Yaml.</span></span><span class="sig-name descname"><span class="pre">Challengeyaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yamlfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.Yaml.Challengeyaml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents the challenge.yml as exists in the folder for that specific challenge</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ctfcli.utils.Yaml.Config">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ctfcli.utils.Yaml.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configpath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.Yaml.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Config class
+Maps to the command
+<a class="reference external" href="mailto:host&#37;&#52;&#48;server$">host<span>&#64;</span>server$</a>&gt; ctfcli config &lt;command&gt;</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ctfcli.utils.Yaml.Config.edit">
+<span class="sig-name descname"><span class="pre">edit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">editor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'micro'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.Yaml.Config.edit" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>ctfcli config edit</dt><dd><p>Edit config with $EDITOR</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ctfcli.utils.Yaml.Config.loadalternativeconfig">
+<span class="sig-name descname"><span class="pre">loadalternativeconfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configpath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.Yaml.Config.loadalternativeconfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads an alternative configuration
+ctfcli config loadalternativeconfig &lt;configpath&gt;</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ctfcli.utils.Yaml.Config.path">
+<span class="sig-name descname"><span class="pre">path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.Yaml.Config.path" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>ctfcli config path</dt><dd><p>Show config path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ctfcli.utils.Yaml.Config.previewconfig">
+<span class="sig-name descname"><span class="pre">previewconfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_string</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.Yaml.Config.previewconfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows current configuration
+ctfcli config previewconfig</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ctfcli.utils.Yaml.Config.view">
+<span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.Yaml.Config.view" title="Permalink to this definition">¶</a></dt>
+<dd><p>view the config
+ctfcli config view</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ctfcli.utils.Yaml.KubernetesYaml">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ctfcli.utils.Yaml.</span></span><span class="sig-name descname"><span class="pre">KubernetesYaml</span></span><a class="headerlink" href="#ctfcli.utils.Yaml.KubernetesYaml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ctfcli.utils.Yaml.Yaml" title="ctfcli.utils.Yaml.Yaml"><code class="xref py py-class docutils literal notranslate"><span class="pre">ctfcli.utils.Yaml.Yaml</span></code></a></p>
+<p>Represents a Kubernetes specification
+future</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ctfcli.utils.Yaml.Yaml">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ctfcli.utils.Yaml.</span></span><span class="sig-name descname"><span class="pre">Yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.Yaml.Yaml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a challange.yml
+Give Path to challenge.yml</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ctfcli.utils.Yaml.Yaml.loadyaml">
+<span class="sig-name descname"><span class="pre">loadyaml</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.Yaml.Yaml.loadyaml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ctfcli.utils.Yaml.Yaml.writemasteryaml">
+<span class="sig-name descname"><span class="pre">writemasteryaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filemode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'a'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.Yaml.Yaml.writemasteryaml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Special function to write the master yaml for the ctfd side of the repository
+remember to assign data to the file with</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">thing</span> <span class="o">=</span> <span class="n">Yaml</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">thing</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">Category</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">thing</span><span class="o">.</span><span class="n">writeyaml</span><span class="p">()</span>
+</pre></div>
 </div>
-<div class="section" id="ctfcli-utils-apicalls-module">
-<h2>ctfcli.utils.apicalls module<a class="headerlink" href="#ctfcli-utils-apicalls-module" title="Permalink to this headline">¶</a></h2>
+<p>File mode is set to append by default so you can manually fix the repo list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ctfcli.utils.Yaml.Yaml.writeyaml">
+<span class="sig-name descname"><span class="pre">writeyaml</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.Yaml.Yaml.writeyaml" title="Permalink to this definition">¶</a></dt>
+<dd><p>remember to assign data to the file with
+&gt;&gt;&gt; thing = Yaml(filepath)
+&gt;&gt;&gt; thing.data[‘key’] = value</p>
+<p>OR… you can assign python objects and store the contents of whole classes</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">thing</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">Category</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">thing</span><span class="o">.</span><span class="n">writeyaml</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="ctfcli-utils-apifunctions-module">
+<h2>ctfcli.utils.apifunctions module<a class="headerlink" href="#ctfcli-utils-apifunctions-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="ctfcli-utils-apisession-module">
+<h2>ctfcli.utils.apisession module<a class="headerlink" href="#ctfcli-utils-apisession-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="ctfcli-utils-auth-module">
 <h2>ctfcli.utils.auth module<a class="headerlink" href="#ctfcli-utils-auth-module" title="Permalink to this headline">¶</a></h2>

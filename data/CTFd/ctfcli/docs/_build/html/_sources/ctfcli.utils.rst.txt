@@ -12,10 +12,18 @@ ctfcli.utils.Yaml module
    :undoc-members:
    :show-inheritance:
 
-ctfcli.utils.apicalls module
-----------------------------
+ctfcli.utils.apifunctions module
+--------------------------------
 
-.. automodule:: ctfcli.utils.apicalls
+.. automodule:: ctfcli.utils.apifunctions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ctfcli.utils.apisession module
+------------------------------
+
+.. automodule:: ctfcli.utils.apisession
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,5 +1,7 @@
+from utils.apisession import APISession
+from utils.utils import errorlogger
 
-class APIFunctions():
+class APIFunctions(APISession):
     '''
     Functions Specific to CTFd
     '''
@@ -9,13 +11,13 @@ class APIFunctions():
     def getusers(self):
         """ gets a list of all users"""
 
-    def getvisibility(self, challenge, challenge_id):
+    def getvisibility(self, challengeid, jsonpayload):
         """
         Gets the visibility of a challenge
         Hidden , Visible
         TODO: make it work
         """
-        response = self.get(f"/api/v1/challenges/{challenge_id}", json=json_payload)
+        response = self.get(f"/api/v1/challenges/{challengeid}", json=jsonpayload)
         response.raise_for_status()
 
     def togglevisibility(self, challenge):
@@ -55,16 +57,15 @@ class APIFunctions():
         """
         Use a PATCH request to modify the Challenge Requirements
         """
-        installed_challenges = SandboxyCTFdRepository.listinstalledchallenges()
-        required_challenges = []
-        for requirements in challenge["requirements"]:
+
+        for requirements in challenge.requirements:
             if type(requirements) == str:
-                for installedchallenge in installed_challenges:
-                    if installedchallenge["name"] == requirements:
-                        required_challenges.append(installedchallenge["id"])
+                required_challenges.append(challenge)
             elif type(requirements) == int:
+                #why? I'll leave it for now
                 required_challenges.append(requirements)
                 required_challenges = list(set(required_challenges))
+                
         data = {"requirements": {"prerequisites": required_challenges}}
         response = self.patch(f"/api/v1/challenges/{challenge_id}", json=data)
         response.raise_for_status()
@@ -140,3 +141,43 @@ class APIFunctions():
                 response = self.post(f"/api/v1/flags", json=flag)
                 response.raise_for_status()
    
+    def uploadfiles(self,challenge,challenge_id,data):
+        """
+        uploads files to the ctfd server
+        SAW ELSEWHERE IT HAD THIS
+## Upload a file to a challenge.  You need to use a nonce from the admin page of the challenge you're editing.
+nonce=$(curl -s http://127.0.0.1:8000/admin/challenges/1 -b cookie | grep nonce | cut -d'"' -f2)
+curl -X POST "http://127.0.0.1:8000/api/v1/files" -b cookie  \
+-F "file=@some-local-file.png" \
+-F "nonce=$nonce" \
+-F "challenge=1" \
+-F "type=challenge"
+        """
+
+        files = []
+        for file in challenge["files"]:
+            file_path = Path(challenge.directory, f)
+            if file_path.exists():
+                file_object = ("file", file_path.open(mode="rb"))
+                files.append(file_object)
+            else:
+                raise Exception
+        # Specifically use data= here instead of json= to send multipart/form-data
+        r = self.post(f"/api/v1/files", files=files, data=self.json_payload)
+        r.raise_for_status()
+
+    def deleteremotefiles(self,file_path,data):
+        """
+        deletes files from ctfd server
+        """
+        try:
+            # Delete existing files
+            all_current_files =self.get(f"/api/v1/files?type=challenge", json=data).json()["data"]
+            for file in all_current_files:
+                for used_file in original_challenge["files"]:
+                    if file["location"] in used_file:
+                        file_id = file["id"]
+                        r =self.delete(f"/api/v1/files/{file_id}", json=True)
+                        r.raise_for_status()
+        except Exception:
+            errorlogger(f"File {file_path} was not found")
