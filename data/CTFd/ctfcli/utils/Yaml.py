@@ -95,7 +95,7 @@ class Challengeyaml(): #file
         self.challengeyaml = Yaml(yamlfile)
         self.challengeyamllocation = str
         self.yamldata = self.challengeyaml.data
-        # name of the challenge
+        # DATA FROM FILE
         self.name        = self.challengeyaml['name']
         self.author      = self.challengeyaml['author']
         self.category    = self.challengeyaml['category']
@@ -103,6 +103,10 @@ class Challengeyaml(): #file
         self.value       = self.challengeyaml['value']
         self.type        = self.challengeyaml['type']
 
+        # internal data
+        self.id
+        self.synched = bool
+        self.installed = bool
 
 class Config():
     '''

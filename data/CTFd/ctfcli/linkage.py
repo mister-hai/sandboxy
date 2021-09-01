@@ -59,8 +59,8 @@ class SandBoxyCTFdLinkage():
             # template challenges
             self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "ctfcli", "templates")
             #config stuff
-            self.SCRIPTDIR           = os.path.join(self.CTFDDATAROOT,".ctfcli")
-            self.CONFIGDIR           = os.path.join(self.CTFDDATAROOT,".ctfcli")
+            self.SCRIPTDIR           = os.path.join(self.CTFDDATAROOT,"ctfcli")
+            self.CONFIGDIR           = os.path.join(self.CTFDDATAROOT,"ctfcli")
             self.CONFIGFILE          = os.path.join(self.CONFIGDIR, self.configname)
             self.config              = Config(self.COPNFIGFILE)
             # store url and token in config
@@ -117,11 +117,7 @@ class SandBoxyCTFdLinkage():
     Get the names of all Categories
     Supply "print=False" to return a variable instead of display to screen 
         '''
-        categories = self.masterlist['categories']
-        if print == True:
-            greenprint("Categories: {}".format(categories))
-        else:
-            return categories
+        cats = []
 
     def getchallengesbycategory(self, category, printscr=True):
         '''

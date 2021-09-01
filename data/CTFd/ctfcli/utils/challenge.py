@@ -50,11 +50,10 @@ class ChallengeActions(Challenge):
 
     def syncchallenge(self,challenge:dict):
         '''
-        Adds a challenge to CTFD
+        Adds a challenge to CTFd server
             Must be in its own folder, in a category that has been indexed
         
         This command is to be run on single challenge folders
-        This command is called RECURSIVELY by other code, referece its input and output
         '''
         greenprint(f"Syncing challenge: {challenge}")
         getchallengebyname(challenge)

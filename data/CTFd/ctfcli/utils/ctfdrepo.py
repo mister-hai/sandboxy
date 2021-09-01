@@ -1,8 +1,8 @@
 from pathlib import Path
-from utils.utils import errorlogger
+from utils.utils import errorlogger, CATEGORIES
 from challenge import Challenge
-from Yaml import Yaml, Challengeyaml
-import git, re, os
+from Yaml import Challengeyaml
+import os
 
 ###############################################################################
 #  CTFd CATEGORY: representation of folder in repository
@@ -18,23 +18,10 @@ class Category(): #folder
         represents a challenge.yaml
         name: thing
     '''
-    def __init__(self,category):
+    def __init__(self,category,location):
         self.name = category
+        self.location = location
     
-    def updaterepository(self, challenge):
-        '''
-    Updates the repository with any new content added to the category given
-    if it doesnt fit the spec, it will issue an error    
-    Try not to let your repo get cluttered
-        '''
-
-    def synccategory(self):
-        '''
-    Updates all challenges in CTFd with the versions in the repository
-    Operates on the entire category 
-        '''
-            #call 
-
 
 ###############################################################################
 #  CTFd REPOSIROTY: representation of folder in repository
@@ -55,21 +42,17 @@ class SandboxyCTFdRepository(): #folder
         self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
         self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
     
-    def createprojectrepo(self,categories):
+    def createprojectrepo(self):
         cat_bag = []
-        # make a new category for every category allowed
-        for challenge_category in categories:
-            cat_bag.append(Category(challenge_category))
-        # get list of all folders in challenges repo
         categoryfolders = self.getsubdirs(self.challengesfolder)
         # itterate over folders in challenge directory
         for category in categoryfolders:
             # if its a repository category folder
-            if category in categories:
-                # add a new category to the bag of cats
-                cat_bag.append(Category(challenge_category))
+            if category in CATEGORIES:
                 # track location change to subdir
                 pwd = self.location(self.challengesfolder, category)
+                # add a new category 
+                cat_bag.append(Category(category, pwd))
                 #get subfolder names in category directory, wreprweswenting indivwidual chwallenges yippyippyippyipp
                 challenges = self.getsubdirs(pwd)
                 # itterate over the individual challenges
@@ -126,12 +109,35 @@ class SandboxyCTFdRepository(): #folder
         setattr(self, category.name, category)
         #TODO: add entry to masterlist.yaml
 
+    def getcategory(self,category):
+        '''
+        Returns The Category, use getattr and a filter
+        
+        Args:
+            category (str): the name of the category to return the challenges from
+        
+        Returns: 
+        '''
+        # for each item in this class
+        for selfmember in dir(self):
+            # if its a Category, and not a hidden class attribute or function
+            if (type(selfmember) in CATEGORIES) and (selfmember.startswith("__") != True):
+                #make sure its the cat want
+                cat = getattr(self,selfmember) 
+                if type(cat) == Category:
+                    # give them the cat
+                    return cat
+                else:
+                    errorlogger("[+] Name conflict, you have a non-Category spec \
+                        object(FOLDER ISNT RIGHT) in the repo, with the name of a category")
+                    raise TypeError
+                
     
     def removecategory(self):
         '''
         Removes a category from the repository
         '''
-    
+
     def loadinstalledchallenges(self):
         '''
         Returns a list of all the installed challenges
@@ -146,3 +152,17 @@ class SandboxyCTFdRepository(): #folder
     def addchallenge(self, challenge:Challenge):
         '''Adds a challenge to the repository'''
         setattr(category,challenge.name,challenge)
+
+    def updaterepository(self, challenge):
+        '''
+    Updates the repository with any new content added to the category given
+    if it doesnt fit the spec, it will issue an error    
+    Try not to let your repo get cluttered
+        '''
+
+    def synccategory(self):
+        '''
+    Updates all challenges in CTFd with the versions in the repository
+    Operates on the entire category 
+        '''
+            #call 
