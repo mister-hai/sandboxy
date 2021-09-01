@@ -47,12 +47,10 @@ class SandboxyCTFdRepository(): #folder
         categoryfolders = self.getsubdirs(self.challengesfolder)
         # itterate over folders in challenge directory
         for category in categoryfolders:
-            # if its a repository category folder
+            # if its a repository category folder in aproved list
             if category in CATEGORIES:
                 # track location change to subdir
                 pwd = self.location(self.challengesfolder, category)
-                # add a new category 
-                cat_bag.append(Category(category, pwd))
                 #get subfolder names in category directory, wreprweswenting indivwidual chwallenges yippyippyippyipp
                 challenges = self.getsubdirs(pwd)
                 # itterate over the individual challenges
@@ -82,14 +80,18 @@ class SandboxyCTFdRepository(): #folder
                     newchallenge = Challenge(
                         name = challengeyaml.name,
                         category = challengeyaml.category,
-                        location = challengeyaml.challengelocation, 
+                        location = challengelocation, 
                         challengefile = challengeyaml,
                         #challengesrc= challengeyaml.challengesrc,
                         #deployment = challengeyaml.deployment,
                         handout= handout,
                         solution= solution
                         )
-                
+                # add a new category based on that challenge files category
+                # check if matches approved list
+                # have to check every bit of the way
+           if category in CATEGORIES:
+                cat_bag.append(Category(category, pwd))
                 #add the new challenge to the category as 
                 # its own named child
                 self.addchallenge(cat_bag[challenge_category],newchallenge)
