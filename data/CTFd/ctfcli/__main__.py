@@ -110,9 +110,10 @@ class SandBoxyCTFdLinkage():
         #for category in cat_bag:
             #self.masterlist.data = category
             #self.masterlist.writemasteryaml(self.masterlistfile, filemode="a")
+        # assign to self as Repo for code usage
         setattr(self,self.masterlist,"Repo")
         # TODO: TIMESTAMPS AND IDS!!!
-        self.masterlist.writemasteryaml(self.masterlistfile, filemode="a")
+        self.masterlist.writemasteryaml(self.Repo, filemode="a")
         # we do this last so we can add all the created files to the git repo        
         SandboxyGitRepository.createprojectrepo()
 

@@ -46,7 +46,6 @@ USAGE:
 
 >>> host@server$> ctfd.py gitops createprojectrepo
 
-    Or, upload from this repository:
 >>> host@server$> ctfd.py ctfcli category listinstalled
 
 / not yet/

@@ -1,62 +1,10 @@
+import yaml
 import json
 import requests
 from pathlib import Path
 from requests import Session
 from utils import errorlogger,blueprint,yellowboldprint,redprint
-from repo import SandboxyCTFdRepository
-import yaml
-import getpass
-
-class CtfdAuth():
-    '''do I need this?'''
-    def do_auth(self, args: argparse.Namespace):
-        """ Authenticate and write a new .ctfd-auth file """
-
-        url = args.url.rstrip("/")
-
-        session = requests.Session()
-
-        r = session.get(f"{url}/login", allow_redirects=False)
-        if r.status_code == 302 and r.headers["Location"].endswith("/setup"):
-            print(
-                f"[red]error[/red]: this ctfd installation has not been setup yet (hint: run `install`)"
-            )
-            return
-
-        # Grab the nonce
-        nonce = r.text.split("csrfNonce': \"")[1].split('"')[0]
-
-        username = input("CTFd Username: ")
-        password = getpass.getpass("CTFd Password: ")
-
-        r = session.post(
-            f"{url}/login",
-            data={
-                "name": username,
-                "password": password,
-                "_submit": "Submit",
-                "nonce": nonce,
-            },
-            allow_redirects=False,
-        )
-        if r.status_code != 302 or not r.headers["Location"].endswith("/challenges"):
-            print("[red]error[/red]: invalid login credentials")
-            return
-
-        r = session.get(f"{args.url}/settings")
-        nonce = r.text.split("csrfNonce': \"")[1].split('"')[0]
-
-        r = session.post(
-            f"{url}/api/v1/tokens", json={}, headers={"CSRF-Token": nonce}
-        )
-        if r.status_code != 200 or not r.json()["success"]:
-            print("[red]error[/red]: token generation failed")
-            return
-
-        print("writing ctfd auth configuration")
-        token = r.json()["data"]["value"]
-        with open(".ctfd-auth", "w") as filp:
-            yaml.dump({"url": args.url, "token": token}, filp)
+from ctfdrepo import SandboxyCTFdRepository
 
 class APISession(Session):
     '''
@@ -75,14 +23,7 @@ class APISession(Session):
         # considering the appended / on the prefix_url
         #url = urljoin(self.prefix_url, url.lstrip("/"))
         #return super(APISession, self).request(method, url, *args, **kwargs)
-        self.USERTEMPLATE = {"name":"foobar",
-                             "email":"foo@bar.com",
-                             "password":"123",
-                             "type":"user",
-                             "verified":"false",
-                             "hidden":"false",
-                             "banned":"false"
-                             }
+
 
     def getusers(self):
         ''' gets a list of all users'''
@@ -267,7 +208,7 @@ curl -X POST "http://127.0.0.1:8000/api/v1/files" -b cookie  \
         if responsecode in set1 :
             blueprint("[-] Server side error - No Resource Available in REST response")
             yellowboldprint("Error Code {}".format(responsecode))
-            return True # "[-] Server side error - No Image Available in REST response"
+            return True # "[-] Server side error - No resource Available in REST response"
         if responsecode in set2:
             redprint("[-] User error in Request")
             yellowboldprint("Error Code {}".format(responsecode))

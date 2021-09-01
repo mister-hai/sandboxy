@@ -1,34 +1,33 @@
-from apicalls import APISession
-from pathlib import Path
-import subprocess
-from utils import errorlogger,yellowboldprint,greenprint
-from repo import SandboxyCTFdRepository
-import requests
-import click
 import yaml
+import requests
+import subprocess
 from Yaml import Yaml
+from pathlib import Path
+
+from apicalls import APISession
+from gitrepo import SandboxyGitRepository
+from ctfdrepo import SandboxyCTFdRepository
+from utils import errorlogger,yellowboldprint,greenprint
 
 class Challenge(): #folder
     '''
-    Maps to the command:
-    user@server$> ctfcli challenge
 
-    Represents the Challenge folder
-    not loaded into fire
     '''
     def __init__(self, 
-            name,
-            category,
-            location, 
-            challengefile, 
-            #challengesrc,
-            #deployment,
-            handout,
-            solution
-            ):
+                name,
+                category,
+                location, 
+                challengefile, 
+                #challengesrc,
+                #deployment,
+                handout,
+                solution
+                ):
         self.name               = str
         self.category           = category
+        # path to challenge folder
         self.challengelocation  = location
+        # path to challenge.yml file
         self.challengefile      = challengefile
         # folder
         self.solutiondir        = solution
@@ -37,22 +36,17 @@ class Challenge(): #folder
         # folder
         #self.challengesrc       = challengesrc
         #self.deployment         = deployment
-        # use for api calls
-        self.CHALLENGETEMPLATE = {
-            "success": "true",
-            "data": [{
-                "id": 1,
-                "type": "standard",
-                "name": "The Lost Park",
-                "value": 50,
-                "solves": 3,
-                "solved_by_me": "false",
-                "category": "Forensics",
-                "tags": [],
-                "template": "/plugins/challenges/assets/view.html",
-                "script": "/plugins/challenges/assets/view.js"
-            }]
-        }
+        self.id = 1
+        self.type = str
+        self.name = "The Lost Park"
+        self.value = 500
+        self.solves = 0
+        self.solved_by_me = "false"
+        self.category = Category
+        self.tags = []
+        self.template = "/plugins/challenges/assets/view.html"
+        self.script =  "/plugins/challenges/assets/view.js"
+    
 
 class ChallengeActions(Challenge):
     def install(self, challenge:str, force=False, ignore=()):
