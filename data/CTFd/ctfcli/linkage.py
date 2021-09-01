@@ -1,4 +1,5 @@
 import re, yaml, os
+from utils.challenge import Challenge
 
 from cookiecutter.main import cookiecutter
 
@@ -108,7 +109,7 @@ class SandBoxyCTFdLinkage():
     Get the names of all Categories
     Supply "print=False" to return a variable instead of display to screen 
         '''
-        cats = []
+        
 
     def getchallengesbycategory(self, category, printscr=True):
         '''
@@ -129,24 +130,11 @@ class SandBoxyCTFdLinkage():
             else:
                 return challenges
 
-    def populatechallengelist(self, categories:Category):
+    def syncchallenge(self, challenge:Challenge):
         '''
-    Maps to the command
-    host@server$> ctfcli populatechallengelist
-    Indexes 
-        PROJECTROOT/data/CTFd/challenges/{category}/ 
-    for challenges and adds them to the master list
+        Syncs a challenge with the CTFd server
         '''
-        challengelist = []
-        # itterate over all categories
-        for category in self.get_categories():
-            pathtocategory = os.path.join(self.challengesfolder, category)
-            # itterate over challenge subdirs
-            challengesbycategory = self.getsubdirs(pathtocategory)
-            for challenge in challengesbycategory:
-                #open the challenge.yaml file to get the name
-                self.challengelistbuffer = open(self.listofchallenges).read()
-                self.challengelistyaml   = yaml.load(self.challengelistbuffer, Loader=yaml.FullLoader) 
+        challenge.sync()
 
     def synccategory(self, category:str):
         '''
@@ -161,17 +149,16 @@ class SandBoxyCTFdLinkage():
             challenges = self.getchallengesbycategory(category)
             for challenge in challenges:
                 greenprint(f"Syncing challenge: {challenge}")
-                challenge.syncinstalled()
+                self.syncchallenge(challenge)
         except Exception:
             errorlogger("[-] Failure to sync category! {}".format(challenge))
 
-    def load_installed_challenges(self, remote=False):
+    def listsyncedchallenges(self, remote=False):
         '''
         Lists the challenges installed to the server
         Use 
-        
             --remote=False 
-        
+
         to check the LOCAL repository
 
         For git operations, use gitoperations or your preferred terminal workflow
@@ -180,13 +167,15 @@ class SandBoxyCTFdLinkage():
             apicall = APISession.generate_session()
             return apicall.get("/api/v1/challenges?view=admin", json=True).json()["data"]
         elif remote == False:
-            SandboxyCTFdRepository.listinstalledchallenges()
+            SandboxyCTFdRepository.loadsyncedchallenges()
 
     def newfromtemplate(self, type=""):
         '''
         Creates a new CTFd Challenge from template
 
         If no repo is present, uploads the DEFAULT template to CTFd
+
+        NOT IMPLEMENTED YET
         '''
         # if no repo is present, uploads a template
         if type == "":

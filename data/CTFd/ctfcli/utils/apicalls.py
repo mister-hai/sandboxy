@@ -52,6 +52,21 @@ class APISession(Session):
             response.raise_for_status()
         except Exception:
             errorlogger("[-] Failure To toggle challenge Visibility! Check the Logfiles!")
+    
+    def makevisible(self,challenge,challenge_id):
+        '''
+        Makes a Challenge Visible
+
+        Args:
+            challenge (str): The challenge to change state
+        '''
+    def makehidden(self, challenge):
+        '''
+        Makes a Challenge Hidden
+
+        Args:
+            challenge (str): The challenge to change state
+        '''
 
     def processrequirements(self, challenge,challenge_id,data):
         '''

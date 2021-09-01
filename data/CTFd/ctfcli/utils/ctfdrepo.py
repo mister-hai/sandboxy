@@ -151,20 +151,28 @@ class SandboxyCTFdRepository(): #folder
         Removes a category from the repository
         '''
 
-    def loadinstalledchallenges(self):
+    def listinstalledchallenges(self):
         '''
         Returns a list of all the installed challenges
 
         '''
 
-    def loadsyncedchallenges(self):
+    def listsyncedchallenges(self):
         '''
         
         '''
 
-    def addchallenge(self, challenge:Challenge):
-        '''Adds a challenge to the repository'''
-        setattr(category,challenge.name,challenge)
+    def addchallenge(self,category, challenge:Challenge):
+        '''
+        Adds a challenge to the repository
+
+        Args:
+            category (str): Category to add challenge to
+        '''
+        if category in CATEGORIES:
+            setattr(category,challenge.name,challenge)
+        else:
+            raise ValueError
 
     def updaterepository(self, challenge):
         '''
