@@ -49,13 +49,6 @@ class Challenge(): #folder
         self.value = int
         #if its a dynamic scoring
         self.dynamic = bool
-        #self.extra = {
-        #            'extra':{
-        #                    'initial':500,
-        #                    'decay'  :100,
-        #                    'minimum':50
-        #                    }
-        #            }
         self.solves = int
         self.solved_by_me = "false"
         self.category = str
@@ -64,15 +57,16 @@ class Challenge(): #folder
         self.script =  str
         self.attempts = int
         self.connection_info = str
-        jsonpayload = {}
+
+        self.jsonpayload = {}
         if self.attempts:
-            jsonpayload["max_attempts"] = self.attempts
+            self.jsonpayload["max_attempts"] = self.attempts
         if self.connection_info:
-            jsonpayload["connection_info"] = self.connection_info
+            self.jsonpayload["connection_info"] = self.connection_info
         # Some challenge types (e.g. dynamic) override value.
         # We can't send it to CTFd because we don't know the current value
         if self.dynamic == True:
-            scorepayload = {
+            self.scorepayload = {
                         'extra': {
                             'initial': 500,
                             'decay'  : 100,
@@ -80,13 +74,13 @@ class Challenge(): #folder
                             }
                         }
         elif self.dynamic == False:
-            scorepayload = {'value':self.value}
-            jsonpayload = {
+            self.scorepayload = {'value':self.value}
+            self.jsonpayload = {
                 "name":         self.name,
                 "category":     self.category,
                 "description":  self.description,
                 "type":         self.type,
-                **scorepayload,
+                **self.scorepayload,
                 "author" :      self.author
                 }
 
@@ -102,8 +96,12 @@ class ChallengeActions(Challenge):
         try:
             #make API call
             apihandler = APIHandler()
-    
+            self.processchallenge(apihandler,self.jsonpayload)
+        except Exception:
+            errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
+
     def processchallenge(self,apihandler:APIHandler,jsonpayload:dict):
+        try:
             # Create new flags
             if self.flags:
                 apihandler.processflags(self,self.id,jsonpayload)
@@ -123,53 +121,82 @@ class ChallengeActions(Challenge):
             if self.requirements:
                 apihandler.processrequirements(self,self.id,jsonpayload)
         except Exception:
-            errorlogger("[-] ERROR! FAILED TO SYNCRONIZE CHALLENGE WITH SERVER")
+            errorlogger("[-] Error in Challenge.processchallenge()")
 
-    def create(self, challenge, ignore=[]):
-        jsonpayload = {
+    def create(self,
+               connection_info,
+               attempts,
+               max_attempts,
+               value,
+               dynamic,
+               initial,
+               decay,
+               minimum,
+               name,
+               category,
+               description,
+               author,
+               flags,
+               topics,
+               tags,
+               hints,
+               files,
+               requirements
+    ):
+        '''
+        host@server$> ctfops challenge create
+        Creates a Manually crafted Challenge from supplied arguments
+        on the command line
+
+        Not Implemented yet
+        '''
+        self.id = 1
+        self.type = type
+        self.name = name
+        self.description = description
+        self.value = value
+        #if its a dynamic scoring
+        self.dynamic = dynamic
+        self.initial = initial
+        self.decay = decay
+        self.minimum = minimum
+        self.solved_by_me = "false"
+        self.category = category
+        self.tags = tags
+        self.attempts = attempts
+        self.connection_info = connection_info
+
+        self.jsonpayload = {}
+        if self.attempts:
+            self.jsonpayload["max_attempts"] = self.max_attempts
+        if connection_info:
+            self.jsonpayload["connection_info"] = self.connection_info
+        # Some challenge types (e.g. dynamic) override value.
+        # We can't send it to CTFd because we don't know the current value
+        if self.dynamic == True:
+            self.scorepayload = {
+                        'extra': {
+                            'initial': self.initial,
+                            'decay'  : self.decay,
+                            'minimum': self.minimum
+                            }
+                        }
+        elif self.dynamic == False:
+            self.scorepayload = {'value':value}
+            self.jsonpayload = {
                 "name":         self.name,
                 "category":     self.category,
                 "description":  self.description,
-                "type":         {self.type, "standard"},
-                "value":        self.value,
-                "extra":        self.extra
+                "type":         self.type,
+                **self.scorepayload,
+                "author" :      self.author
                 }
-        # Some challenge types (e.g. dynamic) override value.
-        # We can't send it to CTFd because we don't know the current value
-        if challenge["value"] is None:
-            del challenge["value"]
-        if self.attempts:
-            jsonpayload["max_attempts"] = self.attempts
-        if self.connection_info:
-            jsonpayload["connection_info"] = self.connection_info
-    
-        apihandler = APISession()
-        response = apihandler.post("/api/v1/challenges", json=jsonpayload)
-        response.raise_for_status()
-        challenge_data = response.json()
-        self.id = challenge_data["data"]["id"]
-        # Create flags
-        if self.flags:
-            apihandler.processflags(jsonpayload)
-        # Create topics
-        if self.topics:
-            apihandler.processtopics(jsonpayload)
-            # Create tags
-        if self.tags:
-            apihandler.processtags(jsonpayload)
-            # Upload files
-        if self.files:
-            apihandler.uploadfiles(jsonpayload)
-        # Add hints
-        if self.hints:
-            apihandler.processhints()
-        # Add requirements
-        if self.requirements:
-            apihandler.processrequirements(jsonpayload)
-        # Set challenge state
-        #if self.state:
-        #        jsonpayload["state"] = challenge["state"]
-        #        apihandler.makevisible(challenge)
-        #        response.raise_for_status()
+        greenprint(f"Syncing challenge: {self.name}")
+        try:
+            #make API call
+            apihandler = APIHandler()
+            self.processchallenge(apihandler,self.jsonpayload)
+        except Exception:
+            errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
 
 

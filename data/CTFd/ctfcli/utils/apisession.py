@@ -98,21 +98,29 @@ class APISession(Session):
         # auth to server
         self.headers.update({"Authorization": "Token {}".format(self.AUTHTOKEN)})
 
-    def getrequest(self, jsonpayload:json):
+    def checkforchallenge(self, endpoint, jsonpayload):
+        return self.get("{}{}".format(endpoint,self.id), json=jsonpayload).json()["data"]
+
+    def getrequest(self, endpoint, jsonpayload:json):
         '''
-        Performs a request to the CTFd server API
+        Performs GET request to the Specified Endpoint with jsonpayload['id']
         '''
-        # check for challenge install
-        apisess = self.get("/api/v1/challenges/{}".format(self.id), json=jsonpayload).json()["data"]
-        # use requests.patch() to modify the value of a specific field on an existing APIcall.
-        response = apisess.patch(f"/api/v1/challenges/{self.id}", json=jsonpayload)
+        response = self.get("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
         response.raise_for_status()
 
-    def postrequest(self):
+    def postrequest(self, endpoint, jsonpayload:json):
         '''
-        Makes a POST Request
+        Makes a POST Request to the Specified Endpoint with jsonpayload['id']
         '''
+        response = self.post("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
+        response.raise_for_status()
 
+    def patchrequest(self, endpoint, jsonpayload:json):
+        """
+        Makes a Patch Request to the Specified Endpoint with jsonpayload['id']
+        """
+        response = self.patch("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
+        response.raise_for_status()
 
     def was_there_was_an_error(self, responsecode):
         """ Returns False if no error"""
