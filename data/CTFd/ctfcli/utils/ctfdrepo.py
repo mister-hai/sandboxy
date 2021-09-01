@@ -51,6 +51,9 @@ class SandboxyCTFdRepository(): #folder
             if category in CATEGORIES:
                 # track location change to subdir
                 pwd = self.location(self.challengesfolder, category)
+                #create a new Category and assign name based on folder
+                newcategory = Category()
+                newcategory.name = category
                 #get subfolder names in category directory, wreprweswenting indivwidual chwallenges yippyippyippyipp
                 challenges = self.getsubdirs(pwd)
                 # itterate over the individual challenges
@@ -87,15 +90,22 @@ class SandboxyCTFdRepository(): #folder
                         handout= handout,
                         solution= solution
                         )
+                #create a new Category and assign name based on folder
+                newcategory = Category()
+                newcategory.name = category
+                # check for an inconsistancy i spotted
+                if challengeyaml.category != category:
+                    errorlogger("[-] Inconsistancy in challenge.yml, \
+                        This field should be a Category in approved list {}".format(category))
+                
                 # add a new category based on that challenge files category
-                # check if matches approved list
-                # have to check every bit of the way
-           if category in CATEGORIES:
-                cat_bag.append(Category(category, pwd))
+                cat = self.getcategory(newcategory.name)
+                #cat_bag.append(Category(category, pwd))
                 #add the new challenge to the category as 
                 # its own named child
-                self.addchallenge(cat_bag[challenge_category],newchallenge)
-        return cat_bag
+                #self.addchallenge(cat_bag[category],newchallenge)
+                self.addchallenge(cat,newchallenge)
+        return self #cat_bag
 
     def addcategory(self, category:Category):
         '''
@@ -111,6 +121,11 @@ class SandboxyCTFdRepository(): #folder
         setattr(self, category.name, category)
         #TODO: add entry to masterlist.yaml
 
+    def listcategories(self):
+        '''
+        Lists all categories in class
+        '''
+
     def getcategory(self,category):
         '''
         Returns The Category, use getattr and a filter
@@ -123,7 +138,7 @@ class SandboxyCTFdRepository(): #folder
         # for each item in this class
         for selfmember in dir(self):
             # if its a Category, and not a hidden class attribute or function
-            if (type(selfmember) in CATEGORIES) and (selfmember.startswith("__") != True):
+            if (selfmember in CATEGORIES):# and (selfmember.startswith("__") != True):
                 #make sure its the cat want
                 cat = getattr(self,selfmember) 
                 if type(cat) == Category:
