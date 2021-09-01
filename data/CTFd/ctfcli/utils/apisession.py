@@ -18,6 +18,26 @@ class APIHandler():
     def __init__(self, ctfdurl,authtoken):
         self.ctfdurl = ctfdurl
         self.authtoken = authtoken
+        self.APIPREFIX = "/api/v1/"
+        self.CTFd_API_ROUTES = {"challenges": f"{self.APIPREFIX}challenges",
+              "tags":f"{self.APIPREFIX}tags", 
+              "topics":f"{self.APIPREFIX}topics", 
+              "awards":f"{self.APIPREFIX}awards", 
+              "hints":f"{self.APIPREFIX}hints", 
+              "flags":f"{self.APIPREFIX}flags", 
+              "submissions":f"{self.APIPREFIX}submissions", 
+              "scoreboard":f"{self.APIPREFIX}scoreboard", 
+              "teams":f"{self.APIPREFIX}teams", 
+              "users":f"{self.APIPREFIX}users", 
+              "statistics":f"{self.APIPREFIX}statistics",
+              "files":f"{self.APIPREFIX}files", 
+              "notifications":f"{self.APIPREFIX}notifications", 
+              "configs":f"{self.APIPREFIX}configs", 
+              "pages":f"{self.APIPREFIX}pages", 
+              "unlocks":f"{self.APIPREFIX}unlocks", 
+              "tokens":f"{self.APIPREFIX}tokens", 
+              "comments":f"{self.APIPREFIX}comments"}
+     
 
     def getusers(self):
         """ gets a list of all users"""
