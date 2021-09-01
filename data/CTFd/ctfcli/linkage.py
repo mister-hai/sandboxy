@@ -1,27 +1,12 @@
-import re
-import git
-import fire
-import json
-import requests
-import yaml
-import click
-import os, sys
-import importlib
-import subprocess
-import configparser
-from pathlib import Path
-from requests import Session
-from urllib.parse import urljoin
-from urllib.parse import urlparse
+import re, yaml, os
+
 from cookiecutter.main import cookiecutter
 
-
 from utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
-from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS, blank_challenge_spec
-from utils.Yaml import Yaml, KubernetesYaml, Challengeyaml, Config
+from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
+from utils.Yaml import Yaml, Config
 from utils.gitrepo import SandboxyGitRepository
 from utils.ctfdrepo import Category,SandboxyCTFdRepository
-from utils.challenge import Challenge
 from utils.utils import errorlogger
 from utils.apicalls import APISession
 

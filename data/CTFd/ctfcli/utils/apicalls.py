@@ -1,6 +1,4 @@
-import yaml
 import json
-import requests
 from pathlib import Path
 from requests import Session
 from utils import errorlogger,blueprint,yellowboldprint,redprint

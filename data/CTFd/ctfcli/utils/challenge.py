@@ -1,11 +1,9 @@
-import yaml
 import requests
 import subprocess
 from Yaml import Yaml
 from pathlib import Path
 
 from apicalls import APISession
-from gitrepo import SandboxyGitRepository
 from ctfdrepo import SandboxyCTFdRepository
 from utils import errorlogger,yellowboldprint,greenprint
 

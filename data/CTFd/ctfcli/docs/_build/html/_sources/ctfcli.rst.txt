@@ -12,18 +12,18 @@ Subpackages
 Submodules
 ----------
 
-ctfcli.ctfd module
-------------------
-
-.. automodule:: ctfcli.ctfd
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 ctfcli.linkage module
 ---------------------
 
 .. automodule:: ctfcli.linkage
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ctfcli.setup module
+-------------------
+
+.. automodule:: ctfcli.setup
    :members:
    :undoc-members:
    :show-inheritance:
