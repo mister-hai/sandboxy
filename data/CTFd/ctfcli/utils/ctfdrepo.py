@@ -1,9 +1,9 @@
-from pathlib import Path
-from utils.utils import errorlogger, CATEGORIES
-from challenge import Challenge
-from Yaml import Challengeyaml
 import os
-
+from pathlib import Path
+from utils.Yaml import Challengeyaml
+from utils.challenge import Challenge
+from utils.utils import errorlogger, CATEGORIES
+from utils.utils import location,getsubdirs
 ###############################################################################
 #  CTFd CATEGORY: representation of folder in repository
 ###############################################################################
@@ -43,26 +43,25 @@ class SandboxyCTFdRepository(): #folder
         self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
     
     def createprojectrepo(self):
-        cat_bag = []
-        categoryfolders = self.getsubdirs(self.challengesfolder)
+        categoryfolders = getsubdirs(self.challengesfolder)
         # itterate over folders in challenge directory
         for category in categoryfolders:
             # if its a repository category folder in aproved list
             if category in CATEGORIES:
                 # track location change to subdir
-                pwd = self.location(self.challengesfolder, category)
+                pwd = location(self.challengesfolder, category)
                 #get subfolder names in category directory, wreprweswenting indivwidual chwallenges yippyippyippyipp
-                challenges = self.getsubdirs(pwd)
+                challenges = getsubdirs(pwd)
                 # itterate over the individual challenges
                 for challengefolder in challenges:
                     # track location change to individual challenge subdir
-                    pwd = self.location(challenges, challengefolder)
+                    pwd = location(challenges, challengefolder)
                     # list files and folders
                     challengefolderdata = os.listdir(pwd)
                     # itterate over them
                     for challengedata in challengefolderdata:
                         # set location to challenge subfolder
-                        challengelocation = self.location(pwd, challengefolder)
+                        challengelocation = location(pwd, challengefolder)
                         # get solutions path
                         if challengedata == "solution":
                             solution = os.path.join(pwd, challengedata)

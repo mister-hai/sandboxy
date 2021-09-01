@@ -132,8 +132,8 @@ class ChallengeActions(Challenge):
                 "name":         self.name,
                 "category":     self.category,
                 "description":  self.description,
-                "type":         {self.type", "standard"},
-                "value":        int(challenge["value"]) if challenge["value"] else challenge["value"],
+                "type":         {self.type, "standard"},
+                "value":        self.value,
                 **challenge.get("extra", {})
                 }
         # Some challenge types (e.g. dynamic) override value.

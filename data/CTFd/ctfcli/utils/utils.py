@@ -51,6 +51,18 @@ warninglog   = lambda message: logger.warning(message)
 errorlog     = lambda message: logger.error(message) 
 criticallog  = lambda message: logger.critical(message)
 
+###############################################
+# returns subdirectories , without . files/dirs
+getsubdirs = lambda directory: [name for name in os.listdir(directory) if os.path.isdir(name) and not re.match(r'\..*', name)]
+# open with read operation
+challengeyamlbufferr = lambda category,challenge: open(os.path.join(category,challenge,self.basechallengeyaml),'r')
+# open with write operation
+challengeyamlbufferw = lambda category,challenge: open(os.path.join(category,challenge,self.basechallengeyaml),'r')
+#loads a challenge.yaml file into a buffer
+loadchallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferr(category,challenge), Loader=yaml.FullLoader)
+writechallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferw(category,challenge), Loader=yaml.FullLoader)
+location = lambda currentdirectory,childorsibling: os.path.join(currentdirectory,childorsibling)
+
 ################################################################################
 ##############             ERROR HANDLING FUNCTIONS            #################
 ################################################################################

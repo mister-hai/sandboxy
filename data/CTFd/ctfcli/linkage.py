@@ -1,4 +1,5 @@
-import re, yaml, os
+from genericpath import isfile
+import re, yaml, os, sys
 from utils.challenge import Challenge
 
 from cookiecutter.main import cookiecutter
@@ -61,20 +62,25 @@ class SandBoxyCTFdLinkage():
             self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "ctfcli", "templates")
             # store url and token in config
             self.ctfdauth = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
-
-            ###############################################
-            # returns subdirectories , without . files/dirs
-            self.getsubdirs = lambda directory: [name for name in os.listdir(directory) if os.path.isdir(name) and not re.match(r'\..*', name)]
-            # open with read operation
-            self.challengeyamlbufferr = lambda category,challenge: open(os.path.join(category,challenge,self.basechallengeyaml),'r')
-            # open with write operation
-            self.challengeyamlbufferw = lambda category,challenge: open(os.path.join(category,challenge,self.basechallengeyaml),'r')
-            #loads a challenge.yaml file into a buffer
-            self.loadchallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferr(category,challenge), Loader=yaml.FullLoader)
-            self.writechallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferw(category,challenge), Loader=yaml.FullLoader)
-            self.location = lambda currentdirectory,childorsibling: os.path.join(currentdirectory,childorsibling)
+            #check for an existance of the master list
+            if self.checkmasterlist():
+                greenprint("[+] Loading masterlist.yaml")
+                self.masterlist = Yaml(self.masterlistlocation)
+            else:
+                redprint("[-] Masterlist Not Found! You need to run 'ctfcli init'!! ")
+                sys.exit()
         except Exception:
             errorlogger("[-] SandBoxyCTFdLinkage.__init__ Failed")
+    
+    def checkmasterlist(self):
+        '''
+        checks for existance and integrety of master list
+        TODO: add integrety checks, currently just checks if it exists
+        '''
+        if isfile(self.masterlistlocation):
+            return True
+        else:
+            return False
 
     def init(self):
         '''
