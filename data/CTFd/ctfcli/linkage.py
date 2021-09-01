@@ -52,10 +52,8 @@ class SandBoxyCTFdLinkage():
             self.CTFD_TOKEN          = ctfdtoken #os.getenv("CTFD_TOKEN")
             self.CTFD_URL            = ctfdurl #os.getenv("CTFD_URL")
             self.configname          = configname
-            # name of the yaml file expected to have the challenge data in each subfolder
-            self.basechallengeyaml   = "challenge.yml"
             # filename for the full challenge index
-            self.masterlistfile      = "challengelist.yml"
+            self.masterlistfile      = "masterlist.yml"
             self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
             self.masterlist          = Yaml(self.masterlistlocation)
             # template challenges
@@ -94,10 +92,8 @@ class SandBoxyCTFdLinkage():
 
     TODO: Add Oauth via discord
         '''
-        #the init function will do the thing and return the data
-        # the return type is the class itself with the schema
-        # repo.category.challenge
         # assign to self as Repo for code usage
+        # repo.category.challenge
         # TODO: TIMESTAMPS AND IDS!!!
         self.masterlist.data = SandboxyCTFdRepository.createprojectrepo()
         setattr(self,self.masterlist.data,"Repo")
@@ -107,7 +103,7 @@ class SandBoxyCTFdLinkage():
         SandboxyGitRepository.createprojectrepo()
 
 
-    def getcategories(self,print=True):
+    def listcategories(self,print=True)-> Category:
         '''
     Maps to the command
     host@server$> ctfcli getcategories
@@ -124,17 +120,6 @@ class SandBoxyCTFdLinkage():
     Lists challenges in repo by category        
     Supply "print=False" to return a variable instead of utf-8 
         '''
-        challenges = []
-        for category in self.get_categories():
-            pathtocategory = os.path.join(self.challengesfolder, category)
-            challengesbycategory = self.getsubdirs(pathtocategory)
-            for challenge in challengesbycategory:
-                challenges.append(challenge)
-            if printscr == True:
-                yellowboldprint("[+] Challenges in Category: {}".format(category))
-                print(challenge)
-            else:
-                return challenges
 
     def syncchallenge(self, challenge:Challenge):
         '''
@@ -173,7 +158,7 @@ class SandBoxyCTFdLinkage():
             apicall = APISession.generate_session()
             return apicall.get("/api/v1/challenges?view=admin", json=True).json()["data"]
         elif remote == False:
-            SandboxyCTFdRepository.loadsyncedchallenges()
+            SandboxyCTFdRepository.listsyncedchallenges()
 
     def newfromtemplate(self, type=""):
         '''

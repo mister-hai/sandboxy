@@ -1,23 +1,19 @@
-
-import getpass
-from collections import namedtuple
-from pathlib import Path
-import os
+import sys
 import json
-import tempfile
-import subprocess
-from pathlib import Path
-from urllib.parse import urlparse
-
 import yaml
+import os,re
+import getpass
+import tempfile
+import pathlib
 import logging
-import threading
 import traceback
 import subprocess
-import pathlib
-import sys
+from pathlib import Path
+from collections import namedtuple
+from urllib.parse import urlparse
+
 try:
-    import colorama
+    #import colorama
     from colorama import init
     init()
     from colorama import Fore, Back, Style
@@ -53,14 +49,16 @@ criticallog  = lambda message: logger.critical(message)
 
 ###############################################
 # returns subdirectories , without . files/dirs
+# name of the yaml file expected to have the challenge data in each subfolder
+basechallengeyaml   = "challenge.yml"
 getsubdirs = lambda directory: [name for name in os.listdir(directory) if os.path.isdir(name) and not re.match(r'\..*', name)]
 # open with read operation
-challengeyamlbufferr = lambda category,challenge: open(os.path.join(category,challenge,self.basechallengeyaml),'r')
+challengeyamlbufferr = lambda category,challenge: open(os.path.join(category,challenge,basechallengeyaml),'r')
 # open with write operation
-challengeyamlbufferw = lambda category,challenge: open(os.path.join(category,challenge,self.basechallengeyaml),'r')
+challengeyamlbufferw = lambda category,challenge: open(os.path.join(category,challenge,basechallengeyaml),'r')
 #loads a challenge.yaml file into a buffer
-loadchallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferr(category,challenge), Loader=yaml.FullLoader)
-writechallengeyaml =  lambda category,challenge: yaml.load(self.challengeyamlbufferw(category,challenge), Loader=yaml.FullLoader)
+loadchallengeyaml =  lambda category,challenge: yaml.load(challengeyamlbufferr(category,challenge), Loader=yaml.FullLoader)
+writechallengeyaml =  lambda category,challenge: yaml.load(challengeyamlbufferw(category,challenge), Loader=yaml.FullLoader)
 location = lambda currentdirectory,childorsibling: os.path.join(currentdirectory,childorsibling)
 
 ################################################################################

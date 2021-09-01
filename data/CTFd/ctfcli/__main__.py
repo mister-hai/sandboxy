@@ -44,9 +44,9 @@ USAGE:
     This will force recreate the project repository within the context of github
     Currently nonfunctional, only used internally. May break your installation
 
->>> host@server$> ctfd.py gitops createprojectrepo
+Or you can sync the repository to CTFd:
 
->>> host@server$> ctfd.py ctfcli category listinstalled
+>>> host@server$> ctfd.py ctfdcli sync
 
 / not yet/
 IF YOU ARE MOVING YOUR INSTALLATION AFTER USING THE PACKER/UNPACKER
