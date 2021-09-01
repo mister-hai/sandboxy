@@ -131,3 +131,12 @@ class SandboxyCTFdRepository(): #folder
         '''
         Removes a category from the repository
         '''
+    
+    def loadinstalledchallenges(self):
+        '''
+        Returns a list of all the installed challenges
+
+        '''
+
+    def loadsyncedchallenges(self):
+        

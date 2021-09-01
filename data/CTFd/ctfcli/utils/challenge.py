@@ -38,14 +38,14 @@ class Challenge(): #folder
         #self.deployment         = deployment
         self.id = 1
         self.type = str
-        self.name = "The Lost Park"
+        self.name = str
         self.value = 500
         self.solves = 0
         self.solved_by_me = "false"
-        self.category = Category
+        self.category = str
         self.tags = []
-        self.template = "/plugins/challenges/assets/view.html"
-        self.script =  "/plugins/challenges/assets/view.js"
+        self.template = str
+        self.script =  str
     
 
 class ChallengeActions(Challenge):
@@ -68,21 +68,22 @@ class ChallengeActions(Challenge):
                     break
             else:  # If we don't break because of duplicated challenge names
                 print(f'Installing {challenge["name"]}')
-                GitOperations.addchallenge(challenge=challenge, ignore=ignore)
+                SandboxyCTFdRepository.addchallenge(challenge=challenge, ignore=ignore)
                 print("Success!", fg="green")
 
-    def sync(self, challenge=None, ignore=()):
-            challenge = self.load_challenge(challenge)
-            greenprint('Loaded {}'.format(challenge["name"]))
+    def sync(self): #, challenge=None, ignore=()):
+            #challenge = self.load_challenge(challenge)
+            #greenprint('Loaded {}'.format(challenge["name"]))
 
             #get list of all challenges
-            installed_challenges = load_installed_challenges()
-            for c in installed_challenges:
-                if c["name"] == challenge["name"]:
-                    break
+            installedchallenges = SandboxyCTFdRepository.loadinstalledchallenges()
+            for challenge in installedchallenges:
+                #check if challenge is synced
+                if challenge.synced == True:
+                    danglies
+                    pass
             else:
                 print(f'Couldn\'t find existing challenge {c["name"]}. Perhaps you meant install instead of sync?')
-                continue  # Go to the next challenge in the overall list
 
             print(f'Syncing {challenge["name"]}', fg="yellow")
             self.syncchallenge(challenge=challenge)

@@ -1,5 +1,9 @@
 
 class CtfdAuth():
+    '''
+    This is an example I have taken from soemwhere ( i dont remember)
+    I am going to entirely rewrite it using it as a "doing the thing" guide
+    '''
     '''do I need this?'''
     def do_auth(self, args: argparse.Namespace):
         """ Authenticate and write a new .ctfd-auth file """
