@@ -1,10 +1,9 @@
 import os
 from pathlib import Path
-from utils.Yaml import Challengeyaml
+from utils.Yaml import Challengeyaml,Masterlist
 from utils.challenge import Challenge
 from utils.utils import errorlogger, CATEGORIES
 from utils.utils import location,getsubdirs
-from utils.utils import loadmasterlist
 ###############################################################################
 #  CTFd CATEGORY: representation of folder in repository
 ###############################################################################
@@ -44,6 +43,8 @@ class SandboxyCTFdRepository(): #folder
         self.repofolder    = os.path.join(self.CTFDDATAROOT, "challenges")
     
     def createprojectrepo(self):
+        # create a new masterlist
+        self.masterlist = Masterlist.loadmasterlist()
         repocategoryfolders = getsubdirs(self.repofolder)
         # itterate over folders in challenge directory
         for category in repocategoryfolders:
@@ -90,7 +91,7 @@ class SandboxyCTFdRepository(): #folder
             if challengedata == "handout":
                 handout = os.path.join(challengeitempath, challengedata)
             # get challenge file 
-            if challengedata == self.basechallengeyaml:
+            if challengedata == "challenge.yml":
                 # get path to challenge file
                 challengefile  = os.path.join(challengeitempath, challengedata)
                 # load the yml describing the challenge

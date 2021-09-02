@@ -1,11 +1,6 @@
-import json
 from pathlib import Path
-import yaml,os,subprocess
-from pygments import highlight
+import yaml,os
 from utils.utils import greenprint, redprint, errorlogger
-from pygments.formatters import TerminalFormatter
-from pygments.lexers import IniLexer, JsonLexer
-import configparser
 
 class Yaml(): #filetype
     '''
@@ -24,10 +19,10 @@ class Yaml(): #filetype
         self.directory = self.filepath.parent
         #if its a kubernetes config
         if self.filename.endswith(".yaml"):
-            redprint("[!] File is .yaml! Presuming to be kubernetes config!")
+            greenprint("[!] File is .yaml! Presuming to be kubernetes config!")
             self.type = "kubernetes"
         elif self.filename.endswith(".yml"):
-            greenprint("[+] Challenge File presumed (.yml)")
+            greenprint("[!] Challenge File presumed (.yml)")
             self.type = "challenge"
         # finally, load the file
         #self.loadyaml(filepath)
@@ -80,6 +75,10 @@ class Masterlist(Yaml):
         self.masterlistfile      = masterlistfile
         self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
         self.masterlist          = Yaml(self.masterlistlocation)
+        # loads the data
+        self.masterlist.loadyaml()
+        self.type = "masterlist"
+        return self
     
     def writemasteryaml(self,name:str, filemode="a"):
         '''
@@ -116,13 +115,6 @@ class Challengeyaml(Yaml): #file
     def __init__(self,yamlfile):
         #get a representation of the challenge.yaml file
         self.loadyaml(yamlfile)
-        # DATA FROM FILE
-        self.name        = self.data['name']
-        self.author      = self.data['author']
-        self.category    = self.data['category']
-        self.description = self.data['description']
-        self.value       = self.data['value']
-        self.type        = self.data['type']
 
         # internal data
         self.id
@@ -131,80 +123,3 @@ class Challengeyaml(Yaml): #file
         super().__init__()
 
 
-
-class Config():
-    '''
-Config class
-Maps to the command
-host@server$> ctfcli config <command>
-    '''
-    def __init__(self, configpath):
-        self.configpath = configpath
-        parser = configparser.ConfigParser()
-        # Preserve case in configparser
-        parser.optionxform = str
-        parser.read(Path(self.configpath))
-        return parser
-
-    def edit(self, editor="micro"):
-        '''
-        ctfcli config edit
-            Edit config with $EDITOR
-        '''
-        # set environment variables for editor
-        editor = os.getenv("EDITOR", editor)
-        command = editor, 
-        subprocess.call(command)
-
-    def path(self):
-        '''
-        ctfcli config path
-            Show config path
-        '''
-        print("[+] Config located at {}".format(self.configpath))
-    
-    def loadalternativeconfig(self, configpath:str):
-        '''
-        Loads an alternative configuration
-        ctfcli config loadalternativeconfig <configpath>
-        '''
-        #path = self.configpath
-        parser = configparser.ConfigParser()
-        # Preserve case in configparser
-        parser.optionxform = str
-        parser.read(Path(configpath))
-        return parser
-
-    def previewconfig(self, as_string=False):
-        '''
-        Shows current configuration
-        ctfcli config previewconfig
-        '''
-        config = self.load_config(self.configpath)
-        d = {}
-        for section in config.sections():
-            d[section] = {}
-            for k, v in config.items(section):
-                d[section][k] = v
-        preview = json.dumps(d, sort_keys=True, indent=4)
-        if as_string is True:
-            return preview
-        else:
-            print(preview)
-    
-    def view(self, color=True, json=False):
-        
-        '''
-        view the config
-        ctfcli config view
-        '''
-        with open(self.configlocation) as f:
-            if json is True:
-                config = self.preview_config(as_string=True)
-                if color:
-                    config = highlight(config, JsonLexer(), TerminalFormatter())
-            else:
-                config = f.read()
-                if color:
-                    config = highlight(config, IniLexer(), TerminalFormatter())
-            print(config)

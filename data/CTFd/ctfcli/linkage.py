@@ -4,7 +4,7 @@ from utils.challenge import Challenge
 
 from cookiecutter.main import cookiecutter
 
-from utils.Yaml import Yaml
+from utils.Yaml import Yaml,Masterlist
 from utils.utils import loadchallengeyaml
 from utils.utils import errorlogger
 from utils.apisession import APISession
@@ -88,7 +88,7 @@ class SandBoxyCTFdLinkage():
         # filename for the full challenge index
         self.masterlistfile      = masterlistfile
         self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
-        self.masterlist          = Yaml(self.masterlistlocation)
+        self.masterlist          = Masterlist(self.masterlistlocation)
 
     def init(self):
         """

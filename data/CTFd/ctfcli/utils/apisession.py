@@ -1,9 +1,7 @@
 import json
-from pathlib import Path
 from requests import Session
-from utils import errorlogger,blueprint,yellowboldprint,redprint
-from ctfdrepo import SandboxyCTFdRepository
-from utils.apifunctions import APIFunctions
+from utils.utils import errorlogger
+#from utils.apifunctions import APIFunctions
 
 
 class APIHandler():
@@ -173,19 +171,20 @@ class APISession(Session):
         '''
         handles response
         '''
-        template = "data": [
+        template = {"data": [
             {
                 "id": 3,
                 "type": "multiple_choice",
                 "name": "Trivia",
                 "value": 42,
                 "solves": 4,
-                "solved_by_me": false,
+                "solved_by_me": 'false',
                 "category": "Multiple Choice",
                 "tags": [],
                 "template": "/plugins/multiple_choice/assets/view.html",
                 "script": "/plugins/multiple_choice/assets/view.js"
-            },
+            }]
+        }
     def was_there_was_an_error(self, responsecode):
         """ Returns False if no error"""
         # server side error]

@@ -1,12 +1,5 @@
-import requests
-import subprocess
-from pathlib import Path
-
-from utils.Yaml import Yaml
-from utils.apisession import APISession
 from utils.apisession import APIHandler
-from utils.ctfdrepo import SandboxyCTFdRepository
-from utils.utils import errorlogger,yellowboldprint,greenprint,CATEGORIES
+from utils.utils import errorlogger,greenprint,CATEGORIES
 
 class Challenge(): #folder
     '''
