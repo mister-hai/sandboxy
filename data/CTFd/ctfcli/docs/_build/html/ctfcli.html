@@ -75,6 +75,54 @@
 <dt class="sig sig-object py" id="ctfcli.Ctfcli">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ctfcli.</span></span><span class="sig-name descname"><span class="pre">Ctfcli</span></span><a class="headerlink" href="#ctfcli.Ctfcli" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>this program will assume it is in the place you found it
+DO NOT MOVE THIS FILE</p>
+<p>This program uses the “fire” plugin from Google, this plugin is very powerful
+and many of the options you will see listed are for backend scripting purposes
+and you should refer to the documentation for thier usage</p>
+<p>Please, I urge you, to read the basic usage and follow the instructions</p>
+<p>Flags to Fire should be separated from the Fire command by an isolated – in
+order to distinguish between flags and named arguments to the program itself.</p>
+<p>So, for example, to enter interactive mode append “– -i” or “– –interactive”
+to any command. To use Fire in verbose mode, append “– –verbose”.
+(without quotes, :) stuff like that confuses me too)</p>
+<p>Proper Usage is as follows:</p>
+<p>/ NOT IMPLEMENTED YET /
+IF YOU ARE MOVING YOUR INSTALLATION AFTER USING THE PACKER/UNPACKER
+IN START.SH, PERFORM THE FOLLOWING ACTIONS/COMMANDS
+&gt;&gt;&gt; <a class="reference external" href="mailto:host&#37;&#52;&#48;server$">host<span>&#64;</span>server$</a>&gt; ctfd.py ctfcli check_install
+/ NOT IMPLEMENTED YET /</p>
+<p>FIRST RUN (ctfd already running):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; host@server$&gt; ctfd.py ctfcli --ctfdurl &lt;URL&gt; --ctfdtoken &lt;TOKEN&gt; init
+</pre></div>
+</div>
+<p>Replacing &lt;URL&gt; with your CTFd website url
+and replacing &lt;TOKEN&gt; with your CTFd website token</p>
+<p>You can obtain a auth token from the “settings” page in the “admin panel”</p>
+<p>This will initialize the repository, from there, you can either:</p>
+<p>Pull a remote repository</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; host@server$&gt; ctfd.py gitops createremoterepo https://REMOTE_REPO_URL.git
+</pre></div>
+</div>
+<p>Or you can sync the initialized repository to CTFd:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; host@server$&gt; ctfd.py ctfdcli sync
+</pre></div>
+</div>
+<p>Generating a completion script</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; host@server$&gt; ctfd.py ctfcli -- --completion
+</pre></div>
+</div>
+<p>Call widget – –completion to generate a completion script for the Fire CLI widget.
+To save the completion script to your home directory, you could e.g. run</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; host@server$&gt; ctfd.py ctfcli --completion &gt; ~/.ctfcli-completion.
+</pre></div>
+</div>
+<p>You should then source this file;
+to get permanent completion, source this file from your .bashrc file.</p>
+<p>Call widget – –completion fish to generate a completion script for the Fish shell.
+Source this file from your fish.config.</p>
+<p>If the commands available in the Fire CLI change, you’ll have to regenerate the
+completion script and source it again.</p>
 </dd></dl>
 
 <dl class="py function">

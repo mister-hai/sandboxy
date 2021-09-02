@@ -24,8 +24,8 @@ for each in PWD_LIST:
         pass
 ###############################################################################
 class Ctfcli():
-    def __init__(self):
-        '''this program will assume it is in the place you found it 
+    '''
+        this program will assume it is in the place you found it 
         DO NOT MOVE THIS FILE
 
         This program uses the "fire" plugin from Google, this plugin is very powerful
@@ -85,7 +85,8 @@ class Ctfcli():
 
         If the commands available in the Fire CLI change, you'll have to regenerate the 
         completion script and source it again.
-        '''
+    '''
+    def __init__(self):
 
         # modify the structure of the program here by reassigning classes
         ctfcli = SandBoxyCTFdLinkage()
