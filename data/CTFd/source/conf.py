@@ -13,7 +13,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('./ctfcli'))
+sys.path.insert(0, os.path.abspath('./ctfcli/utils'))
 
 
 # -- Project information -----------------------------------------------------
@@ -44,7 +44,8 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = [
     '__pycache__',
-    '.vscode'
+    '.vscode',
+    'setup'
 ]
 
 
