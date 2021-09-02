@@ -1,9 +1,9 @@
 import importlib
 import os,sys,fire
-from ctfcli.linkage import SandBoxyCTFdLinkage
-from ctfcli.utils.ctfdrepo import SandboxyCTFdRepository
-from ctfcli.utils.gitrepo import SandboxyGitRepository
-from ctfcli.utils.utils import CATEGORIES
+from linkage import SandBoxyCTFdLinkage
+from utils.ctfdrepo import SandboxyCTFdRepository
+from utils.gitrepo import SandboxyGitRepository
+from utils.utils import CATEGORIES
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -92,12 +92,12 @@ class Ctfcli():
         ctfcli = SandBoxyCTFdLinkage()
         self.ctfcli = ctfcli
         # so we can use the command
-        # ctfcli.py ctfcli ctfdops
+        # py ctfcli ctfdops
         #OR
-        # ctfcli.py ctfcli gitops
+        # py ctfcli gitops
 
         # with fire, this would set the commands as
-        # ctfcli.py gitops OR ctfops
+        # py gitops OR ctfops
         #self.ctfdops = SandboxyCTFdRepository()
         #self.gitops = SandboxyGitRepository()
 

@@ -1,4 +1,4 @@
-from ctfcli.utils.utils import errorlogger
+from utils.utils import errorlogger
 import git, re
 
     

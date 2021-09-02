@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
-from ctfcli.utils.Yaml import Challengeyaml,Masterlist
-from ctfcli.utils.challenge import Challenge
-from ctfcli.utils.utils import errorlogger, CATEGORIES
-from ctfcli.utils.utils import location,getsubdirs
+from utils.Yaml import Challengeyaml,Masterlist
+from utils.challenge import Challenge
+from utils.utils import errorlogger, CATEGORIES
+from utils.utils import location,getsubdirs
 ###############################################################################
 #  CTFd CATEGORY: representation of folder in repository
 ###############################################################################
@@ -30,8 +30,8 @@ class Category(): #folder
         Args:
             challenge (Challenge): Challenge() object from folder in repository
         """
-        if category in CATEGORIES:
-            setattr(category,challenge.name,challenge)
+        if challenge.category in CATEGORIES:
+            setattr(challenge.category,challenge.name,challenge)
         else:
             raise ValueError
 

@@ -1,17 +1,17 @@
 from genericpath import isfile
 import re, yaml, os, sys
-from ctfcli.utils.challenge import Challenge
+from utils.challenge import Challenge
 
 from cookiecutter.main import cookiecutter
 
-from ctfcli.utils.Yaml import Yaml,Masterlist
-from ctfcli.utils.utils import loadchallengeyaml
-from ctfcli.utils.utils import errorlogger
-from ctfcli.utils.apisession import APISession
-from ctfcli.utils.gitrepo import SandboxyGitRepository
-from ctfcli.utils.ctfdrepo import Category,SandboxyCTFdRepository
-from ctfcli.utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
-from ctfcli.utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
+from utils.Yaml import Yaml,Masterlist
+from utils.utils import loadchallengeyaml
+from utils.utils import errorlogger
+from utils.apisession import APISession
+from utils.gitrepo import SandboxyGitRepository
+from utils.ctfdrepo import Category,SandboxyCTFdRepository
+from utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
+from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
 
 
 
@@ -34,7 +34,7 @@ class SandBoxyCTFdLinkage():
 
     """
     def __init__(self
-                    #configname = "ctfcli.ini", 
+                    #configname = "ini", 
                     ):
         greenprint("[+] Instancing a SandboxyCTFdLinkage()")
         self.PROJECTROOT         = os.getenv("PROJECT_ROOT")

@@ -1,6 +1,6 @@
 from pathlib import Path
 import yaml,os
-from ctfcli.utils.utils import greenprint, redprint, errorlogger
+from utils.utils import greenprint, redprint, errorlogger
 #https://matthewpburruss.com/post/yaml/
 # This is one way of turning a yaml into a class
 class Repo:
