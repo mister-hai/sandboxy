@@ -38,16 +38,16 @@ class SandBoxyCTFdLinkage():
                     ):
         greenprint("[+] Instancing a SandboxyCTFdLinkage()")
         self.PROJECTROOT         = os.getenv("PROJECT_ROOT")
-        #self.configname          = configname
-        # template challenges
-        self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "ctfcli", "templates")
-        # store url and token in config
-        self.ctfdauth = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
         #check for an existance of the master list            
         # assign the classes as named commands for fire
         setattr(self, 'ctfdops',SandboxyCTFdRepository())
         setattr(self, 'gitops',SandboxyGitRepository())
-    
+
+        #set important variables on the self from the other
+        self.challengesfolder = self.ctfdops.CTFDDATAROOT
+        # challenge templates
+        self.TEMPLATESDIR = os.path.join(self.challengesfolder, "ctfcli", "templates")    
+
     def checkmasterlist(self):
         """
         checks for existance and integrity of master list
@@ -94,16 +94,24 @@ class SandBoxyCTFdLinkage():
         TODO: Add Oauth via discord
         """
         # TODO: TIMESTAMPS AND IDS!!!
+        # store url and token
+        self.ctfdauth = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
         self.CTFD_TOKEN      = ctfdtoken #os.getenv("CTFD_TOKEN")
         self.CTFD_URL        = ctfdurl #os.getenv("CTFD_URL")
         # returns a Repo() object with Category() objects attached
         try:
             # returns a master list
-            self.masterlist      = self.ctfdops.createprojectrepo()
-            self.repo = self.masterlist.transformtorepository()
+            self.masterlist = self.ctfdops.createprojectrepo()
+            # returns a repository object,
+            # consisting of everything in the challenges folder
             repositoryobject = self.masterlist.transformtorepository(self.masterlist)
-            setattr(self,self.masterlist.data,"Repo")
-            self.masterlist.writemasteryaml(self.Repo, filemode="a")
+
+            #assigns repository to self for use in interactive mode
+            # writes repository object to file as yaml with tags 
+            #self.repo = repositoryobject
+            setattr(self,repositoryobject,"repo")
+            self.masterlist.writemasteryaml(self.repo, filemode="a")
+
         except Exception:
             errorlogger("[-] Failed to create CTFd Repository, check the logfile")
         try:
