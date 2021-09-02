@@ -114,6 +114,9 @@ class APISession(Session):
     def __init__(self, *args, **kwargs):
         """
         Represents a connection to the CTFd API
+
+        Args:
+            
         """
         # auth to server
         self.headers.update({"Authorization": "Token {}".format(self.AUTHTOKEN)})
@@ -124,6 +127,10 @@ class APISession(Session):
     def getrequest(self, endpoint, jsonpayload:json):
         '''
         Performs GET request to the Specified Endpoint with jsonpayload['id']
+
+        Args:
+            endpoint (str): the API endpoint to send to , e.g. /api/vi/challenges
+            payload  (str): the json payload required for the get request
         '''
         response = self.get("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
         response.raise_for_status()
@@ -131,6 +138,10 @@ class APISession(Session):
     def postrequest(self, endpoint, jsonpayload:json):
         '''
         Makes a POST Request to the Specified Endpoint with jsonpayload['id']
+
+        Args:
+            endpoint (str): the API endpoint to send to , e.g. /api/vi/challenges
+            payload  (str): the json payload required for the post request
         '''
         response = self.post("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
         response.raise_for_status()
@@ -138,10 +149,43 @@ class APISession(Session):
     def patchrequest(self, endpoint, jsonpayload:json):
         """
         Makes a Patch Request to the Specified Endpoint with jsonpayload['id']
+
+        Args:
+            endpoint (str): the API endpoint to send to , e.g. /api/vi/challenges
+            payload  (str): the json payload required for the patch request
+                            
         """
         response = self.patch("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
         response.raise_for_status()
 
+    def deleterequest(self, endpoint, jsonpayload:json):
+        '''
+        Makes a Delete Request to the Specified Endpoint with jsonpayload['id']
+
+        Args:
+            endpoint (str): the API endpoint to send to , e.g. /api/vi/challenges
+            payload  (str): the json payload required for the delete request
+        '''
+        response = self.delete("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
+        response.raise_for_status()
+    
+    def handleresponse(self, response:dict):
+        '''
+        handles response
+        '''
+        template = "data": [
+            {
+                "id": 3,
+                "type": "multiple_choice",
+                "name": "Trivia",
+                "value": 42,
+                "solves": 4,
+                "solved_by_me": false,
+                "category": "Multiple Choice",
+                "tags": [],
+                "template": "/plugins/multiple_choice/assets/view.html",
+                "script": "/plugins/multiple_choice/assets/view.js"
+            },
     def was_there_was_an_error(self, responsecode):
         """ Returns False if no error"""
         # server side error]

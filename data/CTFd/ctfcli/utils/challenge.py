@@ -57,7 +57,8 @@ class Challenge(): #folder
         self.script =  str
         self.attempts = int
         self.connection_info = str
-
+        # list of strings, each a challenge name to be completed before this one is allowed
+        self.requirements = []
         self.jsonpayload = {}
         if self.attempts:
             self.jsonpayload["max_attempts"] = self.attempts

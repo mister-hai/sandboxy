@@ -14,18 +14,18 @@ class APIFunctions(APISession):
     def getvisibility(self, challengeid, jsonpayload):
         """
         Gets the visibility of a challenge
+         {"state": "visible"}
         Hidden , Visible
         TODO: make it work
         """
-        response = self.get(f"/api/v1/challenges/{challengeid}", json=jsonpayload)
-        response.raise_for_status()
+        return self.get(f"/api/v1/challenges/{challengeid}").json() #, json=jsonpayload).json()
 
-    def togglevisibility(self, challenge):
+    def togglevisibility(self, challenge_id):
         """
         Toggles a Challenge between hidden and visible
         """
         try:
-            challenge_id = challenge['challenge_id']
+            challenge = self.getvisibility(challenge_id)
             if challenge.get("state") =="hidden":
                 data = {"state": "visible"}
             if challenge.get("state") == "visible":
@@ -38,34 +38,40 @@ class APIFunctions(APISession):
         except Exception:
             errorlogger("[-] Failure To toggle challenge Visibility! Check the Logfiles!")
     
-    def makevisible(self,challenge,challenge_id):
+    def makevisible(self,challenge_id):
         """
         Makes a Challenge Visible
 
         Args:
             challenge (str): The challenge to change state
         """
-    def makehidden(self, challenge):
+        data = {"state": "visible"}
+        response = self.patch(f"/api/v1/challenges/{challenge_id}", json=data)
+        response.raise_for_status()
+
+    def makehidden(self, challenge_id):
         """
         Makes a Challenge Hidden
 
         Args:
             challenge (str): The challenge to change state
         """
+        data = {"state": "hidden"}
+        response = self.patch(f"/api/v1/challenges/{challenge_id}", json=data)
+        response.raise_for_status()
 
-    def processrequirements(self, challenge,challenge_id,data):
+    def processrequirements(self, challenge, requirements, challenge_id):
         """
         Use a PATCH request to modify the Challenge Requirements
         """
 
-        for requirements in challenge.requirements:
-            if type(requirements) == str:
-                required_challenges.append(challenge)
+        for reqs in challenge.requirements:
+            if type(reqs) == str:
+                required_challenges.append(reqs)
             elif type(requirements) == int:
                 #why? I'll leave it for now
-                required_challenges.append(requirements)
+                required_challenges.append(reqs)
                 required_challenges = list(set(required_challenges))
-                
         data = {"requirements": {"prerequisites": required_challenges}}
         response = self.patch(f"/api/v1/challenges/{challenge_id}", json=data)
         response.raise_for_status()
@@ -75,6 +81,12 @@ class APIFunctions(APISession):
             response =self.post("/api/v1/tags", json={"challenge_id": challenge_id, "value": tag})
             response.raise_for_status()
 
+    def gethints(self)-> dict:
+        '''
+        gets hints for specific challenge from server
+        '''
+        return self.get(f"/api/v1/hints", json=data).json()["data"]
+
     def deleteremotehints(self, challenge_id,data):
         """
         deletes all hints from ctfd
@@ -83,15 +95,35 @@ class APIFunctions(APISession):
         # Delete ALL existing hints
         current_hints = self.get(f"/api/v1/hints", json=data).json()["data"]
         for hint in current_hints:
+            hint_id = hint["id"]
+            apicall = self.delete(f"/api/v1/hints/{hint_id}", json=True)
+        apicall.raise_for_status()
+        # deletes specific hint
+            #if hint["challenge_id"] == challenge_id:
+            #    hint_id = hint["id"]
+            #    response = self.delete(f"/api/v1/hints/{hint_id}", json=True)
+            #    response.raise_for_status()
+
+    def deletehints(self):
+        '''
+        Deletes specific challenge hints
+        '''
+        current_hints = self.get(f"/api/v1/hints", json=data).json()["data"]
+        for hint in current_hints:
+            hint_id = hint["id"]
             if hint["challenge_id"] == challenge_id:
                 hint_id = hint["id"]
                 response = self.delete(f"/api/v1/hints/{hint_id}", json=True)
                 response.raise_for_status()
 
-    def processhints(self, challenge,challenge_id,data):
-        self.deleteexistinghints(challenge_id,data)
+
+    def synchints(self,challenge_id,data):
+        '''
+        Syncs hints with ctfd server
+        '''
+        self.deletehints(challenge_id,data)
         # add hints
-        for hint in challenge["hints"]:
+        for hint in challenge.hints:
             if type(hint) == str:
                 data = {
                         "content"     : hint,

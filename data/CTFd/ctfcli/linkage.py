@@ -80,7 +80,7 @@ class SandBoxyCTFdLinkage():
 
     def loadmasterlist(self, masterlistfile =  "masterlist.yml"):
         """
-        Loads the masterlist.yaml
+        Loads the masterlist.yaml , wrapper for utils.utils.Yaml.Yaml.loadmasterlist()
 
         Args:
             masterlistfile (str): The file to load as masterlist, defaults to masterlist.yamlw

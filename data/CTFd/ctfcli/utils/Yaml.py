@@ -17,19 +17,20 @@ class Yaml(): #filetype
         # kubernetes or ctfd
         self.type = str
         # sets name of Yaml() to name of file
-        self.name = os.path.basename(filepath)
+        self.filename = os.path.basename(filepath)
         #get path of file
         self.filepath = Path(filepath)
         #set working dir of file
         self.directory = self.filepath.parent
         #if its a kubernetes config
-        if self.filepath.endswith(".yaml"):
+        if self.filename.endswith(".yaml"):
             redprint("[!] File is .yaml! Presuming to be kubernetes config!")
             self.type = "kubernetes"
-        elif self.filepath.endswith(".yml"):
+        elif self.filename.endswith(".yml"):
             greenprint("[+] Challenge File presumed (.yml)")
-        # finally, load the file    
-        self.loadyaml(filepath)
+            self.type = "challenge"
+        # finally, load the file
+        #self.loadyaml(filepath)
 
     def loadyaml(self):
         try:
@@ -62,6 +63,24 @@ class Yaml(): #filetype
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
 
+
+
+class Masterlist(Yaml):
+    def __init__(self):
+        super().__init__()
+
+    def loadmasterlist(self, masterlistfile =  "masterlist.yml") -> Yaml:
+        """
+        Loads the masterlist.yaml
+
+        Args:
+            masterlistfile (str): The file to load as masterlist, defaults to masterlist.yamlw
+        """
+        # filename for the full challenge index
+        self.masterlistfile      = masterlistfile
+        self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
+        self.masterlist          = Yaml(self.masterlistlocation)
+    
     def writemasteryaml(self,name:str, filemode="a"):
         '''
         Special function to write the master yaml for the ctfd side of the repository
@@ -88,29 +107,30 @@ class KubernetesYaml(Yaml): #file
     future
     '''
     def __init__(self):
-        pass
+        super().__init__()
 
-class Challengeyaml(): #file
+class Challengeyaml(Yaml): #file
     '''
     Represents the challenge.yml as exists in the folder for that specific challenge
     '''
     def __init__(self,yamlfile):
         #get a representation of the challenge.yaml file
-        self.challengeyaml = Yaml(yamlfile)
-        self.challengeyamllocation = str
-        self.yamldata = self.challengeyaml.data
+        self.loadyaml(yamlfile)
         # DATA FROM FILE
-        self.name        = self.challengeyaml['name']
-        self.author      = self.challengeyaml['author']
-        self.category    = self.challengeyaml['category']
-        self.description = self.challengeyaml['description']
-        self.value       = self.challengeyaml['value']
-        self.type        = self.challengeyaml['type']
+        self.name        = self.data['name']
+        self.author      = self.data['author']
+        self.category    = self.data['category']
+        self.description = self.data['description']
+        self.value       = self.data['value']
+        self.type        = self.data['type']
 
         # internal data
         self.id
         self.synched = bool
         self.installed = bool
+        super().__init__()
+
+
 
 class Config():
     '''
