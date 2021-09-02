@@ -1,5 +1,5 @@
-from utils.apisession import APIHandler
-from utils.utils import errorlogger,greenprint,CATEGORIES
+from ctfcli.utils.apisession import APIHandler
+from ctfcli.utils.utils import errorlogger,greenprint,CATEGORIES
 
 class Challenge(): #folder
     '''

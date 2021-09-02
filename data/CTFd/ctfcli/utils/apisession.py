@@ -1,6 +1,6 @@
 import json
 from requests import Session
-from utils.utils import errorlogger
+from ctfcli.utils.utils import errorlogger
 #from utils.apifunctions import APIFunctions
 
 

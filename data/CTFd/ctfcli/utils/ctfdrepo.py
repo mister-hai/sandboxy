@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
-from utils.Yaml import Challengeyaml,Masterlist
-from utils.challenge import Challenge
-from utils.utils import errorlogger, CATEGORIES
-from utils.utils import location,getsubdirs
+from ctfcli.utils.Yaml import Challengeyaml,Masterlist
+from ctfcli.utils.challenge import Challenge
+from ctfcli.utils.utils import errorlogger, CATEGORIES
+from ctfcli.utils.utils import location,getsubdirs
 ###############################################################################
 #  CTFd CATEGORY: representation of folder in repository
 ###############################################################################
