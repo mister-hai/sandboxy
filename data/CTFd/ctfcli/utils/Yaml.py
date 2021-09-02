@@ -146,7 +146,7 @@ class Masterlist(Yaml):
             #open the yml
             # feed the tag and the constructor method to call
             #self.data = 
-            return yaml.load(open(self.masterlistlocation, 'rb'), Loader=self.get_loader(self.tag,self.masterlist_constructor()))
+            return yaml.load(open(self.masterlistlocation, 'rb'), Loader=self.get_loader("!Repo",Repo.construct()))
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
         #defaults to name "Repo"

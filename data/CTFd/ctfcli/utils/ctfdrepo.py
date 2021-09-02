@@ -22,6 +22,18 @@ class Category(): #folder
         self.name = category
         self.location = location
     
+    def addchallenge(self, challenge:Challenge):
+        """
+        INTERNAL
+        Adds a challenge to the repository, appended to Category() class
+
+        Args:
+            challenge (Challenge): Challenge() object from folder in repository
+        """
+        if category in CATEGORIES:
+            setattr(category,challenge.name,challenge)
+        else:
+            raise ValueError
 
 ###############################################################################
 #  CTFd REPOSIROTY: representation of folder in repository
@@ -62,13 +74,13 @@ class SandboxyCTFdRepository(): #folder
                     newchallenge = self.createchallengefromfolder(challengefolderpath)
                     #assign challenge to category
                     setattr(newcategory,newchallenge.name,newchallenge)
-
-                # add a new category based on that folder
-                self.addcategory(newcategory)
+                    
+                # add the new Category() class to self once all challenge folders have been processed
+                self.repo.addcategory(newcategory)
                 #add the new challenge to the category as 
                 # its own named child
                 cat = self.getcategory(newcategory.name)
-                self.addchallenge(cat,newchallenge)
+                newcategory.addchallenge(cat,newchallenge)
         # create a new masterlist
         self.masterlist = Masterlist()
         # return this class to the upper level scope
@@ -121,12 +133,6 @@ class SandboxyCTFdRepository(): #folder
         """
         Adds a Category to the repository
         We are adding classes to this class with "setattr"
-        You can now access that category via
-        rofl = Category()
-        asdf = Repo().init
-        asdf.addcategory(category= categoryname)
-        asdf.categoryname
-
         """
         setattr(self, category.name, category)
         
@@ -178,18 +184,6 @@ class SandboxyCTFdRepository(): #folder
         Lists challenges on the server
         """
 
-
-    def addchallenge(self,category, challenge:Challenge):
-        """
-        Adds a challenge to the repository
-
-        Args:
-            category (str): Category to add challenge to
-        """
-        if category in CATEGORIES:
-            setattr(category,challenge.name,challenge)
-        else:
-            raise ValueError
 
     def removechallenge(self):
         """
