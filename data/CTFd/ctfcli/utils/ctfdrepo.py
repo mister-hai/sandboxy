@@ -35,28 +35,30 @@ class SandboxyCTFdRepository(): #folder
     def __init__(self):
         # reflects the data subdirectory in the project root
         #self.DATAROOT            =  os.path.join(self.PROJECTROOT,"data")
-        # represents the ctfd data folder
+        # represents the ctfd data folder, in typical usage is set by lib.sh
+        #CHALLENGEREPOROOT=/home/moop/sandboxy/data/CTFd
         self.CTFDDATAROOT        = Path(os.getenv("CHALLENGEREPOROOT"))
         # folder expected to contain challenges
         # categories in here
         # then individual challenges
-        self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
-        self.challengesfolder    = os.path.join(self.CTFDDATAROOT, "challenges")
+        self.repofolder    = os.path.join(self.CTFDDATAROOT, "challenges")
     
     def createprojectrepo(self):
-        categoryfolders = getsubdirs(self.challengesfolder)
+        repocategoryfolders = getsubdirs(self.repofolder)
         # itterate over folders in challenge directory
-        for category in categoryfolders:
+        for category in repocategoryfolders:
             # if its a repository category folder in aproved list
             if category in CATEGORIES:
                 # track location change to subdir
-                pwd = location(self.challengesfolder, category)
+                categoryfolders = location(self.repofolder, category)
                 #get subfolder names in category directory, wreprweswenting indivwidual chwallenges yippyippyippyipp
-                challenges = getsubdirs(pwd)
+                categoryfolder = getsubdirs(categoryfolders)
                 # itterate over the individual challenges
-                for challengefolder in challenges:
-                    newchallenge = self.processchallengefolder(challengefolder)
-
+                for challengefolder in categoryfolder:
+                    # track location change to individual challenge subdir
+                    challengefolderpath = location(categoryfolder, challengefolder)
+                    # list files and folders
+                    newchallenge = self.createchallengefromfolder(challengefolderpath)
                 #create a new Category and assign name based on folder
                 newcategory = Category(category)
                 # add a new category based on that challenge files category
@@ -71,28 +73,26 @@ class SandboxyCTFdRepository(): #folder
     def createchallengefromfolder(self, challengefolderpath):
         '''
         Process the contents of the challenge folder given into a new Challenge() class
-
+        This is essentially where the definition of a challenge folder itself
+        is defined and parsed. You modify this to change that core specification
         Args:
             challengefolderpath (str): path to the challenge folder
         '''
-        # track location change to individual challenge subdir
-        pwd = location(challenges, challengefolder)
-        # list files and folders
-        challengefolderdata = os.listdir(pwd)
+        challengefolderdata = os.listdir(challengefolderpath)
         # itterate over them
         for challengedata in challengefolderdata:
-        # set location to challenge subfolder
-            challengelocation = location(pwd, challengefolder)
+        # get path to challenge subitem
+            challengeitempath = location(challengedata, challengefolderpath)
             # get solutions path
             if challengedata == "solution":
-                solution = os.path.join(pwd, challengedata)
+                solution = os.path.join(challengeitempath, challengedata)
             # get handouts path
             if challengedata == "handout":
-                handout = os.path.join(pwd, challengedata)
+                handout = os.path.join(challengeitempath, challengedata)
             # get challenge file 
             if challengedata == self.basechallengeyaml:
                 # get path to challenge file
-                challengefile  = os.path.join(pwd, challengedata)
+                challengefile  = os.path.join(challengeitempath, challengedata)
                 # load the yml describing the challenge
                 challengeyaml = Challengeyaml(challengefile)
                 # get the name of the challenge
