@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from utils.Yaml import Challengeyaml,Masterlist
 from utils.challenge import Challenge
-from utils.utils import errorlogger, CATEGORIES
+from utils.utils import errorlogger, CATEGORIES,yellowboldprint
 from utils.utils import location,getsubdirs
 ###############################################################################
 #  CTFd CATEGORY: representation of folder in repository
@@ -48,11 +48,21 @@ class SandboxyCTFdRepository(): #folder
         #self.DATAROOT            =  os.path.join(self.PROJECTROOT,"data")
         # represents the ctfd data folder, in typical usage is set by lib.sh
         #CHALLENGEREPOROOT=/home/moop/sandboxy/data/CTFd
-        self.CTFDDATAROOT        = Path(os.getenv("CHALLENGEREPOROOT"))
-        # folder expected to contain challenges
-        # categories in here
-        # then individual challenges
-        self.repofolder    = os.path.join(self.CTFDDATAROOT, "challenges")
+        if os.getenv("CHALLENGEREPOROOT"):
+            self.CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
+            yellowboldprint("[+] Repository root variable set, running from start.sh")
+            self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
+        else:
+            yellowboldprint("[+] CHALLENGEREPOROOT variable not set, checking one directory higher")
+            # ugly but it works
+            onelevelup = Path(f'{os.getcwd()}').parent
+            oneleveluplistdir = os.listdir(onelevelup)
+            if ('challenges' in oneleveluplistdir):
+                if os.path.isdir(oneleveluplistdir.get('challenges')):
+                    yellowboldprint("[+] Challenge Folder Found, presuming to be repository location")
+                    self.CTFDDATAROOT = onelevelup
+                    self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
+ 
     
     def createprojectrepo(self)-> Masterlist:
         repocategoryfolders = getsubdirs(self.repofolder)

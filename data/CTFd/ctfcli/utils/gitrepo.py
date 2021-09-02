@@ -18,7 +18,7 @@ Available Commands:
     - 
     - 
     """
-    def __init__(self,repo:str):
+    def __init__(self):
         """
         --repo https://github.com/misterhai/sandboxy
             downloads the repository given
