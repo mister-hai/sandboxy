@@ -1,5 +1,5 @@
-ctfcli
-======
+CTFd
+====
 
 .. toctree::
    :maxdepth: 4
