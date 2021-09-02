@@ -1,14 +1,20 @@
 from pathlib import Path
 import yaml,os
 from utils.utils import greenprint, redprint, errorlogger
-
-
+#https://matthewpburruss.com/post/yaml/
+# This is one way of turning a yaml into a class
 class Repo:
     def __init__(self, objectname = 'Repo', **entries): 
         self.__dict__.update(entries)
         # this is how you define the class name
         self.__name__ = objectname
         self.__qualname__= objectname
+
+def construct(self, loader: yaml.SafeLoader, node: yaml.nodes.MappingNode) -> Repo:
+        '''
+        Builder for Repo Objects
+        '''
+        return Repo(**loader.construct_mapping(node))
 
 class Yaml(): #filetype
     '''
@@ -40,9 +46,6 @@ class Yaml(): #filetype
             #open the yml file
             with open(self.filepath) as f:
                 filedata = yaml.safe_load(f.read())#, filepath=filepath)
-                #assign data to self
-                #previous
-                #super().__init__(filedata)
                 self.data = filedata
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
@@ -62,39 +65,94 @@ class Yaml(): #filetype
             #open the yml file pointed to by the load operation
             with open(self.filepath) as file:
                 yaml.safe_dump(file)
-                #file.write(filedata)
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
 
 
 
 class Masterlist(Yaml):
-    def __init__(self):
+    def __init__(self, masterlistfile =  "masterlist.yml"):
         super().__init__()
+        # filename for the full challenge index
+        self.masterlistfile      = masterlistfile
+        self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
+        #self.masterlist          = Yaml(self.masterlistlocation)
+        # tagg for yaml file
+        self.tag = "!Masterlist"
 
-    def loadmasterlist(self, masterlistfile =  "masterlist.yml"):
+    def masterlist_representer(self, tag, dumper: yaml.SafeDumper, masterlist) -> yaml.nodes.MappingNode:
+        """
+        Represent a Masterlist instance as a YAML mapping node.
+
+        Dumpung raw?
+        """
+        return dumper.represent_mapping(tag, {
+        })
+ 
+    def masterlist_constructor(self, loader: yaml.SafeLoader, node: yaml.nodes.MappingNode):
+        """
+        Construct A Masterlist object from the Yaml file
+        """
+        return Masterlist(**loader.construct_mapping(node))
+
+    def get_dumper(self):
+        """
+        Add representers to a YAML serializer.
+        """
+        safe_dumper = yaml.SafeDumper
+        safe_dumper.add_representer(Masterlist, self.masterlist_representer)
+        return safe_dumper
+ 
+    def get_loader(self,tag:str, constructor):
+        """
+        Add constructors to PyYAML loader.
+
+        Args:
+            tags (str): the tag to use to mark the yaml object in the file
+            constructor (function): theconstructor function to call
+        """
+        loader = yaml.SafeLoader
+        loader.add_constructor(tag, constructor)
+        return loader
+    
+    def loadmasterlist(self):
         """
         Loads the masterlist.yaml into Masterlist.data
 
         Args:
             masterlistfile (str): The file to load as masterlist, defaults to masterlist.yamlw
         """
-        # filename for the full challenge index
-        self.masterlistfile      = masterlistfile
-        self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
-        self.masterlist          = Yaml(self.masterlistlocation)
         # loads the data
-        self.masterlist.loadyaml()
-        self.type = "masterlist"
-        return self
-    
+        try:
+            #open the yml
+            # feed the tag and the constructor method to call
+            #self.data = 
+            return yaml.load(open(self.masterlistlocation, 'rb'), Loader=self.get_loader(self.tag,self.masterlist_constructor))
+        except Exception:
+            errorlogger("[-] ERROR: Could not load .yml file")
+
+    def writenewmasterlist(self, pythoncode):
+        '''
+        Creates a New Masterlist.yaml file from an init command
+        '''
+        with open("output.yml", "w") as stream:
+            stream.write(yaml.dump(pythoncode, Dumper=self.get_dumper(self.tag,self.masterlist_constructor())))
+
+
     def transformtorepository(self, loadedyaml:dict)-> Repo:
         '''
         Transforms Yaml data to Python objects for loading and unloading
         '''
+        try:
+            #open the yml
+            # feed the tag and the constructor method to call
+            #self.data = 
+            return yaml.load(open(self.masterlistlocation, 'rb'), Loader=self.get_loader(self.tag,self.masterlist_constructor()))
+        except Exception:
+            errorlogger("[-] ERROR: Could not load .yml file")
         #defaults to name "Repo"
-        pythonobjects = Repo(**loadedyaml)
-        return pythonobjects
+        #pythonobjects = Repo(**loadedyaml)
+        #return pythonobjects
 
     def writemasteryaml(self,name:str, filemode="a"):
         '''
@@ -112,7 +170,7 @@ class Masterlist(Yaml):
             #open the yml file pointed to by the load operation
             with open(self.filepath, filemode) as file:
                 #file.write()
-                yaml.safe_dump(file)
+                yaml.dump(file)
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
 

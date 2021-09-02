@@ -19,6 +19,14 @@ This tool
     sphinx-apidoc -f -o . ..
     make html
 
+## Packages
+
+    https://smarie.github.io/python-yamlable/
+    pip install yamlable
+    
+    gitpython, docker-compose, python-docker, fire, cookiecutter
+    pyyaml, Pygments, colorama, dotenv
+
 # Creating a Dcoumentation Github Repo
 
 ## Make a remote repository then
@@ -30,3 +38,4 @@ This tool
     git branch -M main
     git remote add origin https://github.com/mister-hai/sandboxy_docs.git
     git push -u origin main
+

@@ -59,7 +59,8 @@ class SandBoxyCTFdLinkage():
             return True
         else:
             redprint("[-] Masterlist Not Found! You need to run 'ctfcli init'!! ")
-            return False
+            raise Exception
+            #return False
 
     def loadmasterlist(self, masterlistfile =  "masterlist.yml"):
         """
@@ -77,6 +78,7 @@ class SandBoxyCTFdLinkage():
         # filename for the full challenge index
         self.masterlistfile      = masterlistfile
         self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
+        # returns itself via a constructor loading yaml into python objects
         self.masterlist          = Masterlist(self.masterlistlocation)
 
     def init(self,ctfdtoken, ctfdurl,):
@@ -96,7 +98,9 @@ class SandBoxyCTFdLinkage():
         self.CTFD_URL        = ctfdurl #os.getenv("CTFD_URL")
         # returns a Repo() object with Category() objects attached
         try:
-            self.masterlist      = self.ctfdops.createprojectrepo().transformtorepository()
+            # returns a master list
+            self.masterlist      = self.ctfdops.createprojectrepo()
+            self.repo = self.masterlist.transformtorepository()
             repositoryobject = self.masterlist.transformtorepository(self.masterlist)
             setattr(self,self.masterlist.data,"Repo")
             self.masterlist.writemasteryaml(self.Repo, filemode="a")
@@ -115,7 +119,8 @@ class SandBoxyCTFdLinkage():
         Get the names of all Categories
         Supply "print=False" to return a variable instead of display to screen 
         """
-        
+        if self.checkmasterlist():
+            self.Repo
 
     def getchallengesbycategory(self, category, printscr=True):
         """
