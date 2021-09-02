@@ -25,18 +25,9 @@ class SandBoxyCTFdLinkage():
 
     parameters are as follows:
 
-        / not yet/
-        loadconfig (bool):  Loads from alternate configuration file
-            DEFAULT: True
-            INFO:    if False, ignores repository config
-        / not yet/
-
-
     Args:
-        projectroot (str): Absolute path to project directory
         ctfdurl (str):     Url of ctfd instance
         ctfdtoken (str):   Auth token as given by settings page in CTFd
-        configname (str):  Name of the configfile to use
 
     Attributes:
         arg (str): This is where we store arg,
@@ -92,15 +83,15 @@ class SandBoxyCTFdLinkage():
 
     def init(self):
         """
-    Link to CTFd instance with token and URI
+        Link to CTFd instance with token and URI
 
->>> host@server$> ctfcli --ctfdtoken <token> --ctfdurl <url> init
+        >>> host@server$> ctfcli --ctfdtoken <token> --ctfdurl <url> init
 
-    - Creates a masterlist of challenges in the repository
-    - Creates a git repository and adds all the files
-    - links repository with CTFd instance via disposable token
+        - Creates a masterlist of challenges in the repository
+        - Creates a git repository and adds all the files
+        - links repository with CTFd instance via disposable token
 
-    TODO: Add Oauth via discord
+        TODO: Add Oauth via discord
         """
         # TODO: TIMESTAMPS AND IDS!!!
         self.masterlist.data = SandboxyCTFdRepository.createprojectrepo()
@@ -113,20 +104,15 @@ class SandBoxyCTFdLinkage():
 
     def listcategories(self,print=True):
         """
-    Maps to the command
-    host@server$> ctfcli getcategories
-    
-    Get the names of all Categories
-    Supply "print=False" to return a variable instead of display to screen 
+        Get the names of all Categories
+        Supply "print=False" to return a variable instead of display to screen 
         """
         
 
     def getchallengesbycategory(self, category, printscr=True):
         """
-    Maps to the command
-    host@server$> ctfcli getchallengesbycategory
-    Lists challenges in repo by category        
-    Supply "print=False" to return a variable instead of utf-8 
+        Lists challenges in repo by category        
+        Supply "print=False" to return a variable instead of utf-8 
         """
 
     def syncchallenge(self, challenge:Challenge):
