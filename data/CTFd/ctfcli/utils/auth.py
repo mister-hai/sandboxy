@@ -1,3 +1,7 @@
+import requests
+import argparse
+import getpass
+import yaml
 
 class CtfdAuth():
     '''

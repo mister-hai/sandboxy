@@ -10,10 +10,11 @@ Welcome to SandboxyCTFdManager's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-* :ref:`modules`
-
+   modules
+   
 Indices and tables
 ==================
+
 
 * :ref:`genindex`
 * :ref:`modindex`

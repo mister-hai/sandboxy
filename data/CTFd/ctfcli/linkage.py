@@ -118,16 +118,22 @@ class SandBoxyCTFdLinkage():
     def syncchallenge(self, challenge:Challenge):
         """
         Syncs a challenge with the CTFd server
+
+        Use 
+        Args:
+            challenge (Challenge): Challenge to syncronize with the CTFd server
         """
         challenge.sync()
 
     def synccategory(self, category:str):
         """
-    Maps to the command
-    host@server$> ctfcli synccategory <categoryname>
+        Maps to the command
+        >>> host@server$> ctfcli synccategory <categoryname>
+        Synchronize all challenges in the given category, 
+        this uploads the challenge data to CTFd
 
-    Synchronize all challenges in the given category, this uploads 
-    the challenge data to CTFd
+        Args:
+            category (str): The name of the category to syncronize with the CTFd server
         """
         try:
             greenprint("[+] Syncing Category: {}". format(category))
@@ -142,11 +148,13 @@ class SandBoxyCTFdLinkage():
         """
         Lists the challenges installed to the server
         Use 
-            --remote=False 
-
+        >>> --remote=False 
         to check the LOCAL repository
 
-        For git operations, use gitoperations or your preferred terminal workflow
+        For git operations, use `gitops` or your preferred terminal workflow
+
+        Args:
+            remote (bool): If True, Checks CTFd server for installed challenges
         """
         if remote == True:
             apicall = APISession.generate_session()

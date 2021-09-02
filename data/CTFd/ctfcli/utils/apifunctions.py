@@ -2,9 +2,9 @@ from utils.apisession import APISession
 from utils.utils import errorlogger
 
 class APIFunctions(APISession):
-    '''
+    """
     Functions Specific to CTFd
-    '''
+    """
     def __init__(self):
         pass
 
@@ -14,8 +14,8 @@ class APIFunctions(APISession):
     def getvisibility(self, challengeid, jsonpayload):
         """
         Gets the visibility of a challenge
-         {"state": "visible"}
-        Hidden , Visible
+        >>> {"state": "visible"}
+        state can be Hidden or Visible
         TODO: make it work
         """
         return self.get(f"/api/v1/challenges/{challengeid}").json() #, json=jsonpayload).json()
@@ -82,9 +82,9 @@ class APIFunctions(APISession):
             response.raise_for_status()
 
     def gethints(self)-> dict:
-        '''
+        """
         gets hints for specific challenge from server
-        '''
+        """
         return self.get(f"/api/v1/hints", json=data).json()["data"]
 
     def deleteremotehints(self, challenge_id,data):
@@ -105,9 +105,9 @@ class APIFunctions(APISession):
             #    response.raise_for_status()
 
     def deletehints(self):
-        '''
+        """
         Deletes specific challenge hints
-        '''
+        """
         current_hints = self.get(f"/api/v1/hints", json=data).json()["data"]
         for hint in current_hints:
             hint_id = hint["id"]
@@ -118,9 +118,9 @@ class APIFunctions(APISession):
 
 
     def synchints(self,challenge_id,data):
-        '''
+        """
         Syncs hints with ctfd server
-        '''
+        """
         self.deletehints(challenge_id,data)
         # add hints
         for hint in challenge.hints:
@@ -177,13 +177,13 @@ class APIFunctions(APISession):
         """
         uploads files to the ctfd server
         SAW ELSEWHERE IT HAD THIS
-## Upload a file to a challenge.  You need to use a nonce from the admin page of the challenge you're editing.
-nonce=$(curl -s http://127.0.0.1:8000/admin/challenges/1 -b cookie | grep nonce | cut -d'"' -f2)
-curl -X POST "http://127.0.0.1:8000/api/v1/files" -b cookie  \
--F "file=@some-local-file.png" \
--F "nonce=$nonce" \
--F "challenge=1" \
--F "type=challenge"
+        >>> ## Upload a file to a challenge.  You need to use a nonce from the admin page of the challenge you're editing.
+        >>> nonce=$(curl -s http://127.0.0.1:8000/admin/challenges/1 -b cookie | grep nonce | cut -d'"' -f2)
+        >>> curl -X POST "http://127.0.0.1:8000/api/v1/files" -b cookie  \
+        >>> -F "file=@some-local-file.png" \
+        >>> -F "nonce=$nonce" \
+        >>> -F "challenge=1" \
+        >>> -F "type=challenge"
         """
 
         files = []

@@ -150,11 +150,9 @@ HARD MODE: ON</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ctfcli.utils.apifunctions.APIFunctions.getvisibility">
 <span class="sig-name descname"><span class="pre">getvisibility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">challengeid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jsonpayload</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.apifunctions.APIFunctions.getvisibility" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Gets the visibility of a challenge</dt><dd><p>{“state”: “visible”}</p>
-</dd>
-</dl>
-<p>Hidden , Visible
+<dd><p>Gets the visibility of a challenge
+&gt;&gt;&gt; {“state”: “visible”}
+state can be Hidden or Visible
 TODO: make it work</p>
 </dd></dl>
 
@@ -216,13 +214,11 @@ TODO: make it work</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ctfcli.utils.apifunctions.APIFunctions.uploadfiles">
 <span class="sig-name descname"><span class="pre">uploadfiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">challenge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">challenge_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.apifunctions.APIFunctions.uploadfiles" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>uploads files to the ctfd server
-SAW ELSEWHERE IT HAD THIS</p>
-</div></blockquote>
-<p>## Upload a file to a challenge.  You need to use a nonce from the admin page of the challenge you’re editing.
-nonce=$(curl -s <a class="reference external" href="http://127.0.0.1:8000/admin/challenges/1">http://127.0.0.1:8000/admin/challenges/1</a> -b cookie | grep nonce | cut -d’”’ -f2)
-curl -X POST “<a class="reference external" href="http://127.0.0.1:8000/api/v1/files">http://127.0.0.1:8000/api/v1/files</a>” -b cookie  -F “<a class="reference external" href="mailto:file=&#37;&#52;&#48;some-local-file&#46;png">file=<span>&#64;</span>some-local-file<span>&#46;</span>png</a>” -F “nonce=$nonce” -F “challenge=1” -F “type=challenge”</p>
+<dd><p>uploads files to the ctfd server
+SAW ELSEWHERE IT HAD THIS
+&gt;&gt;&gt; ## Upload a file to a challenge.  You need to use a nonce from the admin page of the challenge you’re editing.
+&gt;&gt;&gt; nonce=$(curl -s <a class="reference external" href="http://127.0.0.1:8000/admin/challenges/1">http://127.0.0.1:8000/admin/challenges/1</a> -b cookie | grep nonce | cut -d’”’ -f2)
+&gt;&gt;&gt; curl -X POST “<a class="reference external" href="http://127.0.0.1:8000/api/v1/files">http://127.0.0.1:8000/api/v1/files</a>” -b cookie          &gt;&gt;&gt; -F “<a class="reference external" href="mailto:file=&#37;&#52;&#48;some-local-file&#46;png">file=<span>&#64;</span>some-local-file<span>&#46;</span>png</a>”         &gt;&gt;&gt; -F “nonce=$nonce”         &gt;&gt;&gt; -F “challenge=1”         &gt;&gt;&gt; -F “type=challenge”</p>
 </dd></dl>
 
 </dd></dl>
@@ -419,8 +415,22 @@ TODO: make it work</p>
 </dd></dl>
 
 </div>
-<div class="section" id="ctfcli-utils-auth-module">
-<h2>ctfcli.utils.auth module<a class="headerlink" href="#ctfcli-utils-auth-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ctfcli.utils.auth">
+<span id="ctfcli-utils-auth-module"></span><h2>ctfcli.utils.auth module<a class="headerlink" href="#module-ctfcli.utils.auth" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ctfcli.utils.auth.CtfdAuth">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ctfcli.utils.auth.</span></span><span class="sig-name descname"><span class="pre">CtfdAuth</span></span><a class="headerlink" href="#ctfcli.utils.auth.CtfdAuth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is an example I have taken from soemwhere ( i dont remember)
+I am going to entirely rewrite it using it as a “doing the thing” guide</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ctfcli.utils.auth.CtfdAuth.do_auth">
+<span class="sig-name descname"><span class="pre">do_auth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">argparse.Namespace</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.auth.CtfdAuth.do_auth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Authenticate and write a new .ctfd-auth file</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-ctfcli.utils.challenge">
 <span id="ctfcli-utils-challenge-module"></span><h2>ctfcli.utils.challenge module<a class="headerlink" href="#module-ctfcli.utils.challenge" title="Permalink to this headline">¶</a></h2>
@@ -462,8 +472,13 @@ on the command line</p>
 </dd></dl>
 
 </div>
-<div class="section" id="ctfcli-utils-checks-module">
-<h2>ctfcli.utils.checks module<a class="headerlink" href="#ctfcli-utils-checks-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ctfcli.utils.checks">
+<span id="ctfcli-utils-checks-module"></span><h2>ctfcli.utils.checks module<a class="headerlink" href="#module-ctfcli.utils.checks" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ctfcli.utils.checks.lint_challenge">
+<span class="sig-prename descclassname"><span class="pre">ctfcli.utils.checks.</span></span><span class="sig-name descname"><span class="pre">lint_challenge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">challenge</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.checks.lint_challenge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-ctfcli.utils.ctfdrepo">
 <span id="ctfcli-utils-ctfdrepo-module"></span><h2>ctfcli.utils.ctfdrepo module<a class="headerlink" href="#module-ctfcli.utils.ctfdrepo" title="Permalink to this headline">¶</a></h2>
@@ -734,8 +749,18 @@ admins should be managing that using thier preferred git workflow</p>
 </dd></dl>
 
 </div>
-<div class="section" id="ctfcli-utils-securityutils-module">
-<h2>ctfcli.utils.securityutils module<a class="headerlink" href="#ctfcli-utils-securityutils-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ctfcli.utils.securityutils">
+<span id="ctfcli-utils-securityutils-module"></span><h2>ctfcli.utils.securityutils module<a class="headerlink" href="#module-ctfcli.utils.securityutils" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ctfcli.utils.securityutils.firewall">
+<span class="sig-prename descclassname"><span class="pre">ctfcli.utils.securityutils.</span></span><span class="sig-name descname"><span class="pre">firewall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visible</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.utils.securityutils.firewall" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED YET
+turn visible into ON
+turn hidden into OFF</p>
+<p>FIRST PARAM shall be state to set firewall to
+SECOND PARAM shall be the challenge to generate a firewall rule for</p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-ctfcli.utils.utils">
 <span id="ctfcli-utils-utils-module"></span><h2>ctfcli.utils.utils module<a class="headerlink" href="#module-ctfcli.utils.utils" title="Permalink to this headline">¶</a></h2>

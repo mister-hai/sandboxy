@@ -14,6 +14,8 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ctfcli.utils package" href="ctfcli.utils.html" />
+    <link rel="prev" title="ctfcli" href="modules.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -41,13 +43,13 @@
 <li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#module-ctfcli.utils.Yaml">ctfcli.utils.Yaml module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#module-ctfcli.utils.apifunctions">ctfcli.utils.apifunctions module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#module-ctfcli.utils.apisession">ctfcli.utils.apisession module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#ctfcli-utils-auth-module">ctfcli.utils.auth module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#module-ctfcli.utils.auth">ctfcli.utils.auth module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#module-ctfcli.utils.challenge">ctfcli.utils.challenge module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#ctfcli-utils-checks-module">ctfcli.utils.checks module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#module-ctfcli.utils.checks">ctfcli.utils.checks module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#module-ctfcli.utils.ctfdrepo">ctfcli.utils.ctfdrepo module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#module-ctfcli.utils.gitrepo">ctfcli.utils.gitrepo module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#module-ctfcli.utils.models">ctfcli.utils.models module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#ctfcli-utils-securityutils-module">ctfcli.utils.securityutils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#module-ctfcli.utils.securityutils">ctfcli.utils.securityutils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#module-ctfcli.utils.utils">ctfcli.utils.utils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ctfcli.utils.html#module-ctfcli.utils">Module contents</a></li>
 </ul>
@@ -128,12 +130,15 @@ Supply “print=False” to return a variable instead of display to screen</p>
 <dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.listsyncedchallenges">
 <span class="sig-name descname"><span class="pre">listsyncedchallenges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.listsyncedchallenges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lists the challenges installed to the server
-Use</p>
-<blockquote>
-<div><p>–remote=False</p>
-</div></blockquote>
-<p>to check the LOCAL repository</p>
-<p>For git operations, use gitoperations or your preferred terminal workflow</p>
+Use
+&gt;&gt;&gt; –remote=False
+to check the LOCAL repository</p>
+<p>For git operations, use <cite>gitops</cite> or your preferred terminal workflow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>remote</strong> (<em>bool</em>) – If True, Checks CTFd server for installed challenges</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -159,15 +164,23 @@ Use</p>
 <dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.synccategory">
 <span class="sig-name descname"><span class="pre">synccategory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.synccategory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps to the command
-<a class="reference external" href="mailto:host&#37;&#52;&#48;server$">host<span>&#64;</span>server$</a>&gt; ctfcli synccategory &lt;categoryname&gt;</p>
-<p>Synchronize all challenges in the given category, this uploads
-the challenge data to CTFd</p>
+&gt;&gt;&gt; <a class="reference external" href="mailto:host&#37;&#52;&#48;server$">host<span>&#64;</span>server$</a>&gt; ctfcli synccategory &lt;categoryname&gt;
+Synchronize all challenges in the given category,
+this uploads the challenge data to CTFd</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>category</strong> (<em>str</em>) – The name of the category to syncronize with the CTFd server</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.syncchallenge">
 <span class="sig-name descname"><span class="pre">syncchallenge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">challenge</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">utils.challenge.Challenge</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.syncchallenge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Syncs a challenge with the CTFd server</p>
+<p>Use
+:param challenge: Challenge to syncronize with the CTFd server
+:type challenge: Challenge</p>
 </dd></dl>
 
 </dd></dl>
@@ -198,11 +211,22 @@ the challenge data to CTFd</p>
 
 
 <h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ctfcli</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ctfcli package</a></li>
+</ul>
+</li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">ctfcli</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">ctfcli</a></li>
+      <li>Next: <a href="ctfcli.utils.html" title="next chapter">ctfcli.utils package</a></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
