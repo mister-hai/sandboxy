@@ -51,7 +51,7 @@ class Ctfcli():
         
         FIRST RUN (ctfd already running):
 
-        >>> host@server$> ctfd.py ctfcli --ctfdurl <URL> --ctfdtoken <TOKEN> init
+        >>> host@server$> ctfd.py ctfcli init --ctfdurl <URL> --ctfdtoken <TOKEN>
 
         Replacing <URL> with your CTFd website url
         and replacing <TOKEN> with your CTFd website token
