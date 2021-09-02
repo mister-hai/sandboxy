@@ -36,32 +36,23 @@ class SandBoxyCTFdLinkage():
     def __init__(self
                     #configname = "ctfcli.ini", 
                     ):
-        try:
-            greenprint("[+] Instancing a SandboxyCTFdLinkage()")
-            self.PROJECTROOT         = os.getenv("PROJECT_ROOT")
-            #self.configname          = configname
-            # template challenges
-            self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "ctfcli", "templates")
-            # store url and token in config
-            self.ctfdauth = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
-            #check for an existance of the master list
-            
-            # assign the classes as named commands for fire
-            setattr(self, 'ctfdops',SandboxyCTFdRepository())
-            setattr(self, 'gitops',SandboxyGitRepository())
-
-            if self.checkmasterlist():
-                greenprint("[+] Loading masterlist.yaml")
-                self.loadmasterlist()
-            else:
-                raise Exception
-        except Exception:
-            errorlogger("[-] SandBoxyCTFdLinkage.__init__ Failed")
+        greenprint("[+] Instancing a SandboxyCTFdLinkage()")
+        self.PROJECTROOT         = os.getenv("PROJECT_ROOT")
+        #self.configname          = configname
+        # template challenges
+        self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "ctfcli", "templates")
+        # store url and token in config
+        self.ctfdauth = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
+        #check for an existance of the master list            
+        # assign the classes as named commands for fire
+        setattr(self, 'ctfdops',SandboxyCTFdRepository())
+        setattr(self, 'gitops',SandboxyGitRepository())
     
     def checkmasterlist(self):
         """
-        checks for existance and integrety of master list
-        TODO: add integrety checks, currently just checks if it exists
+        checks for existance and integrity of master list
+        
+        TODO: add integrity checks, currently just checks if it exists
         """
         if isfile(self.masterlistlocation):
             greenprint("[+] Masterlist Located!")
@@ -77,6 +68,12 @@ class SandBoxyCTFdLinkage():
         Args:
             masterlistfile (str): The file to load as masterlist, defaults to masterlist.yamlw
         """
+        try:
+            self.checkmasterlist()
+            greenprint("[+] Loading masterlist.yaml")
+            #self.loadmasterlist()
+        except Exception:
+            errorlogger("[-] masterlist does not exist")
         # filename for the full challenge index
         self.masterlistfile      = masterlistfile
         self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
@@ -98,12 +95,19 @@ class SandBoxyCTFdLinkage():
         self.CTFD_TOKEN      = ctfdtoken #os.getenv("CTFD_TOKEN")
         self.CTFD_URL        = ctfdurl #os.getenv("CTFD_URL")
         # returns a Repo() object with Category() objects attached
-        self.masterlist      = self.ctfdops.createprojectrepo()
-        setattr(self,self.masterlist.data,"Repo")
-        self.masterlist.writemasteryaml(self.Repo, filemode="a")
-        # we do this last so we can add all the created files to the git repo        
-        # this is the git backend, operate this seperately
-        self.gitops.createprojectrepo()
+        try:
+            self.masterlist      = self.ctfdops.createprojectrepo().transformtorepository()
+            repositoryobject = self.masterlist.transformtorepository(self.masterlist)
+            setattr(self,self.masterlist.data,"Repo")
+            self.masterlist.writemasteryaml(self.Repo, filemode="a")
+        except Exception:
+            errorlogger("[-] Failed to create CTFd Repository, check the logfile")
+        try:
+            # we do this last so we can add all the created files to the git repo        
+            # this is the git backend, operate this seperately
+            self.gitops.createprojectrepo()
+        except Exception:
+            errorlogger("[-] Git Repository Creation Failed, check the logfile")
 
 
     def listcategories(self,print=True):

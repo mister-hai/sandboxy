@@ -61,7 +61,7 @@ class Yaml(): #filetype
         try:
             #open the yml file pointed to by the load operation
             with open(self.filepath) as file:
-                filedata = yaml.safe_dump(file)
+                yaml.safe_dump(file)
                 #file.write(filedata)
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
@@ -72,9 +72,9 @@ class Masterlist(Yaml):
     def __init__(self):
         super().__init__()
 
-    def loadmasterlist(self, masterlistfile =  "masterlist.yml") -> Yaml:
+    def loadmasterlist(self, masterlistfile =  "masterlist.yml"):
         """
-        Loads the masterlist.yaml
+        Loads the masterlist.yaml into Masterlist.data
 
         Args:
             masterlistfile (str): The file to load as masterlist, defaults to masterlist.yamlw
@@ -111,8 +111,8 @@ class Masterlist(Yaml):
         try:
             #open the yml file pointed to by the load operation
             with open(self.filepath, filemode) as file:
-                filedata = yaml.safe_dump(file)
-                file.write
+                #file.write()
+                yaml.safe_dump(file)
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
 
