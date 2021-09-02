@@ -93,9 +93,16 @@ class Ctfcli():
         setattr(ctfcli, 'gitops',SandboxyGitRepository())
         #assign everything under one command "ctfcli"
         self.ctfcli = ctfcli
+        # so we can use the command
+        # ctfcli.py ctfcli ctfdops
+        #OR
+        # ctfcli.py ctfcli gitops
 
+        # with fire, this would set the commands as
+        # ctfcli.py gitops OR ctfops
         #self.ctfdops = SandboxyCTFdRepository()
         #self.gitops = SandboxyGitRepository()
+
     #def main(self):
     #   pass
 

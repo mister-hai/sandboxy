@@ -19,3 +19,14 @@ This tool
     sphinx-apidoc -f -o . ..
     make html
 
+# Creating a Dcoumentation Github Repo
+
+## Make a remote repository then
+
+    echo "# sandboxy_cods" >> README.md
+    git init
+    git add README.md
+    git commit -m "first commit"
+    git branch -M main
+    git remote add origin https://github.com/mister-hai/sandboxy_docs.git
+    git push -u origin main

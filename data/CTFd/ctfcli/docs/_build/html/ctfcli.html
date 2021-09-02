@@ -60,137 +60,17 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-ctfcli.linkage">
-<span id="ctfcli-linkage-module"></span><h2>ctfcli.linkage module<a class="headerlink" href="#module-ctfcli.linkage" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ctfcli.linkage.</span></span><span class="sig-name descname"><span class="pre">SandBoxyCTFdLinkage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctfdtoken</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctfdurl</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Maps to the command
-<a class="reference external" href="mailto:host&#37;&#52;&#48;server$">host<span>&#64;</span>server$</a>&gt; ctfcli
-Used to upload challenges from the data directory in project root
-And manage the ctfd instance</p>
-<p>parameters are as follows:</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ctfdurl</strong> (<em>str</em>) – Url of ctfd instance</p></li>
-<li><p><strong>ctfdtoken</strong> (<em>str</em>) – Auth token as given by settings page in CTFd</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.arg">
-<span class="sig-name descname"><span class="pre">arg</span></span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.arg" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is where we store arg,</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.checkmasterlist">
-<span class="sig-name descname"><span class="pre">checkmasterlist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.checkmasterlist" title="Permalink to this definition">¶</a></dt>
-<dd><p>checks for existance and integrety of master list
-TODO: add integrety checks, currently just checks if it exists</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.getchallengesbycategory">
-<span class="sig-name descname"><span class="pre">getchallengesbycategory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printscr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.getchallengesbycategory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Lists challenges in repo by category
-Supply “print=False” to return a variable instead of utf-8</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.init">
-<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Link to CTFd instance with token and URI</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; host@server$&gt; ctfcli --ctfdtoken &lt;token&gt; --ctfdurl &lt;url&gt; init
-</pre></div>
+<div class="section" id="ctfcli-ctfcli-module">
+<h2>ctfcli.ctfcli module<a class="headerlink" href="#ctfcli-ctfcli-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<ul class="simple">
-<li><p>Creates a masterlist of challenges in the repository</p></li>
-<li><p>Creates a git repository and adds all the files</p></li>
-<li><p>links repository with CTFd instance via disposable token</p></li>
-</ul>
-<p>TODO: Add Oauth via discord</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.listcategories">
-<span class="sig-name descname"><span class="pre">listcategories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">print</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.listcategories" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the names of all Categories
-Supply “print=False” to return a variable instead of display to screen</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.listsyncedchallenges">
-<span class="sig-name descname"><span class="pre">listsyncedchallenges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.listsyncedchallenges" title="Permalink to this definition">¶</a></dt>
-<dd><p>Lists the challenges installed to the server
-Use
-&gt;&gt;&gt; –remote=False
-to check the LOCAL repository</p>
-<p>For git operations, use <cite>gitops</cite> or your preferred terminal workflow</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>remote</strong> (<em>bool</em>) – If True, Checks CTFd server for installed challenges</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.loadmasterlist">
-<span class="sig-name descname"><span class="pre">loadmasterlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masterlistfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'masterlist.yml'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.loadmasterlist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads the masterlist.yaml , wrapper for utils.utils.Yaml.Yaml.loadmasterlist()</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>masterlistfile</strong> (<em>str</em>) – The file to load as masterlist, defaults to masterlist.yamlw</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.newfromtemplate">
-<span class="sig-name descname"><span class="pre">newfromtemplate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.newfromtemplate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a new CTFd Challenge from template</p>
-<p>If no repo is present, uploads the DEFAULT template to CTFd</p>
-<p>NOT IMPLEMENTED YET</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.synccategory">
-<span class="sig-name descname"><span class="pre">synccategory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.synccategory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Maps to the command
-&gt;&gt;&gt; <a class="reference external" href="mailto:host&#37;&#52;&#48;server$">host<span>&#64;</span>server$</a>&gt; ctfcli synccategory &lt;categoryname&gt;
-Synchronize all challenges in the given category,
-this uploads the challenge data to CTFd</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>category</strong> (<em>str</em>) – The name of the category to syncronize with the CTFd server</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ctfcli.linkage.SandBoxyCTFdLinkage.syncchallenge">
-<span class="sig-name descname"><span class="pre">syncchallenge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">challenge</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">utils.challenge.Challenge</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ctfcli.linkage.SandBoxyCTFdLinkage.syncchallenge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Syncs a challenge with the CTFd server</p>
-<p>Use
-:param challenge: Challenge to syncronize with the CTFd server
-:type challenge: Challenge</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="ctfcli-linkage-module">
+<h2>ctfcli.linkage module<a class="headerlink" href="#ctfcli-linkage-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="ctfcli-setup-module">
 <h2>ctfcli.setup module<a class="headerlink" href="#ctfcli-setup-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-ctfcli">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ctfcli" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
