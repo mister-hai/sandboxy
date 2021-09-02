@@ -41,5 +41,5 @@ setup(
     ],
     packages=find_packages(),
     include_package_data=True,
-    entry_points={"console_scripts": ["ctf = ctfcli.__main__:main"]},
+    entry_points={"console_scripts": ["ctf = ctfcli:main"]},
 )

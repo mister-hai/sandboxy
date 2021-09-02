@@ -42,7 +42,7 @@ class SandboxyCTFdRepository(): #folder
         # then individual challenges
         self.repofolder    = os.path.join(self.CTFDDATAROOT, "challenges")
     
-    def createprojectrepo(self):
+    def createprojectrepo(self)-> Masterlist:
         # create a new masterlist
         self.masterlist = Masterlist.loadmasterlist()
         repocategoryfolders = getsubdirs(self.repofolder)
@@ -69,7 +69,7 @@ class SandboxyCTFdRepository(): #folder
                 cat = self.getcategory(newcategory.name)
                 self.addchallenge(cat,newchallenge)
         # return this class to the upper level scope
-        return self
+        return self.masterlist
 
     def createchallengefromfolder(self, challengefolderpath):
         '''

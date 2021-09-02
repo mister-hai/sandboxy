@@ -2,6 +2,14 @@ from pathlib import Path
 import yaml,os
 from utils.utils import greenprint, redprint, errorlogger
 
+
+class Repo:
+    def __init__(self, objectname = 'Repo', **entries): 
+        self.__dict__.update(entries)
+        # this is how you define the class name
+        self.__name__ = objectname
+        self.__qualname__= objectname
+
 class Yaml(): #filetype
     '''
     Represents a challange.yml
@@ -80,12 +88,20 @@ class Masterlist(Yaml):
         self.type = "masterlist"
         return self
     
+    def transformtorepository(self, loadedyaml:dict)-> Repo:
+        '''
+        Transforms Yaml data to Python objects for loading and unloading
+        '''
+        #defaults to name "Repo"
+        pythonobjects = Repo(**loadedyaml)
+        return pythonobjects
+
     def writemasteryaml(self,name:str, filemode="a"):
         '''
         Special function to write the master yaml for the ctfd side of the repository
         remember to assign data to the file with
         
-        >>> thing = Yaml(filepath)
+        >>> thing = Masterlist(filepath)
         >>> thing.data = Category()
         >>> thing.writeyaml()
 

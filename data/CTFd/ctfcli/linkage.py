@@ -33,22 +33,23 @@ class SandBoxyCTFdLinkage():
         arg (str): This is where we store arg,
 
     """
-    def __init__(self, 
-                    ctfdtoken,
-                    ctfdurl,
+    def __init__(self
                     #configname = "ctfcli.ini", 
                     ):
         try:
             greenprint("[+] Instancing a SandboxyCTFdLinkage()")
             self.PROJECTROOT         = os.getenv("PROJECT_ROOT")
-            self.CTFD_TOKEN          = ctfdtoken #os.getenv("CTFD_TOKEN")
-            self.CTFD_URL            = ctfdurl #os.getenv("CTFD_URL")
             #self.configname          = configname
             # template challenges
             self.TEMPLATESDIR        = os.path.join(self.challengesfolder, "ctfcli", "templates")
             # store url and token in config
             self.ctfdauth = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
             #check for an existance of the master list
+            
+            # assign the classes as named commands for fire
+            setattr(self, 'ctfdops',SandboxyCTFdRepository())
+            setattr(self, 'gitops',SandboxyGitRepository())
+
             if self.checkmasterlist():
                 greenprint("[+] Loading masterlist.yaml")
                 self.loadmasterlist()
@@ -81,7 +82,7 @@ class SandBoxyCTFdLinkage():
         self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
         self.masterlist          = Masterlist(self.masterlistlocation)
 
-    def init(self):
+    def init(self,ctfdtoken, ctfdurl,):
         """
         Link to CTFd instance with token and URI
 
@@ -94,12 +95,15 @@ class SandBoxyCTFdLinkage():
         TODO: Add Oauth via discord
         """
         # TODO: TIMESTAMPS AND IDS!!!
-        self.masterlist.data = SandboxyCTFdRepository.createprojectrepo()
+        self.CTFD_TOKEN      = ctfdtoken #os.getenv("CTFD_TOKEN")
+        self.CTFD_URL        = ctfdurl #os.getenv("CTFD_URL")
+        # returns a Repo() object with Category() objects attached
+        self.masterlist      = self.ctfdops.createprojectrepo()
         setattr(self,self.masterlist.data,"Repo")
         self.masterlist.writemasteryaml(self.Repo, filemode="a")
         # we do this last so we can add all the created files to the git repo        
         # this is the git backend, operate this seperately
-        SandboxyGitRepository.createprojectrepo()
+        self.gitops.createprojectrepo()
 
 
     def listcategories(self,print=True):
@@ -160,7 +164,7 @@ class SandBoxyCTFdLinkage():
             apicall = APISession.generate_session()
             return apicall.get("/api/v1/challenges?view=admin", json=True).json()["data"]
         elif remote == False:
-            SandboxyCTFdRepository.listsyncedchallenges()
+            self.ctfdops.listsyncedchallenges()
 
     def newfromtemplate(self, type=""):
         """
