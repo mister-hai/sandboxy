@@ -12,9 +12,9 @@ from pathlib import Path
 #Before we load the menu, we need to do some checks
 # The .env needs to be reloaded in the case of other alterations
 # and rotating/changing access keys
-projectroot = os.getenv("PROJECT_ROOT")
-dotenv_path = Path('path/to/.env')
-load_dotenv(dotenv_path=dotenv_path)
+#projectroot = os.getenv("PROJECT_ROOT")
+#dotenv_path = Path('path/to/.env')
+#load_dotenv(dotenv_path=dotenv_path)
 # check location
 PWD = os.path.realpath(".")
 PWD_LIST = os.listdir(PWD)

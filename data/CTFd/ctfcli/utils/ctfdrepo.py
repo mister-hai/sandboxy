@@ -52,6 +52,7 @@ class SandboxyCTFdRepository(): #folder
             self.CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
             yellowboldprint("[+] Repository root variable set, running from start.sh")
             self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
+        # this code is inactive currently
         else:
             yellowboldprint("[+] CHALLENGEREPOROOT variable not set, checking one directory higher")
             # ugly but it works
@@ -62,7 +63,7 @@ class SandboxyCTFdRepository(): #folder
                     yellowboldprint("[+] Challenge Folder Found, presuming to be repository location")
                     self.CTFDDATAROOT = onelevelup
                     self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
- 
+        super(SandboxyCTFdRepository, self).__init__()
     
     def createprojectrepo(self)-> Masterlist:
         repocategoryfolders = getsubdirs(self.repofolder)

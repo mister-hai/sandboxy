@@ -1,5 +1,6 @@
 from genericpath import isfile
-import re, yaml, os, sys
+import os
+from pathlib import Path
 from utils.challenge import Challenge
 
 from cookiecutter.main import cookiecutter
@@ -37,7 +38,9 @@ class SandBoxyCTFdLinkage():
                     #configname = "ini", 
                     ):
         greenprint("[+] Instancing a SandboxyCTFdLinkage()")
-        self.PROJECTROOT         = os.getenv("PROJECT_ROOT")
+        #self.PROJECTROOT         = os.getenv("PROJECT_ROOT")
+        # I promised myself I would never do this
+        os.environ["CHALLENGEREPOROOT"] = str(Path(f'{os.getcwd()}'))
         #check for an existance of the master list            
         # assign the classes as named commands for fire
         setattr(self, 'ctfdops',SandboxyCTFdRepository())
