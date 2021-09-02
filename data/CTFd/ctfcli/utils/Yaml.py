@@ -95,7 +95,7 @@ class Masterlist(Yaml):
         """
         return Masterlist(**loader.construct_mapping(node))
 
-    def get_dumper(self):
+    def get_dumper(self,tag:str, constructor):
         """
         Add representers to a YAML serializer.
         """
@@ -137,7 +137,6 @@ class Masterlist(Yaml):
         '''
         with open("output.yml", "w") as stream:
             stream.write(yaml.dump(pythoncode, Dumper=self.get_dumper(self.tag,self.masterlist_constructor())))
-
 
     def transformtorepository(self, loadedyaml:dict)-> Repo:
         '''

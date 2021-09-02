@@ -43,13 +43,13 @@ class SandboxyCTFdRepository(): #folder
         self.repofolder    = os.path.join(self.CTFDDATAROOT, "challenges")
     
     def createprojectrepo(self)-> Masterlist:
-        # create a new masterlist
-        self.masterlist = Masterlist.loadmasterlist()
         repocategoryfolders = getsubdirs(self.repofolder)
         # itterate over folders in challenge directory
         for category in repocategoryfolders:
             # if its a repository category folder in aproved list
             if category in CATEGORIES:
+                #create a new Category and assign name based on folder
+                newcategory = Category(category)                
                 # track location change to subdir
                 categoryfolders = location(self.repofolder, category)
                 #get subfolder names in category directory, wreprweswenting indivwidual chwallenges yippyippyippyipp
@@ -58,16 +58,19 @@ class SandboxyCTFdRepository(): #folder
                 for challengefolder in categoryfolder:
                     # track location change to individual challenge subdir
                     challengefolderpath = location(categoryfolder, challengefolder)
-                    # list files and folders
+                    # create new Challenge() class from folder contents
                     newchallenge = self.createchallengefromfolder(challengefolderpath)
-                #create a new Category and assign name based on folder
-                newcategory = Category(category)
-                # add a new category based on that challenge files category
+                    #assign challenge to category
+                    setattr(newcategory,newchallenge.name,newchallenge)
+
+                # add a new category based on that folder
                 self.addcategory(newcategory)
                 #add the new challenge to the category as 
                 # its own named child
                 cat = self.getcategory(newcategory.name)
                 self.addchallenge(cat,newchallenge)
+        # create a new masterlist
+        self.masterlist = Masterlist()
         # return this class to the upper level scope
         return self.masterlist
 
