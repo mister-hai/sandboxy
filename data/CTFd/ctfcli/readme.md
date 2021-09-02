@@ -16,7 +16,7 @@ This tool
     We use sphinx with google docstrings currently
 
     cd $DATAROOT/CTFd
-    sphinx-apidoc.exe -f -o .\ctfcli\ .
+    sphinx-apidoc.exe -f -o . ./ctfcli
     make html
 
 ## Packages

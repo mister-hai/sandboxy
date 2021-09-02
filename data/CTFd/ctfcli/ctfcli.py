@@ -1,9 +1,9 @@
 import importlib
 import os,sys,fire
-from linkage import SandBoxyCTFdLinkage
-from utils.ctfdrepo import SandboxyCTFdRepository
-from utils.gitrepo import SandboxyGitRepository
-from utils.utils import CATEGORIES
+from ctfcli.linkage import SandBoxyCTFdLinkage
+from ctfcli.utils.ctfdrepo import SandboxyCTFdRepository
+from ctfcli.utils.gitrepo import SandboxyGitRepository
+from ctfcli.utils.utils import CATEGORIES
 from dotenv import load_dotenv
 from pathlib import Path
 

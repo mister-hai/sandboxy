@@ -1,14 +1,6 @@
 ctfcli package
 ==============
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   ctfcli.utils
-
 Submodules
 ----------
 
