@@ -133,7 +133,7 @@ class Masterlist(MasterFile):
         """
         return dumper.represent_mapping(tag, codeobject)
  
-    def _constructor(self, loader: SafeLoader, node: MappingNode, codeobject:object):
+    def _constructor(self, loader: SafeLoader, node: MappingNode, codeobject:object) -> object:
         """
         Construct A object from the Yaml file
         """
