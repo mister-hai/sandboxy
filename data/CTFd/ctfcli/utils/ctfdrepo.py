@@ -102,7 +102,8 @@ class SandboxyCTFdRepository(): #folder
                 newcategory = self._processcategory(category)
                 dictofcategories[newcategory.name] = newcategory
         # assign all to repository class
-            
+        newrepo = Repository(**dictofcategories)
+        masterlist._writenewmasterlist()
         # return this class to the upper level scope
         return self.masterlist, repositoryconstruct
 
