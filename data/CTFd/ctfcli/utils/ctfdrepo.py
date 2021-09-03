@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from utils.Yaml import Challengeyaml,Masterlist
 from utils.challenge import Challenge
-from utils.utils import errorlogger, CATEGORIES,yellowboldprint
+from utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 from utils.utils import location,getsubdirs
 ###############################################################################
 #  CTFd CATEGORY: representation of folder in repository
@@ -36,6 +36,26 @@ class Category(): #folder
             raise ValueError
 
 ###############################################################################
+#  Handout folder
+###############################################################################
+class Handout():
+    '''
+    Represents a Handout folder for files and data to be given to the
+    CTF player
+    '''
+    def __init__(self):
+        pass
+###############################################################################
+#  Solution folder
+###############################################################################
+class Solution():
+    '''
+    Represents a Solution folder for data describing the methods and 
+    steps necessary to solve the challenge and capture the flag
+    '''
+    def __init__(self):
+        pass
+###############################################################################
 #  CTFd REPOSIROTY: representation of folder in repository
 ###############################################################################
 class SandboxyCTFdRepository(): #folder
@@ -50,7 +70,7 @@ class SandboxyCTFdRepository(): #folder
         #CHALLENGEREPOROOT=/home/moop/sandboxy/data/CTFd
         if os.getenv("CHALLENGEREPOROOT"):
             self.CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
-            yellowboldprint("[+] Repository root variable set, running from start.sh")
+            yellowboldprint(f'[+] Repository root ENV variable is {self.CHALLENGEREPOROOT}')
             self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
         # this code is inactive currently
         else:
@@ -71,16 +91,16 @@ class SandboxyCTFdRepository(): #folder
         for category in repocategoryfolders:
             # if its a repository category folder in aproved list
             if category in CATEGORIES:
+                greenprint("[+]")
                 #create a new Category and assign name based on folder
-                newcategory = Category(category)                
-                # track location change to subdir
-                categoryfolders = location(self.repofolder, category)
-                #get subfolder names in category directory, wreprweswenting indivwidual chwallenges yippyippyippyipp
-                categoryfolder = getsubdirs(categoryfolders)
+                newcategory = Category(category, Path())                
+                #get subfolder names in category directory
+                categoryfolder = getsubdirs(location(self.repofolder, category))
                 # itterate over the individual challenges
                 for challengefolder in categoryfolder:
+                    greenprint(f"[+] Found Challenge folder {challengefolder}")
                     # track location change to individual challenge subdir
-                    challengefolderpath = location(categoryfolder, challengefolder)
+                    challengefolderpath = location(Path(categoryfolder), challengefolder)
                     # create new Challenge() class from folder contents
                     newchallenge = self.createchallengefromfolder(challengefolderpath)
                     #assign challenge to category
@@ -97,7 +117,7 @@ class SandboxyCTFdRepository(): #folder
         # return this class to the upper level scope
         return self.masterlist
 
-    def createchallengefromfolder(self, challengefolderpath):
+    def createchallengefromfolder(self, challengefolderpath:Path):
         '''
         Process the contents of the challenge folder given into a new Challenge() class
         This is essentially where the definition of a challenge folder itself
@@ -106,22 +126,24 @@ class SandboxyCTFdRepository(): #folder
             challengefolderpath (str): path to the challenge folder
         '''
         challengefolderdata = os.listdir(challengefolderpath)
+        if "challenge.yml" in challengefolderdata:
+            challengeyaml = Challengeyaml(location(challengefolderpath,'challenge.yaml'))
+            greenprint(f"[+] Challenge.yaml found! {challengeyaml.name}")
+            # load the yml describing the challenge
         # itterate over them
         for challengedata in challengefolderdata:
         # get path to challenge subitem
             challengeitempath = location(challengedata, challengefolderpath)
-            # get solutions path
+            # get solutions
             if challengedata == "solution":
-                solution = os.path.join(challengeitempath, challengedata)
-            # get handouts path
+                greenprint(f"[+] Found Solution folder")
+                solution = challengeitempath
+            # get handouts
             if challengedata == "handout":
-                handout = os.path.join(challengeitempath, challengedata)
+                greenprint(f"[+] Found Handout folder for")
+                handout = challengeitempath
             # get challenge file 
-            if challengedata == "challenge.yml":
-                # get path to challenge file
-                challengefile  = os.path.join(challengeitempath, challengedata)
-                # load the yml describing the challenge
-                challengeyaml = Challengeyaml(challengefile)
+
                 # get the name of the challenge
         # generate challenge based on folder contents
         newchallenge = Challenge(
@@ -167,7 +189,7 @@ class SandboxyCTFdRepository(): #folder
         for selfmember in dir(self):
             # if its a Category, and not a hidden class attribute or function
             if (selfmember in CATEGORIES):# and (selfmember.startswith("__") != True):
-                #make sure its the cat want
+                #make sure its the cat we want
                 cat = getattr(self,selfmember) 
                 if type(cat) == Category:
                     # give them the cat

@@ -1,8 +1,6 @@
 import importlib
 import os,sys,fire
 from linkage import SandBoxyCTFdLinkage
-from utils.ctfdrepo import SandboxyCTFdRepository
-from utils.gitrepo import SandboxyGitRepository
 from utils.utils import CATEGORIES
 from dotenv import load_dotenv
 from pathlib import Path
@@ -66,22 +64,17 @@ class Ctfcli():
 
         Or you can sync the initialized repository to CTFd:
 
-        >>> host@server$> ctfd.py ctfdcli sync
+        >>> host@server$> ctfd.py ctfdcli syncrepository
 
-        Generating a completion script
+        Generating a completion script and adding it to ~/.bashrc
         
-        >>> host@server$> ctfd.py ctfcli -- --completion
+        >>> host@server$> ctfd.py ctfcli -- --completion > ~/.ctfcli-completion
+        >>> host@server$> echo "source ~/.ctfcli-completion" >> ~/.bashrc  
 
-        Call widget -- --completion to generate a completion script for the Fire CLI widget. 
-        To save the completion script to your home directory, you could e.g. run 
-        
-        >>> host@server$> ctfd.py ctfcli --completion > ~/.ctfcli-completion. 
-        
-        You should then source this file; 
-        to get permanent completion, source this file from your .bashrc file.
+        To generate a completion script for the Fish shell. 
+        (fish is nice but incompatible with bash scripts so far as I know so start.sh wont work)
 
-        Call widget -- --completion fish to generate a completion script for the Fish shell. 
-        Source this file from your fish.config.
+        >>> -- --completion fish 
 
         If the commands available in the Fire CLI change, you'll have to regenerate the 
         completion script and source it again.
@@ -91,13 +84,6 @@ class Ctfcli():
         # modify the structure of the program here by reassigning classes
         ctfcli = SandBoxyCTFdLinkage()
         self.ctfcli = ctfcli
-        # so we can use the command
-        # py ctfcli ctfdops
-        #OR
-        # py ctfcli gitops
-
-        # with fire, this would set the commands as
-        # py gitops OR ctfops
         #self.ctfdops = SandboxyCTFdRepository()
         #self.gitops = SandboxyGitRepository()
 
@@ -106,10 +92,5 @@ def main():
 
 
 if __name__ == "__main__":
-    #menu = Menu()
     main()
-    
-    # Load CLI
     #fire.Fire(Ctfcli)
-
-# now goto linkage.py, gitrepo.py, and ctfdrepo.py

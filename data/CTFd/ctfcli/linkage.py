@@ -20,18 +20,13 @@ from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
 class SandBoxyCTFdLinkage():
     """
     Maps to the command
-    host@server$> ctfcli
+    
+    >>> host@server$> python ./ctfcli/ ctfcli
+
     Used to upload challenges from the data directory in project root
+
     And manage the ctfd instance
 
-    parameters are as follows:
-
-    Args:
-        ctfdurl (str):     Url of ctfd instance
-        ctfdtoken (str):   Auth token as given by settings page in CTFd
-
-    Attributes:
-        arg (str): This is where we store arg,
 
     """
     def __init__(self
@@ -41,7 +36,6 @@ class SandBoxyCTFdLinkage():
         #self.PROJECTROOT         = os.getenv("PROJECT_ROOT")
         # I promised myself I would never do this
         os.environ["CHALLENGEREPOROOT"] = str(Path(f'{os.getcwd()}'))
-        #check for an existance of the master list            
         # assign the classes as named commands for fire
         setattr(self, 'ctfdops',SandboxyCTFdRepository())
         setattr(self, 'gitops',SandboxyGitRepository())
@@ -50,6 +44,13 @@ class SandBoxyCTFdLinkage():
         self.challengesfolder = self.ctfdops.CTFDDATAROOT
         # challenge templates
         self.TEMPLATESDIR = os.path.join(self.challengesfolder, "ctfcli", "templates")    
+
+    def _setauth(self,ctfdurl,ctfdtoken):
+        # TODO: TIMESTAMPS AND IDS!!!
+        # store url and token
+        self.ctfdauth = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
+        self.CTFD_TOKEN      = ctfdtoken #os.getenv("CTFD_TOKEN")
+        self.CTFD_URL        = ctfdurl #os.getenv("CTFD_URL")
 
     def checkmasterlist(self):
         """
@@ -88,7 +89,7 @@ class SandBoxyCTFdLinkage():
         """
         Link to CTFd instance with token and URI
 
-        >>> host@server$> ctfcli --ctfdtoken <token> --ctfdurl <url> init
+        >>> host@server$> python ./ctfcli/ ctfcli init
 
         - Creates a masterlist of challenges in the repository
         - Creates a git repository and adds all the files
@@ -96,11 +97,6 @@ class SandBoxyCTFdLinkage():
 
         TODO: Add Oauth via discord
         """
-        # TODO: TIMESTAMPS AND IDS!!!
-        # store url and token
-        self.ctfdauth = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
-        self.CTFD_TOKEN      = ctfdtoken #os.getenv("CTFD_TOKEN")
-        self.CTFD_URL        = ctfdurl #os.getenv("CTFD_URL")
         # returns a Repo() object with Category() objects attached
         try:
             # returns a master list
@@ -139,17 +135,21 @@ class SandBoxyCTFdLinkage():
         Supply "print=False" to return a variable instead of utf-8 
         """
 
-    def syncchallenge(self, challenge:Challenge):
+    def syncchallenge(self, challenge,ctfdurl,ctfdtoken):
         """
         Syncs a challenge with the CTFd server
 
-        Use 
+        Usage:
+        >>> host@server$> ctfcli syncchallenge <challenge_id> --ctfdtoken <token> --ctfdurl <url>
+
         Args:
             challenge (Challenge): Challenge to syncronize with the CTFd server
         """
+        self._setauth(ctfdurl,ctfdtoken)
+        
         challenge.sync()
 
-    def synccategory(self, category:str):
+    def synccategory(self, category:str,ctfdurl,ctfdtoken):
         """
         Maps to the command
         >>> host@server$> ctfcli synccategory <categoryname>
@@ -159,6 +159,7 @@ class SandBoxyCTFdLinkage():
         Args:
             category (str): The name of the category to syncronize with the CTFd server
         """
+        self._setauth(ctfdurl,ctfdtoken)
         try:
             greenprint("[+] Syncing Category: {}". format(category))
             challenges = self.getchallengesbycategory(category)
@@ -167,6 +168,16 @@ class SandBoxyCTFdLinkage():
                 self.syncchallenge(challenge)
         except Exception:
             errorlogger("[-] Failure to sync category! {}".format(challenge))
+
+    def syncrepository(self, ctfdurl, ctfdtoken):
+        '''
+        Syncs the entire Repository Folder
+
+        Args:
+            ctfdurl (str):   The URL of the CTFd Server instance
+            ctfdtoken (str): Token given from Admin Panel > Config > Settings > Auth Token Form
+        '''
+        self._setauth(ctfdurl,ctfdtoken)
 
     def listsyncedchallenges(self, remote=False):
         """
@@ -200,7 +211,4 @@ class SandBoxyCTFdLinkage():
             cookiecutter(os.path.join(self.TEMPLATESDIR, type))
         else:
             cookiecutter(os.path.join(self.TEMPLATESDIR,type))
-
-
-
 

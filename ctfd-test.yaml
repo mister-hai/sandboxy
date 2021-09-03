@@ -12,92 +12,38 @@ services:
 #################################################################        
     ctfd:
       image: ctfd/ctfd
-      build:
-        context: ./containers/ctfd
-        dockerfile: Dockerfile
+      #build:
+      #  context: ./containers/ctfd
+      #  dockerfile: Dockerfile
       hostname: ctfd
       user: root
       restart: unless-stopped
-      environment:
-        - UPLOAD_FOLDER=${UPLOAD_FOLDER}
-        - DATABASE_URL=${DATABASE_URL}
-        - REDIS_URL=${REDIS_URL}
-        - WORKERS=${WORKERS}
-        - LOG_FOLDER=${LOG_FOLDER}
-        - ACCESS_LOG=${ACCESS_LOG}
-        - ERROR_LOG=${ERROR_LOG}
-        - REVERSE_PROXY=${REVERSE_PROXY}
-      env_file:
-        - ./.env
-      volumes:
-        - ${CERTBOTCONFVOLUMES}
-        - ${CERTBOTDATAVOLUMES}
-        - ${CERTBOTLOGVOLUMES}
-        - ./data/CTFd/logs:${LOG_FOLDER}
-        - ./data/CTFd/uploads:${UPLOAD_FOLDER}
-      depends_on:
-        - db
-      expose:
-        - 8000
+      #environment:
+      #  - UPLOAD_FOLDER=${UPLOAD_FOLDER}
+      #  - DATABASE_URL=${DATABASE_URL}
+      #  - REDIS_URL=${REDIS_URL}
+      #  - WORKERS=${WORKERS}
+      #  - LOG_FOLDER=${LOG_FOLDER}
+      #  - ACCESS_LOG=${ACCESS_LOG}
+      #  - ERROR_LOG=${ERROR_LOG}
+      #  - REVERSE_PROXY=${REVERSE_PROXY}
+      #env_file:
+      #  - ./.env
+      #volumes:
+      #  - ${CERTBOTCONFVOLUMES}
+      #  - ${CERTBOTDATAVOLUMES}
+      #  - ${CERTBOTLOGVOLUMES}
+      #  - ./data/CTFd/logs:${LOG_FOLDER}
+      #  - ./data/CTFd/uploads:${UPLOAD_FOLDER}
+      #depends_on:
+      #  - db
+      #expose:
+      #  - 8000
       ports:
-        - 80:80
-        - 443:443
-        - ${CTFDPORT}:8000
-      networks:
-        internal:
-        net:
-          ipv4_address: ${CTFDIP}
-#################################################################
-#                   REDIS SERVER
-#################################################################
-    cache:
-      image: redis
-      depends_on:
-        - ctfd
-      hostname: cache
-      #command: redis-server --appendonly yes
-      ports:
-        #- ${REDISPORT}:6379
-        - 6379:6379
-      volumes:
-        - ./data/redis:/data
-      restart: unless-stopped
-      networks:
-        internal:
-#################################################################
-#                   MYSQL SERVER
-#################################################################
-    db:
-      image: mariadb:10.4.12
-#      depends_on:
-#        - nginx
-      restart: always
-      environment:
-        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-        - MYSQL_USER=${MYSQL_USER}
-        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-        - MYSQL_DATABASE=${MYSQL_DATABASE}
-      # This command is required to set important mariadb defaults
-      command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
-      volumes:
-        - ./data/mysql:/var/lib/mysql
-      networks:
-          internal:
-#################################################################
-#     DNS SERVER
-#################################################################   
-
-
-
-#################################################################
-#     NETWORKS SECTION
-#################################################################      
-networks:
-  internal:
-    internal: true
-
-  net:
-    ipam:
-      config:
-        - subnet: "172.18.0.0/24"
-    #external: true
+      #  - 80:80
+      #  - 443:443
+        - 8000:8000
+      #networks:
+      #  internal:
+      #  net:
+        #  ipv4_address: ${CTFDIP}

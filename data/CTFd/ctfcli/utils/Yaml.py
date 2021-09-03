@@ -3,14 +3,51 @@ import yaml,os
 from utils.utils import greenprint, redprint, errorlogger
 #https://matthewpburruss.com/post/yaml/
 # This is one way of turning a yaml into a class
-class Repo:
-    def __init__(self, objectname = 'Repo', **entries): 
-        self.__dict__.update(entries)
-        # this is how you define the class name
-        self.__name__ = objectname
-        self.__qualname__= objectname
+class Repo():
+    def __new__(cls,*args, **kwargs):
+        cls.__name__ = 'Repo'
+        cls.__qualname__= 'Repo'
+        cls.tag = '!Repo'
+        return super(cls.__name__, cls).__new__(cls, *args, **kwargs)
 
-def construct(self, loader: yaml.SafeLoader, node: yaml.nodes.MappingNode) -> Repo:
+class Repository(Repo):
+    def __init__(self,**entries): 
+        self.__dict__.update(entries)
+
+    def repo_representer(self, tag, dumper: yaml.SafeDumper, code) -> yaml.nodes.MappingNode:
+        """
+        Represent a Masterlist instance as a YAML mapping node.
+        """
+        return dumper.represent_mapping(tag, code)
+ 
+    def repo_constructor(self, loader: yaml.SafeLoader, node: yaml.nodes.MappingNode):
+        """
+        Construct A Masterlist object from the Yaml file
+        """
+        return Repo(**loader.construct_mapping(node))
+
+    def get_dumper(self,tag:str, constructor):
+        """
+        Add representers to a YAML serializer.
+        """
+        safe_dumper = yaml.SafeDumper
+        safe_dumper.add_representer(Masterlist, self.masterlist_representer)
+        return safe_dumper
+ 
+    def get_loader(self,tag:str, constructor):
+        """
+        Add constructors to PyYAML loader.
+
+        Args:
+            tags (str): the tag to use to mark the yaml object in the file
+            constructor (function): theconstructor function to call
+        """
+        loader = yaml.SafeLoader
+        loader.add_constructor(tag, constructor)
+        return loader
+
+
+    def construct(self, loader: yaml.SafeLoader, node: yaml.nodes.MappingNode) -> Repo:
         '''
         Builder for Repo Objects
         '''
@@ -69,16 +106,22 @@ class Yaml(): #filetype
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
 
 
+class MasterFile(Yaml):
+    def __new__(cls,*args, **kwargs):
+        cls.__name__ = 'Repo'
+        cls.__qualname__= 'Repo'
+        cls.tag = '!Repo'
+        return super(cls.__name__, cls).__new__(cls, *args, **kwargs)
 
-class Masterlist(Yaml):
+class Masterlist(MasterFile):
     def __init__(self, masterlistfile =  "masterlist.yml"):
-        super().__init__()
         # filename for the full challenge index
         self.masterlistfile      = masterlistfile
         self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
         #self.masterlist          = Yaml(self.masterlistlocation)
         # tagg for yaml file
         self.tag = "!Masterlist"
+        super().__init__()
 
     def masterlist_representer(self, tag, dumper: yaml.SafeDumper, masterlist) -> yaml.nodes.MappingNode:
         """
