@@ -91,34 +91,38 @@ class SandboxyCTFdRepository(): #folder
         for category in repocategoryfolders:
             # if its a repository category folder in aproved list
             if category in CATEGORIES:
-                greenprint(f"[+] Found Category {category}")
-                categorypath =  Path(self.repofolder,category)
-                #create a new Category and assign name based on folder
-                newcategory = Category(category,categorypath)        
-                #get subfolder names in category directory
-                categoryfolder = getsubdirs(categorypath)
-                # itterate over the individual challenges
-                for challengefolder in categoryfolder:
-                    greenprint(f"[+] Found Challenge folder {challengefolder}")
-                    # track location change to individual challenge subdir
-                    challengefolderpath = Path(categoryfolder, challengefolder)
-                    # create new Challenge() class from folder contents
-                    newchallenge = self.createchallengefromfolder(challengefolderpath)
-                    #assign challenge to category
-                    setattr(newcategory,newchallenge.name,newchallenge)
-                    
-                # add the new Category() class to self once all challenge folders have been processed
-                self._setcategory(newcategory)
-
-                #add the new challenge to the category as 
-                # its own named child
-                cat = self._getcategory(newcategory.name)
-                newcategory._addchallenge(cat,newchallenge)
-
+                newcategory = self._processcategory(category)
+                # return a cat
+        cat = self._getcategory(newcategory.name)
         # create a new masterlist
         self.masterlist = Masterlist()
         # return this class to the upper level scope
         return self.masterlist
+
+    def _processcategory(self,category:str):
+        '''
+        Itterates over a Category folder to add challenges to the database
+        '''
+        greenprint(f"[+] Found Category {category}")
+        categorypath =  Path(self.repofolder,category)
+        #create a new Category and assign name based on folder
+        newcategory = Category(category,categorypath)        
+        #get subfolder names in category directory
+        categoryfolder = getsubdirs(categorypath)
+        # itterate over the individual challenges
+        for challengefolder in categoryfolder:
+            greenprint(f"[+] Found Challenge folder {challengefolder}")
+            # track location change to individual challenge subdir
+            challengefolderpath = Path(categoryfolder, challengefolder)
+            # create new Challenge() class from folder contents
+            newchallenge = self.createchallengefromfolder(challengefolderpath)
+            #assign challenge to category
+            newcategory._addchallenge(newcategory,newchallenge)                    
+            # add the new Category() class to self once all challenge folders have been processed
+            self._setcategory(newcategory)
+
+        
+
 
     def createchallengefromfolder(self, challengefolderpath:Path) -> Challenge:
         '''
@@ -199,7 +203,6 @@ class SandboxyCTFdRepository(): #folder
         for selfmember in dir(self):
             # if its a Category, and not a hidden class attribute or function
             if (type(selfmember) == Category):#in CATEGORIES) and (selfmember.startswith("__") != True):
-                #make sure its the cat we want
                 return getattr(self,selfmember)
                 
     def synccategory(self):
