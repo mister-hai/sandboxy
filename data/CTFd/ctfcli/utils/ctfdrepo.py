@@ -194,20 +194,13 @@ class SandboxyCTFdRepository(): #folder
         
         Returns: 
         """
-        getattr(self.repo, category)
+        getattr(repo, category)
         # for each item in this class
         for selfmember in dir(self):
             # if its a Category, and not a hidden class attribute or function
-            if (selfmember in CATEGORIES):# and (selfmember.startswith("__") != True):
+            if (type(selfmember) == Category):#in CATEGORIES) and (selfmember.startswith("__") != True):
                 #make sure its the cat we want
-                cat = getattr(self,selfmember) 
-                if type(cat) == Category:
-                    # give them the cat
-                    return cat
-                else:
-                    errorlogger("[+] Name conflict, you have a non-Category spec \
-                        object(FOLDER ISNT RIGHT) in the repo, with the name of a category")
-                    raise TypeError
+                return getattr(self,selfmember)
                 
     def synccategory(self):
         """

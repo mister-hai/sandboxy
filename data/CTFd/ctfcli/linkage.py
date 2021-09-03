@@ -52,7 +52,7 @@ class SandBoxyCTFdLinkage():
         self.CTFD_TOKEN      = ctfdtoken #os.getenv("CTFD_TOKEN")
         self.CTFD_URL        = ctfdurl #os.getenv("CTFD_URL")
 
-    def checkmasterlist(self):
+    def _checkmasterlist(self):
         """
         checks for existance and integrity of master list
         
@@ -66,7 +66,7 @@ class SandBoxyCTFdLinkage():
             raise Exception
             #return False
 
-    def loadmasterlist(self, masterlistfile =  "masterlist.yml"):
+    def _loadmasterlist(self, masterlistfile =  "masterlist.yml"):
         """
         Loads the masterlist.yaml , wrapper for utils.utils.Yaml.Yaml.loadmasterlist()
 
@@ -126,7 +126,7 @@ class SandBoxyCTFdLinkage():
         Get the names of all Categories
         Supply "print=False" to return a variable instead of display to screen 
         """
-        if self.checkmasterlist():
+        if self._checkmasterlist():
             self.Repo
 
     def getchallengesbycategory(self, category, printscr=True):
