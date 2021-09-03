@@ -85,21 +85,34 @@ class SandboxyCTFdRepository(): #folder
                     self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
         super(SandboxyCTFdRepository, self).__init__()
     
-    def createprojectrepo(self)-> Masterlist:
+    def _createprojectrepo(self)-> Masterlist:
+        '''
+        Performs all the actions necessary to create a repository
+        From the Challenges Folder in the DATAROOT
+        '''
+        # create a new masterlist
+        masterlist = Masterlist()
+        self._addmasterlist(masterlist)
+        dictofcategories = {}
         repocategoryfolders = getsubdirs(self.repofolder)
         # itterate over folders in challenge directory
         for category in repocategoryfolders:
             # if its a repository category folder in aproved list
             if category in CATEGORIES:
                 newcategory = self._processcategory(category)
-                # return a cat
-        cat = self._getcategory(newcategory.name)
-        # create a new masterlist
-        self.masterlist = Masterlist()
+                dictofcategories[newcategory.name] = newcategory
+        # assign all to repository class
+            
         # return this class to the upper level scope
-        return self.masterlist
+        return self.masterlist, repositoryconstruct
 
-    def _processcategory(self,category:str):
+    def _addmasterlist(self, masterlist:Masterlist):
+        '''
+        Adds a masterlist file to self
+        '''
+        setattr(self,'repo',masterlist)
+
+    def _processcategory(self,category:str)-> Category:
         '''
         Itterates over a Category folder to add challenges to the database
         '''
@@ -120,10 +133,10 @@ class SandboxyCTFdRepository(): #folder
             newcategory._addchallenge(newcategory,newchallenge)                    
             # add the new Category() class to self once all challenge folders have been processed
             self._setcategory(newcategory)
-
+        # return a cat
+        cat = self._getcategory(newcategory.name)
+        return cat
         
-
-
     def createchallengefromfolder(self, challengefolderpath:Path) -> Challenge:
         '''
         Process the contents of the challenge folder given into a new Challenge() class
@@ -167,19 +180,15 @@ class SandboxyCTFdRepository(): #folder
         Lists all categories
         """
 
-    def _setcategory(self, category:Category):
-        """
-        Adds a Category to the class
-        We are adding classes to this class with "setattr"
-        """
-        setattr(self, category.name, category)
-        
-        #TODO: add entry to masterlist.yaml
-
-    def removecategory(self):
+    def removecategory(self, category:str):
         """
         Removes a category from the repository
+
+        Args:
+
+            category (str): Name of the category to unlink
         """
+
     def addcategory(self, category:Path):
         """
         Adds a Category to the repository
@@ -189,21 +198,28 @@ class SandboxyCTFdRepository(): #folder
         """        
         #TODO: add entry to masterlist.yaml
 
-    def _getcategory(self,repo:Repository, category):
+    def _setcategory(self, repo:Repository, category:Category):
+        """
+        Adds a Category to the class
+        We are adding classes to this class with "setattr"
+        """
+        setattr(repo, category.name, category)
+        
+    def _getcategory(self,repo:Repository, category:str)-> Category:
         """
         Returns The Category, use getattr and a filter
         
         Args:
+            repo (Repository) : Repository object created by masterlist
             category (str): the name of the category to return the challenges from
         
         Returns: 
         """
-        getattr(repo, category)
-        # for each item in this class
-        for selfmember in dir(self):
+        # for each item in class
+        for selfmember in dir(repo):
             # if its a Category, and not a hidden class attribute or function
             if (type(selfmember) == Category):#in CATEGORIES) and (selfmember.startswith("__") != True):
-                return getattr(self,selfmember)
+                return getattr(repo,selfmember)
                 
     def synccategory(self):
         """

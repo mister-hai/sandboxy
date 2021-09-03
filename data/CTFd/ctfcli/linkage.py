@@ -74,7 +74,7 @@ class SandBoxyCTFdLinkage():
             masterlistfile (str): The file to load as masterlist, defaults to masterlist.yamlw
         """
         try:
-            self.checkmasterlist()
+            self._checkmasterlist()
             greenprint("[+] Loading masterlist.yaml")
             #self.loadmasterlist()
         except Exception:
@@ -100,7 +100,9 @@ class SandBoxyCTFdLinkage():
         # returns a Repo() object with Category() objects attached
         try:
             # returns a master list
-            self.masterlist = self.ctfdops.createprojectrepo()
+            #self.masterlist = self.ctfdops._createprojectrepo()
+            repoconstruct = self.ctfdops._createprojectrepo()
+            
             # returns a repository object,
             # consisting of everything in the challenges folder
             repositoryobject = self.masterlist.transformtorepository(self.masterlist)
@@ -127,7 +129,7 @@ class SandBoxyCTFdLinkage():
         Supply "print=False" to return a variable instead of display to screen 
         """
         if self._checkmasterlist():
-            self.Repo
+            selfitems = dir(self.repo)
 
     def getchallengesbycategory(self, category, printscr=True):
         """

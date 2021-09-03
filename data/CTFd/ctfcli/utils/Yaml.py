@@ -108,9 +108,9 @@ class Yaml(): #filetype
 
 class MasterFile(Yaml):
     def __new__(cls,*args, **kwargs):
-        cls.__name__ = 'Repo'
-        cls.__qualname__= 'Repo'
-        cls.tag = '!Repo'
+        cls.__name__ = 'repo'
+        cls.__qualname__= 'repo'
+        cls.tag = '!Masterlist'
         return super(cls.__name__, cls).__new__(cls, *args, **kwargs)
 
 class Masterlist(MasterFile):
@@ -119,34 +119,35 @@ class Masterlist(MasterFile):
         self.masterlistfile      = masterlistfile
         self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
         #self.masterlist          = Yaml(self.masterlistlocation)
-        # tagg for yaml file
+        # tag for yaml file
         self.tag = "!Masterlist"
         super().__init__()
 
-    def masterlist_representer(self, tag, dumper: SafeDumper, masterlist) -> MappingNode:
+    def _representer(self, tag, dumper: SafeDumper, codeobject) -> MappingNode:
         """
         Represent a Masterlist instance as a YAML mapping node.
 
-        Dumpung raw?
+        Args:
+            tag (str) : tag to assign object in yaml file
+            codeobject (str): python code in a single object
         """
-        return dumper.represent_mapping(tag, {
-        })
+        return dumper.represent_mapping(tag, codeobject)
  
-    def masterlist_constructor(self, loader: SafeLoader, node: MappingNode):
+    def _constructor(self, loader: SafeLoader, node: MappingNode, codeobject:object):
         """
-        Construct A Masterlist object from the Yaml file
+        Construct A object from the Yaml file
         """
-        return Masterlist(**loader.construct_mapping(node))
+        return codeobject(**loader.construct_mapping(node))
 
-    def get_dumper(self,tag:str, constructor):
+    def _get_dumper(self,tag:str, constructor, classtobuild):
         """
         Add representers to a YAML serializer.
         """
         safe_dumper = SafeDumper
-        safe_dumper.add_representer(Masterlist, self.masterlist_representer)
+        safe_dumper.add_representer(classtobuild, self._masterlist_representer)
         return safe_dumper
  
-    def get_loader(self,tag:str, constructor):
+    def _get_loader(self,tag:str, constructor):
         """
         Add constructors to PyYAML loader.
 
@@ -158,7 +159,7 @@ class Masterlist(MasterFile):
         loader.add_constructor(tag, constructor)
         return loader
     
-    def loadmasterlist(self):
+    def _loadmasterlist(self):
         """
         Loads the masterlist.yaml into Masterlist.data
 
@@ -170,18 +171,18 @@ class Masterlist(MasterFile):
             #open the yml
             # feed the tag and the constructor method to call
             #self.data = 
-            return yaml.load(open(self.masterlistlocation, 'rb'), Loader=self.get_loader(self.tag,self.masterlist_constructor))
+            return yaml.load(open(self.masterlistlocation, 'rb'), Loader=self._get_loader(self.tag,self._constructor))
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
 
-    def writenewmasterlist(self, pythoncode):
+    def _writenewmasterlist(self, pythoncode):
         '''
         Creates a New Masterlist.yaml file from an init command
         '''
         with open("output.yml", "w") as stream:
-            stream.write(yaml.dump(pythoncode, Dumper=self.get_dumper(self.tag,self.masterlist_constructor())))
-
-    def transformtorepository(self, loadedyaml:dict)-> Repo:
+            stream.write(yaml.dump(pythoncode, Dumper=self._get_dumper(self.tag,self._constructor())))
+    
+    def _transformyamltorepository(self, loadedyaml:dict)-> Repo:
         '''
         Transforms Yaml data to Python objects for loading and unloading
         '''
@@ -189,14 +190,14 @@ class Masterlist(MasterFile):
             #open the yml
             # feed the tag and the constructor method to call
             #self.data = 
-            return yaml.load(open(self.masterlistlocation, 'rb'), Loader=self.get_loader("!Repo",Repo.construct()))
+            return yaml.load(open(self.masterlistlocation, 'rb'), Loader=self._get_loader("!Repo",Repo.construct()))
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
         #defaults to name "Repo"
         #pythonobjects = Repo(**loadedyaml)
         #return pythonobjects
 
-    def writemasteryaml(self,name:str, filemode="a"):
+    def _writemasteryaml(self,name:str, filemode="a"):
         '''
         Special function to write the master yaml for the ctfd side of the repository
         remember to assign data to the file with
