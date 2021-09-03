@@ -4,6 +4,30 @@ from utils.Yaml import Challengeyaml,Masterlist,Repository
 from utils.challenge import Challenge
 from utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 from utils.utils import location,getsubdirs
+
+
+###############################################################################
+#  CTFd Repository
+# 
+###############################################################################
+
+class Repo():
+    '''
+    Representation of a repository as exists in the challenges folder
+
+    Args:
+        **args, **kwargs (dict): Feed it a dict of Category()'s with Challenge()'s appended
+    '''
+    def __new__(cls,*args, **kwargs):
+        cls.__name__ = 'Repo'
+        cls.__qualname__= 'Repo'
+        cls.tag = '!Repo'
+        return super(cls).__new__(cls, *args, **kwargs)
+
+class Repository(Repo):
+    def __init__(self,**entries): 
+        self.__dict__.update(entries)
+
 ###############################################################################
 #  CTFd CATEGORY: representation of folder in repository
 ###############################################################################
@@ -103,9 +127,9 @@ class SandboxyCTFdRepository(): #folder
                 dictofcategories[newcategory.name] = newcategory
         # assign all to repository class
         newrepo = Repository(**dictofcategories)
-        masterlist._writenewmasterlist()
+        masterlist._writenewmasterlist(newrepo)
         # return this class to the upper level scope
-        return self.masterlist, repositoryconstruct
+        return masterlist, newrepo
 
     def _addmasterlist(self, masterlist:Masterlist):
         '''

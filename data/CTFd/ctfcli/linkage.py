@@ -14,7 +14,7 @@ from utils.ctfdrepo import Category,SandboxyCTFdRepository
 from utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
 from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
 
-
+from utils.challenge import ChallengeActions
 
 #class CTFCLI():
 class SandBoxyCTFdLinkage():
@@ -101,16 +101,16 @@ class SandBoxyCTFdLinkage():
         try:
             # returns a master list
             #self.masterlist = self.ctfdops._createprojectrepo()
-            repoconstruct = self.ctfdops._createprojectrepo()
+            masterlist, repoconstruct = self.ctfdops._createprojectrepo()
             
             # returns a repository object,
             # consisting of everything in the challenges folder
-            repositoryobject = self.masterlist.transformtorepository(self.masterlist)
+            #repositoryobject = self.masterlist.transformtorepository(self.masterlist)
 
             #assigns repository to self for use in interactive mode
             # writes repository object to file as yaml with tags 
             #self.repo = repositoryobject
-            setattr(self,repositoryobject,"repo")
+            setattr(self,repoconstruct,"repo")
             self.masterlist.writemasteryaml(self.repo, filemode="a")
 
         except Exception:
@@ -149,7 +149,7 @@ class SandBoxyCTFdLinkage():
         """
         self._setauth(ctfdurl,ctfdtoken)
         
-        challenge.sync()
+        challenge.sync(challenge.internalid)
 
     def synccategory(self, category:str,ctfdurl,ctfdtoken):
         """

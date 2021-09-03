@@ -1,5 +1,6 @@
 from utils.apisession import APIHandler
 from utils.utils import errorlogger,greenprint,CATEGORIES
+import hashlib
 
 class Challenge(): #folder
     '''
@@ -18,26 +19,25 @@ class Challenge(): #folder
                 handout,
                 solution
                 ):
-        self.name               = str
         if category not in CATEGORIES:
             errorlogger("[-] Inconsistancy in challenge.yml, \
                 This field should be a Category in approved list {}".format(category))
         else:
-            self.category           = category
+            self.category= category
         # path to challenge folder
         self.challengelocation  = location
         # path to challenge.yml file
-        self.challengefile      = challengefile
+        self.challengefile = challengefile
         # folder
-        self.solutiondir        = solution
+        self.solutiondir = solution
         # folder
-        self.handout            = handout
+        self.handout = handout
         # folder
         #self.challengesrc       = challengesrc
         #self.deployment         = deployment
         self.id = 1
         self.type = str
-        self.name = str
+        self.internalid = hashlib.sha256(self.name)
         self.description = str
         self.value = int
         #if its a dynamic scoring

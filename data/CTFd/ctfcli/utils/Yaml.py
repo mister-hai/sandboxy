@@ -3,58 +3,7 @@ import os
 import yaml
 from yaml import SafeLoader,SafeDumper,MappingNode,safe_load,safe_dump
 from utils.utils import greenprint, redprint, errorlogger
-#https://matthewpburruss.com/post/yaml/
-# This is one way of turning a yaml into a class
 
-class Repo():
-    def __new__(cls,*args, **kwargs):
-        cls.__name__ = 'Repo'
-        cls.__qualname__= 'Repo'
-        cls.tag = '!Repo'
-        return super(cls.__name__, cls).__new__(cls, *args, **kwargs)
-
-class Repository(Repo):
-    def __init__(self,**entries): 
-        self.__dict__.update(entries)
-
-    def repo_representer(self, tag, dumper: SafeDumper, code) -> MappingNode:
-        """
-        Represent a Masterlist instance as a YAML mapping node.
-        """
-        return dumper.represent_mapping(tag, code)
- 
-    def repo_constructor(self, loader: SafeLoader, node: MappingNode):
-        """
-        Construct A Repo object from the Yaml file contents
-        """
-        return Repo(**loader.construct_mapping(node))
-
-    def get_dumper(self,tag:str, constructor):
-        """
-        Add representers to a YAML serializer.
-        """
-        safe_dumper = SafeDumper
-        safe_dumper.add_representer(Masterlist, self.repo_representer)
-        return safe_dumper
- 
-    def get_loader(self,tag:str, constructor):
-        """
-        Add constructors to PyYAML loader.
-
-        Args:
-            tags (str): the tag to use to mark the yaml object in the file
-            constructor (function): theconstructor function to call
-        """
-        loader = SafeLoader
-        loader.add_constructor(tag, constructor)
-        return loader
-
-
-    def construct(self, loader: SafeLoader, node: MappingNode) -> Repo:
-        '''
-        Builder for Repo Objects
-        '''
-        return Repo(**loader.construct_mapping(node))
 
 class Yaml(): #filetype
     '''
@@ -114,6 +63,12 @@ class MasterFile(Yaml):
         return super(cls.__name__, cls).__new__(cls, *args, **kwargs)
 
 class Masterlist(MasterFile):
+    '''
+    This is one way of turning a yaml into a class
+
+    https://matthewpburruss.com/post/yaml/
+
+    '''
     def __init__(self, masterlistfile =  "masterlist.yml"):
         # filename for the full challenge index
         self.masterlistfile      = masterlistfile
@@ -136,6 +91,9 @@ class Masterlist(MasterFile):
     def _constructor(self, loader: SafeLoader, node: MappingNode, codeobject:object) -> object:
         """
         Construct A object from the Yaml file
+
+        Args:
+            loader (SafeLoader) PyYaml Loader to use
         """
         return codeobject(**loader.construct_mapping(node))
 
@@ -144,7 +102,7 @@ class Masterlist(MasterFile):
         Add representers to a YAML serializer.
         """
         safe_dumper = SafeDumper
-        safe_dumper.add_representer(classtobuild, self._masterlist_representer)
+        safe_dumper.add_representer(classtobuild, self._representer)
         return safe_dumper
  
     def _get_loader(self,tag:str, constructor):
@@ -174,6 +132,9 @@ class Masterlist(MasterFile):
             return yaml.load(open(self.masterlistlocation, 'rb'), Loader=self._get_loader(self.tag,self._constructor))
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
+class Testclass():
+    def __init__(self,msg):
+        print(msg)
 
     def _writenewmasterlist(self, pythoncode):
         '''
@@ -190,7 +151,7 @@ class Masterlist(MasterFile):
             #open the yml
             # feed the tag and the constructor method to call
             #self.data = 
-            return yaml.load(open(self.masterlistlocation, 'rb'), Loader=self._get_loader("!Repo",Repo.construct()))
+            return yaml.load(open(self.masterlistlocation, 'rb'), Loader=self._get_loader("!Masterlist"))
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
         #defaults to name "Repo"
