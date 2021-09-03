@@ -1,8 +1,11 @@
 from pathlib import Path
-import yaml,os
+import os
+import yaml
+from yaml import SafeLoader,SafeDumper,MappingNode,safe_load,safe_dump
 from utils.utils import greenprint, redprint, errorlogger
 #https://matthewpburruss.com/post/yaml/
 # This is one way of turning a yaml into a class
+
 class Repo():
     def __new__(cls,*args, **kwargs):
         cls.__name__ = 'Repo'
@@ -14,15 +17,15 @@ class Repository(Repo):
     def __init__(self,**entries): 
         self.__dict__.update(entries)
 
-    def repo_representer(self, tag, dumper: yaml.SafeDumper, code) -> yaml.nodes.MappingNode:
+    def repo_representer(self, tag, dumper: SafeDumper, code) -> MappingNode:
         """
         Represent a Masterlist instance as a YAML mapping node.
         """
         return dumper.represent_mapping(tag, code)
  
-    def repo_constructor(self, loader: yaml.SafeLoader, node: yaml.nodes.MappingNode):
+    def repo_constructor(self, loader: SafeLoader, node: MappingNode):
         """
-        Construct A Masterlist object from the Yaml file
+        Construct A Repo object from the Yaml file contents
         """
         return Repo(**loader.construct_mapping(node))
 
@@ -30,8 +33,8 @@ class Repository(Repo):
         """
         Add representers to a YAML serializer.
         """
-        safe_dumper = yaml.SafeDumper
-        safe_dumper.add_representer(Masterlist, self.masterlist_representer)
+        safe_dumper = SafeDumper
+        safe_dumper.add_representer(Masterlist, self.repo_representer)
         return safe_dumper
  
     def get_loader(self,tag:str, constructor):
@@ -42,12 +45,12 @@ class Repository(Repo):
             tags (str): the tag to use to mark the yaml object in the file
             constructor (function): theconstructor function to call
         """
-        loader = yaml.SafeLoader
+        loader = SafeLoader
         loader.add_constructor(tag, constructor)
         return loader
 
 
-    def construct(self, loader: yaml.SafeLoader, node: yaml.nodes.MappingNode) -> Repo:
+    def construct(self, loader: SafeLoader, node: MappingNode) -> Repo:
         '''
         Builder for Repo Objects
         '''
@@ -58,15 +61,12 @@ class Yaml(): #filetype
     Represents a challange.yml
     Give Path to challenge.yml
     '''
-    def __init__(self, filepath):
-        #set the base values
+    def __init__(self, filepath:Path):
         # kubernetes or ctfd
         self.type = str
         # sets name of Yaml() to name of file
         self.filename = os.path.basename(filepath)
-        #get path of file
-        self.filepath = Path(filepath)
-        #set working dir of file
+        self.filepath = filepath
         self.directory = self.filepath.parent
         #if its a kubernetes config
         if self.filename.endswith(".yaml"):
@@ -82,7 +82,7 @@ class Yaml(): #filetype
         try:
             #open the yml file
             with open(self.filepath) as f:
-                filedata = yaml.safe_load(f.read())#, filepath=filepath)
+                filedata = safe_load(f.read())#, filepath=filepath)
                 self.data = filedata
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
@@ -101,7 +101,7 @@ class Yaml(): #filetype
         try:
             #open the yml file pointed to by the load operation
             with open(self.filepath) as file:
-                yaml.safe_dump(file)
+                safe_dump(file)
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
 
@@ -123,7 +123,7 @@ class Masterlist(MasterFile):
         self.tag = "!Masterlist"
         super().__init__()
 
-    def masterlist_representer(self, tag, dumper: yaml.SafeDumper, masterlist) -> yaml.nodes.MappingNode:
+    def masterlist_representer(self, tag, dumper: SafeDumper, masterlist) -> MappingNode:
         """
         Represent a Masterlist instance as a YAML mapping node.
 
@@ -132,7 +132,7 @@ class Masterlist(MasterFile):
         return dumper.represent_mapping(tag, {
         })
  
-    def masterlist_constructor(self, loader: yaml.SafeLoader, node: yaml.nodes.MappingNode):
+    def masterlist_constructor(self, loader: SafeLoader, node: MappingNode):
         """
         Construct A Masterlist object from the Yaml file
         """
@@ -142,7 +142,7 @@ class Masterlist(MasterFile):
         """
         Add representers to a YAML serializer.
         """
-        safe_dumper = yaml.SafeDumper
+        safe_dumper = SafeDumper
         safe_dumper.add_representer(Masterlist, self.masterlist_representer)
         return safe_dumper
  
@@ -154,7 +154,7 @@ class Masterlist(MasterFile):
             tags (str): the tag to use to mark the yaml object in the file
             constructor (function): theconstructor function to call
         """
-        loader = yaml.SafeLoader
+        loader = SafeLoader
         loader.add_constructor(tag, constructor)
         return loader
     

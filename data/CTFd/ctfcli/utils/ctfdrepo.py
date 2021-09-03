@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from utils.Yaml import Challengeyaml,Masterlist
+from utils.Yaml import Challengeyaml,Masterlist,Repository
 from utils.challenge import Challenge
 from utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 from utils.utils import location,getsubdirs
@@ -22,9 +22,8 @@ class Category(): #folder
         self.name = category
         self.location = location
     
-    def addchallenge(self, challenge:Challenge):
+    def _addchallenge(self, challenge:Challenge):
         """
-        INTERNAL
         Adds a challenge to the repository, appended to Category() class
 
         Args:
@@ -33,6 +32,7 @@ class Category(): #folder
         if challenge.category in CATEGORIES:
             setattr(challenge.category,challenge.name,challenge)
         else:
+            errorlogger(f"[-] Category.addchallenge failed with {challenge.category}")
             raise ValueError
 
 ###############################################################################
@@ -108,11 +108,13 @@ class SandboxyCTFdRepository(): #folder
                     setattr(newcategory,newchallenge.name,newchallenge)
                     
                 # add the new Category() class to self once all challenge folders have been processed
-                self.repo.addcategory(newcategory)
+                self._setcategory(newcategory)
+
                 #add the new challenge to the category as 
                 # its own named child
-                cat = self.getcategory(newcategory.name)
-                newcategory.addchallenge(cat,newchallenge)
+                cat = self._getcategory(newcategory.name)
+                newcategory._addchallenge(cat,newchallenge)
+
         # create a new masterlist
         self.masterlist = Masterlist()
         # return this class to the upper level scope
@@ -123,6 +125,7 @@ class SandboxyCTFdRepository(): #folder
         Process the contents of the challenge folder given into a new Challenge() class
         This is essentially where the definition of a challenge folder itself
         is defined and parsed. You modify this to change that core specification
+
         Args:
             challengefolderpath (str): path to the challenge folder
         '''
@@ -136,11 +139,11 @@ class SandboxyCTFdRepository(): #folder
             challengeitempath = location(challengedata, challengefolderpath)
             # get solutions
             if challengedata == "solution":
-                greenprint(f"[+] Found Solution folder")
+                greenprint("[+] Found Solution folder")
                 solution = challengeitempath
             # get handouts
             if challengedata == "handout":
-                greenprint(f"[+] Found Handout folder for")
+                greenprint("[+] Found Handout folder")
                 handout = challengeitempath
             # get challenge file 
         # generate challenge based on folder contents
@@ -157,12 +160,12 @@ class SandboxyCTFdRepository(): #folder
 
     def listcategories(self):
         """
-        Lists all categories in class
+        Lists all categories
         """
 
-    def addcategory(self, category:Category):
+    def _setcategory(self, category:Category):
         """
-        Adds a Category to the repository
+        Adds a Category to the class
         We are adding classes to this class with "setattr"
         """
         setattr(self, category.name, category)
@@ -173,8 +176,16 @@ class SandboxyCTFdRepository(): #folder
         """
         Removes a category from the repository
         """
+    def addcategory(self, category:Path):
+        """
+        Adds a Category to the repository
 
-    def getcategory(self,category):
+        Args:
+            category (Path): path to category folder, in category level of repository
+        """        
+        #TODO: add entry to masterlist.yaml
+
+    def _getcategory(self,repo:Repository, category):
         """
         Returns The Category, use getattr and a filter
         
@@ -183,6 +194,7 @@ class SandboxyCTFdRepository(): #folder
         
         Returns: 
         """
+        getattr(self.repo, category)
         # for each item in this class
         for selfmember in dir(self):
             # if its a Category, and not a hidden class attribute or function
