@@ -91,16 +91,17 @@ class SandboxyCTFdRepository(): #folder
         for category in repocategoryfolders:
             # if its a repository category folder in aproved list
             if category in CATEGORIES:
-                greenprint("[+]")
+                greenprint(f"[+] Found Category {category}")
+                categorypath =  Path(self.repofolder,category)
                 #create a new Category and assign name based on folder
-                newcategory = Category(category, Path())                
+                newcategory = Category(category,categorypath)        
                 #get subfolder names in category directory
-                categoryfolder = getsubdirs(location(self.repofolder, category))
+                categoryfolder = getsubdirs(categorypath)
                 # itterate over the individual challenges
                 for challengefolder in categoryfolder:
                     greenprint(f"[+] Found Challenge folder {challengefolder}")
                     # track location change to individual challenge subdir
-                    challengefolderpath = location(Path(categoryfolder), challengefolder)
+                    challengefolderpath = Path(categoryfolder, challengefolder)
                     # create new Challenge() class from folder contents
                     newchallenge = self.createchallengefromfolder(challengefolderpath)
                     #assign challenge to category
@@ -117,7 +118,7 @@ class SandboxyCTFdRepository(): #folder
         # return this class to the upper level scope
         return self.masterlist
 
-    def createchallengefromfolder(self, challengefolderpath:Path):
+    def createchallengefromfolder(self, challengefolderpath:Path) -> Challenge:
         '''
         Process the contents of the challenge folder given into a new Challenge() class
         This is essentially where the definition of a challenge folder itself
@@ -130,7 +131,6 @@ class SandboxyCTFdRepository(): #folder
             challengeyaml = Challengeyaml(location(challengefolderpath,'challenge.yaml'))
             greenprint(f"[+] Challenge.yaml found! {challengeyaml.name}")
             # load the yml describing the challenge
-        # itterate over them
         for challengedata in challengefolderdata:
         # get path to challenge subitem
             challengeitempath = location(challengedata, challengefolderpath)
@@ -143,8 +143,6 @@ class SandboxyCTFdRepository(): #folder
                 greenprint(f"[+] Found Handout folder for")
                 handout = challengeitempath
             # get challenge file 
-
-                # get the name of the challenge
         # generate challenge based on folder contents
         newchallenge = Challenge(
             name = challengeyaml.name,
