@@ -123,53 +123,6 @@ class KubernetesYaml(Yaml): #file
     def __init__(self):
         super().__init__()
 
-class Challengeyaml(Yaml): #file
-    """
-    Represents the challenge.yml as exists in the folder for that specific challenge
-
-    Until now, it was a seperate class but now we merge the yaml and the program itself
-    by supplying a dict 
-    >>> filepath = os.path.abspath("challenge.yaml")
-    >>> newchallenge = Challengeyaml(filepath)
-
-    """
-    def __init__(self,yamlfile):
-        #get a representation of the challenge.yaml file
-        yamlcontents = self.loadyaml(yamlfile)
-        self.loadchallengeyaml(**yamlcontents)
-
-        # internal data
-        self.id = str
-        self.synched = bool
-        self.installed = bool
-        super().__init__()
-
-    def loadchallengeyaml(self,**entries):
-        """
-        Unpacks a dict representation of the challenge.yaml into
-        The Challengeyaml() Class, this is ONLY for challenge.yaml
-
-        The structure is simple and only has two levels, and no stored code
-
-        >>> asdf = Challengeyaml(filepath)
-        >>> print(asdf.category)
-        >>> 'Forensics'
-
-        The new challenge name is created by:
-
-        >>> self.__name = "Challenge_" + str(hashlib.sha256(self.name))
-        >>> self.__qualname__ = "Challenge_" + str(hashlib.sha256(self.name))
-        
-        Resulting in a name similar to 
-        Args:
-            yamlfile (str): Full Path to the challenge.yaml
-            **entries (dict): Dict returned from a yaml.load() operation
-        """
-        # unpack supplied dict
-        self.__dict__.update(entries)
-        # the new classname is defined by the name tag in the Yaml now
-        self.__name = "Challenge_" + str(hashlib.sha256(self.name))
-        self.__qualname__ = "Challenge_" + str(hashlib.sha256(self.name))
 class Masterlist(MasterFile):
     """
     This is one way of turning a yaml into a class
@@ -347,11 +300,23 @@ class ChallengeFolder(): #folder
         The program will throw an error and refuse to process that folder
 
     '''
-    def __init__(self, location, challengefile, handout, solution, challengekwargs):
-        self.challengelocation  = location
+    def __init__(self, folderlocation,
+            challengefile,
+            #challengesrc,
+            #deployment,
+            handout,
+            solution
+            ):
+        self.folderlocation  = folderlocation
         self.challengefile = challengefile
         self.solutiondir = solution
         self.handout = handout
+        # load challenge.yaml file
+        yamlcontents = self.loadchallengeyaml(folderlocation)
+        # unpack contents into class
+        self.init(**yamlcontents)
+
+    def init(self, **challengekwargs):
         #self.challengesrc       = challengesrc
         #self.deployment         = deployment
         self.createchallenge()
@@ -361,8 +326,19 @@ class ChallengeFolder(): #folder
         Turns the loaded folder into a CTFd challenge
         '''
 
-class Challenge():
-    '''
+class Challengeyaml(Yaml): #file
+    """
+    Base Class for all the attributes required on both the CTFd side and Repository side
+
+    Args:
+        **kwargs (dict): Dict from Yaml.loadchallengeyaml(filepath)
+
+    Represents the challenge.yml as exists in the folder for that specific challenge
+
+    Until now, it was a seperate class but now we merge the yaml and the program itself
+    by supplying a dict 
+    >>> filepath = os.path.abspath("challenge.yaml")
+    >>> newchallenge = Challengeyaml(filepath)
     This Class is where the data from the challenge.yaml ends up
 
     This is the Protoclass for Challenge.yaml
@@ -370,9 +346,11 @@ class Challenge():
     Additional fields use "get()" for optional and "pop()" for 
     Args:
         **kwargs (dict): The dict created from a yaml.load
-    '''
+    """
     #def __new__(cls,*args, **kwargs):
+
     def __new__(cls,**kwargs):
+        cls.jsonpayload = {}
         #Required sections get the "pop()" function 
         # a KeyError will be raised if the key does not exist
         try:
@@ -406,16 +384,15 @@ class Challenge():
             cls.solutiondir = kwargs.pop("solutiondir")
             # Handout Folder
             cls.handout = kwargs.pop("handout")
-            #cls.challengesrc
-            #cls.deployment
         except Exception:
             errorlogger("[-] Challenge.yaml does not conform to specification, \
                 rejecting. Please check the error log.")
-        #self.challengesrc       = challengesrc
-        #self.deployment         = deployment
-        cls.description = str
-        cls.value = int
-        cls.solves = int
+        #self.challengesrc = kwargs.get('challengesrc')
+        #self.deployment   = kwargs.get('deployment')
+        cls.description = kwargs.get('description')
+        cls.value = kwargs.get('value')
+        # can be from masterfile or server, not challenge.yaml
+        cls.solves = kwargs.get('solves')
         cls.solved_by_me = "false"
         # Topics are used to help tell what techniques/information a challenge involves
         # They are generally only visible to admins
@@ -424,7 +401,7 @@ class Challenge():
         #    - information disclosure
         #    - buffer overflow
         #    - memory forensics
-        cls.topics = kwargs.pop("topics")
+        cls.topics = kwargs.get("topics")
         # Tags are used to provide additional public tagging to a challenge
         # Can be removed if unused
         # Accepts strings
@@ -432,9 +409,36 @@ class Challenge():
         #    - web
         #    - sandbox
         #    - js
-        cls.tags = kwargs.pop("tags")
+        cls.tags = kwargs.get("tags")
         #cls.template = str
         cls.script =  str
+        # Hints are used to give players a way to buy or have suggestions. They are not
+        # required but can be nice.
+        # Can be removed if unused
+        # Accepts dictionaries or strings
+        cls.hints = kwargs.get("hints")
+        #    - {
+        #        content: "This hint costs points",
+        #        cost: 10
+        #    }
+        #    - This hint is free
+        # Requirements are used to make a challenge require another challenge to be
+        # solved before being available.
+        # Can be removed if unused
+        # Accepts challenge names as strings or challenge IDs as integers
+        cls.requirements = kwargs.get("requirements")
+        #    - "Warmup"
+        #    - "Are you alive"
+        # The state of the challenge.
+        # If the field is omitted, the challenge is visible by default.
+        # If provided, the field can take one of two values: hidden, visible.
+        cls.state = kwargs.get("state")
+        #state: hidden
+        
+        # Specifies what version of the challenge specification was used.
+        # Subject to change until ctfcli v1.0.0
+        #version: "0.1"
+        cls.version = kwargs.get("version")
         # The extra field provides additional fields for data during the install/sync commands/
         # Fields in extra can be used to supply additional information for other challenge types
         # For example the follow extra field is for dynamic challenges. To use these following
@@ -483,8 +487,7 @@ class Challenge():
         # connection_info is used to provide a link, hostname, or instructions on how to connect to a challenge
         cls.connection_info = kwargs.get("connection_info")
         # list of strings, each a challenge name to be completed before this one is allowed
-        cls.requirements = kwargs.pop('requirements')
-        cls.jsonpayload = {}
+        cls.requirements = kwargs.get('requirements')
         if cls.attempts:
             cls.jsonpayload["max_attempts"] = cls.attempts
         if cls.connection_info:
@@ -492,16 +495,45 @@ class Challenge():
 
         #return super(cls).__new__(cls, *args, **kwargs)
         return super().__new__(cls)
+    
+    def __init__(self,yamlfile):
+        #get a representation of the challenge.yaml file
+        yamlcontents = self.loadyaml(yamlfile)
+        self.loadchallengeyaml(**yamlcontents)
+
+        # internal data
+        self.id = str
+        self.synched = bool
+        self.installed = bool
+        super().__init__()
+
+    def loadchallengeyaml(self,**entries):
+        """
+        Unpacks a dict representation of the challenge.yaml into
+        The Challengeyaml() Class, this is ONLY for challenge.yaml
+
+        The structure is simple and only has two levels, and no stored code
+
+        >>> asdf = Challengeyaml(filepath)
+        >>> print(asdf.category)
+        >>> 'Forensics'
+
+        The new challenge name is created by:
+
+        >>> self.__name = "Challenge_" + str(hashlib.sha256(self.name))
+        >>> self.__qualname__ = "Challenge_" + str(hashlib.sha256(self.name))
         
-    def __init__(self,**entries): 
-        """
-        Base Class for all the attributes required on both the CTFd side and Repository side
-
+        Resulting in a name similar to 
         Args:
-            **kwargs (dict): Dict from Yaml.loadchallengeyaml(filepath)
+            yamlfile (str): Full Path to the challenge.yaml
+            **entries (dict): Dict returned from a yaml.load() operation
         """
+        # unpack supplied dict
         self.__dict__.update(entries)
-
+        # the new classname is defined by the name tag in the Yaml now
+        self.__name = "Challenge_" + str(hashlib.sha256(self.name))
+        self.__qualname__ = "Challenge_" + str(hashlib.sha256(self.name))
+    
 class ChallengeActions(ChallengeFolder):
 
     def sync(self):
