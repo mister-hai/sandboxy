@@ -2,7 +2,7 @@ import importlib
 import os,sys,fire
 from linkage import SandBoxyCTFdLinkage
 from utils.utils import CATEGORIES
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from pathlib import Path
 
 

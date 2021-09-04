@@ -12,6 +12,14 @@ Subpackages
 Submodules
 ----------
 
+ctfcli.ClassConstructor module
+------------------------------
+
+.. automodule:: ctfcli.ClassConstructor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 ctfcli.linkage module
 ---------------------
 

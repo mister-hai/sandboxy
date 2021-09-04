@@ -5,7 +5,7 @@ from utils.challenge import Challenge
 
 from cookiecutter.main import cookiecutter
 
-from utils.Yaml import Yaml,Masterlist
+from ClassConstructor import Masterlist
 from utils.utils import loadchallengeyaml
 from utils.utils import errorlogger
 from utils.apisession import APISession

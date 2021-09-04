@@ -11,63 +11,13 @@ Welcome to ctfcli's documentation!
    :caption: Contents:
 
    modules
-   
+   ctfcli
+   ctfcli.utils
+   ctfcli.ctfcli module
+
 Indices and tables
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-ctfcli
-======
-
-.. toctree::
-   :maxdepth: 4
-
-   ctfcli
-ctfcli package
-==============
-
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   ctfcli.utils
-
-Submodules
-----------
-
-ctfcli.ctfcli module
---------------------
-
-.. automodule:: ctfcli.ctfcli
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ctfcli.linkage module
----------------------
-
-.. automodule:: ctfcli.linkage
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ctfcli.setup module
--------------------
-
-.. automodule:: ctfcli.setup
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: ctfcli
-   :members:
-   :undoc-members:
-   :show-inheritance:

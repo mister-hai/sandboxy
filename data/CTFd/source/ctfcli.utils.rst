@@ -28,26 +28,10 @@ ctfcli.utils.apisession module
    :undoc-members:
    :show-inheritance:
 
-ctfcli.utils.auth module
-------------------------
-
-.. automodule:: ctfcli.utils.auth
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 ctfcli.utils.challenge module
 -----------------------------
 
 .. automodule:: ctfcli.utils.challenge
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ctfcli.utils.checks module
---------------------------
-
-.. automodule:: ctfcli.utils.checks
    :members:
    :undoc-members:
    :show-inheritance:
@@ -72,14 +56,6 @@ ctfcli.utils.models module
 --------------------------
 
 .. automodule:: ctfcli.utils.models
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ctfcli.utils.securityutils module
----------------------------------
-
-.. automodule:: ctfcli.utils.securityutils
    :members:
    :undoc-members:
    :show-inheritance:

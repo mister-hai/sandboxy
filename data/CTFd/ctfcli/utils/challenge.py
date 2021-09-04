@@ -1,8 +1,7 @@
 from utils.apisession import APIHandler
 from utils.utils import errorlogger,greenprint,CATEGORIES
-import hashlib
 
-class Challenge(): #folder
+class ChallengeFolder(): #folder
     '''
     Represents a Challenge Folder
         If the folder contents are not to specification
@@ -37,7 +36,7 @@ class Challenge(): #folder
         #self.deployment         = deployment
         self.id = 1
         self.type = str
-        self.internalid = hashlib.sha256(self.name)
+        self.internalname = hashlib.sha256(self.name)
         self.description = str
         self.value = int
         #if its a dynamic scoring

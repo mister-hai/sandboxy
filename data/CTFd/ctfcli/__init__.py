@@ -1,4 +1,4 @@
-from __main__ import Ctfcli
+from __main__ import *
 import ctfcli
 import linkage
 import utils.ctfdrepo
@@ -13,5 +13,4 @@ from utils.ctfdrepo import SandboxyCTFdRepository
 from utils.gitrepo import SandboxyGitRepository
 from utils.apisession import APISession,APIHandler
 #from utils.models import *
-from utils.utils import *
-from utils.Yaml import Yaml,Masterlist,Challengeyaml,KubernetesYaml,Repo
+from utils.Yaml import Yaml,Challengeyaml,KubernetesYaml

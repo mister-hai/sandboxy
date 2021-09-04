@@ -1,84 +1,12 @@
 import os
 from pathlib import Path
-from utils.Yaml import Challengeyaml,Masterlist,Repository
-from utils.challenge import Challenge
-from utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 from utils.utils import location,getsubdirs
+from ClassConstructor import Challenge,Category,Repository,Masterlist
+from utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
+#this class get imported up from another file, then pulled in from there 
+# sideways after some operations have been performed
+#from utils.challenge import Challenge
 
-
-###############################################################################
-#  CTFd Repository
-# 
-###############################################################################
-
-class Repo():
-    '''
-    Representation of a repository as exists in the challenges folder
-
-    Args:
-        **args, **kwargs (dict): Feed it a dict of Category()'s with Challenge()'s appended
-    '''
-    def __new__(cls,*args, **kwargs):
-        cls.__name__ = 'Repo'
-        cls.__qualname__= 'Repo'
-        cls.tag = '!Repo'
-        return super(cls).__new__(cls, *args, **kwargs)
-
-class Repository(Repo):
-    def __init__(self,**entries): 
-        self.__dict__.update(entries)
-
-###############################################################################
-#  CTFd CATEGORY: representation of folder in repository
-###############################################################################
-class Category(): #folder
-    """
-    use getattr(),setattr() to add/query Challenge Entries
-    this is used for keeping track internally
-
-    ChallengeCategory:
-        represents a folder in the PROJECTDIRECTORY/data/CTFd/challenges/ dir
-      ChallengeEntry:
-        represents a challenge.yaml
-        name: thing
-    """
-    def __init__(self,category,location):
-        self.name = category
-        self.location = location
-    
-    def _addchallenge(self, challenge:Challenge):
-        """
-        Adds a challenge to the repository, appended to Category() class
-
-        Args:
-            challenge (Challenge): Challenge() object from folder in repository
-        """
-        if challenge.category in CATEGORIES:
-            setattr(challenge.category,challenge.name,challenge)
-        else:
-            errorlogger(f"[-] Category.addchallenge failed with {challenge.category}")
-            raise ValueError
-
-###############################################################################
-#  Handout folder
-###############################################################################
-class Handout():
-    '''
-    Represents a Handout folder for files and data to be given to the
-    CTF player
-    '''
-    def __init__(self):
-        pass
-###############################################################################
-#  Solution folder
-###############################################################################
-class Solution():
-    '''
-    Represents a Solution folder for data describing the methods and 
-    steps necessary to solve the challenge and capture the flag
-    '''
-    def __init__(self):
-        pass
 ###############################################################################
 #  CTFd REPOSIROTY: representation of folder in repository
 ###############################################################################
@@ -173,7 +101,7 @@ class SandboxyCTFdRepository(): #folder
         '''
         challengefolderdata = os.listdir(challengefolderpath)
         if "challenge.yml" in challengefolderdata:
-            challengeyaml = Challengeyaml(location(challengefolderpath,'challenge.yaml'))
+            challengeyaml = Challenge(location(challengefolderpath,'challenge.yaml'))
             greenprint(f"[+] Challenge.yaml found! {challengeyaml.name}")
             # load the yml describing the challenge
         for challengedata in challengefolderdata:
