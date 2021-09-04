@@ -1,11 +1,11 @@
+import hashlib
 import yaml,os
+from pathlib import Path
 from yaml import SafeLoader,SafeDumper,MappingNode
 from utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
 from utils.challenge import Challenge
-from pathlib import Path
 from yaml import SafeLoader,SafeDumper,MappingNode,safe_load,safe_dump
-import hashlib
-
+from utils.apisession import APISession,APIHandler
 
 # Tutorial`        
 class ClassA():
@@ -340,7 +340,37 @@ class Category(): #folder
             errorlogger(f"[-] Category.addchallenge failed with {challenge.category}")
             raise ValueError
 
+class ChallengeFolder(): #folder
+    '''
+    Represents a Challenge Folder
+        If the folder contents are not to specification
+        The program will throw an error and refuse to process that folder
+
+    '''
+    def __init__(self, location, challengefile, handout, solution, challengekwargs):
+        self.challengelocation  = location
+        self.challengefile = challengefile
+        self.solutiondir = solution
+        self.handout = handout
+        #self.challengesrc       = challengesrc
+        #self.deployment         = deployment
+        self.createchallenge()
+
+    def createchallenge(self):
+        '''
+        Turns the loaded folder into a CTFd challenge
+        '''
+
 class Challenge():
+    '''
+    This Class is where the data from the challenge.yaml ends up
+
+    This is the Protoclass for Challenge.yaml
+
+    Additional fields use "get()" for optional and "pop()" for 
+    Args:
+        **kwargs (dict): The dict created from a yaml.load
+    '''
     #def __new__(cls,*args, **kwargs):
     def __new__(cls,**kwargs):
         try:
@@ -351,7 +381,13 @@ class Challenge():
                 This field should be a Category in approved list {}".format(category))
             else:
                 cls.category = category
+
             cls.name = kwargs.pop("name")
+            cls.internalname = "challenge_" + str(hashlib.sha256(cls.name.encode("ascii")).hexdigest())
+            cls.__name__ = "Challenge"
+            cls.__qualname__= "Challenge"
+            cls.tag = '!Challenge'
+
             cls.author = kwargs.pop('author')
             cls.description = kwargs.pop('description')
             # check for int in challenge value
@@ -373,14 +409,52 @@ class Challenge():
         except Exception:
             errorlogger("[-] Challenge.yaml does not conform to specification, \
                 rejecting. Please check the error log.")
-        # hash the name and set the classes name as that
-        cls.internalname = "challenge_" + str(hashlib.sha256(cls.name.encode("ascii")).hexdigest())
-        cls.__name__ = "Challenge"
-        cls.__qualname__= "Challenge"
-        cls.tag = '!Challenge'
-        return super().__new__(cls)
-        #return super(cls).__new__(cls, *args, **kwargs)
+        #self.challengesrc       = challengesrc
+        #self.deployment         = deployment
+        cls.description = str
+        cls.value = int
+        #if its a dynamic scoring
+        cls.dynamic = bool
+        cls.solves = int
+        cls.solved_by_me = "false"
+        cls.category = str
+        cls.tags = []
+        cls.template = str
+        cls.script =  str
+        cls.attempts = int
+        #all OPTIONAL values get the GET statement
+        cls.connection_info = kwargs.get("connection_info")
+        # list of strings, each a challenge name to be completed before this one is allowed
+        cls.requirements = kwargs.pop('requirements')
+        cls.jsonpayload = {}
+        if cls.attempts:
+            cls.jsonpayload["max_attempts"] = cls.attempts
+        if cls.connection_info:
+            cls.jsonpayload["connection_info"] = cls.connection_info
+        # Some challenge types (e.g. dynamic) override value.
+        # We can't send it to CTFd because we don't know the current value
+        if cls.dynamic == True:
+            cls.scorepayload = {
+                        'extra': {
+                            'initial': 500,
+                            'decay'  : 100,
+                            'minimum': 50
+                            }
+                        }
+        elif cls.dynamic == False:
+            cls.scorepayload = {'value':cls.value}
+            cls.jsonpayload = {
+                "name":         cls.name,
+                "category":     cls.category,
+                "description":  cls.description,
+                "type":         cls.type,
+                **cls.scorepayload,
+                "author" :      cls.author
+                }
 
+        #return super(cls).__new__(cls, *args, **kwargs)
+        return super().__new__(cls)
+        
     def __init__(self,**entries): 
         """
         Base Class for all the attributes required on both the CTFd side and Repository side
@@ -389,6 +463,122 @@ class Challenge():
             **kwargs (dict): Dict from Yaml.loadchallengeyaml(filepath)
         """
         self.__dict__.update(entries)
+
+class ChallengeActions(ChallengeFolder):
+
+    def sync(self):
+        '''
+        Adds a challenge to CTFd server
+        
+        '''
+        greenprint(f"Syncing challenge: {self.name}")
+        try:
+            #make API call
+            apihandler = APIHandler()
+            self.processchallenge(apihandler,self.jsonpayload)
+        except Exception:
+            errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
+
+    def processchallenge(self,apihandler:APIHandler,jsonpayload:dict):
+        try:
+            # Create new flags
+            if self.flags:
+                apihandler.processflags(self,self.id,jsonpayload)
+            # Update topics
+            if self.topics:
+                apihandler.processtopics(self,self.id,jsonpayload)
+            # Update tags
+            if self.tags:
+                apihandler.processtopics(self,self.id,jsonpayload)
+            # Upload files
+            if self.files:
+                apihandler.uploadfiles(self,self.id,jsonpayload)
+            # Create hints
+            if self.hints:
+                apihandler.processhints(self,self.id,jsonpayload)
+            # Update requirements
+            if self.requirements:
+                apihandler.processrequirements(self,self.id,jsonpayload)
+        except Exception:
+            errorlogger("[-] Error in Challenge.processchallenge()")
+
+    def create(self,
+               connection_info,
+               attempts,
+               max_attempts,
+               value,
+               dynamic,
+               initial,
+               decay,
+               minimum,
+               name,
+               category,
+               description,
+               author,
+               flags,
+               topics,
+               tags,
+               hints,
+               files,
+               requirements
+    ):
+        '''
+        host@server$> ctfops challenge create
+        Creates a Manually crafted Challenge from supplied arguments
+        on the command line
+
+        Not Implemented yet
+        '''
+        self.id = 1
+        self.type = type
+        self.name = name
+        self.description = description
+        self.value = value
+        #if its a dynamic scoring
+        self.dynamic = dynamic
+        self.initial = initial
+        self.decay = decay
+        self.minimum = minimum
+        self.solved_by_me = "false"
+        self.category = category
+        self.tags = tags
+        self.attempts = attempts
+        self.connection_info = connection_info
+
+        self.jsonpayload = {}
+        if self.attempts:
+            self.jsonpayload["max_attempts"] = self.max_attempts
+        if connection_info:
+            self.jsonpayload["connection_info"] = self.connection_info
+        # Some challenge types (e.g. dynamic) override value.
+        # We can't send it to CTFd because we don't know the current value
+        if self.dynamic == True:
+            self.scorepayload = {
+                        'extra': {
+                            'initial': self.initial,
+                            'decay'  : self.decay,
+                            'minimum': self.minimum
+                            }
+                        }
+        elif self.dynamic == False:
+            self.scorepayload = {'value':value}
+            self.jsonpayload = {
+                "name":         self.name,
+                "category":     self.category,
+                "description":  self.description,
+                "type":         self.type,
+                **self.scorepayload,
+                "author" :      self.author
+                }
+        greenprint(f"Syncing challenge: {self.name}")
+        try:
+            #make API call
+            apihandler = APIHandler()
+            self.processchallenge(apihandler,self.jsonpayload)
+        except Exception:
+            errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
+
+
 
 ###############################################################################
 #  Handout folder

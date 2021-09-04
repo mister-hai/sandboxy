@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
+from collections import Tuple
 from utils.utils import location,getsubdirs
-from ClassConstructor import Challenge,Category,Repository,Masterlist
+from ClassConstructor import ChallengeFolder,Category,Repository,Masterlist
 from utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 #this class get imported up from another file, then pulled in from there 
 # sideways after some operations have been performed
@@ -16,9 +17,6 @@ class SandboxyCTFdRepository(): #folder
     Companion to the SandboxyCTFdRepository
     """
     def __init__(self):
-        # reflects the data subdirectory in the project root
-        #self.DATAROOT            =  os.path.join(self.PROJECTROOT,"data")
-        # represents the ctfd data folder, in typical usage is set by lib.sh
         #CHALLENGEREPOROOT=/home/moop/sandboxy/data/CTFd
         if os.getenv("CHALLENGEREPOROOT"):
             self.CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
@@ -37,7 +35,7 @@ class SandboxyCTFdRepository(): #folder
                     self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
         super(SandboxyCTFdRepository, self).__init__()
     
-    def _createprojectrepo(self)-> Masterlist:
+    def _createprojectrepo(self)-> Tuple[Masterlist,Repository]:
         '''
         Performs all the actions necessary to create a repository
         From the Challenges Folder in the DATAROOT
@@ -90,7 +88,7 @@ class SandboxyCTFdRepository(): #folder
         cat = self._getcategory(newcategory.name)
         return cat
         
-    def createchallengefromfolder(self, challengefolderpath:Path) -> Challenge:
+    def createchallengefromfolder(self, challengefolderpath:Path) -> ChallengeFolder:
         '''
         Process the contents of the challenge folder given into a new Challenge() class
         This is essentially where the definition of a challenge folder itself
@@ -101,12 +99,12 @@ class SandboxyCTFdRepository(): #folder
         '''
         challengefolderdata = os.listdir(challengefolderpath)
         if "challenge.yml" in challengefolderdata:
-            challengeyaml = Challenge(location(challengefolderpath,'challenge.yaml'))
+            challengeyaml = ChallengeFolder(location(challengefolderpath,'challenge.yaml'))
             greenprint(f"[+] Challenge.yaml found! {challengeyaml.name}")
             # load the yml describing the challenge
         for challengedata in challengefolderdata:
         # get path to challenge subitem
-            challengeitempath = location(challengedata, challengefolderpath)
+            challengeitempath = location(challengefolderpath, challengedata)
             # get solutions
             if challengedata == "solution":
                 greenprint("[+] Found Solution folder")
@@ -117,7 +115,7 @@ class SandboxyCTFdRepository(): #folder
                 handout = challengeitempath
             # get challenge file 
         # generate challenge based on folder contents
-        newchallenge = Challenge(
+        newchallenge = ChallengeFolder.createchallenge(
             name = challengeyaml.name,
             category = challengeyaml.category,
             challengefile = challengeyaml.filepath,
