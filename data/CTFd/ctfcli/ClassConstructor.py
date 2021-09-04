@@ -7,7 +7,7 @@ from utils.challenge import Challenge
 from yaml import SafeLoader,SafeDumper,MappingNode,safe_load,safe_dump
 from utils.apisession import APISession,APIHandler
 
-# Tutorial`        
+# Tutorial
 class ClassA():
     def __init__(self, message):
         print(message)
@@ -373,6 +373,8 @@ class Challenge():
     '''
     #def __new__(cls,*args, **kwargs):
     def __new__(cls,**kwargs):
+        #Required sections get the "pop()" function 
+        # a KeyError will be raised if the key does not exist
         try:
             # Required sections
             category= kwargs.pop("category")
@@ -381,7 +383,7 @@ class Challenge():
                 This field should be a Category in approved list {}".format(category))
             else:
                 cls.category = category
-
+            # set class name as challenge name sha256 hashed
             cls.name = kwargs.pop("name")
             cls.internalname = "challenge_" + str(hashlib.sha256(cls.name.encode("ascii")).hexdigest())
             cls.__name__ = "Challenge"
@@ -413,24 +415,35 @@ class Challenge():
         #self.deployment         = deployment
         cls.description = str
         cls.value = int
-        #if its a dynamic scoring
-        cls.dynamic = bool
         cls.solves = int
         cls.solved_by_me = "false"
-        cls.category = str
-        cls.tags = []
-        cls.template = str
+        # Topics are used to help tell what techniques/information a challenge involves
+        # They are generally only visible to admins
+        # Accepts strings
+        #topics:
+        #    - information disclosure
+        #    - buffer overflow
+        #    - memory forensics
+        cls.topics = kwargs.pop("topics")
+        # Tags are used to provide additional public tagging to a challenge
+        # Can be removed if unused
+        # Accepts strings
+        #tags:
+        #    - web
+        #    - sandbox
+        #    - js
+        cls.tags = kwargs.pop("tags")
+        #cls.template = str
         cls.script =  str
-        cls.attempts = int
-        #all OPTIONAL values get the GET statement
-        cls.connection_info = kwargs.get("connection_info")
-        # list of strings, each a challenge name to be completed before this one is allowed
-        cls.requirements = kwargs.pop('requirements')
-        cls.jsonpayload = {}
-        if cls.attempts:
-            cls.jsonpayload["max_attempts"] = cls.attempts
-        if cls.connection_info:
-            cls.jsonpayload["connection_info"] = cls.connection_info
+        # The extra field provides additional fields for data during the install/sync commands/
+        # Fields in extra can be used to supply additional information for other challenge types
+        # For example the follow extra field is for dynamic challenges. To use these following
+        # extra fields, set the type to "dynamic" and uncomment the "extra" section below
+        # extra:
+        #     initial: 500
+        #     decay: 100
+        #     minimum: 50
+        cls.dynamic = bool
         # Some challenge types (e.g. dynamic) override value.
         # We can't send it to CTFd because we don't know the current value
         if cls.dynamic == True:
@@ -451,6 +464,31 @@ class Challenge():
                 **cls.scorepayload,
                 "author" :      cls.author
                 }
+
+        #all OPTIONAL values get the GET statement
+        # Can be removed if unused
+        cls.attempts = int
+        # Settings used for Dockerfile deployment
+        # If not used, remove or set to null
+        # If you have a Dockerfile set to .
+        # If you have an imaged hosted on Docker set to the image url (e.g. python/3.8:latest, registry.gitlab.com/python/3.8:latest)
+        # Follow Docker best practices and assign a tag
+        cls.image = kwargs.get('image')
+        # Specify a host to deploy the challenge onto.
+        # The currently supported URI schemes are ssh:// and registry://
+        # ssh is an ssh URI where the above image will be copied to and deployed (e.g. ssh://root@123.123.123.123)
+        # registry is a Docker registry tag (e.g registry://registry.example.com/test/image)
+        # host can also be specified during the deploy process: `ctf challenge deploy challenge --host=ssh://root@123.123.123.123`
+        cls.host = kwargs.get("host")
+        # connection_info is used to provide a link, hostname, or instructions on how to connect to a challenge
+        cls.connection_info = kwargs.get("connection_info")
+        # list of strings, each a challenge name to be completed before this one is allowed
+        cls.requirements = kwargs.pop('requirements')
+        cls.jsonpayload = {}
+        if cls.attempts:
+            cls.jsonpayload["max_attempts"] = cls.attempts
+        if cls.connection_info:
+            cls.jsonpayload["connection_info"] = cls.connection_info
 
         #return super(cls).__new__(cls, *args, **kwargs)
         return super().__new__(cls)
@@ -523,7 +561,7 @@ class ChallengeActions(ChallengeFolder):
                requirements
     ):
         '''
-        host@server$> ctfops challenge create
+        host@server$> python ./ctfcli/ ctfcli ctfdops repo <category name> challenge create
         Creates a Manually crafted Challenge from supplied arguments
         on the command line
 
