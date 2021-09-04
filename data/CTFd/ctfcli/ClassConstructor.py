@@ -20,11 +20,13 @@ class ClassB():
         codeobject (object): An arbitrary function or bit of code as a single object
     """
     def __init__(self, codeobject, message:str):
-        codeobject(message)
+        self.codeobject = codeobject
+        self.codeobject(message)
 
 class Proto2():
     """
-    The Class used to represent a repository
+    The Class Accepts a dict of {Classname:Class(params)}
+    The Class calls ClassB(ClassA, Message) -> ClassA(message)
     """
     def __init__(self,**entries):
         self.__dict__.update(entries)
@@ -32,8 +34,8 @@ class Proto2():
 
 # Quick test to check if modifications have affected base function
 # testinstance = ClassB(ClassA,message="this message is piped through the scope to an arbitrary class")
-#asdf = {"id":1,"name":"testrepository","ClassA": testinstance ,"tag":'!Repo'}
-#qwer = Proto2(**asdf)
+#protopayload = {"ClassA": testinstance}
+#qwer = Proto2(**protopayload)
 #qwer
 
 ###############################################################################
@@ -339,37 +341,99 @@ class Category(): #folder
             raise ValueError
 
 class Challenge():
+    #def __new__(cls,*args, **kwargs):
     def __new__(cls,**kwargs):
-        cls.__name__ = ''
-        cls.__qualname__= ''
+        try:
+            # Required sections
+            category= kwargs.pop("category")
+            if category not in CATEGORIES:
+                errorlogger("[-] Inconsistancy in challenge.yml, \
+                This field should be a Category in approved list {}".format(category))
+            else:
+                cls.category = category
+            cls.name = kwargs.pop("name")
+            cls.author = kwargs.pop('author')
+            cls.description = kwargs.pop('description')
+            # check for int in challenge value
+            if type(kwargs.get('value')) != int:
+                raise TypeError
+            else:
+                cls.value = kwargs.pop('value')
+            cls.type = kwargs.pop('type')
+            #path to challenge folder
+            cls.location = kwargs.pop("location")
+            # path to challenge.yml file
+            cls.challengefile = kwargs.pop("challengefile")
+            # Solutions Folder
+            cls.solutiondir = kwargs.pop("solutiondir")
+            # Handout Folder
+            cls.handout = kwargs.pop("handout")
+            #cls.challengesrc
+            #cls.deployment
+        except Exception:
+            errorlogger("[-] Challenge.yaml does not conform to specification, \
+                rejecting. Please check the error log.")
+        # hash the name and set the classes name as that
+        cls.internalname = "challenge_" + str(hashlib.sha256(cls.name.encode("ascii")).hexdigest())
+        cls.__name__ = "Challenge"
+        cls.__qualname__= "Challenge"
         cls.tag = '!Challenge'
         return super().__new__(cls)
+        #return super(cls).__new__(cls, *args, **kwargs)
 
-    def __init__(self):
+    def __init__(self,**entries): 
         """
         Base Class for all the attributes required on both the CTFd side and Repository side
 
         Args:
             **kwargs (dict): Dict from Yaml.loadchallengeyaml(filepath)
         """
+        self.__dict__.update(entries)
 
 ###############################################################################
 #  Handout folder
 ###############################################################################
-class Handout():
+class Hando():
+    '''
+    LOL how do you like THIS name?!?
+    muahaha
+    '''
+    #def __new__(cls,*args, **kwargs):
+    def __new__(cls,**kwargs):
+        cls.__name__ = "Handout"
+        cls.__qualname__= 'Handout'
+        cls.tag = '!Handout'
+        return super().__new__(cls)
+        #return super(cls).__new__(cls, *args, **kwargs)
+
+class Handout(Hando):
     """
     Represents a Handout folder for files and data to be given to the
     CTF player
     """
-    def __init__(self):
-        pass
+    def __init__(self,**entries): 
+        self.__dict__.update(entries)
+
 ###############################################################################
 #  Solution folder
 ###############################################################################
-class Solution():
+class Soluto():
+    '''
+    OR THIS!?!? muhahahaAHAHAHA
+
+    '''
+    #def __new__(cls,*args, **kwargs):
+    def __new__(cls,**kwargs):
+        cls.__name__ = "Solution"
+        cls.__qualname__= 'Solution'
+        cls.tag = '!Solution'
+        return super().__new__(cls)
+        #return super(cls).__new__(cls, *args, **kwargs)
+
+class Solution(Soluto):
     """
     Represents a Solution folder for data describing the methods and 
     steps necessary to solve the challenge and capture the flag
     """
-    def __init__(self):
-        pass
+    def __init__(self,**entries): 
+        self.__dict__.update(entries)

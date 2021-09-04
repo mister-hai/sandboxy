@@ -8,16 +8,7 @@ class ChallengeFolder(): #folder
         The program will throw an error and refuse to process that folder
 
     '''
-    def __init__(self, 
-                name,
-                category,
-                location, 
-                challengefile, 
-                #challengesrc,
-                #deployment,
-                handout,
-                solution
-                ):
+    def __init__(self, category, location, challengefile, handout, solution):
         if category not in CATEGORIES:
             errorlogger("[-] Inconsistancy in challenge.yml, \
                 This field should be a Category in approved list {}".format(category))
