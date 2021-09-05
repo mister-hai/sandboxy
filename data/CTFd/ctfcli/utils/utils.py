@@ -56,7 +56,12 @@ criticallog  = lambda message: logger.critical(message)
 # returns subdirectories , without . files/dirs
 # name of the yaml file expected to have the challenge data in each subfolder
 basechallengeyaml   = "challenge.yml"
-getsubdirs = lambda directory: [name for name in os.listdir(os.path.abspath(directory)) if os.path.isdir(name) and not re.match(r'\..*', name)]
+def getsubdirs(directory):
+    wat = []
+    for item in os.listdir(os.path.normpath(directory)):
+       if (not os.path.isfile(os.path.join(directory, item))) and not re.match(r'\..*', item):
+           wat.append(Path(os.path.join(directory, item)))
+    return wat
 # open with read operation
 challengeyamlbufferr = lambda category,challenge: open(os.path.join(category,challenge,basechallengeyaml),'r')
 # open with write operation

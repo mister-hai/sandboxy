@@ -53,13 +53,10 @@ class Ctfcli():
 
         Replacing <URL> with your CTFd website url
         and replacing <TOKEN> with your CTFd website token
-
         You can obtain a auth token from the "settings" page in the "admin panel"
-
         This will initialize the repository, from there, you can either:
         
         Pull a remote repository
-
         >>> host@server$> ctfd.py gitops createremoterepo https://REMOTE_REPO_URL.git
 
         Or you can sync the initialized repository to CTFd:
