@@ -4,14 +4,6 @@ ctfcli.utils package
 Submodules
 ----------
 
-ctfcli.utils.Yaml module
-------------------------
-
-.. automodule:: ctfcli.utils.Yaml
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 ctfcli.utils.apifunctions module
 --------------------------------
 
@@ -24,14 +16,6 @@ ctfcli.utils.apisession module
 ------------------------------
 
 .. automodule:: ctfcli.utils.apisession
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ctfcli.utils.challenge module
------------------------------
-
-.. automodule:: ctfcli.utils.challenge
    :members:
    :undoc-members:
    :show-inheritance:

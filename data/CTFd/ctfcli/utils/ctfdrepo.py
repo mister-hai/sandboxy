@@ -1,8 +1,7 @@
 from genericpath import isfile
 import os
 from pathlib import Path
-from collections import Tuple
-from utils.utils import location,getsubdirs
+from utils.utils import getsubdirs
 from ClassConstructor import Challengeyaml,Category,Repository,Masterlist
 from utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 #this class get imported up from another file, then pulled in from there 
@@ -107,11 +106,15 @@ class SandboxyCTFdRepository(): #folder
                 if (challengedata == "challenge.yaml") and (isfile(challengeitempath)):
                     greenprint(f"[+] Challenge.yaml found!")
                     challengeyaml = Path(os.path.abspath(challengeitempath))
-                if (challengedata == "solution") and (isfile(challengeitempath) or os.path.isdir(challengeitempath)):
+                if (challengedata == "solution") and  \
+                        (isfile(challengeitempath) or  \
+                        os.path.isdir(challengeitempath)):
                     greenprint("[+] Found Solution folder")
                     solution = Path(os.path.abspath(challengeitempath))
                 # get handouts, might be file, or directory
-                if ("handout" in challengedata) and (isfile(challengeitempath) or os.path.isdir(challengeitempath)):
+                if ("handout" in challengedata) and \
+                        (isfile(challengeitempath) or \
+                        os.path.isdir(challengeitempath)):
                     greenprint("[+] Found Handout folder")
                     handout = challengeitempath
         # get challenge file 

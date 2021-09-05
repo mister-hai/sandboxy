@@ -123,7 +123,7 @@ class SandBoxyCTFdLinkage():
             errorlogger("[-] Git Repository Creation Failed, check the logfile")
 
 
-    def listcategories(self,print=True):
+    def listcategories(self,prints=True):
         """
         Get the names of all Categories
         Supply "print=False" to return a variable instead of display to screen 
@@ -132,14 +132,23 @@ class SandBoxyCTFdLinkage():
             selfitems = dir(self.repo)
             for item in selfitems:
                 if type(item) == Category:
-                    print(item)
-
+                    if prints == True:
+                        print(item)
+                    else:
+                        return item
 
     def getchallengesbycategory(self, category, printscr=True):
         """
         Lists challenges in repo by category        
         Supply "print=False" to return a variable instead of utf-8 
         """
+        if self._checkmasterlist():
+            selfitem = self.__dict__.get('category')
+            if (type(selfitem) == Category):
+                    if printscr == True:
+                        print(selfitem.listchallenges())
+                    else:
+                        return selfitem.listchallenges()
 
     def syncchallenge(self, challenge,ctfdurl,ctfdtoken):
         """

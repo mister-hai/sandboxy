@@ -1,3 +1,4 @@
+from __future__ import annotations
 import hashlib
 import yaml,os
 from pathlib import Path
@@ -5,7 +6,6 @@ from yaml import SafeLoader,SafeDumper,MappingNode
 from utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
 from yaml import SafeLoader,SafeDumper,MappingNode,safe_load,safe_dump
 from utils.apisession import APISession,APIHandler
-from __future__ import annotations
 
 # Tutorial
 class ClassA():
