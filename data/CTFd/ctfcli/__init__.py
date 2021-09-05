@@ -1,6 +1,6 @@
 import ctfcli.utils.utils
 import ctfcli.utils.ctfdrepo
-import ctfcli.utils.gitrepo
+#import ctfcli.utils.gitrepo
 import ctfcli.utils.apisession
 #from ctfcli.linkage import SandBoxyCTFdLinkage
 #from ctfcli.utils.ctfdrepo import SandboxyCTFdRepository

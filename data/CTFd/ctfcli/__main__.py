@@ -1,5 +1,5 @@
-import importlib
 import os,sys,fire
+sys.path.insert(0, os.path.abspath('.'))
 from ctfcli.linkage import SandBoxyCTFdLinkage
 from ctfcli.utils.utils import CATEGORIES
 #from dotenv import load_dotenv

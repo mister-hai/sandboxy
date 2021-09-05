@@ -8,7 +8,7 @@ from ctfcli.ClassConstructor import Masterlist,Category
 from ctfcli.utils.utils import loadchallengeyaml
 from ctfcli.utils.utils import errorlogger
 from ctfcli.utils.apisession import APISession
-from ctfcli.utils.gitrepo import SandboxyGitRepository
+#from ctfcli.utils.gitrepo import SandboxyGitRepository
 from ctfcli.utils.ctfdrepo import SandboxyCTFdRepository
 from ctfcli.utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
 from ctfcli.utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
@@ -35,7 +35,7 @@ class SandBoxyCTFdLinkage():
         os.environ["CHALLENGEREPOROOT"] = str(Path(f'{os.getcwd()}'))
         # assign the classes as named commands for fire
         setattr(self, 'ctfdops',SandboxyCTFdRepository())
-        setattr(self, 'gitops',SandboxyGitRepository())
+        #setattr(self, 'gitops',SandboxyGitRepository())
 
         #set important variables on the self from the other
         self.challengesfolder = self.ctfdops.CTFDDATAROOT

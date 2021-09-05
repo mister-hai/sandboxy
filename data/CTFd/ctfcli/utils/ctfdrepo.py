@@ -18,9 +18,9 @@ class SandboxyCTFdRepository(): #folder
     """
     def __init__(self):
         #CHALLENGEREPOROOT=/home/moop/sandboxy/data/CTFd
-        if os.getenv("CHALLENGEREPOROOT"):
+        if os.getenv("CHALLENGEREPOROOT") != None:
             self.CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
-            yellowboldprint(f'[+] Repository root ENV variable is {self.CHALLENGEREPOROOT}')
+            yellowboldprint(f'[+] Repository root ENV variable is {self.CTFDDATAROOT}')
             self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
         # this code is inactive currently
         else:
