@@ -56,6 +56,21 @@ class Repository(Repo):
     """
     Representation of a repository as exists in the challenges folder
 
+    >>> ctfcli ctfdops repo reversing Challenge_SHA256HASHSTRING
+    >>> 'Category: Reversing, Challenge Name: "ROPSrFUN4A11"'
+
+    Repository -> Reversing -> Challenge_SHA256HASHSTRING
+                            -> Challenge_SHA256HASHSTRING
+                            -> Challenge_SHA256HASHSTRING
+                            -> Challenge_SHA256HASHSTRING
+               -> Forensics 
+                            -> Challenge_SHA256HASHSTRING
+                            -> Challenge_SHA256HASHSTRING
+                            -> Challenge_SHA256HASHSTRING
+               -> Web 
+                            -> Challenge_SHA256HASHSTRING
+                            -> Challenge_SHA256HASHSTRING
+                    
     Args:
         **kwargs (dict): Feed it a dict of Category()'s with Challenge()'s appended
     """

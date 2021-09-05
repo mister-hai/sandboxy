@@ -99,11 +99,14 @@ class SandBoxyCTFdLinkage():
         """
         # returns a Repo() object with Category() objects attached
         try:
-            # returns a master list
-            self.masterlist = self.ctfdops._createprojectrepo()
-            masterlist = self.ctfdops._createrepo()
-            
             # returns a repository object,
+            repository = self.ctfdops._createrepo()
+            # create a new masterlist
+            masterlist = Masterlist()
+            # write the masterlist with all the repo data to disk
+            masterlist._writenewmasterlist(repository)
+            # future method to add alternative masterlist
+            #self._addmasterlist(masterlist)
             # consisting of everything in the challenges folder
             #repositoryobject = self.masterlist.transformtorepository(self.masterlist)
 

@@ -47,9 +47,6 @@ class SandboxyCTFdRepository(): #folder
         Masterlist, Repo (Tuple): Two new data objects
 
         '''
-        # create a new masterlist
-        masterlist = Masterlist()
-        #self._addmasterlist(masterlist)
         dictofcategories = {}
         repocategoryfolders = getsubdirs(self.repofolder)
         # itterate over folders in challenge directory
@@ -65,10 +62,8 @@ class SandboxyCTFdRepository(): #folder
         # assign all categories to repository class
         # using protoclass + dict expansion
         newrepo = Repository(**dictofcategories)
-        # write the masterlist with all the repo data to disk
-        masterlist._writenewmasterlist(newrepo)
         # return this class to the upper level scope
-        return (masterlist, newrepo)
+        return newrepo
 
     def _addmasterlist(self, masterlist:Masterlist):
         '''

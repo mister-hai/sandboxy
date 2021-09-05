@@ -1,13 +1,15 @@
 # DAILY PLAN
 
-    Rewriting the entirety of ctfcli to not look like garbage and maybe be actually extensible?
+    Rewriting the entirety of ctfcli
         
 
 # WEEKLY PLAN
     
     well gee golly am I glad all those tutorials had THIS laying around!
     https://docs.docker.com/network/proxy/#configure-the-docker-client
-    but really no, they didnt... proxy issues solved?
+    but really no, they didnt... proxy issues solved? NO THEY WERE NOT
+
+    THEY WERE NOT SOLVED AT ALL
 
     start.sh is a bootstrapper right? so make it call python and hand over the 
     env to the REPL with "fire" after it installs, yeah?
@@ -18,7 +20,6 @@
 
         working on script to upload them easily according to ctfcli spec
 
-        byte-banging the API on CTFd to make sure the fields are correct
 
 
 # PENTEST SANDBOX
