@@ -107,14 +107,14 @@ class SandBoxyCTFdLinkage():
             masterlist._writenewmasterlist(repository)
             # future method to add alternative masterlist
             #self._addmasterlist(masterlist)
-            # consisting of everything in the challenges folder
+
+            # read masterlist to verify it was saved properly
             #repositoryobject = self.masterlist.transformtorepository(self.masterlist)
+            repositoryobject = self.masterlist._loadmasterlist()
 
             #assigns repository to self for use in interactive mode
-            # writes repository object to file as yaml with tags 
             #self.repo = repositoryobject
-            setattr(self,repoconstruct,"repo")
-            self.masterlist.writemasteryaml(self.repo, filemode="a")
+            setattr(self,repositoryobject,"repo")
 
         except Exception:
             errorlogger("[-] Failed to create CTFd Repository, check the logfile")
