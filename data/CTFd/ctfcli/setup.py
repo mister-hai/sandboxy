@@ -37,7 +37,6 @@ setup(
         "colorama==0.4.3",
         "appdirs==1.4.3",
         "gitpython",
-        "dotenv"
     ],
     packages=find_packages(),
     include_package_data=True,

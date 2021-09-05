@@ -1,7 +1,7 @@
 import importlib
 import os,sys,fire
-from linkage import SandBoxyCTFdLinkage
-from utils.utils import CATEGORIES
+from ctfcli.linkage import SandBoxyCTFdLinkage
+from ctfcli.utils.utils import CATEGORIES
 #from dotenv import load_dotenv
 from pathlib import Path
 

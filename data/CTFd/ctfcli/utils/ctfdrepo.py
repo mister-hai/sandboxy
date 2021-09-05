@@ -1,9 +1,9 @@
 from genericpath import isfile
 import os
 from pathlib import Path
-from utils.utils import getsubdirs
-from ClassConstructor import Challengeyaml,Category,Repository,Masterlist
-from utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
+from ctfcli.utils.utils import getsubdirs
+from ctfcli.ClassConstructor import Challengeyaml,Category,Repository,Masterlist
+from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 #this class get imported up from another file, then pulled in from there 
 # sideways after some operations have been performed
 #from utils.challenge import Challenge

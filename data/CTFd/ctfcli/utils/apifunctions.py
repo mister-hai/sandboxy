@@ -1,5 +1,5 @@
-from utils.apisession import APISession
-from utils.utils import errorlogger
+from ctfcli.utils.apisession import APISession
+from ctfcli.utils.utils import errorlogger
 
 class APIFunctions(APISession):
     """
