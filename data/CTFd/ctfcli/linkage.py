@@ -100,8 +100,8 @@ class SandBoxyCTFdLinkage():
         # returns a Repo() object with Category() objects attached
         try:
             # returns a master list
-            #self.masterlist = self.ctfdops._createprojectrepo()
-            masterlist, repoconstruct = self.ctfdops._createprojectrepo()
+            self.masterlist = self.ctfdops._createprojectrepo()
+            masterlist = self.ctfdops._createrepo()
             
             # returns a repository object,
             # consisting of everything in the challenges folder

@@ -36,24 +36,36 @@ class SandboxyCTFdRepository(): #folder
                     self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
         super(SandboxyCTFdRepository, self).__init__()
     
-    def _createprojectrepo(self)-> Tuple[Masterlist,Repository]:
+    def _createrepo(self)-> Masterlist:
         '''
         Performs all the actions necessary to create a repository
         From the Challenges Folder in the DATAROOT
+
+        Creates the masterlist and Repository objects
+
+        Returns:
+        Masterlist, Repo (Tuple): Two new data objects
+
         '''
         # create a new masterlist
         masterlist = Masterlist()
-        self._addmasterlist(masterlist)
+        #self._addmasterlist(masterlist)
         dictofcategories = {}
         repocategoryfolders = getsubdirs(self.repofolder)
         # itterate over folders in challenge directory
         for category in repocategoryfolders:
+            categorypath = Path(os.path.abspath(category))
             # if its a repository category folder in aproved list
             if category in CATEGORIES:
-                newcategory = self._processcategory(category)
+                # each pass of _processcategories will 
+                # process the challenges in that category
+                newcategory = self._processcategory(categorypath)
+                # this dict contains the entire repository now
                 dictofcategories[newcategory.name] = newcategory
-        # assign all to repository class
+        # assign all categories to repository class
+        # using protoclass + dict expansion
         newrepo = Repository(**dictofcategories)
+        # write the masterlist with all the repo data to disk
         masterlist._writenewmasterlist(newrepo)
         # return this class to the upper level scope
         return (masterlist, newrepo)
@@ -62,32 +74,33 @@ class SandboxyCTFdRepository(): #folder
         '''
         Adds a masterlist file to self
         '''
-        setattr(self,'repo',masterlist)
+        setattr(self,'masterlist',masterlist)
 
-    def _processcategory(self,category:str)-> Category:
+    def _processcategory(self,categorypath:Path)-> Category:
         '''
         Itterates over a Category folder to add challenges to the database
         '''
-        greenprint(f"[+] Found Category {category}")
-        categorypath =  Path(self.repofolder,category)
+        greenprint(f"[+] Found Category {categorypath.name}")
         #create a new Category and assign name based on folder
-        newcategory = Category(category,categorypath)        
+        newcategory = Category(categorypath.name,categorypath)        
         #get subfolder names in category directory
         categoryfolder = getsubdirs(categorypath)
         # itterate over the individual challenges
         for challengefolder in categoryfolder:
-            greenprint(f"[+] Found Challenge folder {challengefolder}")
-            # track location change to individual challenge subdir
-            challengefolderpath = Path(categoryfolder, challengefolder)
+            challengefolderpath = Path(os.path.abspath(challengefolder))
+            greenprint(f"[+] Found Challenge folder {challengefolderpath.name}")
             # create new Challenge() class from folder contents
             newchallenge = self.createchallengefromfolder(challengefolderpath)
             #assign challenge to category
             newcategory._addchallenge(newcategory,newchallenge)                    
             # add the new Category() class to self once all challenge folders have been processed
-            self._setcategory(newcategory)
+            #self._setcategory(newcategory)
         # return a cat
-        cat = self._getcategory(newcategory.name)
-        return cat
+        #cat = self._getcategory(newcategory.name)
+        # this category now contains al lthe challenges
+        
+        #return cat
+        return newcategory
         
     def createchallengefromfolder(self, challengefolderpath:Path) -> ChallengeFolder:
         '''

@@ -64,8 +64,11 @@ challengeyamlbufferw = lambda category,challenge: open(os.path.join(category,cha
 #loads a challenge.yaml file into a buffer
 loadchallengeyaml =  lambda category,challenge: yaml.load(challengeyamlbufferr(category,challenge), Loader=yaml.FullLoader)
 writechallengeyaml =  lambda category,challenge: yaml.load(challengeyamlbufferw(category,challenge), Loader=yaml.FullLoader)
+# simulation of a chdir command to "walk" through the repo
+# helps metally
 location = lambda currentdirectory,childorsibling: os.path.join(currentdirectory,childorsibling)
-
+# gets path of a file
+getpath = lambda directoryitem: Path(os.path.abspath(directoryitem))
 ################################################################################
 ##############             ERROR HANDLING FUNCTIONS            #################
 ################################################################################
