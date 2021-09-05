@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from collections import Tuple
 from utils.utils import location,getsubdirs
-from ClassConstructor import ChallengeFolder,Category,Repository,Masterlist
+from ClassConstructor import Challengeyaml,Category,Repository,Masterlist
 from utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 #this class get imported up from another file, then pulled in from there 
 # sideways after some operations have been performed
@@ -102,7 +102,7 @@ class SandboxyCTFdRepository(): #folder
         #return cat
         return newcategory
         
-    def createchallengefromfolder(self, challengefolderpath:Path) -> ChallengeFolder:
+    def createchallengefromfolder(self, challengefolderpath:Path) -> Challengeyaml:
         '''
         Process the contents of the challenge folder given into a new Challenge() class
         This is essentially where the definition of a challenge folder itself
@@ -131,7 +131,7 @@ class SandboxyCTFdRepository(): #folder
                     handout = challengeitempath
         # get challenge file 
         # generate challenge based on folder contents
-        newchallenge = ChallengeFolder.createchallenge(
+        newchallenge = Challengeyaml.createchallenge(
             challengeyaml = challengeyaml,
             handout= handout,
             solution= solution

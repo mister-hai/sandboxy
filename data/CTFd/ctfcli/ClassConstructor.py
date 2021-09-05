@@ -267,11 +267,20 @@ class Masterlist(MasterFile):
 ###############################################################################
 #  CHALLENGEYAML
 ###############################################################################
-class Challengey(Yaml):
+class Challengeyaml(Yaml):
     """
     Base Class for all the attributes required on both the CTFd side and Repository side
     Represents the challenge.yml as exists in the folder for that specific challenge
 
+    Represents a Challenge Folder
+        If the folder contents are not to specification
+        The program will throw an error and refuse to process that folder
+    
+    Contents of a Challenge Folder:
+        handouts: File or Folder
+        solution: File or Folder
+        challenge.yaml
+    
     >>> filepath = os.path.abspath("challenge.yaml")
     >>> newchallenge = Challengeyaml(filepath)
 
@@ -282,6 +291,7 @@ class Challengey(Yaml):
     >>> kwargs.get() 
     Required Arguments:
     >>> kwargs.pop()
+
 
     Args:
         file (Path): filepath of challenge.yaml
@@ -492,84 +502,11 @@ class Challengey(Yaml):
         return self
         #super().__init__()
 
-###############################################################################
-#  CTFd CATEGORY: representation of folder in repository
-###############################################################################
-class Category(): #folder
-    """
-    use getattr(),setattr() to add/query Challenge Entries
-    this is used for keeping track internally
-
-    ChallengeCategory:
-        represents a folder in the PROJECTDIRECTORY/data/CTFd/challenges/ dir
-      ChallengeEntry:
-        represents a challenge.yaml
-        name: thing
-    """
-    def __init__(self,category,location):
-        self.name = category
-        self.location = location
-    
-    def _addchallenge(self, challenge:Challengeyaml):
-        """
-        Adds a challenge to the repository, appended to Category() class
-
-        Args:
-            challenge (Challenge): Challenge() object from folder in repository
-        """
-        try:    
-            setattr(challenge.category,challenge.name,challenge)
-        except:
-            errorlogger(f"[-] Category._addchallenge failed with {challenge.category}")
-
-    def _removechallenge(self, challengename):
+    def _processhandout(self):
         '''
-        Removes a Challenge from the repository class
-
-        Args:
-            challengename (str): The name of the challenge as given by category.listchallenges()
-                                 will fit the form "Challenge_SHA256HASHSTRING"
+        TODO: scan for .tar.gz or folder
+                - upload 
         '''
-        delattr(self,challengename)
-    
-    def listchallenges(self):
-        '''
-        Lists all the challenges appended to this category
-        '''
-###############################################################################
-#  CHALLENGEFOLDER
-###############################################################################
-class ChallengeFolder():
-    '''
-    Represents a Challenge Folder
-        If the folder contents are not to specification
-        The program will throw an error and refuse to process that folder
-    
-    Contents of a Challenge Folder:
-        handouts: File or Folder
-        solution: File or Folder
-        challenge.yaml
-    '''
-    def __init__(self, folderlocation,
-            challengefile,
-            #challengesrc,
-            #deployment,
-            handout,
-            solution
-            ):
-        self.folderlocation  = folderlocation
-        self.challengefile = challengefile
-        self.solutiondir = solution
-        self.handout = handout
-        # load challenge.yaml file
-        # unpack contents into class
-        self._init(self.challengefile)
-
-
-###############################################################################
-# CHALLENGEACTIONS
-###############################################################################
-class ChallengeActions(ChallengeFolder):
 
     def sync(self):
         '''
@@ -693,6 +630,51 @@ class ChallengeActions(ChallengeFolder):
             errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
 
 
+
+###############################################################################
+#  CTFd CATEGORY: representation of folder in repository
+###############################################################################
+class Category(): #folder
+    """
+    use getattr(),setattr() to add/query Challenge Entries
+    this is used for keeping track internally
+
+    ChallengeCategory:
+        represents a folder in the PROJECTDIRECTORY/data/CTFd/challenges/ dir
+      ChallengeEntry:
+        represents a challenge.yaml
+        name: thing
+    """
+    def __init__(self,category,location):
+        self.name = category
+        self.location = location
+    
+    def _addchallenge(self, challenge:Challengeyaml):
+        """
+        Adds a challenge to the repository, appended to Category() class
+
+        Args:
+            challenge (Challenge): Challenge() object from folder in repository
+        """
+        try:    
+            setattr(challenge.category,challenge.name,challenge)
+        except:
+            errorlogger(f"[-] Category._addchallenge failed with {challenge.category}")
+
+    def _removechallenge(self, challengename):
+        '''
+        Removes a Challenge from the repository class
+
+        Args:
+            challengename (str): The name of the challenge as given by category.listchallenges()
+                                 will fit the form "Challenge_SHA256HASHSTRING"
+        '''
+        delattr(self,challengename)
+    
+    def listchallenges(self):
+        '''
+        Lists all the challenges appended to this category
+        '''
 
 ###############################################################################
 #  Handout folder
