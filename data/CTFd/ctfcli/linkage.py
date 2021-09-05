@@ -1,20 +1,17 @@
 from genericpath import isfile
 import os
 from pathlib import Path
-from utils.challenge import Challenge
 
 from cookiecutter.main import cookiecutter
 
-from ClassConstructor import Masterlist
+from ClassConstructor import Masterlist,Category
 from utils.utils import loadchallengeyaml
 from utils.utils import errorlogger
 from utils.apisession import APISession
 from utils.gitrepo import SandboxyGitRepository
-from utils.ctfdrepo import Category,SandboxyCTFdRepository
+from utils.ctfdrepo import SandboxyCTFdRepository
 from utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
 from utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
-
-from utils.challenge import ChallengeActions
 
 #class CTFCLI():
 class SandBoxyCTFdLinkage():
@@ -133,6 +130,10 @@ class SandBoxyCTFdLinkage():
         """
         if self._checkmasterlist():
             selfitems = dir(self.repo)
+            for item in selfitems:
+                if type(item) == Category:
+                    print(item)
+
 
     def getchallengesbycategory(self, category, printscr=True):
         """

@@ -200,7 +200,7 @@ class Masterlist(MasterFile):
         safe_dumper.add_representer(classtobuild, self._representer)
         return safe_dumper
  
-    def _get_loader(self, constructor):#,tag:str):
+    def _get_loader(self, tag:str, constructor):
         """
         Add constructors to PyYAML loader.
 
@@ -211,10 +211,10 @@ class Masterlist(MasterFile):
         """
         loader = SafeLoader
         #loader.add_constructor(tag, constructor)
-        loader.add_multi_constructor(self.tag, self.multi_constructor_masterlist)
-        loader.add_multi_constructor(self.repotag, self.multi_constructor_repo)
-        loader.add_multi_constructor(self.categorytag, self.multi_constructor_category)
-        loader.add_multi_constructor(self.challengetag, self.multi_constructor_obj)
+        loader.add_constructor(self.tag, self.multi_constructor_masterlist)
+        #loader.add_multi_constructor(self.repotag, self.multi_constructor_repo)
+        #loader.add_multi_constructor(self.categorytag, self.multi_constructor_category)
+        #loader.add_multi_constructor(self.challengetag, self.multi_constructor_obj)
 
         return loader
     
@@ -229,7 +229,7 @@ class Masterlist(MasterFile):
             #open the yml
             # feed the tag and the constructor method to call
             return yaml.load(open(self.masterlistlocation, 'rb'), 
-                Loader=self._get_loader(self.tag,self._constructor))
+                Loader=self._get_loader(self.tag,self._multiconstructor))
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
 
@@ -642,8 +642,6 @@ class Challengeyaml(Yaml):
         except Exception:
             errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
 
-
-
 ###############################################################################
 #  CTFd CATEGORY: representation of folder in repository
 ###############################################################################
@@ -662,6 +660,23 @@ class Category(): #folder
         self.name = category
         self.location = location
     
+    def __repr__(self):
+        '''
+        The way it looks when you print to screen via the following method
+        >>> asdf = Category(categoryfolderpath)
+        >>> print(asdf)
+        >>> 'Categoryname : <name>'
+        >>> 'Challenges  : <challenge number>'
+        >>> 'Number synched : <ctfd challenges in category>'
+        '''
+        numberofchallenges = len(self.listchallenges)
+        self_repr = f"""Category: {self.name}
+        Category Folder Location: {self.location}
+        Number of Challenges in Category: {numberofchallenges}
+        Number of Challenges Synched to CTFd Server: {self.getsynchedchallenges()}
+        """
+        return self_repr
+
     def _addchallenge(self, challenge:Challengeyaml):
         """
         Adds a challenge to the repository, appended to Category() class
