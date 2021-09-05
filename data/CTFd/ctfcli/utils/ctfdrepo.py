@@ -93,13 +93,6 @@ class SandboxyCTFdRepository(): #folder
             newchallenge = self.createchallengefromfolder(challengefolderpath)
             #assign challenge to category
             newcategory._addchallenge(newcategory,newchallenge)                    
-            # add the new Category() class to self once all challenge folders have been processed
-            #self._setcategory(newcategory)
-        # return a cat
-        #cat = self._getcategory(newcategory.name)
-        # this category now contains al lthe challenges
-        
-        #return cat
         return newcategory
         
     def createchallengefromfolder(self, challengefolderpath:Path) -> Challengeyaml:
@@ -111,20 +104,17 @@ class SandboxyCTFdRepository(): #folder
         Args:
             challengefolderpath (str): path to the challenge folder
         '''
-        challengefolderdata = os.listdir(challengefolderpath)
-        if "challenge.yml" in challengefolderdata:
-            #challengeyaml = ChallengeYaml(location(challengefolderpath,'challenge.yaml'))
-
-            for challengedata in challengefolderdata:
+        for challengedata in os.listdir(challengefolderpath):
+            if "challenge.yml" in challengedata:
             # get path to challenge subitem
-                challengeitempath = location(challengefolderpath, challengedata)
+                challengeitempath = Path(os.path.abspath(challengedata))
                 # get solutions
                 if (challengedata == "challenge.yaml") and (isfile(challengeitempath)):
                     greenprint(f"[+] Challenge.yaml found!")
-                    challengeyaml = location(challengefolderpath,challengeitempath)
+                    challengeyaml = Path(os.path.abspath(challengeitempath))
                 if (challengedata == "solution") and (isfile(challengeitempath) or os.path.isdir(challengeitempath)):
                     greenprint("[+] Found Solution folder")
-                    solution = challengeitempath
+                    solution = Path(os.path.abspath(challengeitempath))
                 # get handouts, might be file, or directory
                 if ("handout" in challengedata) and (isfile(challengeitempath) or os.path.isdir(challengeitempath)):
                     greenprint("[+] Found Handout folder")

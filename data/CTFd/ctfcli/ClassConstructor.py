@@ -294,8 +294,9 @@ class Challengeyaml(Yaml):
 
 
     Args:
-        file (Path): filepath of challenge.yaml
-
+        yamlfile        (Path): filepath of challenge.yaml
+        handout         (Path)
+        solution        (Path)
     """
     #def __new__(cls,*args, **kwargs):
 
@@ -304,13 +305,10 @@ class Challengeyaml(Yaml):
 #        return super().__new__(cls)
     
     def __init__(self,yamlfile,
-            folderlocation,
-            #challengesrc,
-            #deployment,
             handout,
             solution
             ):
-        self.folderlocation  = folderlocation
+        self.folderlocation  = Path(os.path.abspath(yamlfile))
         self.challengefile = yamlfile
         self.solutiondir = solution
         self.handout = handout
