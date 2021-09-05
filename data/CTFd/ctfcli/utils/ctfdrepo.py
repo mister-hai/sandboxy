@@ -47,21 +47,23 @@ class SandboxyCTFdRepository(): #folder
 
         '''
         dictofcategories = {}
+        #repocategoryfolders = os.listdir(os.path.abspath(self.repofolder))
         repocategoryfolders = getsubdirs(self.repofolder)
         # itterate over folders in challenge directory
         for category in repocategoryfolders:
-            categorypath = Path(os.path.abspath(category))
-            # if its a repository category folder in aproved list
-            if category in CATEGORIES:
-                # each pass of _processcategories will 
-                # process the challenges in that category
-                newcategory = self._processcategory(categorypath)
-                # this dict contains the entire repository now
-                dictofcategories[newcategory.name] = newcategory
-        # assign all categories to repository class
-        # using protoclass + dict expansion
-        newrepo = Repository(**dictofcategories)
-        # return this class to the upper level scope
+            if os.path.isdir(category):
+                categorypath = Path(os.path.abspath(category))
+                # if its a repository category folder in aproved list
+                if category in CATEGORIES:
+                    # each pass of _processcategories will 
+                    # process the challenges in that category
+                    newcategory = self._processcategory(categorypath)
+                    # this dict contains the entire repository now
+                    dictofcategories[newcategory.name] = newcategory
+            # assign all categories to repository class
+            # using protoclass + dict expansion
+            newrepo = Repository(**dictofcategories)
+            # return this class to the upper level scope
         return newrepo
 
     def _addmasterlist(self, masterlist:Masterlist):
@@ -78,7 +80,7 @@ class SandboxyCTFdRepository(): #folder
         #create a new Category and assign name based on folder
         newcategory = Category(categorypath.name,categorypath)        
         #get subfolder names in category directory
-        categoryfolder = getsubdirs(categorypath)
+        categoryfolder = os.listdir(os.path.abspath(categorypath))
         # itterate over the individual challenges
         for challengefolder in categoryfolder:
             challengefolderpath = Path(os.path.abspath(challengefolder))

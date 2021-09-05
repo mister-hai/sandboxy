@@ -82,7 +82,7 @@ class SandBoxyCTFdLinkage():
         # returns itself via a constructor loading yaml into python objects
         self.masterlist          = Masterlist(self.masterlistlocation)
 
-    def init(self,ctfdtoken, ctfdurl,):
+    def init(self):
         """
         Link to CTFd instance with token and URI
 
