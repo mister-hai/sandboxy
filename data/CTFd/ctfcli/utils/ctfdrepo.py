@@ -4,6 +4,7 @@ from pathlib import Path
 from ctfcli.utils.utils import getsubdirs
 from ctfcli.ClassConstructor import Challengeyaml,Category,Repository,Masterlist
 from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
+from ctfcli.utils.utils import redprint
 #this class get imported up from another file, then pulled in from there 
 # sideways after some operations have been performed
 #from utils.challenge import Challenge
@@ -22,6 +23,7 @@ class SandboxyCTFdRepository(): #folder
             self.CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
             yellowboldprint(f'[+] Repository root ENV variable is {self.CTFDDATAROOT}')
             self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
+            yellowboldprint(f'[+] Challenge root is {self.repofolder}')
         # this code is inactive currently
         else:
             yellowboldprint("[+] CHALLENGEREPOROOT variable not set, checking one directory higher")
@@ -51,19 +53,19 @@ class SandboxyCTFdRepository(): #folder
         repocategoryfolders = getsubdirs(self.repofolder)
         # itterate over folders in challenge directory
         for category in repocategoryfolders:
-            if os.path.isdir(category):
-                categorypath = Path(os.path.abspath(category))
-                # if its a repository category folder in aproved list
-                if category in CATEGORIES:
-                    # each pass of _processcategories will 
-                    # process the challenges in that category
-                    newcategory = self._processcategory(categorypath)
-                    # this dict contains the entire repository now
-                    dictofcategories[newcategory.name] = newcategory
+            categorypath = Path(os.path.join(self.repofolder, category))
+            # if its a repository category folder in aproved list
+            if category in CATEGORIES:
+                # each pass of _processcategories will 
+                # process the challenges in that category
+                newcategory = self._processcategory(categorypath)
+                # this dict contains the entire repository now
+                dictofcategories[newcategory.name] = newcategory
             # assign all categories to repository class
             # using protoclass + dict expansion
-            newrepo = Repository(**dictofcategories)
-            # return this class to the upper level scope
+        
+        newrepo = Repository(**dictofcategories)
+        # return this class to the upper level scope
         return newrepo
 
     def _addmasterlist(self, masterlist:Masterlist):
@@ -80,11 +82,12 @@ class SandboxyCTFdRepository(): #folder
         #create a new Category and assign name based on folder
         newcategory = Category(categorypath.name,categorypath)        
         #get subfolder names in category directory
-        categoryfolder = os.listdir(os.path.abspath(categorypath))
+        categoryfolder = getsubdirs(newcategory.location)
         # itterate over the individual challenges
         for challengefolder in categoryfolder:
-            challengefolderpath = Path(os.path.abspath(challengefolder))
+            challengefolderpath = Path(self.repofolder,categorypath.name, challengefolder)
             greenprint(f"[+] Found Challenge folder {challengefolderpath.name}")
+            yellowboldprint(f'[+] {challengefolderpath}')
             # create new Challenge() class from folder contents
             newchallenge = self.createchallengefromfolder(challengefolderpath)
             #assign challenge to category
@@ -100,28 +103,26 @@ class SandboxyCTFdRepository(): #folder
         Args:
             challengefolderpath (str): path to the challenge folder
         '''
-        for challengedata in os.listdir(challengefolderpath):
-            if "challenge.yml" in challengedata:
-            # get path to challenge subitem
-                challengeitempath = Path(os.path.abspath(challengedata))
-                # get solutions
-                if (challengedata == "challenge.yaml") and (isfile(challengeitempath)):
-                    greenprint(f"[+] Challenge.yaml found!")
-                    challengeyaml = Path(os.path.abspath(challengeitempath))
-                if (challengedata == "solution") and  \
-                        (isfile(challengeitempath) or  \
-                        os.path.isdir(challengeitempath)):
-                    greenprint("[+] Found Solution folder")
-                    solution = Path(os.path.abspath(challengeitempath))
-                # get handouts, might be file, or directory
-                if ("handout" in challengedata) and \
-                        (isfile(challengeitempath) or \
-                        os.path.isdir(challengeitempath)):
-                    greenprint("[+] Found Handout folder")
-                    handout = challengeitempath
+        challengedirlist = [challengedata for challengedata in os.listdir(os.path.normpath(challengefolderpath))]
+        # get path to challenge subitem
+        challengeitempath = lambda challengedata: Path(os.path.abspath(os.path.join(challengefolderpath,challengedata)))
+        # get solutions
+        for item in challengedirlist:
+            if ("challenge.yaml" in item):# and (isfile(challengeitempath)):
+                greenprint(f"[+] Challenge.yaml found!")
+                challengeyaml = Path(os.path.abspath(challengeitempath(item)))
+            elif ("solution" in item):
+                greenprint("[+] Found Solution folder")
+                solution = Path(os.path.abspath(challengeitempath(item)))
+                yellowboldprint(f'[+] {solution}')
+            # get handouts, might be file, or directory
+            elif (("handout" or "distfiles" or "challenge" )in item):
+                greenprint("[+] Found Handout folder")
+                handout = challengeitempath(item)
+                yellowboldprint(f"[+] {handout} ")
         # get challenge file 
         # generate challenge based on folder contents
-        newchallenge = Challengeyaml.createchallenge(
+        newchallenge = Challengeyaml(
             challengeyaml = challengeyaml,
             handout= handout,
             solution= solution

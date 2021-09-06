@@ -97,12 +97,12 @@ class Yaml(): #filetype
             greenprint("[!] Challenge File presumed (.yml)")
             self.type = "challenge"
 
-    def loadyaml(self):
+    def loadyaml(self, filepath):
         """
         Loads the yaml specified by the class variable Yaml.filepath
         """
         try:
-            with open(self.filepath) as f:
+            with open(filepath) as f:
                 filedata = safe_load(f.read())#, filepath=filepath)
                 self.data = filedata
         except Exception:
@@ -319,12 +319,13 @@ class Challengeyaml(Yaml):
 #        #return super(cls).__new__(cls, *args, **kwargs)
 #        return super().__new__(cls)
     
-    def __init__(self,yamlfile,
+    def __init__(self,
+            challengeyaml,
             handout,
             solution
             ):
-        self.folderlocation  = Path(os.path.abspath(yamlfile))
-        self.challengefile = yamlfile
+        self.folderlocation  = Path(os.path.abspath(challengeyaml))
+        self.challengefile = challengeyaml
         self.solutiondir = solution
         self.handout = handout
 

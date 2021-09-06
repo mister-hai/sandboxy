@@ -57,10 +57,23 @@ criticallog  = lambda message: logger.critical(message)
 # name of the yaml file expected to have the challenge data in each subfolder
 basechallengeyaml   = "challenge.yml"
 def getsubdirs(directory):
+    '''
+    Returns folders in a directory as Paths
+    '''
     wat = []
     for item in os.listdir(os.path.normpath(directory)):
        if (not os.path.isfile(os.path.join(directory, item))) and not re.match(r'\..*', item):
-           wat.append(Path(os.path.join(directory, item)))
+           wat.append(item)
+    return wat
+
+def getsubfiles(directory):
+    '''
+    Returns files in a directory as Paths
+    '''
+    wat = []
+    for item in os.listdir(os.path.normpath(directory)):
+       if (os.path.isfile(os.path.join(directory, item))) and not re.match(r'\..*', item):
+           wat.append(item)
     return wat
 # open with read operation
 challengeyamlbufferr = lambda category,challenge: open(os.path.join(category,challenge,basechallengeyaml),'r')
@@ -179,13 +192,14 @@ def get_exposed_ports(challenge):
     else:
         return None
 CATEGORIES = [
-    "Exploitation",
-    "Reversing",
-    "Web",
-    "Forensics",
-    "Scripting",
-    "Cryptography",
-    "Networking",
+    "exploitation",
+    "reversing",
+    "web",
+    "forensics",
+    "scripting",
+    "crypto",
+    "networking",
+    "linux"
     ]
 
 APIPREFIX = "/api/v1/"
