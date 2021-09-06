@@ -14,8 +14,13 @@ flag: 'CTF{ONEFORANAGRAMS}'
 description:
   Check out the BSidesSF CTF program.  We got a chance to put a puzzle in there.
   If you're good with permutations, you'll get this once.
-value: 50
-min_value: 50
+#value: 50
+#min_value: 50
 tags:
   - Misc
 notes: Word Jumble/Anagram challenge for program.
+type: dynamic
+extra:
+  initial: 500
+  decay: 100
+  minimum: 50

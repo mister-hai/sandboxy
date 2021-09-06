@@ -319,6 +319,7 @@ class Challengeyaml(Yaml):
 #        return super().__new__(cls)
     
     def __init__(self,
+            category,
             challengeyaml,
             handout,
             solution
@@ -327,7 +328,10 @@ class Challengeyaml(Yaml):
         self.challengefile = challengeyaml
         self.solutiondir = solution
         self.handout = handout
-
+        if category not in CATEGORIES:
+            errorlogger("[-] Inconsistancy in inputs {}".format(category))
+        else:
+            self.category = category
         #get a representation of the challenge.yaml file
         yamlcontents = self.loadyaml(self.challengefile)
         #load the challenge yaml dict into the class
@@ -370,15 +374,11 @@ class Challengeyaml(Yaml):
         # a KeyError will be raised if the key does not exist
         try:
             # Required sections
-            category= kwargs.pop("category")
-            if category not in CATEGORIES:
-                errorlogger("[-] Inconsistancy in challenge.yml, \
-                This field should be a Category in approved list {}".format(category))
-            else:
-                self.category = category
+            #category= category # kwargs.pop("category")
             # set class name as challenge name sha256 hashed
             self.name = kwargs.pop("name")
             self.internalname = "challenge_" + str(hashlib.sha256(self.name.encode("ascii")).hexdigest())
+            yellowboldprint(f'[+] Internal name: %s' % self.internalname)
             self.__name__ = "Challenge"
             self.__qualname__= "Challenge"
             self.tag = '!Challenge'
@@ -386,19 +386,15 @@ class Challengeyaml(Yaml):
             self.author = kwargs.pop('author')
             self.description = kwargs.pop('description')
             # check for int in challenge value
-            if type(kwargs.get('value')) != int:
-                raise TypeError
-            else:
-                self.value = kwargs.pop('value')
-            self.type = kwargs.pop('type')
+
             #path to challenge folder
-            self.location = kwargs.pop("location")
+            #self.location = kwargs.pop("location")
             # path to challenge.yml file
-            self.challengefile = kwargs.pop("challengefile")
+            #self.challengefile = kwargs.pop("challengefile")
             # Solutions Folder
-            self.solutiondir = kwargs.pop("solutiondir")
+            #self.solutiondir = kwargs.pop("solutiondir")
             # Handout Folder
-            self.handout = kwargs.pop("handout")
+            #self.handout = kwargs.pop("handout")
         except Exception:
             errorlogger("[-] Challenge.yaml does not conform to specification, \
                 rejecting. Please check the error log.")
@@ -462,29 +458,36 @@ class Challengeyaml(Yaml):
         #     initial: 500
         #     decay: 100
         #     minimum: 50
-        self.dynamic = kwargs.get("dynamic")
         # OLD COMMENT
         # Some challenge types (e.g. dynamic) override value.
         # We can't send it to CTFd because we don't know the current value
-        if self.dynamic == True:
-            extra = kwargs.pop("extra")
+        typeof = kwargs.pop('type')
+        if typeof == 'dynamic':
+            self.type = typeof
+            self.extra = kwargs.pop("extra")
             self.scorepayload = {
                         'extra': {
-                            'initial': extra['initial'],
-                            'decay'  : extra['decay'],
-                            'minimum': extra['minimun']
+                            'initial': self.extra['initial'],
+                            'decay'  : self.extra['decay'],
+                            'minimum': self.extra['minimum']
                             }
                         }
-        elif self.dynamic == False:
-            self.scorepayload = {'value':self.value}
-            self.jsonpayload = {
-                "name":         self.name,
-                "category":     self.category,
-                "description":  self.description,
-                "type":         self.type,
-                **self.scorepayload,
-                "author" :      self.author
-                }
+
+        elif typeof == 'standard':
+            if type(kwargs.get('value')) != int:
+                raise TypeError
+            else:
+                self.value = kwargs.pop('value')
+                self.scorepayload['value'] = self.value
+        
+        self.jsonpayload = {
+            "name":         self.name,
+            "category":     self.category,
+            "description":  self.description,
+            "type":         self.type,
+            **self.scorepayload,
+            "author" :      self.author
+            }
 
         #all OPTIONAL values get the GET statement
         # kwargs.get() does not raise an exception when the key does not exist
@@ -512,9 +515,18 @@ class Challengeyaml(Yaml):
             self.jsonpayload["connection_info"] = self.connection_info
 
         #return the newly created challenge instance
+        print(self.__repr__())
         return self
         #super().__init__()
 
+    def __repr__(self):
+        '''
+        printself
+        '''
+        #asdf = [item for item in self.__dict__]
+        for key in self.__dict__:
+            print(str(key) + " : " + str(self.__dict__[key]))
+        
     def _processhandout(self):
         '''
         TODO: scan for .tar.gz or folder

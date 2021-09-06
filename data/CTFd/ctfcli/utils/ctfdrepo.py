@@ -89,12 +89,12 @@ class SandboxyCTFdRepository(): #folder
             greenprint(f"[+] Found Challenge folder {challengefolderpath.name}")
             yellowboldprint(f'[+] {challengefolderpath}')
             # create new Challenge() class from folder contents
-            newchallenge = self.createchallengefromfolder(challengefolderpath)
+            newchallenge = self.createchallengefromfolder(challengefolderpath,newcategory.name)
             #assign challenge to category
             newcategory._addchallenge(newcategory,newchallenge)                    
         return newcategory
         
-    def createchallengefromfolder(self, challengefolderpath:Path) -> Challengeyaml:
+    def createchallengefromfolder(self, challengefolderpath:Path,category:str) -> Challengeyaml:
         '''
         Process the contents of the challenge folder given into a new Challenge() class
         This is essentially where the definition of a challenge folder itself
@@ -123,6 +123,7 @@ class SandboxyCTFdRepository(): #folder
         # get challenge file 
         # generate challenge based on folder contents
         newchallenge = Challengeyaml(
+            category = category,
             challengeyaml = challengeyaml,
             handout= handout,
             solution= solution
