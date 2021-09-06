@@ -15,6 +15,7 @@ description:
   Fine, I learned not to roll my own crypto.  I hear OpenSSL is good and easy to
   use, so I'll use that to encrypt my secrets.  Unfortunately, I keep crashing.
   Can you help me figure out what the bug is?
+type: standard
 value: 500
 tags:
   - Crypto

@@ -192,14 +192,14 @@ def get_exposed_ports(challenge):
     else:
         return None
 CATEGORIES = [
-    "exploitation",
-    "reversing",
-    "web",
-    "forensics",
-    "scripting",
+    #"exploitation",
+    #"reversing",
+    #"web",
+    #"forensics",
+    #"scripting",
     "crypto",
-    "networking",
-    "linux"
+    #"networking",
+    #"linux"
     ]
 
 APIPREFIX = "/api/v1/"

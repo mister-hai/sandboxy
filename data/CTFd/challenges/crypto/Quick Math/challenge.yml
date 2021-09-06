@@ -13,15 +13,16 @@ description: |
   c3 = 29146719498409.
   Find the original message. (Wrap it with csictf{})
 
-value: 500
-type: dynamic
-
 flags:
   - csictf{h45t4d}
 
 tags:
   - crypto
 
+
+#value: 500
+type: dynamic
 extra:
+  initial: 500
   decay: 450
   minimum: 100

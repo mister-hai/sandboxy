@@ -339,8 +339,10 @@ class Challengeyaml(Yaml):
         # unpack supplied dict
         #self.__dict__.update(entries)
         # the new classname is defined by the name tag in the Yaml now
-        self.__name = "Challenge_" + str(hashlib.sha256(self.name.encode("ascii")))
-        self.__qualname__ = "Challenge_" + str(hashlib.sha256(self.name.encode("ascii")))
+        self.internalname = "Challenge_" + str(hashlib.sha256(self.name.encode("ascii")).hexdigest)
+        self.__name = self.internalname
+        self.__qualname__ = self.internalname
+        yellowboldprint(f'[+] Internal name: %s' % self.internalname)
         #self.challengesrc       = challengesrc
         #self.deployment         = deployment
 
@@ -377,12 +379,6 @@ class Challengeyaml(Yaml):
             #category= category # kwargs.pop("category")
             # set class name as challenge name sha256 hashed
             self.name = kwargs.pop("name")
-            self.internalname = "challenge_" + str(hashlib.sha256(self.name.encode("ascii")).hexdigest())
-            yellowboldprint(f'[+] Internal name: %s' % self.internalname)
-            self.__name__ = "Challenge"
-            self.__qualname__= "Challenge"
-            self.tag = '!Challenge'
-
             self.author = kwargs.pop('author')
             self.description = kwargs.pop('description')
             # check for int in challenge value
@@ -697,7 +693,7 @@ class Category(): #folder
             challenge (Challenge): Challenge() object from folder in repository
         """
         try:    
-            setattr(challenge.category,challenge.name,challenge)
+            setattr(self,challenge.internalname,challenge)
         except:
             errorlogger(f"[-] Category._addchallenge failed with {challenge.category}")
 

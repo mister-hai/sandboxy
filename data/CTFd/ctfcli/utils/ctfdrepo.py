@@ -56,14 +56,12 @@ class SandboxyCTFdRepository(): #folder
             categorypath = Path(os.path.join(self.repofolder, category))
             # if its a repository category folder in aproved list
             if category in CATEGORIES:
-                # each pass of _processcategories will 
                 # process the challenges in that category
                 newcategory = self._processcategory(categorypath)
                 # this dict contains the entire repository now
                 dictofcategories[newcategory.name] = newcategory
-            # assign all categories to repository class
-            # using protoclass + dict expansion
-        
+        # assign all categories to repository class
+        # using protoclass + dict expansion
         newrepo = Repository(**dictofcategories)
         # return this class to the upper level scope
         return newrepo
@@ -91,7 +89,7 @@ class SandboxyCTFdRepository(): #folder
             # create new Challenge() class from folder contents
             newchallenge = self.createchallengefromfolder(challengefolderpath,newcategory.name)
             #assign challenge to category
-            newcategory._addchallenge(newcategory,newchallenge)                    
+            newcategory._addchallenge(newchallenge)                    
         return newcategory
         
     def createchallengefromfolder(self, challengefolderpath:Path,category:str) -> Challengeyaml:
@@ -108,7 +106,7 @@ class SandboxyCTFdRepository(): #folder
         challengeitempath = lambda challengedata: Path(os.path.abspath(os.path.join(challengefolderpath,challengedata)))
         # get solutions
         for item in challengedirlist:
-            if ("challenge.yaml" in item):# and (isfile(challengeitempath)):
+            if (("challenge.yaml" or "challenge.yml")in item):# and (isfile(challengeitempath)):
                 greenprint(f"[+] Challenge.yaml found!")
                 challengeyaml = Path(os.path.abspath(challengeitempath(item)))
             elif ("solution" in item):

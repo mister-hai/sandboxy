@@ -15,6 +15,7 @@ description:
   "[Kerckhoffs's principle](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
   states that \"A cryptosystem should be secure even if everything about the
   system, except the key, is public knowledge.\"  So here's our unbreakable cipher."
+type: standard
 value: 500
 tags:
   - Crypto

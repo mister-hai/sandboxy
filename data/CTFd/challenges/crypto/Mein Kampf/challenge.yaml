@@ -15,9 +15,6 @@ description: |
   "Ciphertext: zkrtwvvvnrkulxhoywoj"
   (Words in the flag are separated by underscores)
 
-value: 500
-type: dynamic
-
 flags:
   - csictf{no_shit_sherlock}
 
@@ -25,7 +22,10 @@ tags:
   - crypto
   - beginner
 
+#value: 500
+type: dynamic
 extra:
+  initial: 500
   decay: 450
   minimum: 100
 

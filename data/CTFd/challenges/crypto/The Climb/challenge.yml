@@ -4,9 +4,6 @@ category: Crypto
 
 description: We are not lost, we're right here somewhere on this little blue line. Wait, why do I feel like I'm being watched?
 
-value: 500
-type: dynamic
-
 flags:
   - csictf{hillshaveeyes}
 
@@ -17,6 +14,9 @@ files:
   - theclimb.txt"
   - theclimb.java"
 
+#value: 500
+type: dynamic
 extra:
+  initial: 500
   decay: 450
   minimum: 100
