@@ -102,9 +102,8 @@ class Yaml(): #filetype
         Loads the yaml specified by the class variable Yaml.filepath
         """
         try:
-            with open(filepath) as f:
-                filedata = safe_load(f.read())#, filepath=filepath)
-                self.data = filedata
+            with open(filepath, 'r') as stream:
+                return yaml.safe_load(stream)
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
     
