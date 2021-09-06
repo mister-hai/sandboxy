@@ -7,10 +7,11 @@ description: The flag.zip contains the flag I am looking for but it is password 
 
 
 type: dynamic
-#value: 500
-initial: 500
-decay: 450
-minimum: 100
+value: 500
+extra:
+  initial: 500
+  decay: 450
+  minimum: 100
 
 flags:
   - csictf{gr34t_m1nds_th1nk_4l1ke}

@@ -127,7 +127,7 @@ class MasterFile(Yaml):
         cls.__name__ = 'repo'
         cls.__qualname__= 'repo'
         cls.tag = '!Masterlist'
-        return super(cls.__name__, cls).__new__(cls, *args, **kwargs)
+        return super(cls,cls.__name__).__new__(cls, *args, **kwargs)
 
 class KubernetesYaml(Yaml): #file
     """
@@ -372,6 +372,7 @@ class Challengeyaml(Yaml):
         self.installed = bool
 
         self.jsonpayload = {}
+        self.scorepayload = {}
         #Required sections get the "pop()" function 
         # a KeyError will be raised if the key does not exist
         try:
@@ -457,6 +458,11 @@ class Challengeyaml(Yaml):
         # OLD COMMENT
         # Some challenge types (e.g. dynamic) override value.
         # We can't send it to CTFd because we don't know the current value
+        if type(kwargs.get('value')) != int:
+            raise TypeError
+        else:
+            self.value = kwargs.pop('value')
+        self.scorepayload['value'] = self.value
         typeof = kwargs.pop('type')
         if typeof == 'dynamic':
             self.type = typeof
@@ -470,13 +476,8 @@ class Challengeyaml(Yaml):
                         }
 
         elif typeof == 'standard':
-            if type(kwargs.get('value')) != int:
-                raise TypeError
-            else:
-                self.value = kwargs.pop('value')
-                self.scorepayload['value'] = self.value
-        
-        self.jsonpayload = {
+            self.type = typeof
+            self.jsonpayload = {
             "name":         self.name,
             "category":     self.category,
             "description":  self.description,
@@ -484,7 +485,8 @@ class Challengeyaml(Yaml):
             **self.scorepayload,
             "author" :      self.author
             }
-
+        else:
+            raise ValueError(f"Unknown type {typeof}in Classconstructor.Challengeyaml._initchallenge()")
         #all OPTIONAL values get the GET statement
         # kwargs.get() does not raise an exception when the key does not exist
         # Can be removed if unused
@@ -511,7 +513,7 @@ class Challengeyaml(Yaml):
             self.jsonpayload["connection_info"] = self.connection_info
 
         #return the newly created challenge instance
-        print(self.__repr__())
+        #print(self.__repr__())
         return self
         #super().__init__()
 

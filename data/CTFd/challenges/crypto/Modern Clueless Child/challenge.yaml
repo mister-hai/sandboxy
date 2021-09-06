@@ -16,7 +16,7 @@ flags:
 tags:
  - crypto
 
-#value: 500
+value: 500
 type: dynamic
 extra:
   initial: 500  

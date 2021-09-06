@@ -11,10 +11,9 @@ version: "0.1"
 name: anagrams
 author: matir
 flag: 'CTF{ONEFORANAGRAMS}'
-description:
-  Check out the BSidesSF CTF program.  We got a chance to put a puzzle in there.
+description: Check out the BSidesSF CTF program.  We got a chance to put a puzzle in there.
   If you're good with permutations, you'll get this once.
-#value: 50
+value: 500
 #min_value: 50
 tags:
   - Misc

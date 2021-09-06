@@ -22,7 +22,7 @@ tags:
   - crypto
   - beginner
 
-#value: 500
+value: 500
 type: dynamic
 extra:
   initial: 500
