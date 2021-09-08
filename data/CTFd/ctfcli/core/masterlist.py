@@ -1,8 +1,11 @@
+import os, yaml
+from ctfcli.core.yamlstuff import Yaml
+from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
 
 ###############################################################################
 #  MASTERLIST
 ###############################################################################
-class Masterlist():
+class Masterlist(Yaml):
     """
     This is one way of turning a yaml into a class
 
@@ -12,7 +15,7 @@ class Masterlist():
     def __init__(self,repository):
         # filename for the full challenge index
         #self.masterlistfile      = masterlistfile
-        self.masterlistlocation  = os.path.join(repository., self.masterlistfile)
+        self.masterlistlocation  = os.path.join(repository.location, self.masterlistfile)
         #self.masterlist          = Yaml(self.masterlistlocation)
         # tag for yaml file
         self.tag = "!Masterlist:"

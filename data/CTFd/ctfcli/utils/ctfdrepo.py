@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from ctfcli.utils.utils import getsubdirs
 from ctfcli.core.category import Category
-from ctfcli.core.challenge import ChallengeYaml
+from ctfcli.core.challenge import Challengeyaml
 from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
 from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint

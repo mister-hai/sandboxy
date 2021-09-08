@@ -7,8 +7,9 @@ description: hoshimaseok is up to no good. Track him down.
 value: 500
 type: dynamic
 
-decay: 450
-minimum: 100
+initial: 500
+decay: 50
+minimum: 50
 
 flags:
   - csictf{sc4r3d_0f_c0mm1tm3nt}

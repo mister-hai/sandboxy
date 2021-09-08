@@ -2,7 +2,7 @@ from __future__ import annotations
 import yaml
 
 from ctfcli.core.category import Category
-from ctfcli.core.challenge import ChallengeYaml
+from ctfcli.core.challenge import Challengeyaml
 from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
 from yaml import SafeLoader,SafeDumper,MappingNode
@@ -55,6 +55,8 @@ class Constructor():
             return Masterlist(**loader.construct_mapping(node, deep=True))
         elif type == 'repo':
             return Repository(**loader.construct_mapping(node, deep=True))
+        elif type== "category":
+            return Category(**loader.construct_mapping(node, deep=True))
         elif type== "challenge":
             return Challengeyaml(**loader.construct_mapping(node, deep=True))
 

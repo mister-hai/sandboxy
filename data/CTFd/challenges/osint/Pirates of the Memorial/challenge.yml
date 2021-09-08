@@ -8,8 +8,9 @@ description: |
 value: 500
 type: dynamic
 
-decay: 450
-minimum: 100
+initial: 500
+decay: 50
+minimum: 50
 
 flags:
   - csictf{pl4g14r1sm_1s_b4d}

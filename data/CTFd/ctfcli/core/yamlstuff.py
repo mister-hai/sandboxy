@@ -1,4 +1,4 @@
-import yaml
+import yaml, os
 from pathlib import Path
 from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
 from yaml import safe_load,safe_dump
