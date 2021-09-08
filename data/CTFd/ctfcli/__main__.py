@@ -20,6 +20,24 @@ for each in PWD_LIST:
     #Check categories
     if (each in CATEGORIES) or ():
         pass
+#CHALLENGEREPOROOT=/home/moop/sandboxy/data/CTFd
+
+if os.getenv("CHALLENGEREPOROOT") != None:
+    CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
+    yellowboldprint(f'[+] Repository root ENV variable is {CTFDDATAROOT}')
+    repofolder = os.path.join(CTFDDATAROOT, "challenges")
+    yellowboldprint(f'[+] Challenge root is {repofolder}')
+    # this code is inactive currently
+else:
+    yellowboldprint("[+] CHALLENGEREPOROOT variable not set, checking one directory higher")
+    # ugly but it works
+    onelevelup = Path(f'{os.getcwd()}').parent
+    oneleveluplistdir = os.listdir(onelevelup)
+    if ('challenges' in oneleveluplistdir):
+        if os.path.isdir(oneleveluplistdir.get('challenges')):
+            yellowboldprint("[+] Challenge Folder Found, presuming to be repository location")
+            CTFDDATAROOT = onelevelup
+            repofolder = os.path.join(CTFDDATAROOT, "challenges")
 ###############################################################################
 class Ctfcli():
     '''

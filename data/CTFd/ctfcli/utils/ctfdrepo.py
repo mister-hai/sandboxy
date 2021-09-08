@@ -1,8 +1,10 @@
-from genericpath import isfile
 import os
 from pathlib import Path
 from ctfcli.utils.utils import getsubdirs
-from ctfcli.ClassConstructor import Challengeyaml,Category,Repository,Masterlist
+from ctfcli.core.category import Category
+from ctfcli.core.challenge import ChallengeYaml
+from ctfcli.core.repository import Repository
+from ctfcli.core.masterlist import Masterlist
 from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 from ctfcli.utils.utils import redprint
 #this class get imported up from another file, then pulled in from there 
@@ -18,23 +20,6 @@ class SandboxyCTFdRepository(): #folder
     Companion to the SandboxyCTFdRepository
     """
     def __init__(self):
-        #CHALLENGEREPOROOT=/home/moop/sandboxy/data/CTFd
-        if os.getenv("CHALLENGEREPOROOT") != None:
-            self.CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
-            yellowboldprint(f'[+] Repository root ENV variable is {self.CTFDDATAROOT}')
-            self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
-            yellowboldprint(f'[+] Challenge root is {self.repofolder}')
-        # this code is inactive currently
-        else:
-            yellowboldprint("[+] CHALLENGEREPOROOT variable not set, checking one directory higher")
-            # ugly but it works
-            onelevelup = Path(f'{os.getcwd()}').parent
-            oneleveluplistdir = os.listdir(onelevelup)
-            if ('challenges' in oneleveluplistdir):
-                if os.path.isdir(oneleveluplistdir.get('challenges')):
-                    yellowboldprint("[+] Challenge Folder Found, presuming to be repository location")
-                    self.CTFDDATAROOT = onelevelup
-                    self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
         super(SandboxyCTFdRepository, self).__init__()
     
     def _createrepo(self)-> Masterlist:
