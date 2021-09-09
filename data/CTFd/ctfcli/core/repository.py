@@ -70,3 +70,12 @@ class Repository(Repo):
     def __init__(self,**entries): 
         self.__dict__.update(entries)
 
+    def _setlocation(self, location):
+        """
+        Sets the repo folder root location
+
+        In sandboxy this will be ../challenges
+        """
+        #setattr(self, 'location', location)
+        self.location = location
+

@@ -32,7 +32,8 @@ class SandBoxyCTFdLinkage():
         self.repofolder = repositoryfolder
         try:
             greenprint("[+] Instancing a SandboxyCTFdLinkage()")
-            setattr(self, 'ctfdops',SandboxyCTFdRepository(self.repofolder))
+            self.ctfdops = SandboxyCTFdRepository(self.repofolder)
+            #setattr(self, 'ctfdops',SandboxyCTFdRepository(self.repofolder))
         except Exception:
             errorlogger("[-] FAILED: Instancing a SandboxyCTFdLinkage()")
 
@@ -100,8 +101,9 @@ class SandBoxyCTFdLinkage():
         try:
             # returns a repository object,
             repository = self.ctfdops._createrepo()
+            repository._setlocation(self.repofolder)
             # create a new masterlist
-            masterlist = Masterlist()
+            masterlist = Masterlist(repository)
             # write the masterlist with all the repo data to disk
             masterlist._writenewmasterlist(repository)
             # future method to add alternative masterlist

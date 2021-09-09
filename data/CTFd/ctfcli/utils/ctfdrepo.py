@@ -30,7 +30,7 @@ class SandboxyCTFdRepository(): #folder
             errorlogger("[-] FAILED: Instancing a SandboxyCTFdRepository()")
 
     
-    def _createrepo(self)-> Masterlist:
+    def _createrepo(self)-> Repository:
         '''
         Performs all the actions necessary to create a repository
         From the Challenges Folder in the DATAROOT
