@@ -1,7 +1,7 @@
 import ctfcli.utils.utils
-import ctfcli.utils.ctfdrepo
+import ctfcli.core.ctfdrepo
 #import ctfcli.utils.gitrepo
-import ctfcli.utils.apisession
+import ctfcli.core.apisession
 #from ctfcli.linkage import SandBoxyCTFdLinkage
 #from ctfcli.utils.ctfdrepo import SandboxyCTFdRepository
 #from ctfcli.utils.gitrepo import SandboxyGitRepository

@@ -47,12 +47,16 @@ class Yaml(): #filetype
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
 
 
-#class MasterFile(Yaml):
-    #def __new__(cls,*args, **kwargs):
-        #cls.__name__ = 'MasterFile'
-        #cls.__qualname__= 'MasterFile'
-    #    cls.tag = '!Masterlist'
-    #    return super(cls).__new__(cls, *args, **kwargs)
+class MasterFile(Yaml):
+    """
+    Protoclass for the masterlist, this helps avoid 
+    circular imports and allows you to split code apart more
+    """
+    def __new__(cls,*args, **kwargs):
+        cls.__name__ = 'MasterFile'
+        cls.__qualname__= 'MasterFile'
+        cls.tag = '!Masterlist'
+        return super(cls).__new__(cls, *args, **kwargs)
 
 class KubernetesYaml(Yaml): #file
     """

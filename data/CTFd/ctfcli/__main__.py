@@ -26,8 +26,8 @@ os.environ["CHALLENGEREPOROOT"] = str(Path(f'{os.getcwd()}'))
 if os.getenv("CHALLENGEREPOROOT") != None:
     CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
     yellowboldprint(f'[+] Repository root ENV variable is {CTFDDATAROOT}')
-    repofolder = os.path.join(CTFDDATAROOT, "challenges")
-    yellowboldprint(f'[+] Challenge root is {repofolder}')
+    challengeroot = os.path.join(CTFDDATAROOT, "challenges")
+    yellowboldprint(f'[+] Challenge root is {challengeroot}')
     # this code is inactive currently
 else:
     yellowboldprint("[+] CHALLENGEREPOROOT variable not set, checking one directory higher")
@@ -98,10 +98,10 @@ class Ctfcli():
     '''
     def __init__(self):
         # challenge templates
-        self.TEMPLATESDIR = os.path.join(repofolder, "ctfcli", "templates")    
+        self.TEMPLATESDIR = os.path.join(CTFDDATAROOT, "ctfcli", "templates")    
 
         # modify the structure of the program here by reassigning classes
-        ctfcli = SandBoxyCTFdLinkage(CTFDDATAROOT)
+        ctfcli = SandBoxyCTFdLinkage(challengeroot)
         self.ctfcli = ctfcli
         #self.ctfdops = SandboxyCTFdRepository()
         #self.gitops = SandboxyGitRepository()

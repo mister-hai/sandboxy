@@ -1,16 +1,14 @@
 from genericpath import isfile
 import os
 from pathlib import Path
-
-from cookiecutter.main import cookiecutter
-
-from ctfcli.ClassConstructor import Masterlist,Category
-from ctfcli.utils.utils import loadchallengeyaml
+from ctfcli.core.category import Category
 from ctfcli.utils.utils import errorlogger
-from ctfcli.utils.apisession import APISession
+from cookiecutter.main import cookiecutter
+from ctfcli.core.masterlist import Masterlist
+from ctfcli.core.apisession import APISession
 #from ctfcli.utils.gitrepo import SandboxyGitRepository
-from ctfcli.utils.ctfdrepo import SandboxyCTFdRepository
-from ctfcli.utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
+from ctfcli.core.ctfdrepo import SandboxyCTFdRepository
+from ctfcli.utils.utils import redprint,greenprint,CATEGORIES
 from ctfcli.utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
 
 #class CTFCLI():

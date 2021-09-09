@@ -4,7 +4,7 @@ import yaml
 from ctfcli.core.category import Category
 from ctfcli.core.challenge import Challengeyaml
 from ctfcli.core.repository import Repository
-from ctfcli.core.masterlist import Masterlist
+from ctfcli.core.yamlstuff import MasterFile
 from yaml import SafeLoader,SafeDumper,MappingNode
 from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
 from yaml import SafeLoader,SafeDumper,MappingNode,safe_load,safe_dump
@@ -12,7 +12,7 @@ from ctfcli.core.repository import Repository
 
 
 ###############################################################################
-#  MASTERLIST
+#  wat
 ###############################################################################
 class Constructor():
     """
@@ -21,8 +21,7 @@ class Constructor():
     https://matthewpburruss.com/post/yaml/
 
     """
-    def __init__(self,repository):
-        self.tag = "!Masterlist:"
+    def __init__(self):
         self.repotag = "!Repo:"
         self.categorytag = "!Category:"
         self.challengetag = "!Challenge:"
@@ -52,7 +51,7 @@ class Constructor():
         """
         
         if type == "masterlist":
-            return Masterlist(**loader.construct_mapping(node, deep=True))
+            return MasterFile(**loader.construct_mapping(node, deep=True))
         elif type == 'repo':
             return Repository(**loader.construct_mapping(node, deep=True))
         elif type== "category":

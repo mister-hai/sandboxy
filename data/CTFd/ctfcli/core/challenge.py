@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ctfcli.core.yamlstuff import Yaml
 from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
-from ctfcli.utils.apisession import APIHandler
+from ctfcli.core.apisession import APIHandler
 ###############################################################################
 #  CHALLENGEYAML
 ###############################################################################
