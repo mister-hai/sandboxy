@@ -97,21 +97,25 @@ class SandboxyCTFdRepository(): #folder
         challengedirlist = [challengedata for challengedata in os.listdir(os.path.normpath(challengefolderpath))]
         # get path to challenge subitem
         challengeitempath = lambda challengedata: Path(os.path.abspath(os.path.join(challengefolderpath,challengedata)))
-        # get solutions
-        for item in challengedirlist:
-            if (("challenge.yaml" or "challenge.yml")in item):# and (isfile(challengeitempath)):
-                greenprint(f"[+] Challenge.yaml found!")
-                challengeyaml = Path(os.path.abspath(challengeitempath(item)))
-            elif ("solution" in item):
-                greenprint("[+] Found Solution folder")
-                solution = Path(os.path.abspath(challengeitempath(item)))
-                yellowboldprint(f'[+] {solution}')
-            # get handouts, might be file, or directory
-            elif (("handout" or "distfiles" or "challenge" )in item):
-                greenprint("[+] Found Handout folder")
-                handout = challengeitempath(item)
-                yellowboldprint(f"[+] {handout} ")
-        # get challenge file 
+
+        try:
+            for item in challengedirlist:
+                if (("challenge.yaml" or "challenge.yml")in item):# and (isfile(challengeitempath)):
+                    greenprint(f"[+] Challenge.yaml found!")
+                    challengeyaml = Path(os.path.abspath(challengeitempath(item)))
+                elif ("solution" in item):
+                    greenprint("[+] Found Solution folder")
+                    solution = Path(os.path.abspath(challengeitempath(item)))
+                    yellowboldprint(f'[+] {solution}')
+                # get handouts, might be file, or directory
+                elif (("handout")in item):
+                    greenprint("[+] Found Handout folder")
+                    handout = challengeitempath(item)
+                    yellowboldprint(f"[+] {handout} ")
+                else:
+                    raise Exception
+        except Exception:
+            errorlogger("[-] ERROR: Challenge Folder contents do not conform to specification!")
         # generate challenge based on folder contents
         newchallenge = Challengeyaml(
             category = category,
