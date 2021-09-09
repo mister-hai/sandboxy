@@ -29,8 +29,8 @@
                     file1.txt
                     file2.tar.gz
                     ...
-                challenge.yml
-                challenge.yaml (kubernetes deployment)
+                challenge.yml || challenge.yaml
+                deploy.yaml (kubernetes deployment)
                 README.MD
 
     cd to this directory on the command line and Run the command :

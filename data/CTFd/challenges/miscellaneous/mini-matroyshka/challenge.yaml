@@ -8,12 +8,15 @@
 #   file documenting the solution)
 
 version: beta1
-name: earota
-scoreboard_name: earota
-author: symmetric
-flag: 'CTF{one_iota_away_from_riches}'
-description: '01ι'
+name: mini-matroyshka
+author: Matir
+flag: 'CTF{so_easy_an_ogre_could_do_it}'
+description:
+  A lot of the computer world is just layers of abstraction.  Layers and layers
+  and layers and layers and layers and layers and layers and layers and ...
+  layers and layers and ...
+type: static
 value: 500
 tags:
-  - Forensics
-notes: This is just a file for download
+  - Misc
+notes: Private notes on deployment, setup, etc.

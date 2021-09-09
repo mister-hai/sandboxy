@@ -6,11 +6,10 @@ description: I encrypted my flag so that nobody can see it, but now I realize I 
 
 value: 500
 type: dynamic
-
 extra:
-  decay: 450
-  minimum: 100
-
+  initial: 500
+  decay: 50
+  minimum: 50
 flags:
   - csictf{esreverisjustreverseinreverseright}
 

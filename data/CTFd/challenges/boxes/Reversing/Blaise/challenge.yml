@@ -9,9 +9,10 @@ description: |
 
 value: 500
 type: dynamic
-
-decay: 450
-minimum: 100
+extra:
+  initial: 500
+  decay: 50
+  minimum: 50
 
 flags:
   - csictf{y0u_d1sc0v3r3d_th3_p4sc4l's_tr14ngl3}

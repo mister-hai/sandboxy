@@ -12,6 +12,7 @@ name: toast-clicker1
 author: itsC0rg1
 flag: 'CTF{Bready_To_Crumble}'
 description: A fun toast clicker game for your enjoyment. While you are at it, can you find the first flag?
+type: static
 value: 500
 tags:
   - Mobile

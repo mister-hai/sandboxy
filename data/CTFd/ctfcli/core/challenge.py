@@ -202,7 +202,7 @@ class Challengeyaml(Yaml):
                             }
                         }
 
-        elif typeof == 'standard':
+        elif (typeof == 'standard') or (typeof == 'static'):
             self.type = typeof
             self.jsonpayload = {
             "name":         self.name,
@@ -213,7 +213,7 @@ class Challengeyaml(Yaml):
             "author" :      self.author
             }
         else:
-            raise ValueError(f"Unknown type {typeof}in Classconstructor.Challengeyaml._initchallenge()")
+            raise ValueError(f"Unknown type {typeof} in Classconstructor.Challengeyaml._initchallenge()")
         #all OPTIONAL values get the GET statement
         # kwargs.get() does not raise an exception when the key does not exist
         # Can be removed if unused

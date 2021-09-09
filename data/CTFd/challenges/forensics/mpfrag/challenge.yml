@@ -12,6 +12,7 @@ name: mpfrag
 author: symmetric
 flag: 'CTF{bridge_ext2_gaps}'
 description: 'Was MPEG ever good?'
+type: static
 value: 500
 tags:
   - Forensics

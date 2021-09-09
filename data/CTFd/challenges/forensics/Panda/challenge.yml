@@ -6,9 +6,10 @@ description: I wanted to send this file to AJ1479 but I did not want anyone else
 
 value: 500
 type: dynamic
-
-decay: 450
-minimum: 100
+extra:
+  initial: 500
+  decay: 50
+  minimum: 50
 
 flags:
   - csictf{kung_fu_p4nd4}

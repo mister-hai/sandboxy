@@ -1,3 +1,4 @@
+from genericpath import isdir
 import os
 from pathlib import Path
 from ctfcli.utils.utils import getsubdirs
@@ -6,7 +7,7 @@ from ctfcli.core.challenge import Challengeyaml
 from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
 from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
-from ctfcli.utils.utils import redprint
+from ctfcli.utils.utils import redprint,logger
 #this class get imported up from another file, then pulled in from there 
 # sideways after some operations have been performed
 #from utils.challenge import Challenge
@@ -97,34 +98,48 @@ class SandboxyCTFdRepository(): #folder
         challengedirlist = [challengedata for challengedata in os.listdir(os.path.normpath(challengefolderpath))]
         # get path to challenge subitem
         challengeitempath = lambda challengedata: Path(os.path.abspath(os.path.join(challengefolderpath,challengedata)))
-
+        kwargs = dict
         try:
-            for item in challengedirlist:
-                if (("challenge.yaml" or "challenge.yml")in item):# and (isfile(challengeitempath)):
-                    greenprint(f"[+] Challenge.yaml found!")
-                    challengeyaml = Path(os.path.abspath(challengeitempath(item)))
-                elif ("solution" in item):
-                    greenprint("[+] Found Solution folder")
-                    solution = Path(os.path.abspath(challengeitempath(item)))
-                    yellowboldprint(f'[+] {solution}')
-                # get handouts, might be file, or directory
-                elif (("handout")in item):
-                    greenprint("[+] Found Handout folder")
-                    handout = challengeitempath(item)
-                    yellowboldprint(f"[+] {handout} ")
+            contentslist = ["handout","solution","challenge.yaml","challenge.yml"]
+            for item in contentslist:
+                if item in challengedirlist:
+                    greenprint(f"[+] Found : {item}")
+                    itempath = challengeitempath(item)
+                    kwargs[itempath.anchor]
                 else:
-                    raise Exception
+                    logger.error(f"[-] missing important item in challenge folder, skipping : missing {item}")
+                    break
+                
+                for item in challengedirlist:
+                    if (item == "challenge.yaml") or (item == "challenge.yml"):# and (isfile(challengeitempath)):
+                        greenprint(f"[+] Challenge.yaml found!")
+                        challengeyaml = Path(os.path.abspath(challengeitempath(item)))
+                    elif (item == "solution") and (isdir(os.path.abspath(challengeitempath(item)))):
+                        greenprint("[+] Found Solution folder")
+                        solution = Path(os.path.abspath(challengeitempath(item)))
+                        yellowboldprint(f'[+] {solution}')
+                    # get handouts, might be file, or directory
+                    elif (item == "handout") and (isdir(os.path.abspath(challengeitempath(item)))):
+                        greenprint("[+] Found Handout folder")
+                        handout = challengeitempath(item)
+                        yellowboldprint(f"[+] {handout} ")
+                    elif item not in contentslist:
+                        logger.error(f"[-] missing important item in challenge folder, skipping : missing {item}")
+                        break
         except Exception:
             errorlogger("[-] ERROR: Challenge Folder contents do not conform to specification!")
         # generate challenge based on folder contents
-        newchallenge = Challengeyaml(
-            category = category,
-            challengeyaml = challengeyaml,
-            handout= handout,
-            solution= solution
-            )
-        return newchallenge
-
+        try:
+            newchallenge = Challengeyaml(
+                category = category,
+                challengeyaml = challengeyaml,
+                handout= handout,
+                solution= solution
+                )
+            return newchallenge
+        except Exception:
+            errorlogger("[-] ERROR: Could not Create new Challenge from supplied data, Please check the log file")
+        
     def listcategories(self):
         """
         Lists all categories

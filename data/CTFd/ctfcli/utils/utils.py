@@ -30,10 +30,13 @@ except ImportError as derp:
 ################################################################################
 ##############               LOGGING AND ERRORS                #################
 ################################################################################
-LOGLEVEL            = 'DEV_IS_DUMB'
-LOGLEVELS           = [1,2,3,'DEV_IS_DUMB']
+LOGLEVEL = 4
 log_file            = 'logfile'
-logging.basicConfig(filename=log_file, format='%(asctime)s %(message)s', filemode='w')
+logging.basicConfig(filename=log_file, 
+                    format='%(asctime)s %(message)s', 
+                    filemode='w',
+                    level=LOGLEVEL
+                    )
 logger              = logging.getLogger()
 launchercwd         = pathlib.Path().absolute()
 
@@ -102,7 +105,7 @@ def errorlogger(message):
         errormesg = message + ''.join(trace.format_exception_only())
         #traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
         lineno = 'LINE NUMBER >>>' + str(exc_tb.tb_lineno)
-        errorlog(lineno+errormesg)
+        logger.error(lineno+errormesg)
     except Exception:
         print("EXCEPTION IN ERROR HANDLER!!!")
         print(message + ''.join(trace.format_exception_only()))

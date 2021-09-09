@@ -12,22 +12,6 @@ ctfcli.utils.apifunctions module
    :undoc-members:
    :show-inheritance:
 
-ctfcli.utils.apisession module
-------------------------------
-
-.. automodule:: ctfcli.utils.apisession
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ctfcli.utils.ctfdrepo module
-----------------------------
-
-.. automodule:: ctfcli.utils.ctfdrepo
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 ctfcli.utils.gitrepo module
 ---------------------------
 

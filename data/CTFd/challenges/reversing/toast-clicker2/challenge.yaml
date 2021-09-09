@@ -12,6 +12,7 @@ name: toast-clicker2
 author: itsC0rg1
 flag: 'CTF{T00_Many_S3cr3t5}'
 description: You found the first flag, can you find the second one? 
+type: static
 value: 500
 tags:
   - Mobile

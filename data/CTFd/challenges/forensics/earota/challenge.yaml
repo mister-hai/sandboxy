@@ -8,11 +8,13 @@
 #   file documenting the solution)
 
 version: beta1
-name: magic
+name: earota
+scoreboard_name: earota
 author: symmetric
-flag: 'CTF{magical_unicorn_gait}'
-description: 'Much magic, so rainbow, wow!'
+flag: 'CTF{one_iota_away_from_riches}'
+description: '01ι'
+type: static
 value: 500
 tags:
   - Forensics
-notes: Private notes on deployment, setup, etc.
+notes: This is just a file for download
