@@ -15,7 +15,7 @@ description: 'Never done ECC before? Now you can!'
 value: 500
 tags:
   - Crypto
-  - "101"
+  - Easy
 port: 25519
 protocol: tcp # accepted: http, https, tcp, udp
 flag_path: /home/ctf/flag.txt # Optional; but helpful for players
