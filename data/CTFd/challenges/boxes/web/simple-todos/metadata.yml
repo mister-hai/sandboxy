@@ -15,7 +15,7 @@ description: "For my new job as a San Franisco tour guide, I totally realized th
 value: 500
 tags:
   - Web
-  - "101"
+  - easy
 port: 3000
 protocol: http # accepted: http, https, tcp, udp
 flag_path: 'Mongo table called `flag`'

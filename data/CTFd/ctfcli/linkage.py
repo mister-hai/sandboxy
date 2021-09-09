@@ -26,44 +26,30 @@ class SandBoxyCTFdLinkage():
 
 
     """
-    def __init__(self
-                    #configname = "ini", 
-                    ):
-        greenprint("[+] Instancing a SandboxyCTFdLinkage()")
-        #self.PROJECTROOT         = os.getenv("PROJECT_ROOT")
-        # I promised myself I would never do this
-        os.environ["CHALLENGEREPOROOT"] = str(Path(f'{os.getcwd()}'))
-        # assign the classes as named commands for fire
-        setattr(self, 'ctfdops',SandboxyCTFdRepository())
-        #setattr(self, 'gitops',SandboxyGitRepository())
-        if os.getenv("CHALLENGEREPOROOT") != None:
-            self.CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
-            yellowboldprint(f'[+] Repository root ENV variable is {self.CTFDDATAROOT}')
-            self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
-            yellowboldprint(f'[+] Challenge root is {self.repofolder}')
-        # this code is inactive currently
-        else:
-            yellowboldprint("[+] CHALLENGEREPOROOT variable not set, checking one directory higher")
-            # ugly but it works
-            onelevelup = Path(f'{os.getcwd()}').parent
-            oneleveluplistdir = os.listdir(onelevelup)
-            if ('challenges' in oneleveluplistdir):
-                if os.path.isdir(oneleveluplistdir.get('challenges')):
-                    yellowboldprint("[+] Challenge Folder Found, presuming to be repository location")
-                    self.CTFDDATAROOT = onelevelup
-                    self.repofolder = os.path.join(self.CTFDDATAROOT, "challenges")
-
-        #set important variables on the self from the other
-        self.challengesfolder = self.ctfdops.CTFDDATAROOT
-        # challenge templates
-        self.TEMPLATESDIR = os.path.join(self.challengesfolder, "ctfcli", "templates")    
+    def __init__(self,
+                repositoryfolder:Path 
+                ):
+        self.repofolder = repositoryfolder
+        try:
+            greenprint("[+] Instancing a SandboxyCTFdLinkage()")
+            setattr(self, 'ctfdops',SandboxyCTFdRepository(self.repofolder))
+        except Exception:
+            errorlogger("[-] FAILED: Instancing a SandboxyCTFdLinkage()")
 
     def _setauth(self,ctfdurl,ctfdtoken):
+        """
+        Sets variables on the class instance to allow for authentication
+        to the CTFd server instance
+
+        Args:
+            ctfdurl (str): URI for CTFd server
+            ctfdtoken (str): Token provided by admin panel in ctfd
+        """
         # TODO: TIMESTAMPS AND IDS!!!
         # store url and token
-        self.ctfdauth = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
         self.CTFD_TOKEN      = ctfdtoken #os.getenv("CTFD_TOKEN")
         self.CTFD_URL        = ctfdurl #os.getenv("CTFD_URL")
+        self.ctfdauth = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
 
     def _checkmasterlist(self):
         """

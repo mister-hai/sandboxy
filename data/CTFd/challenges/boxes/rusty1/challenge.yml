@@ -6,7 +6,7 @@ description: We found the backdoor for a server, and they even included source c
 value: 500
 tags:
   - Reversing
-  - "101"
+  - Easy
 port: 8832
 protocol: tcp
 flag_path: /home/ctf/flag.txt

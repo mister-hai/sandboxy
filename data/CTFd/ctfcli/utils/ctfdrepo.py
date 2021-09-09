@@ -19,8 +19,16 @@ class SandboxyCTFdRepository(): #folder
     Backend to CTFd Repository
     Companion to the SandboxyCTFdRepository
     """
-    def __init__(self):
-        super(SandboxyCTFdRepository, self).__init__()
+    def __init__(self,
+                repositoryfolder:Path 
+                ):
+        self.repofolder = repositoryfolder
+        try:
+            greenprint("[+] Instancing a SandboxyCTFdRepository()")
+            super(SandboxyCTFdRepository, self).__init__()
+        except Exception:
+            errorlogger("[-] FAILED: Instancing a SandboxyCTFdRepository()")
+
     
     def _createrepo(self)-> Masterlist:
         '''

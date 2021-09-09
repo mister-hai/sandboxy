@@ -5,9 +5,9 @@ from yaml import safe_load,safe_dump
 
 class Yaml(): #filetype
     """
-    Represents a challange.yml
-    Give Path to challenge.yml
+    Base class for challenges and the repo
 
+    Anything thats a yaml file inherits from this
     Args:
         filepath (str): Full Filepath to Yaml File to load
     """

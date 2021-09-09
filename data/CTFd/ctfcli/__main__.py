@@ -4,6 +4,7 @@ from ctfcli.linkage import SandBoxyCTFdLinkage
 from ctfcli.utils.utils import CATEGORIES
 #from dotenv import load_dotenv
 from pathlib import Path
+from ctfcli.utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
 
 
 ###############################################################################
@@ -21,7 +22,7 @@ for each in PWD_LIST:
     if (each in CATEGORIES) or ():
         pass
 #CHALLENGEREPOROOT=/home/moop/sandboxy/data/CTFd
-
+os.environ["CHALLENGEREPOROOT"] = str(Path(f'{os.getcwd()}'))
 if os.getenv("CHALLENGEREPOROOT") != None:
     CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
     yellowboldprint(f'[+] Repository root ENV variable is {CTFDDATAROOT}')
@@ -38,6 +39,7 @@ else:
             yellowboldprint("[+] Challenge Folder Found, presuming to be repository location")
             CTFDDATAROOT = onelevelup
             repofolder = os.path.join(CTFDDATAROOT, "challenges")
+
 ###############################################################################
 class Ctfcli():
     '''
@@ -95,9 +97,11 @@ class Ctfcli():
         completion script and source it again.
     '''
     def __init__(self):
+        # challenge templates
+        self.TEMPLATESDIR = os.path.join(repofolder, "ctfcli", "templates")    
 
         # modify the structure of the program here by reassigning classes
-        ctfcli = SandBoxyCTFdLinkage()
+        ctfcli = SandBoxyCTFdLinkage(CTFDDATAROOT)
         self.ctfcli = ctfcli
         #self.ctfdops = SandboxyCTFdRepository()
         #self.gitops = SandboxyGitRepository()
