@@ -1,0 +1,6 @@
+2021-09-09 05:54:43,613 LINE NUMBER >>>116[-] ERROR: Challenge Folder contents do not conform to specification!Exception
+
+2021-09-09 05:54:43,613 LINE NUMBER >>>101[-] Failed to create CTFd Repository, check the logfileUnboundLocalError: local variable 'challengeyaml' referenced before assignment
+
+2021-09-09 05:54:43,613 LINE NUMBER >>>123[-] Git Repository Creation Failed, check the logfileAttributeError: 'SandBoxyCTFdLinkage' object has no attribute 'gitops'
+
