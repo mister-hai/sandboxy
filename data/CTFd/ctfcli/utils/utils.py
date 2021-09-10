@@ -30,16 +30,13 @@ except ImportError as derp:
 ################################################################################
 ##############               LOGGING AND ERRORS                #################
 ################################################################################
-LOGLEVEL = 4
 log_file            = 'logfile'
 logging.basicConfig(filename=log_file, 
-                    format='%(asctime)s %(message)s', 
-                    filemode='w',
-                    level=LOGLEVEL
+                    #format='%(asctime)s %(message)s', 
+                    filemode='w'
                     )
 logger              = logging.getLogger()
 launchercwd         = pathlib.Path().absolute()
-
 
 redprint          = lambda text: print(Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
 blueprint         = lambda text: print(Fore.BLUE + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
@@ -101,14 +98,11 @@ def errorlogger(message):
     """
     exc_type, exc_value, exc_tb = sys.exc_info()
     trace = traceback.TracebackException(exc_type, exc_value, exc_tb) 
-    try:
-        errormesg = message + ''.join(trace.format_exception_only())
-        #traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
-        lineno = 'LINE NUMBER >>>' + str(exc_tb.tb_lineno)
-        logger.error(lineno+errormesg)
-    except Exception:
-        print("EXCEPTION IN ERROR HANDLER!!!")
-        print(message + ''.join(trace.format_exception_only()))
+    errormesg = message + ''.join(trace.format_exception_only())
+    #traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
+    lineno = 'LINE NUMBER >>>' + str(exc_tb.tb_lineno)
+    logger.error(lineno+errormesg)
+    print(lineno+errormesg + ''.join(trace.format_exception_only()))
 
         
 Prompt = namedtuple("Prompt", ["text", "type", "default", "required", "multiple"])

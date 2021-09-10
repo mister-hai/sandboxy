@@ -29,7 +29,7 @@ class Constructor():
         self.challengetag = "!Challenge:"
         super().__init__()
 
-    def _multirepresenter(self, tag, dumper: SafeDumper, codeobject) -> MappingNode:
+    def _representer(self, tag, dumper: SafeDumper, codeobject) -> MappingNode:
         """
         Represent a Object instance as a YAML mapping node.
 
@@ -44,21 +44,14 @@ class Constructor():
         """
         return dumper.represent_mapping(tag, codeobject)
  
-    def _loader(self, loader: Loader, node: yaml.nodes.MappingNode):#, tag="!Masterlist:"):
+    def _loader(self, loader: Loader, node: yaml.nodes.MappingNode):
         """
         Construct an object based on yaml node input
         Part of the flow of YAML -> Python3
         """
-        #if tag == "!Masterlist:":
-        return MasterFile(**loader.construct_mapping(node, deep=True))
-        #elif tag == '!Repo:':
-        #    return Repository(**loader.construct_mapping(node, deep=True))
-        #elif tag == "!Category:":
-        #    return Category(**loader.construct_mapping(node, deep=True))
-        #elif tag == "!Challenge:":
-        #    return Challengeyaml(**loader.construct_mapping(node, deep=True))
+        return Repository(**loader.construct_mapping(node, deep=True))
 
-    def _get_dumper(self,tag:str, constructor, classtobuild):
+    def _get_dumper(self,constructor, classtobuild):
         """
         Add representers to a YAML serializer.
 
@@ -68,7 +61,7 @@ class Constructor():
         safe_dumper.add_representer(classtobuild, constructor)
         return safe_dumper
  
-    def _get_loader(self, tag:str, constructor):
+    def _get_loader(self, tag, constructor):
         """
         Add constructors to PyYAML loader.
 
@@ -78,15 +71,10 @@ class Constructor():
             constructor (function): the constructor function to call
         """
         loader = Loader
-        loader.add_constructor(tag, constructor)
-        #loader.add_constructor(self.tag, self.multi_constructor_masterlist)
-        #loader.add_multi_constructor(self.repotag, self.multi_constructor_repo)
-        #loader.add_multi_constructor(self.categorytag, self.multi_constructor_category)
-        #loader.add_multi_constructor(self.challengetag, self.multi_constructor_obj)
-
+        loader.add_constructor(tag,constructor)
         return loader
     
-    def _loadyaml(self,filelocation:Path):
+    def _loadyaml(self,tag, filelocation:Path):
         """
         Loads the masterlist.yaml into Masterlist.data
         Yaml -> Python3
@@ -98,11 +86,11 @@ class Constructor():
             #open the yml
             # feed the tag and the constructor method to call
             return yaml.load(open(filelocation, 'rb'), 
-                Loader=self._get_loader(self.tag,self._loader))
+                Loader=self._get_loader(tag, self._loader))
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file {filelocation.stem}")
 
-    def _writenewmasterlist(self, pythoncode, filemode="a"):
+    def _writeyaml(self,filepath, pythoncode, classtype,filemode="w"):
         """
         Creates a New Masterlist.yaml file from an init command
         remember to assign data to the file with
@@ -115,24 +103,12 @@ class Constructor():
             filemode (str) : File Mode To open File with. set to append by default
         """
         try:
-            with open("output.yml", filemode) as stream:
-                yellowboldprint("[+] Attempting To Write yaml")
+            with open(filepath, filemode) as stream:
                 stream.write(yaml.dump(pythoncode,
-                        Dumper=self._get_dumper(self.tag,self._multirepresenter)))
-                greenprint("[+] yaml written to disk!")
+                        Dumper=self._get_dumper(self._representer,classtype)))
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
 
-    def _writeyaml(self, tag, stream,pythoncode,classtype):
-        """
-        Transforms Yaml data to Python objects for loading and unloading
-        """
-        try:
-            return stream.write(yaml.dump(pythoncode,
-                    Dumper=self._get_dumper(self.tag,self._multirepresenter,classtype)))
-
-        except Exception:
-            errorlogger("[-] ERROR: Could not load .yml file")
 
 
 

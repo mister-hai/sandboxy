@@ -62,11 +62,9 @@ class SandBoxyCTFdLinkage():
             if os.path.exists(self.masterlistlocation):
                 masterlist = Masterlist()._loadmasterlist()
             else: 
-                raise Exception(makered("[-] Masterlist not located! Run 'ctfcli ctfdops init' first!"))
-
-            #setattr(self, 'ctfdops',SandboxyCTFdRepository(self.repofolder))
-        except Exception as e:
-            errorlogger(f"[-] FAILED: Instancing a SandboxyCTFdLinkage()\n{e}")
+                raise Exception
+        except Exception:
+            errorlogger("[-] Masterlist not located! Run 'ctfcli ctfdops init' first!")
 
 
     def _loadmasterlist(self, masterlistfile =  "masterlist.yml"):
@@ -108,9 +106,9 @@ class SandBoxyCTFdLinkage():
             # create a new masterlist
             masterlist = Masterlist(self.repofolder.parent)
             # write the masterlist with all the repo data to disk
-            masterlist._writenewmasterlist(repository)
+            masterlist._writenewmasterlist(repository,filemode="w")
             # read masterlist to verify it was saved properly
-            repositoryobject = masterlist._loadmasterlist()
+            repositoryobject = masterlist._loadmasterlist("!Repo:")
             #assigns repository to self for use in interactive mode
             #self.repo = repositoryobject
             setattr(self,repositoryobject,"repo")

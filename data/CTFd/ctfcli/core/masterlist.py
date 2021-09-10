@@ -2,7 +2,7 @@ import os, yaml
 from pathlib import Path
 from ctfcli.ClassConstructor import Constructor
 from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
-
+from ctfcli.core.repository import Repository
 ###############################################################################
 #  MASTERLIST
 ###############################################################################
@@ -24,20 +24,20 @@ class Masterlist():
         self.challengetag = "!Challenge:"
         #super().__init__()
 
-    def _loadmasterlist(self):
+    def _loadmasterlist(self, tag):
         """
         Loads the masterlist.yaml into Masterlist.data
 
         Args:
-            masterlistfile (str): The file to load as masterlist, defaults to masterlist.yamlw
+            masterlistfile (str): The file to load as masterlist, defaults to masterlist.yaml
         """
         try:
             workcrew = Constructor()
-            return workcrew._loadyaml(self.masterlistlocation)
+            return workcrew._loadyaml(tag,self.masterlistlocation)
         except Exception:
             errorlogger("[-] ERROR:File = Masterlist")
 
-    def _writenewmasterlist(self, pythoncode, filename = "masterlist.yaml", filemode="a"):
+    def _writenewmasterlist(self, pythoncode,filemode="w"):
         """
         Creates a New Masterlist.yaml file from an init command
         remember to assign data to the file with
@@ -46,6 +46,7 @@ class Masterlist():
         >>> thing._writenewmasterlist(pythoncodeobject, filename = "masterlist.yaml", filemode="a")
 
         Args: 
+            filepath (Path): path to masterfile
             pythoncode (Object): an instance of a python object to transform to YAML
             filemode (str) : File Mode To open File with. set to append by default
                              so you can manually fix the repo list
@@ -53,9 +54,8 @@ class Masterlist():
         """
         workcrew = Constructor()
         try:
-            with open(filename, filemode) as stream:
                 yellowboldprint("[+] Attempting To Write Masterlist.yaml")
-                workcrew._writeyaml(stream, pythoncode, Masterlist)
+                workcrew._writeyaml(self.masterlistlocation, pythoncode, Repository, filemode)
                 greenprint("[+] Masterlist.yaml written to disk!")
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
