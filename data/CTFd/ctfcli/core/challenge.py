@@ -49,12 +49,14 @@ class Challengeyaml(Yaml):
             category,
             challengeyaml,
             handout,
-            solution
+            solution,
+            readme
             ):
         self.folderlocation  = Path(os.path.abspath(challengeyaml))
         self.challengefile = challengeyaml
         self.solutiondir = solution
         self.handout = handout
+        self.readme = readme
         if category not in CATEGORIES:
             errorlogger("[-] Inconsistancy in inputs {}".format(category))
         else:

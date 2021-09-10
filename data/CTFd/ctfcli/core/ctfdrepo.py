@@ -94,47 +94,59 @@ class SandboxyCTFdRepository(): #folder
 
         Args:
             challengefolderpath (str): path to the challenge folder
+            category (str): currently requires you specify the category
         '''
         challengedirlist = [challengedata for challengedata in os.listdir(os.path.normpath(challengefolderpath))]
         # get path to challenge subitem
         challengeitempath = lambda challengedata: Path(os.path.abspath(os.path.join(challengefolderpath,challengedata)))
-        kwargs = dict
+        kwargs = {}
+        contentslist = ["handout","solution","challenge"] #.yaml","challenge.yml"]
         try:
-            contentslist = ["handout","solution","challenge.yaml","challenge.yml"]
-            for item in contentslist:
-                if item in challengedirlist:
+            # for list of all item in dir
+            for item in challengedirlist:
+                itempath = challengeitempath(item)
+                # if the item is in the list of approved items
+                if itempath.stem in contentslist:
                     greenprint(f"[+] Found : {item}")
-                    itempath = challengeitempath(item)
-                    kwargs[itempath.anchor]
+                    kwargs[str(itempath.stem).lower()] = itempath
+                # if its a readme
+                elif itempath.stem == "README":
+                    kwargs[str(itempath.stem).lower()] = itempath
+                # extra stuff not in approved list of contents
+                elif itempath.stem not in contentslist:
+                    # ignore it
+                    continue
+                # all other conditions
                 else:
                     logger.error(f"[-] missing important item in challenge folder, skipping : missing {item}")
                     break
                 
-                for item in challengedirlist:
-                    if (item == "challenge.yaml") or (item == "challenge.yml"):# and (isfile(challengeitempath)):
-                        greenprint(f"[+] Challenge.yaml found!")
-                        challengeyaml = Path(os.path.abspath(challengeitempath(item)))
-                    elif (item == "solution") and (isdir(os.path.abspath(challengeitempath(item)))):
-                        greenprint("[+] Found Solution folder")
-                        solution = Path(os.path.abspath(challengeitempath(item)))
-                        yellowboldprint(f'[+] {solution}')
-                    # get handouts, might be file, or directory
-                    elif (item == "handout") and (isdir(os.path.abspath(challengeitempath(item)))):
-                        greenprint("[+] Found Handout folder")
-                        handout = challengeitempath(item)
-                        yellowboldprint(f"[+] {handout} ")
-                    elif item not in contentslist:
-                        logger.error(f"[-] missing important item in challenge folder, skipping : missing {item}")
-                        break
+                #for item in challengedirlist:
+                #    if (item == "challenge.yaml") or (item == "challenge.yml"):# and (isfile(challengeitempath)):
+                #        greenprint(f"[+] Challenge.yaml found!")
+                #        challengeyaml = Path(os.path.abspath(challengeitempath(item)))
+                #    elif (item == "solution") and (isdir(os.path.abspath(challengeitempath(item)))):
+                #        greenprint("[+] Found Solution folder")
+                #        solution = Path(os.path.abspath(challengeitempath(item)))
+                #        yellowboldprint(f'[+] {solution}')
+                #    # get handouts, might be file, or directory
+                #    elif (item == "handout") and (isdir(os.path.abspath(challengeitempath(item)))):
+                #        greenprint("[+] Found Handout folder")
+                #        handout = challengeitempath(item)
+                #        yellowboldprint(f"[+] {handout} ")
+                #    elif item not in contentslist:
+                #        logger.error(f"[-] missing important item in challenge folder, skipping : missing {item}")
+                #        break
         except Exception:
             errorlogger("[-] ERROR: Challenge Folder contents do not conform to specification!")
         # generate challenge based on folder contents
         try:
             newchallenge = Challengeyaml(
                 category = category,
-                challengeyaml = challengeyaml,
-                handout= handout,
-                solution= solution
+                challengeyaml = kwargs.pop("challenge"),
+                handout= kwargs.pop('handout'),
+                solution= kwargs.pop('solution'),
+                readme = kwargs.get('readme')
                 )
             return newchallenge
         except Exception:
