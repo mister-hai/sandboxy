@@ -1,5 +1,5 @@
 
-from ctfcli.core.challenge import Challengeyaml
+from ctfcli.core.challenge import Challenge
 from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
 
 ###############################################################################
@@ -42,7 +42,7 @@ class Category(): #folder
         #return self_repr
         return wat
 
-    def _addchallenge(self, challenge:Challengeyaml):
+    def _addchallenge(self, challenge:Challenge):
         """
         Adds a challenge to the repository, appended to Category() class
 
@@ -64,7 +64,12 @@ class Category(): #folder
         '''
         delattr(self,challengename)
     
-    def listchallenges(self):
+    def listchallenges(self) -> list:
         '''
         Lists all the challenges appended to this category
         '''
+        challengelist = []
+        for selfitem in vars(self):
+            if type(selfitem) == Challenge:
+                challengelist.append(selfitem)
+        return challengelist

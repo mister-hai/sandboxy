@@ -1,9 +1,11 @@
-from genericpath import isfile
+from __future__ import annotations
 import os
 from pathlib import Path
 from ctfcli.core.category import Category
 from ctfcli.utils.utils import errorlogger
 from cookiecutter.main import cookiecutter
+from ctfcli.core.challenge import Challenge
+from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
 from ctfcli.core.apisession import APISession
 #from ctfcli.utils.gitrepo import SandboxyGitRepository
@@ -27,6 +29,7 @@ class SandBoxyCTFdLinkage():
     def __init__(self,
                 repositoryfolder:Path 
                 ):
+        self.repo = Repository
         self.repofolder = repositoryfolder
         self.masterlistlocation = Path(self.repofolder.parent, "masterlist.yaml")
         try:
@@ -111,7 +114,7 @@ class SandBoxyCTFdLinkage():
             repositoryobject = masterlist._loadmasterlist("!Repo:")
             #assigns repository to self for use in interactive mode
             #self.repo = repositoryobject
-            #setattr(self,repositoryobject,"repo")
+            setattr(self,"repo",repositoryobject)
 
         except Exception:
             errorlogger("[-] Failed to create CTFd Repository, check the logfile")
@@ -122,34 +125,67 @@ class SandBoxyCTFdLinkage():
         #except Exception:
         #    errorlogger("[-] Git Repository Creation Failed, check the logfile")
 
-    def listcategories(self,prints=True):
+    def listcategories(self,prints=True) -> list:
         """
         Get the names of all Categories
         Supply "print=False" to return a variable instead of display to screen 
         """
+        catbag = []
         if self._checkmasterlist():
-            selfitems = dir(self.repo)
-            for item in selfitems:
-                if type(item) == Category:
-                    if prints == True:
-                        print(item)
-                    else:
-                        return item
-
-    def getchallengesbycategory(self, category, printscr=True):
+            # all items in repo
+            repositorycontents =  vars(self.repo)
+            for repositoryitem in repositorycontents:
+                # if item is a category
+                if (type(getattr(self.repo, repositoryitem)) == Category):
+                    catholder:Category = getattr(repositoryitem, self.repo)
+                    catbag.append(catholder)
+            if (prints == False):
+                # print the category.__repr__ to screen
+                for each in catbag:
+                    print(each)
+            else:
+                # return the object list itself
+                return catbag
+    
+    def getchallengesbycategory(self,categoryname,printscr=True) -> list:
         """
-        Lists challenges in repo by category        
-        Supply "print=False" to return a variable instead of utf-8 
+        Returns either a list of challenges or prints them to screen
         """
         if self._checkmasterlist():
-            selfitem = self.__dict__.get('category')
-            if (type(selfitem) == Category):
-                    if printscr == True:
-                        print(selfitem.listchallenges())
-                    else:
-                        return selfitem.listchallenges()
-
-    def syncchallenge(self, challenge,ctfdurl,ctfdtoken):
+            # listcategories() returns a list of Categories 
+            for category in self.listcategories(prints=False):
+                # the bag with cats
+                if category.name == categoryname:
+                    challengesack = category.listchallenges()
+            if printscr == True:
+                for each in challengesack:
+                    print(each)
+            else:
+                return challengesack
+            
+    def getallchallenges(self, category, printscr=True) -> list:
+        """
+        Lists ALL challenges in repo
+        Supply "print=False" to return a variable instead of text 
+        """
+        if self._checkmasterlist():
+            challengesack = []
+            # listcategories() returns a list of categories 
+            for category in self.listcategories(prints=False):
+                # the bag with cats
+                for categoryitem in vars(category):
+                    # its a challenge class
+                    if (type(getattr(category, categoryitem)) == Challenge):
+                        # retrieve it and assign to variable
+                        challenge:Challenge = getattr(category, categoryitem)
+                        challengesack.append(challenge)
+            if printscr == True:
+                print(challengesack)
+            else:
+                # return a list of cchallenge for each category
+                return challengesack
+            
+    def syncchallenge(self, challenge:Challenge,ctfdurl,ctfdtoken):
         """
         Syncs a challenge with the CTFd server
 
@@ -159,8 +195,9 @@ class SandBoxyCTFdLinkage():
         Args:
             challenge (Challenge): Challenge to syncronize with the CTFd server
         """
-        self._setauth(ctfdurl,ctfdtoken)        
-        challenge.sync(challenge.internalid)
+        if self._checkmasterlist():
+            self._setauth(ctfdurl,ctfdtoken)        
+            challenge.sync(challenge.internalname)
 
     def synccategory(self, category:str,ctfdurl,ctfdtoken):
         """
@@ -172,43 +209,60 @@ class SandBoxyCTFdLinkage():
         Args:
             category (str): The name of the category to syncronize with the CTFd server
         """
-        self._setauth(ctfdurl,ctfdtoken)
-        try:
-            greenprint("[+] Syncing Category: {}". format(category))
-            challenges = self.getchallengesbycategory(category)
-            for challenge in challenges:
-                greenprint(f"Syncing challenge: {challenge}")
-                self.syncchallenge(challenge)
-        except Exception:
-            errorlogger("[-] Failure to sync category! {}".format(challenge))
+        if self._checkmasterlist():
+            self._setauth(ctfdurl,ctfdtoken)
+            try:
+                greenprint("[+] Syncing Category: {}". format(category))
+                challenges = self.getchallengesbycategory(category)
+                for challenge in challenges:
+                    greenprint(f"Syncing challenge: {challenge}")
+                    self.syncchallenge(challenge)
+            except Exception:
+                errorlogger("[-] Failure to sync category! {}".format(challenge))
 
     def syncrepository(self, ctfdurl, ctfdtoken):
         '''
+        NOT IMPLEMENTED YET
         Syncs the entire Repository Folder
 
         Args:
             ctfdurl (str):   The URL of the CTFd Server instance
             ctfdtoken (str): Token given from Admin Panel > Config > Settings > Auth Token Form
         '''
-        self._setauth(ctfdurl,ctfdtoken)
+        if self._checkmasterlist():
+            catbag = []
+            challengesack = []
+            self._setauth(ctfdurl,ctfdtoken)
+            for category in self.listcategories(prints=False):
+                # the bag with cats
+                catbag.append(category)
+            for cat in catbag:
+                # shake the cats up
+                for challenge in self.getchallengesbycategory(cat, printscr=False):
+                    challengesack.append(challenge)
+            # thor it at the wall and watch the mayhem
+            for challenge in challengesack:
+                challenge.sync()
 
     def listsyncedchallenges(self, remote=False):
         """
+        NOT IMPLEMENTED YET
+
         Lists the challenges installed to the server
         Use 
         >>> --remote=False 
         to check the LOCAL repository
-
         For git operations, use `gitops` or your preferred terminal workflow
 
         Args:
             remote (bool): If True, Checks CTFd server for installed challenges
         """
-        if remote == True:
-            apicall = APISession.generate_session()
-            return apicall.get("/api/v1/challenges?view=admin", json=True).json()["data"]
-        elif remote == False:
-            self.ctfdops.listsyncedchallenges()
+        if self._checkmasterlist():
+            if remote == True:
+                apicall = APISession.generate_session()
+                return apicall.get("/api/v1/challenges?view=admin", json=True).json()["data"]
+            elif remote == False:
+                self.ctfdops.listsyncedchallenges()
 
     def newfromtemplate(self, type=""):
         """
@@ -218,10 +272,11 @@ class SandBoxyCTFdLinkage():
 
         NOT IMPLEMENTED YET
         """
-        # if no repo is present, uploads a template
-        if type == "":
-            type = "default"
-            cookiecutter(os.path.join(self.TEMPLATESDIR, type))
-        else:
-            cookiecutter(os.path.join(self.TEMPLATESDIR,type))
+        if self._checkmasterlist():
+            # if no repo is present, uploads a template
+            if type == "":
+                type = "default"
+                cookiecutter(os.path.join(self.TEMPLATESDIR, type))
+            else:
+                cookiecutter(os.path.join(self.TEMPLATESDIR,type))
 

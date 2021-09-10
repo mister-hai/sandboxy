@@ -1,15 +1,11 @@
-from __future__ import annotations
 import yaml
 
 import os
 from pathlib import Path
-from ctfcli.core.category import Category
-from ctfcli.core.challenge import Challengeyaml
 from ctfcli.core.repository import Repository
-from ctfcli.core.yamlstuff import MasterFile
-from yaml import SafeLoader,SafeDumper,MappingNode,Dumper,Loader
+from yaml import SafeDumper,MappingNode,Dumper,Loader
 from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
-from yaml import SafeLoader,SafeDumper,MappingNode,safe_load,safe_dump
+from yaml import SafeDumper,MappingNode
 from ctfcli.core.repository import Repository
 
 

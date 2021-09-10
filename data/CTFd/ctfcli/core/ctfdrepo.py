@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from ctfcli.utils.utils import getsubdirs
 from ctfcli.core.category import Category
-from ctfcli.core.challenge import Challengeyaml
+from ctfcli.core.challenge import Challenge
 from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
 from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
@@ -13,9 +13,9 @@ from ctfcli.utils.utils import redprint,logger
 #from utils.challenge import Challenge
 
 ###############################################################################
-#  CTFd REPOSIROTY: representation of folder in repository
+#
 ###############################################################################
-class SandboxyCTFdRepository(): #folder
+class SandboxyCTFdRepository():
     """
     Backend to CTFd Repository
     Companion to the SandboxyCTFdRepository
@@ -86,7 +86,7 @@ class SandboxyCTFdRepository(): #folder
             newcategory._addchallenge(newchallenge)                    
         return newcategory
         
-    def createchallengefromfolder(self, challengefolderpath:Path,category:str) -> Challengeyaml:
+    def createchallengefromfolder(self, challengefolderpath:Path,category:str) -> Challenge:
         '''
         Process the contents of the challenge folder given into a new Challenge() class
         This is essentially where the definition of a challenge folder itself
@@ -124,7 +124,7 @@ class SandboxyCTFdRepository(): #folder
             errorlogger("[-] ERROR: Challenge Folder contents do not conform to specification!")
         # generate challenge based on folder contents
         try:
-            newchallenge = Challengeyaml(
+            newchallenge = Challenge(
                 category = category,
                 challengeyaml = kwargs.pop("challenge"),
                 handout= kwargs.pop('handout'),
@@ -139,7 +139,7 @@ class SandboxyCTFdRepository(): #folder
         """
         Lists all categories
         """
-        selflist = self.__dict__
+        selflist = self.repo
         categorylist = []
         for item in selflist:
             if type(item) == Category:

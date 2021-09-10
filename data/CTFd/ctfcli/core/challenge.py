@@ -8,7 +8,7 @@ from ctfcli.core.apisession import APIHandler
 ###############################################################################
 #  CHALLENGEYAML
 ###############################################################################
-class Challengeyaml(Yaml):
+class Challenge(Yaml):
     """
     Base Class for all the attributes required on both the CTFd side and Repository side
     Represents the challenge.yml as exists in the folder for that specific challenge
@@ -23,7 +23,7 @@ class Challengeyaml(Yaml):
         challenge.yaml
     
     >>> filepath = os.path.abspath("challenge.yaml")
-    >>> newchallenge = Challengeyaml(filepath)
+    >>> newchallenge = Challenge(filepath)
 
     This Class is where the data from the challenge.yaml ends up
     For modifications to CTFd itself; Additional fields use these
@@ -79,11 +79,11 @@ class Challengeyaml(Yaml):
     def _initchallenge(self,**kwargs):
         """
         Unpacks a dict representation of the challenge.yaml into
-        The Challengeyaml() Class, this is ONLY for challenge.yaml
+        The Challenge() Class, this is ONLY for challenge.yaml
 
         The structure is simple and only has two levels, and no stored code
 
-        >>> asdf = Challengeyaml(filepath)
+        >>> asdf = Challenge(filepath)
         >>> print(asdf.category)
         >>> 'Forensics'
 
@@ -216,7 +216,7 @@ class Challengeyaml(Yaml):
             "author" :      self.author
             }
         else:
-            raise ValueError(f"Unknown type {typeof} in Classconstructor.Challengeyaml._initchallenge()")
+            raise ValueError(f"Unknown type {typeof} in Classconstructor.Challenge._initchallenge()")
         #all OPTIONAL values get the GET statement
         # kwargs.get() does not raise an exception when the key does not exist
         # Can be removed if unused
