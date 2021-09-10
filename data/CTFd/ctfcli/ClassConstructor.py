@@ -1,6 +1,7 @@
 from __future__ import annotations
 import yaml
 
+import os
 from ctfcli.core.category import Category
 from ctfcli.core.challenge import Challengeyaml
 from ctfcli.core.repository import Repository
@@ -42,7 +43,7 @@ class Constructor():
         """
         return dumper.represent_mapping(tag, codeobject)
  
-    def _multiloader(self, loader: Loader, node: yaml.nodes.MappingNode, type="!Masterlist:"):
+    def _multiloader(self, loader: Loader, node: yaml.nodes.MappingNode, tag="!Masterlist:"):
         """
         Construct an object based on yaml node input
         Part of the flow of YAML -> Python3
@@ -51,13 +52,13 @@ class Constructor():
             type (str): 'masterlist' || 'repo' || 'challenge'
         """
         
-        if type == "!Masterlist:":
+        if tag == "!Masterlist:":
             return MasterFile(**loader.construct_mapping(node, deep=True))
-        elif type == '!Repo:':
+        elif tag == '!Repo:':
             return Repository(**loader.construct_mapping(node, deep=True))
-        elif type== "!Category:":
+        elif tag == "!Category:":
             return Category(**loader.construct_mapping(node, deep=True))
-        elif type== "!Challenge:":
+        elif tag == "!Challenge:":
             return Challengeyaml(**loader.construct_mapping(node, deep=True))
 
     def _get_dumper(self,tag:str, constructor, classtobuild):
@@ -80,15 +81,15 @@ class Constructor():
             constructor (function): the constructor function to call
         """
         loader = Loader
-        #loader.add_constructor(tag, constructor)
-        loader.add_constructor(self.tag, self.multi_constructor_masterlist)
+        loader.add_constructor(tag, constructor)
+        #loader.add_constructor(self.tag, self.multi_constructor_masterlist)
         #loader.add_multi_constructor(self.repotag, self.multi_constructor_repo)
         #loader.add_multi_constructor(self.categorytag, self.multi_constructor_category)
         #loader.add_multi_constructor(self.challengetag, self.multi_constructor_obj)
 
         return loader
     
-    def _loadmasterlist(self):
+    def _loadyaml(self,filelocation):
         """
         Loads the masterlist.yaml into Masterlist.data
         Yaml -> Python3
@@ -99,10 +100,10 @@ class Constructor():
         try:
             #open the yml
             # feed the tag and the constructor method to call
-            return yaml.load(open(self.filelocation, 'rb'), 
+            return yaml.load(open(filelocation, 'rb'), 
                 Loader=self._get_loader(self.tag,self._multiloader))
         except Exception:
-            errorlogger("[-] ERROR: Could not load .yml file")
+            errorlogger("[-] ERROR: Could not load .yml file {filelocation.stem}")
 
     def _writenewmasterlist(self, pythoncode, filemode="a"):
         """
@@ -125,13 +126,14 @@ class Constructor():
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
 
-    def _loadyaml(self, tag, loadedyaml:dict):
+    def _writeyaml(self, tag, stream,pythoncode,classtype):
         """
         Transforms Yaml data to Python objects for loading and unloading
         """
         try:
-            return yaml.load(open(self.location, 'rb'),
-                        Loader=self._get_loader(tag))
+            return stream.write(yaml.dump(pythoncode,
+                    Dumper=self._get_dumper(self.tag,self._multirepresenter,classtype)))
+
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
 

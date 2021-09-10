@@ -120,23 +120,6 @@ class SandboxyCTFdRepository(): #folder
                 else:
                     logger.error(f"[-] missing important item in challenge folder, skipping : missing {item}")
                     break
-                
-                #for item in challengedirlist:
-                #    if (item == "challenge.yaml") or (item == "challenge.yml"):# and (isfile(challengeitempath)):
-                #        greenprint(f"[+] Challenge.yaml found!")
-                #        challengeyaml = Path(os.path.abspath(challengeitempath(item)))
-                #    elif (item == "solution") and (isdir(os.path.abspath(challengeitempath(item)))):
-                #        greenprint("[+] Found Solution folder")
-                #        solution = Path(os.path.abspath(challengeitempath(item)))
-                #        yellowboldprint(f'[+] {solution}')
-                #    # get handouts, might be file, or directory
-                #    elif (item == "handout") and (isdir(os.path.abspath(challengeitempath(item)))):
-                #        greenprint("[+] Found Handout folder")
-                #        handout = challengeitempath(item)
-                #        yellowboldprint(f"[+] {handout} ")
-                #    elif item not in contentslist:
-                #        logger.error(f"[-] missing important item in challenge folder, skipping : missing {item}")
-                #        break
         except Exception:
             errorlogger("[-] ERROR: Challenge Folder contents do not conform to specification!")
         # generate challenge based on folder contents
@@ -156,6 +139,12 @@ class SandboxyCTFdRepository(): #folder
         """
         Lists all categories
         """
+        selflist = self.__dict__
+        categorylist = []
+        for item in selflist:
+            if type(item) == Category:
+                categorylist.append(item)
+
 
     def removecategory(self, category:str):
         """

@@ -104,26 +104,20 @@ class SandBoxyCTFdLinkage():
             masterlist = Masterlist(repository)
             # write the masterlist with all the repo data to disk
             masterlist._writenewmasterlist(repository)
-            # future method to add alternative masterlist
-            #self._addmasterlist(masterlist)
-
             # read masterlist to verify it was saved properly
-            #repositoryobject = self.masterlist.transformtorepository(self.masterlist)
-            repositoryobject = self.masterlist._loadmasterlist()
-
+            repositoryobject = masterlist._loadmasterlist()
             #assigns repository to self for use in interactive mode
             #self.repo = repositoryobject
             setattr(self,repositoryobject,"repo")
 
         except Exception:
             errorlogger("[-] Failed to create CTFd Repository, check the logfile")
-        try:
+        #try:
             # we do this last so we can add all the created files to the git repo        
             # this is the git backend, operate this seperately
-            self.gitops.createprojectrepo()
-        except Exception:
-            errorlogger("[-] Git Repository Creation Failed, check the logfile")
-
+            #self.gitops.createprojectrepo()
+        #except Exception:
+        #    errorlogger("[-] Git Repository Creation Failed, check the logfile")
 
     def listcategories(self,prints=True):
         """
@@ -162,8 +156,7 @@ class SandBoxyCTFdLinkage():
         Args:
             challenge (Challenge): Challenge to syncronize with the CTFd server
         """
-        self._setauth(ctfdurl,ctfdtoken)
-        
+        self._setauth(ctfdurl,ctfdtoken)        
         challenge.sync(challenge.internalid)
 
     def synccategory(self, category:str,ctfdurl,ctfdtoken):
