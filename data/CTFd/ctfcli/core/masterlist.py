@@ -13,11 +13,10 @@ class Masterlist():
     https://matthewpburruss.com/post/yaml/
 
     """
-    def __init__(self,repository):
+    def __init__(self, repofolder):
         # filename for the full challenge index
-        self.masterlistfile      = "masterlist.yaml"
-        self.masterlistlocation  = Path(os.path.join(repository.location, self.masterlistfile))
-        #self.masterlistobject    = Yaml(self.masterlistlocation)
+        #self.masterlistfile      = "masterlist.yaml"
+        self.masterlistlocation  = Path(repofolder,"masterlist.yaml") #Path(os.path.join(repository.location, self.masterlistfile))
         # tag for yaml file object
         self.tag = "!Masterlist:"
         self.repotag = "!Repo:"
@@ -44,7 +43,7 @@ class Masterlist():
         remember to assign data to the file with
         
         >>> thing = Masterlist(filepath)
-        >>> thing._writenewmasterlist(pythoncodeobject)
+        >>> thing._writenewmasterlist(pythoncodeobject, filename = "masterlist.yaml", filemode="a")
 
         Args: 
             pythoncode (Object): an instance of a python object to transform to YAML

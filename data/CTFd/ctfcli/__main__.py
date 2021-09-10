@@ -26,7 +26,7 @@ os.environ["CHALLENGEREPOROOT"] = str(Path(f'{os.getcwd()}'))
 if os.getenv("CHALLENGEREPOROOT") != None:
     CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
     yellowboldprint(f'[+] Repository root ENV variable is {CTFDDATAROOT}')
-    challengeroot = os.path.join(CTFDDATAROOT, "challenges")
+    challengeroot = Path(CTFDDATAROOT, "challenges")# os.path.join(CTFDDATAROOT, "challenges")
     yellowboldprint(f'[+] Challenge root is {challengeroot}')
     # this code is inactive currently
 else:

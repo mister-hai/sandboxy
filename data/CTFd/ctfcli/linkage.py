@@ -8,7 +8,7 @@ from ctfcli.core.masterlist import Masterlist
 from ctfcli.core.apisession import APISession
 #from ctfcli.utils.gitrepo import SandboxyGitRepository
 from ctfcli.core.ctfdrepo import SandboxyCTFdRepository
-from ctfcli.utils.utils import redprint,greenprint,CATEGORIES
+from ctfcli.utils.utils import redprint,greenprint,CATEGORIES,makered
 from ctfcli.utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
 
 #class CTFCLI():
@@ -28,12 +28,13 @@ class SandBoxyCTFdLinkage():
                 repositoryfolder:Path 
                 ):
         self.repofolder = repositoryfolder
+        self.masterlistlocation = Path(self.repofolder.parent, "masterlist.yaml")
         try:
             greenprint("[+] Instancing a SandboxyCTFdLinkage()")
             self.ctfdops = SandboxyCTFdRepository(self.repofolder)
             #setattr(self, 'ctfdops',SandboxyCTFdRepository(self.repofolder))
-        except Exception:
-            errorlogger("[-] FAILED: Instancing a SandboxyCTFdLinkage()")
+        except Exception as e:
+            errorlogger(f"[-] FAILED: Instancing a SandboxyCTFdLinkage()\n{e}")
 
     def _setauth(self,ctfdurl,ctfdtoken):
         """
@@ -56,13 +57,17 @@ class SandBoxyCTFdLinkage():
         
         TODO: add integrity checks, currently just checks if it exists
         """
-        if isfile(self.masterlistlocation):
-            greenprint("[+] Masterlist Located!")
-            return True
-        else:
-            redprint("[-] Masterlist Not Found! You need to run 'ctfcli init'!! ")
-            raise Exception
-            #return False
+        try:
+            greenprint("[+] Checking masterlist")
+            if os.path.exists(self.masterlistlocation):
+                masterlist = Masterlist()._loadmasterlist()
+            else: 
+                raise Exception(makered("[-] Masterlist not located! Run 'ctfcli ctfdops init' first!"))
+
+            #setattr(self, 'ctfdops',SandboxyCTFdRepository(self.repofolder))
+        except Exception as e:
+            errorlogger(f"[-] FAILED: Instancing a SandboxyCTFdLinkage()\n{e}")
+
 
     def _loadmasterlist(self, masterlistfile =  "masterlist.yml"):
         """
@@ -101,7 +106,7 @@ class SandBoxyCTFdLinkage():
             repository = self.ctfdops._createrepo()
             repository._setlocation(self.repofolder)
             # create a new masterlist
-            masterlist = Masterlist(repository)
+            masterlist = Masterlist(self.repofolder.parent)
             # write the masterlist with all the repo data to disk
             masterlist._writenewmasterlist(repository)
             # read masterlist to verify it was saved properly

@@ -2,6 +2,7 @@ from __future__ import annotations
 import yaml
 
 import os
+from pathlib import Path
 from ctfcli.core.category import Category
 from ctfcli.core.challenge import Challengeyaml
 from ctfcli.core.repository import Repository
@@ -43,23 +44,19 @@ class Constructor():
         """
         return dumper.represent_mapping(tag, codeobject)
  
-    def _multiloader(self, loader: Loader, node: yaml.nodes.MappingNode, tag="!Masterlist:"):
+    def _loader(self, loader: Loader, node: yaml.nodes.MappingNode):#, tag="!Masterlist:"):
         """
         Construct an object based on yaml node input
         Part of the flow of YAML -> Python3
-
-        Args:
-            type (str): 'masterlist' || 'repo' || 'challenge'
         """
-        
-        if tag == "!Masterlist:":
-            return MasterFile(**loader.construct_mapping(node, deep=True))
-        elif tag == '!Repo:':
-            return Repository(**loader.construct_mapping(node, deep=True))
-        elif tag == "!Category:":
-            return Category(**loader.construct_mapping(node, deep=True))
-        elif tag == "!Challenge:":
-            return Challengeyaml(**loader.construct_mapping(node, deep=True))
+        #if tag == "!Masterlist:":
+        return MasterFile(**loader.construct_mapping(node, deep=True))
+        #elif tag == '!Repo:':
+        #    return Repository(**loader.construct_mapping(node, deep=True))
+        #elif tag == "!Category:":
+        #    return Category(**loader.construct_mapping(node, deep=True))
+        #elif tag == "!Challenge:":
+        #    return Challengeyaml(**loader.construct_mapping(node, deep=True))
 
     def _get_dumper(self,tag:str, constructor, classtobuild):
         """
@@ -89,7 +86,7 @@ class Constructor():
 
         return loader
     
-    def _loadyaml(self,filelocation):
+    def _loadyaml(self,filelocation:Path):
         """
         Loads the masterlist.yaml into Masterlist.data
         Yaml -> Python3
@@ -101,7 +98,7 @@ class Constructor():
             #open the yml
             # feed the tag and the constructor method to call
             return yaml.load(open(filelocation, 'rb'), 
-                Loader=self._get_loader(self.tag,self._multiloader))
+                Loader=self._get_loader(self.tag,self._loader))
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file {filelocation.stem}")
 
