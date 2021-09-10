@@ -24,13 +24,14 @@ class Masterlist():
         self.challengetag = "!Challenge:"
         #super().__init__()
 
-    def _loadmasterlist(self, tag):
+    def _loadmasterlist(self) -> Repository:#, tag):
         """
         Loads the masterlist.yaml into Masterlist.data
 
         Args:
             masterlistfile (str): The file to load as masterlist, defaults to masterlist.yaml
         """
+        tag = "!Repo:"
         try:
             workcrew = Constructor()
             return workcrew._loadyaml(tag,self.masterlistlocation)

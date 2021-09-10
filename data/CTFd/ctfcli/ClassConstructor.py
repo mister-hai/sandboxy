@@ -1,6 +1,6 @@
 import yaml
 
-import os
+import os,sys
 from pathlib import Path
 from ctfcli.core.repository import Repository
 from yaml import SafeDumper,MappingNode,Dumper,Loader
@@ -46,7 +46,11 @@ class Constructor():
         Construct an object based on yaml node input
         Part of the flow of YAML -> Python3
         """
+        if sys.platform == "win32":
+            import pathlib
+            pathlib.PosixPath = pathlib.WindowsPath
         return Repository(**loader.construct_mapping(node, deep=True))
+        
 
     def _get_dumper(self,constructor, classtobuild):
         """

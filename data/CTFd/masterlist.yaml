@@ -1,13 +1,15 @@
 !Repo:
 crypto: !!python/object:ctfcli.core.category.Category
-  Challenge_17f1fac02be406f95668b33db8983c496af3954664ab8435c66a067156a79853: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_17f1fac02be406f95668b33db8983c496af3954664ab8435c66a067156a79853
+  Challenge_17f1fac02be406f95668b33db8983c496af3954664ab8435c66a067156a79853: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_17f1fac02be406f95668b33db8983c496af3954664ab8435c66a067156a79853
     __qualname__: Challenge_17f1fac02be406f95668b33db8983c496af3954664ab8435c66a067156a79853
     attempts: &id001 !!python/name:builtins.int ''
     author: iagox86
     category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -21,8 +23,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -34,8 +38,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - barcoder
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -67,8 +73,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -92,14 +100,16 @@ crypto: !!python/object:ctfcli.core.category.Category
     type: standard
     value: 500
     version: beta1
-  Challenge_350732370f8440b17994ab13ffd38bc3860187b5cd0e3943772de8d28d16b54b: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_350732370f8440b17994ab13ffd38bc3860187b5cd0e3943772de8d28d16b54b
+  Challenge_350732370f8440b17994ab13ffd38bc3860187b5cd0e3943772de8d28d16b54b: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_350732370f8440b17994ab13ffd38bc3860187b5cd0e3943772de8d28d16b54b
     __qualname__: Challenge_350732370f8440b17994ab13ffd38bc3860187b5cd0e3943772de8d28d16b54b
     attempts: *id001
     author: SrishtiGohain
     category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -117,8 +127,10 @@ crypto: !!python/object:ctfcli.core.category.Category
       decay: 450
       initial: 500
       minimum: 100
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -130,8 +142,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - Modern Clueless Child
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -160,8 +174,10 @@ crypto: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 100
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -184,14 +200,16 @@ crypto: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: null
-  Challenge_48b54d817a125935cd7b2bb8974b0b7ca9632e2139b4edd7bd2523913feeae85: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_48b54d817a125935cd7b2bb8974b0b7ca9632e2139b4edd7bd2523913feeae85
+  Challenge_48b54d817a125935cd7b2bb8974b0b7ca9632e2139b4edd7bd2523913feeae85: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_48b54d817a125935cd7b2bb8974b0b7ca9632e2139b4edd7bd2523913feeae85
     __qualname__: Challenge_48b54d817a125935cd7b2bb8974b0b7ca9632e2139b4edd7bd2523913feeae85
     attempts: *id001
     author: ashikka
     category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -209,8 +227,10 @@ crypto: !!python/object:ctfcli.core.category.Category
       decay: 450
       initial: 500
       minimum: 100
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -222,8 +242,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - Quick Math
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -252,8 +274,10 @@ crypto: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 100
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -276,14 +300,16 @@ crypto: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: null
-  Challenge_5a7639cb1c09b4159e22c4c94b4df528267c345717577d88ca9fe972b276b954: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_5a7639cb1c09b4159e22c4c94b4df528267c345717577d88ca9fe972b276b954
+  Challenge_5a7639cb1c09b4159e22c4c94b4df528267c345717577d88ca9fe972b276b954: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_5a7639cb1c09b4159e22c4c94b4df528267c345717577d88ca9fe972b276b954
     __qualname__: Challenge_5a7639cb1c09b4159e22c4c94b4df528267c345717577d88ca9fe972b276b954
     attempts: *id001
     author: matir
     category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -297,8 +323,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -310,8 +338,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - decrypto-1
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -343,8 +373,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -368,14 +400,16 @@ crypto: !!python/object:ctfcli.core.category.Category
     type: standard
     value: 500
     version: beta1
-  Challenge_9c2c405852ad58597139ae17f80a3902b009b8f104b72a0dcb88022e511b9727: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_9c2c405852ad58597139ae17f80a3902b009b8f104b72a0dcb88022e511b9727
+  Challenge_9c2c405852ad58597139ae17f80a3902b009b8f104b72a0dcb88022e511b9727: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_9c2c405852ad58597139ae17f80a3902b009b8f104b72a0dcb88022e511b9727
     __qualname__: Challenge_9c2c405852ad58597139ae17f80a3902b009b8f104b72a0dcb88022e511b9727
     attempts: *id001
     author: roerohan
     category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -393,8 +427,10 @@ crypto: !!python/object:ctfcli.core.category.Category
       decay: 450
       initial: 500
       minimum: 100
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -406,8 +442,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - Rivest Shamir Adleman
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -436,8 +474,10 @@ crypto: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 100
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -460,14 +500,16 @@ crypto: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: null
-  Challenge_9d5bcdc9443850d7f705c38ec5230c22883efed7c3e86e75019dea3a7774081e: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_9d5bcdc9443850d7f705c38ec5230c22883efed7c3e86e75019dea3a7774081e
+  Challenge_9d5bcdc9443850d7f705c38ec5230c22883efed7c3e86e75019dea3a7774081e: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_9d5bcdc9443850d7f705c38ec5230c22883efed7c3e86e75019dea3a7774081e
     __qualname__: Challenge_9d5bcdc9443850d7f705c38ec5230c22883efed7c3e86e75019dea3a7774081e
     attempts: *id001
     author: matir
     category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -481,8 +523,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -494,8 +538,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - decrypto-2
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -527,8 +573,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -551,14 +599,16 @@ crypto: !!python/object:ctfcli.core.category.Category
     type: standard
     value: 500
     version: beta1
-  Challenge_b6648a9eb88d867f19609235cd9b82d115b0ba1a894a9cc0c2442599dca39c9c: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_b6648a9eb88d867f19609235cd9b82d115b0ba1a894a9cc0c2442599dca39c9c
+  Challenge_b6648a9eb88d867f19609235cd9b82d115b0ba1a894a9cc0c2442599dca39c9c: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_b6648a9eb88d867f19609235cd9b82d115b0ba1a894a9cc0c2442599dca39c9c
     __qualname__: Challenge_b6648a9eb88d867f19609235cd9b82d115b0ba1a894a9cc0c2442599dca39c9c
     attempts: *id001
     author: AJ147
     category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -576,8 +626,10 @@ crypto: !!python/object:ctfcli.core.category.Category
       decay: 450
       initial: 500
       minimum: 100
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -589,8 +641,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - Mein Kampf
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -619,8 +673,10 @@ crypto: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 100
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -644,14 +700,16 @@ crypto: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: null
-  Challenge_b746db4dc5bf27830590079701ff4a753ea60490792542905a95e33cb4fd13fe: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_b746db4dc5bf27830590079701ff4a753ea60490792542905a95e33cb4fd13fe
+  Challenge_b746db4dc5bf27830590079701ff4a753ea60490792542905a95e33cb4fd13fe: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_b746db4dc5bf27830590079701ff4a753ea60490792542905a95e33cb4fd13fe
     __qualname__: Challenge_b746db4dc5bf27830590079701ff4a753ea60490792542905a95e33cb4fd13fe
     attempts: *id001
     author: Pragati
     category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -669,8 +727,10 @@ crypto: !!python/object:ctfcli.core.category.Category
       decay: 450
       initial: 500
       minimum: 100
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -682,8 +742,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - little RSA
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -712,8 +774,10 @@ crypto: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 100
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -737,14 +801,16 @@ crypto: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: '0.1'
-  Challenge_b7b607ee0bbfbdc8f9b764255e62930da990c77118eb5f30ca4ae78271f7d054: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_b7b607ee0bbfbdc8f9b764255e62930da990c77118eb5f30ca4ae78271f7d054
+  Challenge_b7b607ee0bbfbdc8f9b764255e62930da990c77118eb5f30ca4ae78271f7d054: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_b7b607ee0bbfbdc8f9b764255e62930da990c77118eb5f30ca4ae78271f7d054
     __qualname__: Challenge_b7b607ee0bbfbdc8f9b764255e62930da990c77118eb5f30ca4ae78271f7d054
     attempts: *id001
     author: matir
     category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -762,8 +828,10 @@ crypto: !!python/object:ctfcli.core.category.Category
       decay: 100
       initial: 500
       minimum: 50
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -775,8 +843,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - anagrams
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -805,8 +875,10 @@ crypto: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 50
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -829,14 +901,16 @@ crypto: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: '0.1'
-  Challenge_c23f5d380165697e1bab49d7348abbe75ae5f44c805db0d490cc2bb405b88f46: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_c23f5d380165697e1bab49d7348abbe75ae5f44c805db0d490cc2bb405b88f46
+  Challenge_c23f5d380165697e1bab49d7348abbe75ae5f44c805db0d490cc2bb405b88f46: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_c23f5d380165697e1bab49d7348abbe75ae5f44c805db0d490cc2bb405b88f46
     __qualname__: Challenge_c23f5d380165697e1bab49d7348abbe75ae5f44c805db0d490cc2bb405b88f46
     attempts: *id001
     author: matir
     category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -850,8 +924,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -863,8 +939,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - decrypto-3
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -896,8 +974,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -921,14 +1001,16 @@ crypto: !!python/object:ctfcli.core.category.Category
     type: standard
     value: 500
     version: beta1
-  Challenge_e4dd07cfc028dc0f60400e4237aafaa9af32f393e316589210d8272e1b9f4f69: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_e4dd07cfc028dc0f60400e4237aafaa9af32f393e316589210d8272e1b9f4f69
+  Challenge_e4dd07cfc028dc0f60400e4237aafaa9af32f393e316589210d8272e1b9f4f69: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_e4dd07cfc028dc0f60400e4237aafaa9af32f393e316589210d8272e1b9f4f69
     __qualname__: Challenge_e4dd07cfc028dc0f60400e4237aafaa9af32f393e316589210d8272e1b9f4f69
     attempts: *id001
     author: iagox86
     category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -942,8 +1024,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -955,8 +1039,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - config-me
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -988,8 +1074,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1013,14 +1101,16 @@ crypto: !!python/object:ctfcli.core.category.Category
     type: standard
     value: 500
     version: null
-  Challenge_f7da35fe3c580f116f2db849598aa0e9b7852ab5bc12755b1d5a047608fc4cac: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_f7da35fe3c580f116f2db849598aa0e9b7852ab5bc12755b1d5a047608fc4cac
+  Challenge_f7da35fe3c580f116f2db849598aa0e9b7852ab5bc12755b1d5a047608fc4cac: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_f7da35fe3c580f116f2db849598aa0e9b7852ab5bc12755b1d5a047608fc4cac
     __qualname__: Challenge_f7da35fe3c580f116f2db849598aa0e9b7852ab5bc12755b1d5a047608fc4cac
     attempts: *id001
     author: ashikka and AJ1479
     category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1038,8 +1128,10 @@ crypto: !!python/object:ctfcli.core.category.Category
       decay: 450
       initial: 500
       minimum: 100
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1051,8 +1143,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - The Climb
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1081,8 +1175,10 @@ crypto: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 100
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1105,8 +1201,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: null
-  location: !!python/object/apply:pathlib.WindowsPath
-  - C:\
+  location: !!python/object/apply:pathlib.PosixPath
+  - /
+  - mnt
+  - c
   - Users
   - moop
   - Desktop
@@ -1119,14 +1217,16 @@ crypto: !!python/object:ctfcli.core.category.Category
   name: crypto
   tag: '!Category:'
 forensics: !!python/object:ctfcli.core.category.Category
-  Challenge_097c0082169f3514b8daf45692851050ce20eb19bb384298e0fb96191eb78da5: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_097c0082169f3514b8daf45692851050ce20eb19bb384298e0fb96191eb78da5
+  Challenge_097c0082169f3514b8daf45692851050ce20eb19bb384298e0fb96191eb78da5: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_097c0082169f3514b8daf45692851050ce20eb19bb384298e0fb96191eb78da5
     __qualname__: Challenge_097c0082169f3514b8daf45692851050ce20eb19bb384298e0fb96191eb78da5
     attempts: *id001
     author: SrishtiGohain
     category: forensics
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1144,8 +1244,10 @@ forensics: !!python/object:ctfcli.core.category.Category
       decay: 50
       initial: 500
       minimum: 50
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1157,8 +1259,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - forensics
     - In Your Eyes
     - challenge.yml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1179,8 +1283,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     jsonpayload:
       max_attempts: *id001
     name: In Your Eyes
-    readme: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    readme: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1199,8 +1305,10 @@ forensics: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 50
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1224,14 +1332,16 @@ forensics: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: '0.1'
-  Challenge_3be7a505483c0050243c5cbad4700da13925aa4137a55e9e33efd8bc4d05850f: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_3be7a505483c0050243c5cbad4700da13925aa4137a55e9e33efd8bc4d05850f
+  Challenge_3be7a505483c0050243c5cbad4700da13925aa4137a55e9e33efd8bc4d05850f: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_3be7a505483c0050243c5cbad4700da13925aa4137a55e9e33efd8bc4d05850f
     __qualname__: Challenge_3be7a505483c0050243c5cbad4700da13925aa4137a55e9e33efd8bc4d05850f
     attempts: *id001
     author: symmetric
     category: forensics
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1245,8 +1355,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1258,8 +1370,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - forensics
     - magic
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1291,8 +1405,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1315,14 +1431,16 @@ forensics: !!python/object:ctfcli.core.category.Category
     type: static
     value: 500
     version: beta1
-  Challenge_4192dd56ef44e2e787648920ee53c2e3bb92b9fd7430b1807dd43093312544dc: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_4192dd56ef44e2e787648920ee53c2e3bb92b9fd7430b1807dd43093312544dc
+  Challenge_4192dd56ef44e2e787648920ee53c2e3bb92b9fd7430b1807dd43093312544dc: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_4192dd56ef44e2e787648920ee53c2e3bb92b9fd7430b1807dd43093312544dc
     __qualname__: Challenge_4192dd56ef44e2e787648920ee53c2e3bb92b9fd7430b1807dd43093312544dc
     attempts: *id001
     author: roerohan
     category: forensics
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1340,8 +1458,10 @@ forensics: !!python/object:ctfcli.core.category.Category
       decay: 50
       initial: 500
       minimum: 50
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1353,8 +1473,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - forensics
     - Archenemy
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1375,8 +1497,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     jsonpayload:
       max_attempts: *id001
     name: Archenemy
-    readme: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    readme: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1395,8 +1519,10 @@ forensics: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 50
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1419,14 +1545,16 @@ forensics: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: 0.1
-  Challenge_5e25943333030d82c3d65b06c2ed33d0e1dbe2838a8c41462ce30ad1e217376f: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_5e25943333030d82c3d65b06c2ed33d0e1dbe2838a8c41462ce30ad1e217376f
+  Challenge_5e25943333030d82c3d65b06c2ed33d0e1dbe2838a8c41462ce30ad1e217376f: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_5e25943333030d82c3d65b06c2ed33d0e1dbe2838a8c41462ce30ad1e217376f
     __qualname__: Challenge_5e25943333030d82c3d65b06c2ed33d0e1dbe2838a8c41462ce30ad1e217376f
     attempts: *id001
     author: tangobeer
     category: forensics
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1444,8 +1572,10 @@ forensics: !!python/object:ctfcli.core.category.Category
       decay: 50
       initial: 500
       minimum: 50
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1457,8 +1587,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - forensics
     - Gradient sky
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1479,8 +1611,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     jsonpayload:
       max_attempts: *id001
     name: Gradient sky
-    readme: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    readme: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1499,8 +1633,10 @@ forensics: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 50
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1525,14 +1661,16 @@ forensics: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: '0.1'
-  Challenge_6861ed54cbcdfd19f8df0900c376b65382e668e1f4d3c8927ec672d7d1247c77: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_6861ed54cbcdfd19f8df0900c376b65382e668e1f4d3c8927ec672d7d1247c77
+  Challenge_6861ed54cbcdfd19f8df0900c376b65382e668e1f4d3c8927ec672d7d1247c77: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_6861ed54cbcdfd19f8df0900c376b65382e668e1f4d3c8927ec672d7d1247c77
     __qualname__: Challenge_6861ed54cbcdfd19f8df0900c376b65382e668e1f4d3c8927ec672d7d1247c77
     attempts: *id001
     author: symmetric
     category: forensics
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1546,8 +1684,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1559,8 +1699,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - forensics
     - earota
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1592,8 +1734,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1616,14 +1760,16 @@ forensics: !!python/object:ctfcli.core.category.Category
     type: static
     value: 500
     version: beta1
-  Challenge_796c985cc82da7e0cb4bfcb45d43c893fbd29b79e7602fb7cb595b153aef731c: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_796c985cc82da7e0cb4bfcb45d43c893fbd29b79e7602fb7cb595b153aef731c
+  Challenge_796c985cc82da7e0cb4bfcb45d43c893fbd29b79e7602fb7cb595b153aef731c: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_796c985cc82da7e0cb4bfcb45d43c893fbd29b79e7602fb7cb595b153aef731c
     __qualname__: Challenge_796c985cc82da7e0cb4bfcb45d43c893fbd29b79e7602fb7cb595b153aef731c
     attempts: *id001
     author: 21StWarlock
     category: forensics
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1641,8 +1787,10 @@ forensics: !!python/object:ctfcli.core.category.Category
       decay: 50
       initial: 500
       minimum: 50
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1654,8 +1802,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - forensics
     - unseen
     - challenge.yml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1676,8 +1826,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     jsonpayload:
       max_attempts: *id001
     name: unseen
-    readme: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    readme: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1696,8 +1848,10 @@ forensics: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 50
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1720,14 +1874,16 @@ forensics: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: '0.1'
-  Challenge_866f08119f6cb6770d41da98c5c7d78623883ba996c5455365d337b401bf85c7: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_866f08119f6cb6770d41da98c5c7d78623883ba996c5455365d337b401bf85c7
+  Challenge_866f08119f6cb6770d41da98c5c7d78623883ba996c5455365d337b401bf85c7: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_866f08119f6cb6770d41da98c5c7d78623883ba996c5455365d337b401bf85c7
     __qualname__: Challenge_866f08119f6cb6770d41da98c5c7d78623883ba996c5455365d337b401bf85c7
     attempts: *id001
     author: symmetric
     category: forensics
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1741,8 +1897,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - challenge.yml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1754,8 +1912,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - forensics
     - mpfrag
     - challenge.yml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1787,8 +1947,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1811,14 +1973,16 @@ forensics: !!python/object:ctfcli.core.category.Category
     type: static
     value: 500
     version: beta1
-  Challenge_d7ecdf25eaf3deba0f2628771dbdd22d4138ab6cf38f91ed02a2ca0dec7c8ab7: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_d7ecdf25eaf3deba0f2628771dbdd22d4138ab6cf38f91ed02a2ca0dec7c8ab7
+  Challenge_d7ecdf25eaf3deba0f2628771dbdd22d4138ab6cf38f91ed02a2ca0dec7c8ab7: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_d7ecdf25eaf3deba0f2628771dbdd22d4138ab6cf38f91ed02a2ca0dec7c8ab7
     __qualname__: Challenge_d7ecdf25eaf3deba0f2628771dbdd22d4138ab6cf38f91ed02a2ca0dec7c8ab7
     attempts: *id001
     author: corgi
     category: forensics
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1832,8 +1996,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - challenge.yml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1845,8 +2011,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - forensics
     - open-sesame
     - challenge.yml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1878,8 +2046,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1903,14 +2073,16 @@ forensics: !!python/object:ctfcli.core.category.Category
     type: static
     value: 500
     version: beta1
-  Challenge_f7d9ea7f3980635237d6ea58048057c33a218f2670e0ff45af5f4f670e9aa6f4: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_f7d9ea7f3980635237d6ea58048057c33a218f2670e0ff45af5f4f670e9aa6f4
+  Challenge_f7d9ea7f3980635237d6ea58048057c33a218f2670e0ff45af5f4f670e9aa6f4: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_f7d9ea7f3980635237d6ea58048057c33a218f2670e0ff45af5f4f670e9aa6f4
     __qualname__: Challenge_f7d9ea7f3980635237d6ea58048057c33a218f2670e0ff45af5f4f670e9aa6f4
     attempts: *id001
     author: ashikka
     category: forensics
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1928,8 +2100,10 @@ forensics: !!python/object:ctfcli.core.category.Category
       decay: 50
       initial: 500
       minimum: 50
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1941,8 +2115,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     - forensics
     - Panda
     - challenge.yml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1963,8 +2139,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     jsonpayload:
       max_attempts: *id001
     name: Panda
-    readme: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    readme: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -1983,8 +2161,10 @@ forensics: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 50
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2007,8 +2187,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: '0.1'
-  location: !!python/object/apply:pathlib.WindowsPath
-  - C:\
+  location: !!python/object/apply:pathlib.PosixPath
+  - /
+  - mnt
+  - c
   - Users
   - moop
   - Desktop
@@ -2020,8 +2202,10 @@ forensics: !!python/object:ctfcli.core.category.Category
   - forensics
   name: forensics
   tag: '!Category:'
-location: !!python/object/apply:pathlib.WindowsPath
-- C:\
+location: !!python/object/apply:pathlib.PosixPath
+- /
+- mnt
+- c
 - Users
 - moop
 - Desktop
@@ -2031,14 +2215,16 @@ location: !!python/object/apply:pathlib.WindowsPath
 - CTFd
 - challenges
 miscellaneous: !!python/object:ctfcli.core.category.Category
-  Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794
+  Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794
     __qualname__: Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794
     attempts: *id001
     author: harsoh
     category: miscellaneous
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2056,8 +2242,10 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
       decay: 50
       initial: 500
       minimum: 50
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2069,8 +2257,10 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     - miscellaneous
     - Machine Fix
     - challenge.yml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2091,8 +2281,10 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     jsonpayload:
       max_attempts: *id001
     name: Machine Fix
-    readme: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    readme: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2111,8 +2303,10 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 50
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2136,14 +2330,16 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: '0.1'
-  Challenge_8f18b5409b7741b41244bc0401a7ffcc01eaec23b8eb449a43957a700b338f3c: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_8f18b5409b7741b41244bc0401a7ffcc01eaec23b8eb449a43957a700b338f3c
+  Challenge_8f18b5409b7741b41244bc0401a7ffcc01eaec23b8eb449a43957a700b338f3c: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_8f18b5409b7741b41244bc0401a7ffcc01eaec23b8eb449a43957a700b338f3c
     __qualname__: Challenge_8f18b5409b7741b41244bc0401a7ffcc01eaec23b8eb449a43957a700b338f3c
     attempts: *id001
     author: Matir
     category: miscellaneous
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2157,8 +2353,10 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2170,8 +2368,10 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     - miscellaneous
     - mini-matroyshka
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2203,8 +2403,10 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2227,8 +2429,10 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     type: static
     value: 500
     version: beta1
-  location: !!python/object/apply:pathlib.WindowsPath
-  - C:\
+  location: !!python/object/apply:pathlib.PosixPath
+  - /
+  - mnt
+  - c
   - Users
   - moop
   - Desktop
@@ -2241,14 +2445,16 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
   name: miscellaneous
   tag: '!Category:'
 reversing: !!python/object:ctfcli.core.category.Category
-  Challenge_1ebe04d280ba028ce026ac0bd5cd350bd540413f9feb53237a08994f163301c7: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_1ebe04d280ba028ce026ac0bd5cd350bd540413f9feb53237a08994f163301c7
+  Challenge_1ebe04d280ba028ce026ac0bd5cd350bd540413f9feb53237a08994f163301c7: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_1ebe04d280ba028ce026ac0bd5cd350bd540413f9feb53237a08994f163301c7
     __qualname__: Challenge_1ebe04d280ba028ce026ac0bd5cd350bd540413f9feb53237a08994f163301c7
     attempts: *id001
     author: AJ1479
     category: reversing
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2266,8 +2472,10 @@ reversing: !!python/object:ctfcli.core.category.Category
       decay: 50
       initial: 500
       minimum: 50
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2279,8 +2487,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - reversing
     - Scrambled Eggs
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2301,8 +2511,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     jsonpayload:
       max_attempts: *id001
     name: Scrambled Eggs
-    readme: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    readme: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2321,8 +2533,10 @@ reversing: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 50
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2346,14 +2560,16 @@ reversing: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: '0.1'
-  Challenge_2d62e7d1e987384761ace68734964d8b164176271c1fd92981e160f5d7f8451b: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_2d62e7d1e987384761ace68734964d8b164176271c1fd92981e160f5d7f8451b
+  Challenge_2d62e7d1e987384761ace68734964d8b164176271c1fd92981e160f5d7f8451b: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_2d62e7d1e987384761ace68734964d8b164176271c1fd92981e160f5d7f8451b
     __qualname__: Challenge_2d62e7d1e987384761ace68734964d8b164176271c1fd92981e160f5d7f8451b
     attempts: *id001
     author: 21StWarlock#1598
     category: reversing
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2371,8 +2587,10 @@ reversing: !!python/object:ctfcli.core.category.Category
       decay: 50
       initial: 500
       minimum: 50
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2384,8 +2602,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - reversing
     - pydis2ctf
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2406,8 +2626,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     jsonpayload:
       max_attempts: *id001
     name: pydis2ctf
-    readme: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    readme: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2426,8 +2648,10 @@ reversing: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 50
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2451,14 +2675,16 @@ reversing: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: '0.1'
-  Challenge_4a832402101de1b3f176d1dfbe5ce47ff67efd22d711738e8bd6629ab466267f: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_4a832402101de1b3f176d1dfbe5ce47ff67efd22d711738e8bd6629ab466267f
+  Challenge_4a832402101de1b3f176d1dfbe5ce47ff67efd22d711738e8bd6629ab466267f: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_4a832402101de1b3f176d1dfbe5ce47ff67efd22d711738e8bd6629ab466267f
     __qualname__: Challenge_4a832402101de1b3f176d1dfbe5ce47ff67efd22d711738e8bd6629ab466267f
     attempts: *id001
     author: itsC0rg1
     category: reversing
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2472,8 +2698,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2485,8 +2713,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - reversing
     - toast-clicker2
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2518,8 +2748,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2543,14 +2775,16 @@ reversing: !!python/object:ctfcli.core.category.Category
     type: static
     value: 500
     version: beta1
-  Challenge_746c4a027e6ad633345a26c5417b7b004e24bf3e07d2b5dd3dc987f0b98ec6de: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_746c4a027e6ad633345a26c5417b7b004e24bf3e07d2b5dd3dc987f0b98ec6de
+  Challenge_746c4a027e6ad633345a26c5417b7b004e24bf3e07d2b5dd3dc987f0b98ec6de: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_746c4a027e6ad633345a26c5417b7b004e24bf3e07d2b5dd3dc987f0b98ec6de
     __qualname__: Challenge_746c4a027e6ad633345a26c5417b7b004e24bf3e07d2b5dd3dc987f0b98ec6de
     attempts: *id001
     author: itsC0rg1
     category: reversing
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2564,8 +2798,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2577,8 +2813,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - reversing
     - toast-clicker3
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2610,8 +2848,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2635,14 +2875,16 @@ reversing: !!python/object:ctfcli.core.category.Category
     type: static
     value: 500
     version: beta1
-  Challenge_a75021e59f268fbe0f51194c49cdf15004b06c60701a05bd2d2b640482f49bff: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_a75021e59f268fbe0f51194c49cdf15004b06c60701a05bd2d2b640482f49bff
+  Challenge_a75021e59f268fbe0f51194c49cdf15004b06c60701a05bd2d2b640482f49bff: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_a75021e59f268fbe0f51194c49cdf15004b06c60701a05bd2d2b640482f49bff
     __qualname__: Challenge_a75021e59f268fbe0f51194c49cdf15004b06c60701a05bd2d2b640482f49bff
     attempts: *id001
     author: Matir
     category: reversing
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2656,8 +2898,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2669,8 +2913,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - reversing
     - maltty
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2702,8 +2948,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2727,14 +2975,16 @@ reversing: !!python/object:ctfcli.core.category.Category
     type: static
     value: 500
     version: beta1
-  Challenge_afe341a793dae04a8a3830d4009700856040bc0f55053677f54c843e9b064ef7: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_afe341a793dae04a8a3830d4009700856040bc0f55053677f54c843e9b064ef7
+  Challenge_afe341a793dae04a8a3830d4009700856040bc0f55053677f54c843e9b064ef7: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_afe341a793dae04a8a3830d4009700856040bc0f55053677f54c843e9b064ef7
     __qualname__: Challenge_afe341a793dae04a8a3830d4009700856040bc0f55053677f54c843e9b064ef7
     attempts: *id001
     author: itsC0rg1
     category: reversing
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2748,8 +2998,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2761,8 +3013,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - reversing
     - toast-clicker1
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2794,8 +3048,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2819,14 +3075,16 @@ reversing: !!python/object:ctfcli.core.category.Category
     type: static
     value: 500
     version: beta1
-  Challenge_df36a820a5dc8aa10e406346d2a0ff47574c7ece9c2ee026469b90e83f1a215a: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_df36a820a5dc8aa10e406346d2a0ff47574c7ece9c2ee026469b90e83f1a215a
+  Challenge_df36a820a5dc8aa10e406346d2a0ff47574c7ece9c2ee026469b90e83f1a215a: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_df36a820a5dc8aa10e406346d2a0ff47574c7ece9c2ee026469b90e83f1a215a
     __qualname__: Challenge_df36a820a5dc8aa10e406346d2a0ff47574c7ece9c2ee026469b90e83f1a215a
     attempts: *id001
     author: iagox86
     category: reversing
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2840,8 +3098,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - challenge.yaml
     connection_info: null
     description: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2853,8 +3113,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - reversing
     - strace-me
     - challenge.yaml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2886,8 +3148,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     scorepayload:
       value: 500
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2911,14 +3175,16 @@ reversing: !!python/object:ctfcli.core.category.Category
     type: static
     value: 500
     version: beta1
-  Challenge_ef846b8fd21e40fd7173a14798275968cf2af35d3ad9a3c448784a39964848f1: !!python/object:ctfcli.core.challenge.Challengeyaml
-    _Challengeyaml__name: Challenge_ef846b8fd21e40fd7173a14798275968cf2af35d3ad9a3c448784a39964848f1
+  Challenge_ef846b8fd21e40fd7173a14798275968cf2af35d3ad9a3c448784a39964848f1: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_ef846b8fd21e40fd7173a14798275968cf2af35d3ad9a3c448784a39964848f1
     __qualname__: Challenge_ef846b8fd21e40fd7173a14798275968cf2af35d3ad9a3c448784a39964848f1
     attempts: *id001
     author: roerohan
     category: reversing
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    challengefile: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2936,8 +3202,10 @@ reversing: !!python/object:ctfcli.core.category.Category
       decay: 50
       initial: 500
       minimum: 50
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    folderlocation: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2949,8 +3217,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     - reversing
     - Esrever
     - challenge.yml
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    handout: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2971,8 +3241,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     jsonpayload:
       max_attempts: *id001
     name: Esrever
-    readme: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    readme: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -2991,8 +3263,10 @@ reversing: !!python/object:ctfcli.core.category.Category
         initial: 500
         minimum: 50
     script: *id002
-    solutiondir: !!python/object/apply:pathlib.WindowsPath
-    - C:\
+    solutiondir: !!python/object/apply:pathlib.PosixPath
+    - /
+    - mnt
+    - c
     - Users
     - moop
     - Desktop
@@ -3016,8 +3290,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     type: dynamic
     value: 500
     version: '0.1'
-  location: !!python/object/apply:pathlib.WindowsPath
-  - C:\
+  location: !!python/object/apply:pathlib.PosixPath
+  - /
+  - mnt
+  - c
   - Users
   - moop
   - Desktop

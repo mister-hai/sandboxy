@@ -30,17 +30,19 @@ class Category(): #folder
         >>> 'Challenges  : <challenge number>'
         >>> 'Number synched : <ctfd challenges in category>'
         '''
-        numberofchallenges = len(self.listchallenges)
-        self_repr = f"""Category: {self.name}
-        Category Folder Location: {self.location}
-        Number of Challenges in Category: {numberofchallenges}
-        Number of Challenges Synched to CTFd Server: {self.getsynchedchallenges()}
+        #numberofchallenges = len(self.listchallenges)
+        self_repr = f"""
+Category: {self.name}
+Category Folder Location: {self.location}
         """
-        wat = []
-        for key in self.__dict__:
-            wat.append(str(key) + " : " + str(self.__dict__[key]))
-        #return self_repr
-        return wat
+        #wat = []
+        #challengelist = self.listchallenges()
+        #for challenge in challengelist:
+        #    self_repr.append(challenge + "\n")
+        #for key in vars(self):#.__dict__:
+        #    wat.append(str(key) + " : " + str(vars(self).get(key)))
+        return self_repr
+        #return wat
 
     def _addchallenge(self, challenge:Challenge):
         """

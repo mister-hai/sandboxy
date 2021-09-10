@@ -1,6 +1,7 @@
 from __future__ import annotations
 import os
 from pathlib import Path
+import pathlib
 from ctfcli.core.category import Category
 from ctfcli.utils.utils import errorlogger
 from cookiecutter.main import cookiecutter
@@ -16,14 +17,12 @@ from ctfcli.utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
 #class CTFCLI():
 class SandBoxyCTFdLinkage():
     """
-    Maps to the command
-    
+    CTFCLI
+
     >>> host@server$> python ./ctfcli/ ctfcli
 
     Used to upload challenges from the data directory in project root
-
     And manage the ctfd instance
-
 
     """
     def __init__(self,
@@ -43,12 +42,11 @@ class SandBoxyCTFdLinkage():
         """
         Sets variables on the class instance to allow for authentication
         to the CTFd server instance
-
         Args:
             ctfdurl (str): URI for CTFd server
             ctfdtoken (str): Token provided by admin panel in ctfd
         """
-        # TODO: TIMESTAMPS AND IDS!!!
+        # TODO: TIMESTAMPS AND IDS!!! create API call and push data
         # store url and token
         self.CTFD_TOKEN      = ctfdtoken #os.getenv("CTFD_TOKEN")
         self.CTFD_URL        = ctfdurl #os.getenv("CTFD_URL")
@@ -56,38 +54,21 @@ class SandBoxyCTFdLinkage():
 
     def _checkmasterlist(self):
         """
-        checks for existance and integrity of master list
-        
+        checks for existance and integrity of master list and loads it into self
         TODO: add integrity checks, currently just checks if it exists
+        then loads it into self
         """
         try:
             greenprint("[+] Checking masterlist")
             if os.path.exists(self.masterlistlocation):
-                masterlist = Masterlist()._loadmasterlist()
+                repository = Masterlist(self.repofolder.parent)._loadmasterlist()
+                setattr(self,"repo", repository)
+                return True
             else: 
                 raise Exception
         except Exception:
             errorlogger("[-] Masterlist not located! Run 'ctfcli ctfdops init' first!")
-
-
-    def _loadmasterlist(self, masterlistfile =  "masterlist.yml"):
-        """
-        Loads the masterlist.yaml , wrapper for utils.utils.Yaml.Yaml.loadmasterlist()
-
-        Args:
-            masterlistfile (str): The file to load as masterlist, defaults to masterlist.yamlw
-        """
-        try:
-            self._checkmasterlist()
-            greenprint("[+] Loading masterlist.yaml")
-            #self.loadmasterlist()
-        except Exception:
-            errorlogger("[-] masterlist does not exist")
-        # filename for the full challenge index
-        self.masterlistfile      = masterlistfile
-        self.masterlistlocation  = os.path.join(self.challengesfolder, self.masterlistfile)
-        # returns itself via a constructor loading yaml into python objects
-        self.masterlist          = Masterlist(self.masterlistlocation)
+            return False
 
     def init(self):
         """
@@ -111,7 +92,7 @@ class SandBoxyCTFdLinkage():
             # write the masterlist with all the repo data to disk
             masterlist._writenewmasterlist(repository,filemode="w")
             # read masterlist to verify it was saved properly
-            repositoryobject = masterlist._loadmasterlist("!Repo:")
+            repositoryobject = masterlist._loadmasterlist()
             #assigns repository to self for use in interactive mode
             #self.repo = repositoryobject
             setattr(self,"repo",repositoryobject)
@@ -133,13 +114,13 @@ class SandBoxyCTFdLinkage():
         catbag = []
         if self._checkmasterlist():
             # all items in repo
-            repositorycontents =  vars(self.repo)
+            repositorycontents =  self.repo.__dict__#vars(self.repo)
             for repositoryitem in repositorycontents:
                 # if item is a category
-                if (type(getattr(self.repo, repositoryitem)) == Category):
-                    catholder:Category = getattr(repositoryitem, self.repo)
+                if (type(repositorycontents.get(repositoryitem)) == Category):# getattr(self.repo, repositoryitem)) == Category):
+                    catholder:Category = repositorycontents.get(repositoryitem)# getattr(repositoryitem, self.repo)
                     catbag.append(catholder)
-            if (prints == False):
+            if prints == True:
                 # print the category.__repr__ to screen
                 for each in catbag:
                     print(each)

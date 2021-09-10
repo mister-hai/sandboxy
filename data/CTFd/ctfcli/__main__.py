@@ -28,7 +28,7 @@ if os.getenv("CHALLENGEREPOROOT") != None:
     yellowboldprint(f'[+] Repository root ENV variable is {CTFDDATAROOT}')
     challengeroot = Path(CTFDDATAROOT, "challenges")# os.path.join(CTFDDATAROOT, "challenges")
     yellowboldprint(f'[+] Challenge root is {challengeroot}')
-    # this code is inactive currently
+# this code is inactive currently
 else:
     yellowboldprint("[+] CHALLENGEREPOROOT variable not set, checking one directory higher")
     # ugly but it works
