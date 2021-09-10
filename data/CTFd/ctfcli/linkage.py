@@ -139,8 +139,8 @@ class SandBoxyCTFdLinkage():
                 if category.name == categoryname:
                     challengesack = category.listchallenges()
             if printscr == True:
-                for each in challengesack:
-                    print(each)
+                for challenge in challengesack:
+                    print(challenge)
             else:
                 return challengesack
             
@@ -161,7 +161,8 @@ class SandBoxyCTFdLinkage():
                         challenge:Challenge = getattr(category, categoryitem)
                         challengesack.append(challenge)
             if printscr == True:
-                print(challengesack)
+                for challenge in challengesack:
+                    print(challenge)
             else:
                 # return a list of cchallenge for each category
                 return challengesack
@@ -211,17 +212,11 @@ class SandBoxyCTFdLinkage():
             ctfdtoken (str): Token given from Admin Panel > Config > Settings > Auth Token Form
         '''
         if self._checkmasterlist():
-            catbag = []
             challengesack = []
             self._setauth(ctfdurl,ctfdtoken)
-            for category in self.listcategories(prints=False):
-                # the bag with cats
-                catbag.append(category)
-            for cat in catbag:
-                # shake the cats up
-                for challenge in self.getchallengesbycategory(cat, printscr=False):
-                    challengesack.append(challenge)
-            # thor it at the wall and watch the mayhem
+            for challenge in self.getallchallenges(printscr=False):
+                challengesack.append(challenge)
+            # throw it at the wall and watch the mayhem
             for challenge in challengesack:
                 challenge.sync()
 

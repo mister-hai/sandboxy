@@ -67,9 +67,14 @@ class Ctfcli():
         >>> host@server$> ctfd.py ctfcli check_install
         / NOT IMPLEMENTED YET /
         
-        FIRST RUN (ctfd already running):
+        FIRST RUN, if you have not modified the repository this is not necessary!
 
-        >>> host@server$> ctfd.py ctfcli init --ctfdurl <URL> --ctfdtoken <TOKEN>
+        >>> host@server$> ctfd.py ctfcli init
+
+
+        To sync to CTFd Server:
+
+        >>> host@server$> ctfd.py ctfcli syncrepository --ctfdurl <URL> --ctfdtoken <TOKEN>
 
         Replacing <URL> with your CTFd website url
         and replacing <TOKEN> with your CTFd website token
@@ -77,14 +82,11 @@ class Ctfcli():
         This will initialize the repository, from there, you can either:
         
         Pull a remote repository
+        you have to create a new masterlist after this
+        That will be covered further down.
         >>> host@server$> ctfd.py gitops createremoterepo https://REMOTE_REPO_URL.git
 
-        Or you can sync the initialized repository to CTFd:
-
-        >>> host@server$> ctfd.py ctfdcli syncrepository
-
         Generating a completion script and adding it to ~/.bashrc
-        
         >>> host@server$> ctfd.py ctfcli -- --completion > ~/.ctfcli-completion
         >>> host@server$> echo "source ~/.ctfcli-completion" >> ~/.bashrc  
 

@@ -72,6 +72,6 @@ Category Folder Location: {self.location}
         '''
         challengelist = []
         for selfitem in vars(self):
-            if type(selfitem) == Challenge:
+            if type(vars(self).get(selfitem)) == Challenge:
                 challengelist.append(selfitem)
         return challengelist
