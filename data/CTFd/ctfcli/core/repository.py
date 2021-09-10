@@ -41,9 +41,18 @@ class Repo():
     def __new__(cls,**kwargs):
         cls.__name__ = "Repo"
         cls.__qualname__= 'Repo'
-        cls.tag = '!Repo'
+        cls.tag = '!Repo:'
         return super().__new__(cls)
         #return super(cls).__new__(cls, *args, **kwargs)
+
+    def __repr__(self):
+        '''
+        '''
+        wat = []
+        for key in self.__dict__:
+            wat.append(str(key) + " : " + str(self.__dict__[key]))
+        #return self_repr
+        return wat
 
 class Repository(Repo):
     """

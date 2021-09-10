@@ -57,6 +57,7 @@ class Challengeyaml(Yaml):
         self.solutiondir = solution
         self.handout = handout
         self.readme = readme
+        self.tag = "!Challenge:"
         if category not in CATEGORIES:
             errorlogger("[-] Inconsistancy in inputs {}".format(category))
         else:

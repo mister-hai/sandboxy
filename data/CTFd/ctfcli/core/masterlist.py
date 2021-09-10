@@ -38,7 +38,7 @@ class Masterlist():
             #open the yml
             # feed the tag and the constructor method to call
             return yaml.load(open(self.masterlistlocation, 'rb'), 
-                Loader=workcrew._get_loader(self.tag,workcrew._multiconstructor))
+                Loader=workcrew._get_loader(self.tag,workcrew._multiloader))
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
 
@@ -56,13 +56,12 @@ class Masterlist():
                              so you can manually fix the repo list
 
         """
-        #create a foreman
         workcrew = Constructor()
         try:
             with open("output.yml", filemode) as stream:
                 yellowboldprint("[+] Attempting To Write Masterlist.yaml")
                 stream.write(yaml.dump(pythoncode,
-                        Dumper=workcrew._get_dumper(self.tag,workcrew._multiconstructor())))
+                        Dumper=workcrew._get_dumper(self.tag,workcrew._multirepresenter,Masterlist)))
                 greenprint("[+] Masterlist.yaml written to disk!")
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
@@ -75,7 +74,7 @@ class Masterlist():
         workcrew = Constructor()
         try:
             return yaml.load(open(self.masterlistlocation, 'rb'),
-                        Loader=self._get_loader("!Masterlist"))
+                        Loader=workcrew._get_loader("!Masterlist"))
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
 

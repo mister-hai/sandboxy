@@ -19,6 +19,7 @@ class Category(): #folder
     def __init__(self,category,location):
         self.name = category
         self.location = location
+        self.tag = "!Category:"
     
     def __repr__(self):
         '''
@@ -35,7 +36,11 @@ class Category(): #folder
         Number of Challenges in Category: {numberofchallenges}
         Number of Challenges Synched to CTFd Server: {self.getsynchedchallenges()}
         """
-        return self_repr
+        wat = []
+        for key in self.__dict__:
+            wat.append(str(key) + " : " + str(self.__dict__[key]))
+        #return self_repr
+        return wat
 
     def _addchallenge(self, challenge:Challengeyaml):
         """

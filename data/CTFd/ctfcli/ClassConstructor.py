@@ -5,7 +5,7 @@ from ctfcli.core.category import Category
 from ctfcli.core.challenge import Challengeyaml
 from ctfcli.core.repository import Repository
 from ctfcli.core.yamlstuff import MasterFile
-from yaml import SafeLoader,SafeDumper,MappingNode
+from yaml import SafeLoader,SafeDumper,MappingNode,Dumper,Loader
 from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
 from yaml import SafeLoader,SafeDumper,MappingNode,safe_load,safe_dump
 from ctfcli.core.repository import Repository
@@ -27,7 +27,7 @@ class Constructor():
         self.challengetag = "!Challenge:"
         super().__init__()
 
-    def _representer(self, tag, dumper: SafeDumper, codeobject) -> MappingNode:
+    def _multirepresenter(self, tag, dumper: SafeDumper, codeobject) -> MappingNode:
         """
         Represent a Object instance as a YAML mapping node.
 
@@ -42,21 +42,22 @@ class Constructor():
         """
         return dumper.represent_mapping(tag, codeobject)
  
-    def _multiconstructor(self, loader: SafeLoader, node: yaml.nodes.MappingNode, type="masterlist"):
+    def _multiloader(self, loader: Loader, node: yaml.nodes.MappingNode, type="!Masterlist:"):
         """
         Construct an object based on yaml node input
+        Part of the flow of YAML -> Python3
 
         Args:
             type (str): 'masterlist' || 'repo' || 'challenge'
         """
         
-        if type == "masterlist":
+        if type == "!Masterlist:":
             return MasterFile(**loader.construct_mapping(node, deep=True))
-        elif type == 'repo':
+        elif type == '!Repo:':
             return Repository(**loader.construct_mapping(node, deep=True))
-        elif type== "category":
+        elif type== "!Category:":
             return Category(**loader.construct_mapping(node, deep=True))
-        elif type== "challenge":
+        elif type== "!Challenge:":
             return Challengeyaml(**loader.construct_mapping(node, deep=True))
 
     def _get_dumper(self,tag:str, constructor, classtobuild):
@@ -65,8 +66,8 @@ class Constructor():
 
         Converts Python to Yaml
         """
-        safe_dumper = SafeDumper
-        safe_dumper.add_representer(classtobuild, self._representer)
+        safe_dumper = Dumper
+        safe_dumper.add_representer(classtobuild, constructor)
         return safe_dumper
  
     def _get_loader(self, tag:str, constructor):
@@ -78,7 +79,7 @@ class Constructor():
             tags (str): the tag to use to mark the yaml object in the file
             constructor (function): the constructor function to call
         """
-        loader = SafeLoader
+        loader = Loader
         #loader.add_constructor(tag, constructor)
         loader.add_constructor(self.tag, self.multi_constructor_masterlist)
         #loader.add_multi_constructor(self.repotag, self.multi_constructor_repo)
@@ -90,6 +91,7 @@ class Constructor():
     def _loadmasterlist(self):
         """
         Loads the masterlist.yaml into Masterlist.data
+        Yaml -> Python3
 
         Args:
             masterlistfile (str): The file to load as masterlist, defaults to masterlist.yamlw
@@ -98,7 +100,7 @@ class Constructor():
             #open the yml
             # feed the tag and the constructor method to call
             return yaml.load(open(self.filelocation, 'rb'), 
-                Loader=self._get_loader(self.tag,self._multiconstructor))
+                Loader=self._get_loader(self.tag,self._multiloader))
         except Exception:
             errorlogger("[-] ERROR: Could not load .yml file")
 
@@ -118,7 +120,7 @@ class Constructor():
             with open("output.yml", filemode) as stream:
                 yellowboldprint("[+] Attempting To Write yaml")
                 stream.write(yaml.dump(pythoncode,
-                        Dumper=self._get_dumper(self.tag,self._multiconstructor())))
+                        Dumper=self._get_dumper(self.tag,self._multirepresenter)))
                 greenprint("[+] yaml written to disk!")
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")
