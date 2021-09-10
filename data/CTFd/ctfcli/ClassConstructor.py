@@ -29,7 +29,7 @@ class Constructor():
         self.challengetag = "!Challenge:"
         super().__init__()
 
-    def _representer(self, tag, dumper: SafeDumper, codeobject) -> MappingNode:
+    def _representer(self, dumper: SafeDumper, codeobject) -> MappingNode:
         """
         Represent a Object instance as a YAML mapping node.
 
@@ -42,7 +42,8 @@ class Constructor():
             tag (str) : tag to assign object in yaml file
             codeobject (str): python code in a single object
         """
-        return dumper.represent_mapping(tag, codeobject)
+        tag = "!Repo:"
+        return dumper.represent_mapping(tag, codeobject.__dict__)
  
     def _loader(self, loader: Loader, node: yaml.nodes.MappingNode):
         """

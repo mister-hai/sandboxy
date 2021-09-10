@@ -111,7 +111,7 @@ class SandBoxyCTFdLinkage():
             repositoryobject = masterlist._loadmasterlist("!Repo:")
             #assigns repository to self for use in interactive mode
             #self.repo = repositoryobject
-            setattr(self,repositoryobject,"repo")
+            #setattr(self,repositoryobject,"repo")
 
         except Exception:
             errorlogger("[-] Failed to create CTFd Repository, check the logfile")
