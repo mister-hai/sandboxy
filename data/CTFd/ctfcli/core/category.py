@@ -34,9 +34,11 @@ class Category(): #folder
         numberofchallenges = len(challenges)
         self_repr = f"""Category: {self.name}
 Category Folder Location: {self.location}
-Installed Challenges : {numberofchallenges}"""
+Installed Challenges : {numberofchallenges}
+"""
         for challenge in challenges:
-            self_repr += f"{challenge}"
+            self_repr += f"""{challenge.name}
+"""
         #wat = []
         #challengelist = self.listchallenges()
         #for challenge in challengelist:
@@ -71,9 +73,10 @@ Installed Challenges : {numberofchallenges}"""
     def listchallenges(self) -> list:
         '''
         Lists all the challenges appended to this category
+        gives keys, you need to use vars(object).get(key)
         '''
         challengelist = []
         for selfitem in vars(self):
             if type(vars(self).get(selfitem)) == Challenge:
-                challengelist.append(selfitem)
+                challengelist.append(vars(self).get(selfitem))
         return challengelist
