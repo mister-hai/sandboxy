@@ -143,7 +143,27 @@ def registry(challenge, host):
     tag = f"{url.netloc}{url.path}"
     subprocess.call(["docker", "tag", image_name, tag])
     subprocess.call(["docker", "push", tag])
-
+    
+ctfdurl = str
+APIPREFIX = "/api/v1/"
+CTFd_API_ROUTES = {"challenges": f"{APIPREFIX}challenges",
+    "tags":f"{ctfdurl}{APIPREFIX}tags", 
+    "topics":f"{ctfdurl}{APIPREFIX}topics", 
+    "awards":f"{ctfdurl}{APIPREFIX}awards", 
+    "hints":f"{ctfdurl}{APIPREFIX}hints", 
+    "flags":f"{ctfdurl}{APIPREFIX}flags", 
+    "submissions":f"{ctfdurl}{APIPREFIX}submissions", 
+    "scoreboard":f"{ctfdurl}{APIPREFIX}scoreboard", 
+    "teams":f"{ctfdurl}{APIPREFIX}teams", 
+    "users":f"{ctfdurl}{APIPREFIX}users", 
+    "statistics":f"{APIPREFIX}statistics",
+    "files":f"{APIPREFIX}files", 
+    "notifications":f"{APIPREFIX}notifications", 
+    "configs":f"{APIPREFIX}configs", 
+    "pages":f"{APIPREFIX}pages", 
+    "unlocks":f"{APIPREFIX}unlocks", 
+    "tokens":f"{APIPREFIX}tokens", 
+    "comments":f"{APIPREFIX}comments"}
 
 DEPLOY_HANDLERS = {"ssh": ssh, "registry": registry}
 

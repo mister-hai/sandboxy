@@ -1,6 +1,6 @@
 import json
 from requests import Session
-from ctfcli.utils.utils import errorlogger
+from ctfcli.utils.utils import errorlogger, errorlog
 #from utils.apifunctions import APIFunctions
 
 
@@ -14,28 +14,74 @@ class APIHandler():
         authtoken (str): The authentication Token given in the settings page of the admin panel on the CTFd server
     """
     def __init__(self, ctfdurl,authtoken):
+        #https://server.host.net/ctfd/
         self.ctfdurl = ctfdurl
         self.authtoken = authtoken
         self.APIPREFIX = "/api/v1/"
-        self.CTFd_API_ROUTES = {"challenges": f"{self.APIPREFIX}challenges",
-              "tags":f"{self.APIPREFIX}tags", 
-              "topics":f"{self.APIPREFIX}topics", 
-              "awards":f"{self.APIPREFIX}awards", 
-              "hints":f"{self.APIPREFIX}hints", 
-              "flags":f"{self.APIPREFIX}flags", 
-              "submissions":f"{self.APIPREFIX}submissions", 
-              "scoreboard":f"{self.APIPREFIX}scoreboard", 
-              "teams":f"{self.APIPREFIX}teams", 
-              "users":f"{self.APIPREFIX}users", 
-              "statistics":f"{self.APIPREFIX}statistics",
-              "files":f"{self.APIPREFIX}files", 
-              "notifications":f"{self.APIPREFIX}notifications", 
-              "configs":f"{self.APIPREFIX}configs", 
-              "pages":f"{self.APIPREFIX}pages", 
-              "unlocks":f"{self.APIPREFIX}unlocks", 
-              "tokens":f"{self.APIPREFIX}tokens", 
-              "comments":f"{self.APIPREFIX}comments"}
-     
+
+    def _getroute(self, tag):
+        routeslist = ["challenges","tags","topics","awards",
+        "hints", "flags","submissions","scoreboard",
+        "teams","users","statistics","files", "notifications",
+        "configs", "pages", "unlocks", "tokens", "comments"]
+        dictofroutes = {}
+        if tag in routeslist:
+            dictofroutes[tag] = f"{self.ctfdurl}{self.APIPREFIX}{tag}"
+        return dictofroutes
+
+    def POSTauthtoserver(self,adminusername,adminpassword):
+        """
+        Performs a POST request to the server login page to begin
+        an administrative session
+        """
+        apisession = APISession()
+        # template for authentication packet
+        authpayload = {
+	        "name": str,
+	        "password": str,
+	        "_submit": "Submit",
+            # I think the nonce can be anything?
+            # try an empty one a few times with other fields fuzxzzed
+	        "nonce": str #"84e85c763320742797291198b9d52cf6c82d89f120e2551eb7bf951d44663977"
+        }
+        # get the login form
+        apiresponse = apisession.get(f"{self.ctfdurl}/login", allow_redirects=False)
+        # if the server responds ok and its a setup, pre install
+        if self.was_there_was_an_error(apiresponse.status_code):
+            if apiresponse.status_code == 302 and apiresponse.headers["Location"].endswith("/setup"):
+                errorlog(f"[-] CTFd installation has not been setup yet")
+                raise Exception
+                # the server was ok and responded with login
+            else:
+                # Grab the nonce
+                authpayload['username'] = adminusername
+                authpayload['password'] = adminpassword
+                authpayload['nonce'] = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+        # make the api request to the login page
+        # this logs us in as admin
+        apiresponse = apisession.post(
+            url=self._getroute("login"),
+            data = authpayload,
+            allow_redirects=False,
+        )
+        if self.was_there_was_an_error(apiresponse.status_code) or (not apiresponse.headers["Location"].endswith("/challenges")):
+            errorlog('invalid login credentials')
+            raise Exception
+
+        apiresponse = apisession.get(f"{args.url}/settings")
+        nonce = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+
+        apiresponse = apisession.post(
+            f"{url}/api/v1/tokens", json={}, headers={"CSRF-Token": nonce}
+        )
+        if apiresponse.status_code != 200 or not apiresponse.json()["success"]:
+            console.log("[red]error[/red]: token generation failed")
+            return
+
+        console.log("writing ctfd auth configuration")
+        token = apiresponse.json()["data"]["value"]
+        with open(".ctfd-auth", "w") as filp:
+            yaml.dump({"url": args.url, "token": token}, filp)
 
     def getusers(self):
         """ gets a list of all users"""
@@ -115,6 +161,13 @@ class APISession(Session):
 
         Args:
             
+        """
+        super(APISession, self).__init__(*args, **kwargs)
+
+    def _apiauth(self):
+        """
+        Set auth headers for post administrative login
+        ?User creation must be done with admin login, not apiauth?
         """
         # auth to server
         self.headers.update({"Authorization": "Token {}".format(self.AUTHTOKEN)})

@@ -38,7 +38,7 @@ class SandBoxyCTFdLinkage():
         except Exception as e:
             errorlogger(f"[-] FAILED: Instancing a SandboxyCTFdLinkage()\n{e}")
 
-    def _setauth(self,ctfdurl,ctfdtoken):
+    def _setauth(self,ctfdurl,ctfdtoken,adminusername,adminpassword):
         """
         Sets variables on the class instance to allow for authentication
         to the CTFd server instance
@@ -48,9 +48,11 @@ class SandBoxyCTFdLinkage():
         """
         # TODO: TIMESTAMPS AND IDS!!! create API call and push data
         # store url and token
-        self.CTFD_TOKEN      = ctfdtoken #os.getenv("CTFD_TOKEN")
-        self.CTFD_URL        = ctfdurl #os.getenv("CTFD_URL")
-        self.ctfdauth = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
+        self.CTFD_TOKEN    = ctfdtoken #os.getenv("CTFD_TOKEN")
+        self.CTFD_URL      = ctfdurl #os.getenv("CTFD_URL")
+        self.adminusername = adminusername
+        self.adminpassword = adminpassword
+        self.ctfdauth      = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
 
     def _checkmasterlist(self):
         """
