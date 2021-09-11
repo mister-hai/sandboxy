@@ -239,7 +239,6 @@ class Challenge(Yaml):
         Set the json_payload variable for interacting with the CTFd API
         This is the /challenge endpoint template
         """
-        self.scorepayload['value'] = self.value
         if self.typeof == 'dynamic':
             self.scorepayload['extra'] = {
                                 'initial': self.extra['initial'],
@@ -247,37 +246,25 @@ class Challenge(Yaml):
                                 'minimum': self.extra['minimum']
                                 }
         elif (self.typeof == 'standard') or (self.typeof == 'static'):
-            self.jsonpayload = {
+            self.scorepayload['value'] = self.value
+        # set final payload
+        self.jsonpayload = {
             "name":         self.name,
             "category":     self.category,
             "description":  self.description,
             "type":         self.type,
-            'value':        self.scorepayload,
+            # unpack "value + extra" OR "value"
+            **self.scorepayload,
             "author" :      self.author
             }
-
-
-
-
-
-
-        self.datapayload = {
-            "name": self.name,
-            "category": self.category,
-            "description": self.description,
-            "type": self.type,
-            "value": self.value,
-            "extra": self.extra
-        }
-
         # Some challenge types (e.g. dynamic) override value.
         # We can't send it to CTFd because we don't know the current value
         if self.value is None:
-            del self.datapayload['value']
+            del self.jsonpayload['value']
         if self.attempts:
-            self.datapayload["max_attempts"] = self.attempts
+            self.jsonpayload["max_attempts"] = self.attempts
         if self.connection_info and self.connection_info:
-            self.datapayload['connection_info'] = self.connection_info
+            self.jsonpayload['connection_info'] = self.connection_info
         #why?
         self.datapayload["state"] = "hidden"
 
