@@ -28,7 +28,7 @@ services:
       image: nginx:latest
       hostname: nginx
       depends_on:
-        - juiceshop
+      #  - juiceshop
 #        - dvwa
         - ctfd
       restart: unless-stopped
@@ -43,7 +43,7 @@ services:
         - 443:443
       extra_hosts:
         - "ctfd:${CTFDIP}"
-        - "juiceshop:${JUICESHOPIP}"
+      #  - "juiceshop:${JUICESHOPIP}"
       networks:
         net:
           ipv4_address: ${NGINXIP}
@@ -104,7 +104,7 @@ services:
       extra_hosts:
         - "nginx:${NGINXIP}"
       # I have been trying to avoid this
-      #network_mod: host
+      #network_mode: host
       networks:
         internal:
         net:

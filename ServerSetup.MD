@@ -79,3 +79,7 @@
 
         0 12 * * * /usr/bin/certbot renew --quiet
 
+
+# Docker configuration
+
+    docker network create --gateway=192.168.0.1 --subnet=192.168.0.0/24 net

@@ -10,7 +10,8 @@ class APIHandler():
         Provides a wrapper for the API Functions
     
 
-    
+        for dev use:
+        useragent = 'Mozilla/5.0 (X11; Linux x86_64; rv:28.0) Gecko/20100101  Firefox/28.0'
     Args: 
         ctfdurl (str): The URL of the CTFd Server instance you are operating
         authtoken (str): The authentication Token given in the settings page of the admin panel on the CTFd server
@@ -66,16 +67,15 @@ class APIHandler():
                 # the server was ok and responded with login
             else:
                 # Grab the nonce
-                authpayload['username'] = adminusername
+                authpayload['name'] = adminusername
                 authpayload['password'] = adminpassword
                 authpayload['nonce'] = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
         # make the api request to the login page
         # this logs us in as admin
         apiresponse = self.post(
             url=self._getroute("login"),
-            data = authpayload,
-            allow_redirects=False,
-        )
+            data = authpayload
+            )#,allow_redirects=False,)
         if self.was_there_was_an_error(apiresponse.status_code) or (not apiresponse.headers["Location"].endswith("/challenges")):
             errorlog('invalid login credentials')
             raise Exception
@@ -89,11 +89,7 @@ class APIHandler():
         # get settings page in admin panel
         apiresponse = self.get(self._getroute("settings"))
         nonce = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
-        apiresponse = self.post(
-                            url     =self._getroute("token"),
-                            json    ={},
-                            headers ={"CSRF-Token": nonce}
-                            )
+        apiresponse = self.post(url=self._getroute("token"),json={},headers ={"CSRF-Token": nonce})
         if self.was_there_was_an_error(apiresponse.status_code) or (not apiresponse.json()["success"]):
             errorlog("[-] Token generation failed")
             raise Exception

@@ -18,27 +18,27 @@ services:
       hostname: ctfd
       user: root
       restart: unless-stopped
-      #environment:
-      #  - UPLOAD_FOLDER=${UPLOAD_FOLDER}
+      environment:
+        - UPLOAD_FOLDER=${UPLOAD_FOLDER}
       #  - DATABASE_URL=${DATABASE_URL}
       #  - REDIS_URL=${REDIS_URL}
       #  - WORKERS=${WORKERS}
-      #  - LOG_FOLDER=${LOG_FOLDER}
+        - LOG_FOLDER=${LOG_FOLDER}
       #  - ACCESS_LOG=${ACCESS_LOG}
       #  - ERROR_LOG=${ERROR_LOG}
       #  - REVERSE_PROXY=${REVERSE_PROXY}
-      #env_file:
-      #  - ./.env
-      #volumes:
+      env_file:
+        - ./.env
+      volumes:
       #  - ${CERTBOTCONFVOLUMES}
       #  - ${CERTBOTDATAVOLUMES}
       #  - ${CERTBOTLOGVOLUMES}
-      #  - ./data/CTFd/logs:${LOG_FOLDER}
-      #  - ./data/CTFd/uploads:${UPLOAD_FOLDER}
+        - ./data/CTFd/logs:${LOG_FOLDER}
+        - ./data/CTFd/uploads:${UPLOAD_FOLDER}
       #depends_on:
       #  - db
-      #expose:
-      #  - 8000
+      expose:
+        - 8000
       ports:
       #  - 80:80
       #  - 443:443

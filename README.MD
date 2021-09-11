@@ -1,6 +1,6 @@
 # DAILY PLAN
 
-    Rewriting the entirety of ctfcli
+    Rewriting the entirety of ctfcli, API calls are all thats left for the most part
         
 
 # WEEKLY PLAN
@@ -11,15 +11,15 @@
 
     THEY WERE NOT SOLVED AT ALL
 
-    start.sh is a bootstrapper right? so make it call python and hand over the 
-    env to the REPL with "fire" after it installs, yeah?
-
     PROGRESS:
-        set of challenges seperated into data directory 
-        and organized somewhat, needs the yaml files modified
+        set of challenges seperated into data directory and organized mostly
 
         working on script to upload them easily according to ctfcli spec
+        Script generates a masterlist of all challenges in repo and 
+        can upload them singly or en masse.
 
+        Currently, the masterlist is created, and read from, reflecting the repo
+        and the rest is just api calls needing to be written
 
 
 # PENTEST SANDBOX
@@ -175,23 +175,6 @@
                 ./.ctf/config
             ERROR: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree. Working tree has modifications.  Cannot add.
 
-        git clone https://github.com/sigpwny/UIUCTF-2021-Public.git
-            - will add the data ctfcli does not download
-
-        ctf challenge add https://github.com/csivitu/ctf-challenges.git
-            - will show error, IGNORE IT, lines are added to the 
-                ./.ctf/config
-            ERROR: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree. Working tree has modifications.  Cannot add.
-
-        git clone https://github.com/csivitu/ctf-challenges.git
-
-    THEN YOU BEGIN INSTALLING THE CHALLENGES VIA THE YAML FILES
-    THE CHALLENGES MUST BE UPLOADED TO CTFD FIRST BEFORE ACTIVATING THE KCTF ENVIRONMENT
-     
-    the bssides ones need modification
-        
-        ctf challenge install /path/to/chal/
-            - I am going to make a script to install them all at once
     
     EXAMPLE:
         moop@fightbiscuits:~/challengedir$ ctf challenge install ./UIUCTF-2021-Public/jail/baby_python
