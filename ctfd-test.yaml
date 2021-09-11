@@ -2,12 +2,11 @@ version: "3"
 #################################################################
 ##
 ## THIS FILE CONTAINS A TEST 
-##
+##docker network create --gateway=192.168.0.1 --subnet=192.168.0.0/24 net
 #################################################################
-services:
+services:      
 #################################################################
 ## CTFD; 
-## Testing nginx on ctfd
 # STATUS : FUNCTIONAL
 #################################################################        
     ctfd:
@@ -17,33 +16,84 @@ services:
       #  dockerfile: Dockerfile
       hostname: ctfd
       user: root
-      restart: unless-stopped
+      restart: always
       environment:
         - UPLOAD_FOLDER=${UPLOAD_FOLDER}
-      #  - DATABASE_URL=${DATABASE_URL}
-      #  - REDIS_URL=${REDIS_URL}
-      #  - WORKERS=${WORKERS}
+        - DATABASE_URL=${DATABASE_URL}
+        - REDIS_URL=${REDIS_URL}
+        - WORKERS=${WORKERS}
         - LOG_FOLDER=${LOG_FOLDER}
-      #  - ACCESS_LOG=${ACCESS_LOG}
-      #  - ERROR_LOG=${ERROR_LOG}
-      #  - REVERSE_PROXY=${REVERSE_PROXY}
-      env_file:
-        - ./.env
+        - ACCESS_LOG=${ACCESS_LOG}
+        - ERROR_LOG=${ERROR_LOG}
+        #- REVERSE_PROXY=${REVERSE_PROXY}
       volumes:
-      #  - ${CERTBOTCONFVOLUMES}
-      #  - ${CERTBOTDATAVOLUMES}
-      #  - ${CERTBOTLOGVOLUMES}
         - ./data/CTFd/logs:${LOG_FOLDER}
         - ./data/CTFd/uploads:${UPLOAD_FOLDER}
-      #depends_on:
-      #  - db
+      depends_on:
+        - db
+#        - nginx
       expose:
         - 8000
       ports:
-      #  - 80:80
-      #  - 443:443
         - 8000:8000
-      #networks:
-      #  internal:
-      #  net:
-        #  ipv4_address: ${CTFDIP}
+      #extra_hosts:
+      #  - "nginx:${NGINXIP}"
+      # I have been trying to avoid this
+      #network_mode: host
+      networks:
+        internal:
+        net:
+          ipv4_address: ${CTFDIP}
+
+#################################################################
+#                   REDIS SERVER
+#################################################################
+    cache:
+      image: redis
+      #depends_on:
+      #  - nginx
+      hostname: cache
+      #command: redis-server --appendonly yes
+      ports:
+        #- ${REDISPORT}:6379
+        - 6379:6379
+      volumes:
+        - ./data/redis:/data
+      restart: unless-stopped
+      network_mode: host
+      networks:
+        internal:
+#################################################################
+#                   MYSQL SERVER
+#################################################################
+    db:
+      image: mariadb:10.4.12
+#      depends_on:
+#        - nginx
+      restart: always
+      environment:
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+      # This command is required to set important mariadb defaults
+      command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
+      volumes:
+        - ./data/mysql:/var/lib/mysql
+      network_mode: host
+      networks:
+          internal:
+#################################################################
+#     DNS SERVER
+#################################################################   
+
+
+#################################################################
+#     NETWORKS SECTION
+#################################################################      
+networks:
+  internal:
+    internal: true
+
+  net:
+    external: true
