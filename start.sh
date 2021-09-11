@@ -191,10 +191,11 @@ unset CDPATH
 ## IMPORT USER DEFINED FUNCTIONS FROM SCRIPT DIR AND SET LOCATION
 ###############################################################################
 # gets pwd
-if [ DIR=$( cd -P "$( dirname "$SOURCE" )" && pwd ) ]; then
+if [ DIR = $( cd -P "$( dirname "$SOURCE" )" && pwd ) ]; then
   cecho "[+] pwd: ${DIR} \n DEVS NEED TO ADD CHECKS FOR RELEVANT FILES" red;
 else
   cecho "%s" "[-] COULD NOT SET PWD, SOMETING SERIOUS IS WRONG" red;
+fi
 printf "[+] Setting project root in ${DIR}"
 PROJECT_ROOT = $DIR
 #./start.sh

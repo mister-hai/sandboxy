@@ -192,31 +192,10 @@ class Challenge(Yaml):
             raise TypeError
         else:
             self.value = kwargs.pop('value')
-        self.scorepayload['value'] = self.value
-        typeof = kwargs.pop('type')
-        if typeof == 'dynamic':
-            self.type = typeof
+        self.typeof = kwargs.pop('type')
+        if self.typeof == 'dynamic':
             self.extra = kwargs.pop("extra")
-            self.scorepayload = {
-                        'extra': {
-                            'initial': self.extra['initial'],
-                            'decay'  : self.extra['decay'],
-                            'minimum': self.extra['minimum']
-                            }
-                        }
-
-        elif (typeof == 'standard') or (typeof == 'static'):
-            self.type = typeof
-            self.jsonpayload = {
-            "name":         self.name,
-            "category":     self.category,
-            "description":  self.description,
-            "type":         self.type,
-            **self.scorepayload,
-            "author" :      self.author
-            }
-        else:
-            raise ValueError(f"Unknown type {typeof} in Classconstructor.Challenge._initchallenge()")
+        #raise ValueError(f"Unknown type {typeof} in Classconstructor.Challenge._initchallenge()")
         #all OPTIONAL values get the GET statement
         # kwargs.get() does not raise an exception when the key does not exist
         # Can be removed if unused
@@ -254,7 +233,54 @@ class Challenge(Yaml):
         #asdf = [item for item in self.__dict__]
         for key in self.__dict__:
             print(str(key) + " : " + str(self.__dict__[key]))
-        
+
+    def _setpayload(self):
+        """
+        Set the json_payload variable for interacting with the CTFd API
+        This is the /challenge endpoint template
+        """
+        self.scorepayload['value'] = self.value
+        if self.typeof == 'dynamic':
+            self.scorepayload['extra'] = {
+                                'initial': self.extra['initial'],
+                                'decay'  : self.extra['decay'],
+                                'minimum': self.extra['minimum']
+                                }
+        elif (self.typeof == 'standard') or (self.typeof == 'static'):
+            self.jsonpayload = {
+            "name":         self.name,
+            "category":     self.category,
+            "description":  self.description,
+            "type":         self.type,
+            'value':        self.scorepayload,
+            "author" :      self.author
+            }
+
+
+
+
+
+
+        self.datapayload = {
+            "name": self.name,
+            "category": self.category,
+            "description": self.description,
+            "type": self.type,
+            "value": self.value,
+            "extra": self.extra
+        }
+
+        # Some challenge types (e.g. dynamic) override value.
+        # We can't send it to CTFd because we don't know the current value
+        if self.value is None:
+            del self.datapayload['value']
+        if self.attempts:
+            self.datapayload["max_attempts"] = self.attempts
+        if self.connection_info and self.connection_info:
+            self.datapayload['connection_info'] = self.connection_info
+        #why?
+        self.datapayload["state"] = "hidden"
+
     def _processhandout(self):
         '''
         TODO: scan for .tar.gz or folder
@@ -265,9 +291,9 @@ class Challenge(Yaml):
         '''
         These are the Actions that a Challenge folder can undergo, namely:
 
-        Add:
+        Add(sync):
             Adds a challenge to CTFd server
-        Remove:
+        Remove(unsync):
             Removes a challenge from CTFd server
         Delete:
             Deletes a challenge from the local Repository
@@ -279,6 +305,7 @@ class Challenge(Yaml):
         try:
             #make API call
             apihandler = APIHandler()
+            self._setpayload
             self.processchallenge(apihandler,self.jsonpayload)
         except Exception:
             errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))

@@ -43,7 +43,6 @@ else:
 ###############################################################################
 class Ctfcli():
     '''
-        this program will assume it is in the place you found it 
         DO NOT MOVE THIS FILE
 
         This program uses the "fire" plugin from Google, this plugin is very powerful
@@ -59,21 +58,12 @@ class Ctfcli():
         to any command. To use Fire in verbose mode, append "-- --verbose". 
         (without quotes, :) stuff like that confuses me too)
 
-        Proper Usage is as follows:
-
-        / NOT IMPLEMENTED YET /
-        IF YOU ARE MOVING YOUR INSTALLATION AFTER USING THE PACKER/UNPACKER
-        IN START.SH, PERFORM THE FOLLOWING ACTIONS/COMMANDS
-        >>> host@server$> ctfd.py ctfcli check_install
-        / NOT IMPLEMENTED YET /
+        Proper Usage is as follows
         
         FIRST RUN, if you have not modified the repository this is not necessary!
-
         >>> host@server$> ctfd.py ctfcli init
 
-
         To sync to CTFd Server:
-
         >>> host@server$> ctfd.py ctfcli syncrepository --ctfdurl <URL> --ctfdtoken <TOKEN>
 
         Replacing <URL> with your CTFd website url
@@ -97,6 +87,12 @@ class Ctfcli():
 
         If the commands available in the Fire CLI change, you'll have to regenerate the 
         completion script and source it again.
+
+        / NOT IMPLEMENTED YET /
+        IF YOU ARE MOVING YOUR INSTALLATION AFTER USING THE PACKER/UNPACKER
+        IN START.SH, PERFORM THE FOLLOWING ACTIONS/COMMANDS
+        >>> host@server$> ctfd.py ctfcli check_install
+        / NOT IMPLEMENTED YET /
     '''
     def __init__(self):
         # challenge templates

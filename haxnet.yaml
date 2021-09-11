@@ -133,7 +133,7 @@ services:
         hax:
           external: true
           ipv4_address: ${JUICESHOPIP}
-       
+
 #################################################################
 ##  Mutillidae2 ; will be locked down for semi-private usage
 # STATUS : FUNCTIONAL
