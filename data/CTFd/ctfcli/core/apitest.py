@@ -14,22 +14,20 @@ authpayload = {
 # start session
 apisession = requests.Session()
 apisession.headers.update(useragent)
-#apiresponse = apisession.get(url=loginurl, allow_redirects=False)
+apiresponse = apisession.get(url=loginurl, allow_redirects=False)
 # set auth fields
-#authpayload['name'] = "root"
-#authpayload['password'] ="root"
-#authpayload['nonce'] = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
-#apiresponse = apisession.post(url=loginurl,data = authpayload)#,allow_redirects=False)
+authpayload['name'] = "root"
+authpayload['password'] ="root"
+authpayload['nonce'] = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+apiresponse = apisession.post(url=loginurl,data = authpayload)#,allow_redirects=False)
 # grab nonce
-#nonce = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
-#print("============\nNonce: "+ nonce + "\n===============")
+nonce = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+print("============\nNonce: "+ nonce + "\n===============")
 # get token URL
-#apiresponse = apisession.post(url=settingsurl,json={},headers ={"CSRF-Token": nonce})
-#authtoken = apiresponse.json()["data"]["value"]
-
-# get list of challenges
-apiresponse = apisession.get(adminchallengesendpoint,json=True)
-#emptychallengesresponse = {"success": 'true', "data": []}
+apiresponse = apisession.post(url=tokensurl,json={},headers ={"CSRF-Token": nonce})
 # token endpoint
 apisession.get(tokensurl)
 authtoken = apiresponse.json()["data"]["value"]
+# get list of challenges
+apiresponse = apisession.get(adminchallengesendpoint,json=True)
+#emptychallengesresponse = {"success": 'true', "data": []}

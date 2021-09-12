@@ -10,7 +10,7 @@
 version: "0.1"
 name: anagrams
 author: matir
-flag: 'CTF{ONEFORANAGRAMS}'
+flags: 'CTF{ONEFORANAGRAMS}'
 description: Check out the BSidesSF CTF program.  We got a chance to put a puzzle in there.
   If you're good with permutations, you'll get this once.
 value: 500

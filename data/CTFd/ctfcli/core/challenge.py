@@ -110,22 +110,9 @@ class Challenge(Yaml):
         #Required sections get the "pop()" function 
         # a KeyError will be raised if the key does not exist
         try:
-            # Required sections
-            #category= category # kwargs.pop("category")
-            # set class name as challenge name sha256 hashed
             self.name = kwargs.pop("name")
             self.author = kwargs.pop('author')
             self.description = kwargs.pop('description')
-            # check for int in challenge value
-
-            #path to challenge folder
-            #self.location = kwargs.pop("location")
-            # path to challenge.yml file
-            #self.challengefile = kwargs.pop("challengefile")
-            # Solutions Folder
-            #self.solutiondir = kwargs.pop("solutiondir")
-            # Handout Folder
-            #self.handout = kwargs.pop("handout")
         except Exception:
             errorlogger("[-] Challenge.yaml does not conform to specification, \
                 rejecting. Please check the error log.")
@@ -168,6 +155,43 @@ class Challenge(Yaml):
         # solved before being available.
         # Can be removed if unused
         # Accepts challenge names as strings or challenge IDs as integers
+        ##############################################
+        # FLAGS
+        ##############################################
+        # Flags specify answers that your challenge use. You should generally provide at least one.
+        # Can be removed if unused
+        # Accepts strings or dictionaries of CTFd API data
+        #flags:
+        #    # A static case sensitive flag
+        #    - flag{3xampl3}
+        #    # A static case sensitive flag created with a dictionary
+        #    - {
+        #        type: "static",
+        #        content: "flag{wat}",
+        #    }
+        #    # A static case insensitive flag
+        #    - {
+        #        type: "static",
+        #        content: "flag{wat}",
+        #        data: "case_insensitive",
+        #    }
+        #    # A regex case insensitive flag
+        #    - {
+        #        type: "regex",
+        #        content: "(.*)STUFF(.*)",
+        #        data: "case_insensitive",
+        #    }
+        try:
+            self.flags = kwargs.pop('flags')
+        except Exception:
+            try:
+                self.flags = kwargs.pop('flag')
+            except Exception:
+                pass
+        except Exception:
+            errorlogger('[-] ERROR: No flag in challenge')
+            pass
+        
         self.requirements = kwargs.get("requirements")
         #    - "Warmup"
         #    - "Are you alive"
@@ -222,6 +246,10 @@ class Challenge(Yaml):
         self.requirements = kwargs.get('requirements')
         self.attempts = kwargs.get('attempts')
 
+        ################################
+        # FILES
+        ################################
+        self.files = kwargs.get('files')
         return self
 
     def __repr__(self):
@@ -305,7 +333,7 @@ class Challenge(Yaml):
         except Exception:
             errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
 
-    def apiGET(self, apiresponse:Response,selector):
+    def _getid(self, apiresponse:Response):
         """
         Gets data from API
         mirror api response structure
@@ -322,6 +350,7 @@ class Challenge(Yaml):
             tags = challenge.get('tags')
             template = challenge.get('template')
             script = challenge.get('script')
+            
 
 
     def processchallenge(self,apihandler:APIHandler,jsonpayload:dict):
