@@ -16,7 +16,7 @@ class Masterlist():
     def __init__(self, repofolder):
         # filename for the full challenge index
         #self.masterlistfile      = "masterlist.yaml"
-        self.masterlistlocation  = Path(repofolder,"masterlist.yaml") #Path(os.path.join(repository.location, self.masterlistfile))
+        self.masterlistlocation  = repofolder#Path(repofolder,"masterlist.yaml") #Path(os.path.join(repository.location, self.masterlistfile))
         # tag for yaml file object
         self.tag = "!Masterlist:"
         self.repotag = "!Repo:"

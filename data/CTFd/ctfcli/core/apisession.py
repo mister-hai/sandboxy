@@ -25,7 +25,7 @@ class APIHandler(Session):
         "hints", "flags","submissions","scoreboard",
         "teams","users","statistics","files", "notifications",
         "configs", "pages", "unlocks", "tokens", "comments"]
-        self.template = {"data": [
+        self.challengetemplate = {"data": [
             {
                 "id": 3,
                 "type": "multiple_choice",
@@ -39,6 +39,28 @@ class APIHandler(Session):
                 "script": "/plugins/multiple_choice/assets/view.js"
             }]
         }
+        self.flagstemplate = {
+            "success": true,
+            "data": [
+                {
+                    "content": "test{thisisatest}",
+                    "id": 1,
+                    "challenge_id": 1,
+                    "type": "static",
+                    "data": "",
+                    "challenge": 1
+                },
+                {
+                    "content": "test{thisisatest}",
+                    "id": 2,
+                    "challenge_id": 2,
+                    "type": "static",
+                    "data": "",
+                    "challenge": 2
+                }
+            ]
+        }
+
 
     def _getroute(self, tag):
         """
@@ -197,11 +219,11 @@ class APIHandler(Session):
         Use a PATCH request to modify the Challenge Requirements
         """
         if jsonpayload.get("requirements"):
-            installed_challenges = load_installed_challenges()
+            syncedchallenges = self.getsyncedchallenges()
             required_challenges = []
             for r in challenge["requirements"]:
                 if type(r) == str:
-                    for c in installed_challenges:
+                    for c in syncedchallenges:
                         if c["name"] == r:
                             required_challenges.append(c["id"])
                 elif type(r) == int:

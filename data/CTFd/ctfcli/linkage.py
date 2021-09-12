@@ -1,18 +1,11 @@
-from __future__ import annotations
 import os
 from pathlib import Path
-import pathlib
-from ctfcli.core.category import Category
-from ctfcli.utils.utils import errorlogger
-from cookiecutter.main import cookiecutter
-from ctfcli.core.challenge import Challenge
 from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
 from ctfcli.core.apisession import APIHandler
 #from ctfcli.utils.gitrepo import SandboxyGitRepository
 from ctfcli.core.ctfdrepo import SandboxyCTFdRepository
-from ctfcli.utils.utils import redprint,greenprint,CATEGORIES,makered
-from ctfcli.utils.utils import CHALLENGE_SPEC_DOCS, DEPLOY_HANDLERS
+from ctfcli.utils.utils import redprint,greenprint,CATEGORIES, errorlogger
 
 #class CTFCLI():
 class SandBoxyCTFdLinkage():
@@ -59,11 +52,21 @@ class SandBoxyCTFdLinkage():
         checks for existance and integrity of master list and loads it into self
         TODO: add integrity checks, currently just checks if it exists
         then loads it into self
+
+        The following function has that property and could be considered the simplest decorator one could possibly write:
+
+        >>> def null_decorator(func):
+        >>> return func
+        >>> def greet():
+        >>>     return 'Hello!'
+        >>> greet = null_decorator(greet)
+        >>> greet()
+        >>> "Hello!"
         """
         try:
             greenprint("[+] Checking masterlist")
             if os.path.exists(self.masterlistlocation):
-                repository = Masterlist(self.repofolder.parent)._loadmasterlist()
+                repository = Masterlist(self.masterlistlocation)._loadmasterlist()
                 setattr(self,"repo", repository)
                 return True
             else: 
@@ -71,6 +74,24 @@ class SandBoxyCTFdLinkage():
         except Exception:
             errorlogger("[-] Masterlist not located! Run 'ctfcli init' first!")
             return False
+
+    def _updatemasterlist(self):
+        """
+        This method is used after every command, just as _checkmasterlist()
+        is used before every command
+
+        Any changes to the repository are reflected in this
+        """
+        dictofcategories = {}
+        # get all of the categories in memory/server
+        # not categories in file
+        for cat in self.listcategories(prints=False):
+            dictofcategories[cat.name] = cat
+        # create new repo and push to new masterlist, overwriting old one
+        masterlist = Masterlist(self.masterlistlocation)
+        newrepo = Repository(**dictofcategories)
+        masterlist._writenewmasterlist(self.repo,filemode="w")
+
 
     def init(self):
         """
@@ -108,12 +129,13 @@ class SandBoxyCTFdLinkage():
         #except Exception:
         #    errorlogger("[-] Git Repository Creation Failed, check the logfile")
 
+    #@_checkmasterlist
     def listcategories(self,prints=True) -> list:
         """
         Lists all currently installed categories
         """
         if self._checkmasterlist():
-            self.repo.listcategories(prints=prints)
+            return self.repo.listcategories(prints=prints)
 
     def getchallengesbycategory(self,categoryname,printscr=True) -> list:
         """
@@ -216,20 +238,3 @@ v        '''
                 return apicall.get("/api/v1/challenges?view=admin", json=True).json()["data"]
             elif remote == False:
                 self.ctfdops.listsyncedchallenges()
-
-    def newfromtemplate(self, type=""):
-        """
-        Creates a new CTFd Challenge from template
-
-        If no repo is present, uploads the DEFAULT template to CTFd
-
-        NOT IMPLEMENTED YET
-        """
-        if self._checkmasterlist():
-            # if no repo is present, uploads a template
-            if type == "":
-                type = "default"
-                cookiecutter(os.path.join(self.TEMPLATESDIR, type))
-            else:
-                cookiecutter(os.path.join(self.TEMPLATESDIR,type))
-

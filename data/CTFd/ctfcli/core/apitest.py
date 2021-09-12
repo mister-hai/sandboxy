@@ -30,6 +30,47 @@ print("============\nNonce: "+ nonce + "\n===============")
 
 # get list of challenges
 apiresponse = apisession.get(adminchallengesendpoint,json=True)
+emptychallengesresponse = {"success": 'true', "data": []}
+testchallengesresponse = {
+			"success": 'true',
+			"data": [
+				{
+					"id": 1,
+					"type": "standard",
+					"name": "test",
+					"value": 500,
+					"solves": 0,
+					"solved_by_me": true,
+					"category": "test",
+					"tags": [],
+					"template": "/plugins/challenges/assets/view.html",
+					"script": "/plugins/challenges/assets/view.js"
+				}, 
+				{
+					"id": 2,
+					"type": "dynamic",
+					"name": "dynamic test",
+					"value": 500,
+					"solves": 0,
+					"solved_by_me": true,
+					"category": "test",
+					"tags": [],
+					"template": "/plugins/dynamic_challenges/assets/view.html",
+					"script": "/plugins/dynamic_challenges/assets/view.js"
+				}
+			]
+		}
 # token endpoint
 apisession.get(tokensurl)
 authtoken = apiresponse.json()["data"]["value"]
+tokenresponse = {
+				"success": true, 
+				"data": {
+						"created": "2021-09-12T08:59:52.421062+00:00", 
+						"value": "e2c1cb51859e5d7afad6c2cd82757277077a564166d360b48cafd5fcc1e4e015", 
+						"type": "user",
+						"id": 1,
+						"expiration":"2021-10-12T08:59:52.421073+00:00",
+						"user_id": 1
+						}
+				}

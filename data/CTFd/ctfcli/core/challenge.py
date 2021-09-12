@@ -58,6 +58,10 @@ class Challenge(Yaml):
         self.handout = handout
         self.readme = readme
         self.tag = "!Challenge:"
+
+        # this is set after syncing by the ctfd server, it increments by one per
+        # challenge upload so it's predictable
+        self.id = int
         if category not in CATEGORIES:
             errorlogger("[-] Inconsistancy in inputs {}".format(category))
         else:
@@ -287,7 +291,11 @@ class Challenge(Yaml):
             #make API call
             #apihandler = APIHandler()
             self._setpayload
-            self.processchallenge(apihandler,self.jsonpayload)
+            # TODO: get return value for challenge id from a 
+            # list synced challenges
+            # after syncing everything and then sort by name
+            challengeid = self.processchallenge(apihandler,self.jsonpayload)
+            self.id = challengeid
         except Exception:
             errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
 
