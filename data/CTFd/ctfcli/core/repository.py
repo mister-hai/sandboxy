@@ -1,5 +1,8 @@
 from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
 from ctfcli.core.category import Category
+from ctfcli.core.challenge import Challenge
+from ctfcli.core.apisession import APIHandler
+
 # Tutorial
 class ClassA():
     def __init__(self, message):
@@ -79,6 +82,18 @@ class Repository(Repo):
     def __init__(self,**entries): 
         self.__dict__.update(entries)
 
+    def _syncchallenge(self, challenge:Challenge, apihandler:APIHandler):
+        """
+        currently not being called
+        keep it around please
+        Syncs a challenge with the CTFd server
+        Internal method
+
+        Args:
+            challenge (Challenge): Challenge to syncronize with the CTFd server
+        """   
+        challenge.sync(apihandler)
+
     def _setlocation(self, location):
         """
         Sets the repo folder root location
@@ -123,3 +138,62 @@ class Repository(Repo):
                 print(challenge)
         else:
             return challengesack
+
+    def getallchallenges(self, category, printscr=True) -> list:
+        """
+        Lists ALL challenges in repo
+        Supply "print=False" to return a variable instead of text 
+        """
+        challengesack = []
+        # listcategories() returns a list of categories 
+        for category in self.listcategories(prints=False):
+            # the bag with cats
+            for categoryitem in vars(category):
+                # its a challenge class
+                if (type(getattr(category, categoryitem)) == Challenge):
+                    # retrieve it and assign to variable
+                    challenge:Challenge = getattr(category, categoryitem)
+                    challengesack.append(challenge)
+        if printscr == True:
+            for challenge in challengesack:
+                print(challenge)
+        else:
+            # return a list of challenge for each category
+            return challengesack
+
+    def synccategory(self, category:str, apihandler:APIHandler):#,adminusername,adminpassword):
+        """
+        Sync Category:
+        Synchronize all challenges in the given category, 
+        this uploads the challenge data to CTFd
+        Args:
+            category (str): The name of the category to syncronize with the CTFd server
+            ctfurl (str): URL of the CTFd server instance
+            ctftoken (str): Token provided by CTFd
+        """
+        try:
+            greenprint("[+] Syncing Category: {}". format(category))
+            challenges = self.getchallengesbycategory(category,printscr=False)
+            for challenge in challenges:
+                greenprint(f"Syncing challenge: {challenge.name}")
+                #self._syncchallenge(challenge,apihandler)
+                challenge.sync(apihandler)
+        except Exception:
+            errorlogger(f"[-] Failure to sync category! {category.name}")
+    
+    def syncrepository(self,apihandler:APIHandler):
+        '''
+        Syncs the entire Repository Folder
+
+        Args:
+            ctfdurl (str):   The URL of the CTFd Server instance
+            ctfdtoken (str): Token given from Admin Panel > Config > Settings > Auth Token Form
+        '''
+        challengesack = []
+        for challenge in self.getallchallenges(printscr=False):
+            challengesack.append(challenge)
+        # throw it at the wall and watch the mayhem
+        for challenge in challengesack:
+            #challenge.sync()
+            #self._syncchallenge(challenge,apihandler)
+            challenge.sync(apihandler)

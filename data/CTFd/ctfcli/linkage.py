@@ -69,7 +69,7 @@ class SandBoxyCTFdLinkage():
             else: 
                 raise Exception
         except Exception:
-            errorlogger("[-] Masterlist not located! Run 'ctfcli ctfdops init' first!")
+            errorlogger("[-] Masterlist not located! Run 'ctfcli init' first!")
             return False
 
     def init(self):
@@ -108,50 +108,19 @@ class SandBoxyCTFdLinkage():
         #except Exception:
         #    errorlogger("[-] Git Repository Creation Failed, check the logfile")
 
-    def listcategories(self):#,prints=True) -> list:
+    def listcategories(self,prints=True) -> list:
         """
-        Test of scope change
+        Lists all currently installed categories
         """
         if self._checkmasterlist():
-            self.repo.listcategories()
+            self.repo.listcategories(prints=prints)
 
-    def _listcategories(self,prints=True) -> list:
-        """
-        Get the names of all Categories
-        Supply "print=False" to return a variable instead of display to screen 
-        """
-        catbag = []
-        if self._checkmasterlist():
-            # all items in repo
-            repositorycontents =  self.repo.__dict__#vars(self.repo)
-            for repositoryitem in repositorycontents:
-                # if item is a category
-                if (type(repositorycontents.get(repositoryitem)) == Category):# getattr(self.repo, repositoryitem)) == Category):
-                    catholder:Category = repositorycontents.get(repositoryitem)# getattr(repositoryitem, self.repo)
-                    catbag.append(catholder)
-            if prints == True:
-                # print the category.__repr__ to screen
-                for each in catbag:
-                    print(each)
-            else:
-                # return the object list itself
-                return catbag
-    
     def getchallengesbycategory(self,categoryname,printscr=True) -> list:
         """
         Returns either a list of challenges or prints them to screen
         """
         if self._checkmasterlist():
-            # listcategories() returns a list of Categories 
-            for category in self.listcategories(prints=False):
-                # the bag with cats
-                if category.name == categoryname:
-                    challengesack = category.listchallenges()
-            if printscr == True:
-                for challenge in challengesack:
-                    print(challenge)
-            else:
-                return challengesack
+            self.repo.getchallengesbycategory(categoryname, printscr)
             
     def getallchallenges(self, category, printscr=True) -> list:
         """
@@ -159,87 +128,73 @@ class SandBoxyCTFdLinkage():
         Supply "print=False" to return a variable instead of text 
         """
         if self._checkmasterlist():
-            challengesack = []
-            # listcategories() returns a list of categories 
-            for category in self.listcategories(prints=False):
-                # the bag with cats
-                for categoryitem in vars(category):
-                    # its a challenge class
-                    if (type(getattr(category, categoryitem)) == Challenge):
-                        # retrieve it and assign to variable
-                        challenge:Challenge = getattr(category, categoryitem)
-                        challengesack.append(challenge)
-            if printscr == True:
-                for challenge in challengesack:
-                    print(challenge)
-            else:
-                # return a list of challenge for each category
-                return challengesack
+            self.repo.getallchallenges(category, printscr)
 
-    def syncchallenge(self, challenge:Challenge,ctfdurl,ctfdtoken,adminusername,adminpassword):
+#    def syncchallenge(self, challenge:Challenge,ctfdurl,ctfdtoken,adminusername,adminpassword):
+#        """
+#        Syncs a challenge with the CTFd server
+#        Internal method
+#
+#        Args:
+#            challenge (Challenge): Challenge to syncronize with the CTFd server        
+#        """
+#        self._setauth(ctfdurl,ctfdtoken,adminusername,adminpassword)
+
+    def _syncchallenge(self, challenge,ctfdurl,ctfdtoken):#,adminusername,adminpassword):
         """
+        DO NOT USE
+        saved for later
         Syncs a challenge with the CTFd server
-        Internal method
 
         Args:
-            challenge (Challenge): Challenge to syncronize with the CTFd server        
-        """
-        self._setauth(ctfdurl,ctfdtoken,adminusername,adminpassword)
-
-    def _syncchallenge(self, challenge:Challenge,ctfdurl,ctfdtoken,adminusername,adminpassword):
-        """
-        Syncs a challenge with the CTFd server
-        Internal method
-
-        Args:
-            challenge (Challenge): Challenge to syncronize with the CTFd server
+            challenge (str): Path to Challenge Folder to syncronize with the CTFd server
+                                   Please put this in the correct category
+            ctfurl    (str): Url to CTFd Server
+            ctfdtoken (str): CTFd Server token
         """
         
         # create API handler for CTFd Server
         apihandler = APIHandler(self.CTFD_URL, self.CTFD_TOKEN)
         #self._setauth(ctfdurl,ctfdtoken)        
-        challenge.sync(challenge.internalname, apihandler)
+        self.repo._syncchallenge(challenge, apihandler)
 
-    def synccategory(self, category:str,ctfdurl,ctfdtoken,adminusername,adminpassword):
+    def synccategory(self, category:str,ctfdurl,ctfdtoken):#,adminusername,adminpassword):
         """
+        Sync Category:
+
         Maps to the command
-        >>> host@server$> ctfcli synccategory <categoryname>
+        >>> ctfcli synccategory <categoryname> --ctfdurl <URL> --ctfdtoken <TOKEN>
+        Use after :
+        >>> ctfcli init
+        >>> ctfcli listcategories
+
+        Do NOT use  --adminusername <NAME> --adminpassword <PASS>
+
         Synchronize all challenges in the given category, 
         this uploads the challenge data to CTFd
 
         Args:
-            category (str): The name of the category to syncronize with the CTFd server
+            category (str): The internal name of the category to syncronize with the CTFd server
+            ctfurl   (str): URL of the CTFd server instance
+            ctftoken (str): Token provided by CTFd
         """
         if self._checkmasterlist():
-            self._setauth(ctfdurl,ctfdtoken,adminusername,adminpassword)
-            try:
-                greenprint("[+] Syncing Category: {}". format(category))
-                challenges = self.getchallengesbycategory(category)
-                for challenge in challenges:
-                    greenprint(f"Syncing challenge: {challenge}")
-                    self._syncchallenge(challenge)
-            except Exception:
-                errorlogger("[-] Failure to sync category! {}".format(challenge))
+            apihandler = APIHandler(self.CTFD_URL, self.CTFD_TOKEN)
+            self._setauth(ctfdurl,ctfdtoken)
+            self.repo.synccategory(category, apihandler)
 
-    def syncrepository(self, ctfdurl, ctfdtoken,adminusername,adminpassword):
+    def syncrepository(self, ctfdurl, ctfdtoken):
         '''
         Syncs the entire Repository Folder
 
         Args:
             ctfdurl (str):   The URL of the CTFd Server instance
             ctfdtoken (str): Token given from Admin Panel > Config > Settings > Auth Token Form
-        '''
+v        '''
         if self._checkmasterlist():
-            self._setauth(ctfdurl,ctfdtoken,adminusername,adminpassword)
             apihandler = APIHandler(self.CTFD_URL, self.CTFD_TOKEN)
-            challengesack = []
-            self._setauth(ctfdurl,ctfdtoken)
-            for challenge in self.getallchallenges(printscr=False):
-                challengesack.append(challenge)
-            # throw it at the wall and watch the mayhem
-            for challenge in challengesack:
-                #challenge.sync()
-                self._syncchallenge(challenge,apihandler)
+            self._setauth(ctfdurl,ctfdtoken)#,adminusername,adminpassword)
+            self.repo.syncrepository(apihandler)
 
     def listsyncedchallenges(self, ctfdurl, ctfdtoken,adminusername,adminpassword, remote=False):
         """

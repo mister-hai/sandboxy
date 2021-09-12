@@ -154,6 +154,13 @@ class APIHandler(Session):
         #with open(".ctfd-auth", "w") as filp:
         #    yaml.dump({"url": self.ctfdurl, "token": self.authtoken}, filp)
 
+    def getsyncedchallenges(self):
+        """
+        Gets a json container of all the challenges synced to the server
+        """
+        endpoint = self._getroute('challenges') + "?view=admin"
+        return self.get(url = endpoint, json=True).json()["data"]
+
     def getusers(self):
         """ gets a list of all users"""
 
