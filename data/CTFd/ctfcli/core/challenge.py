@@ -1,7 +1,7 @@
 import os
 from hashlib import sha256
 from pathlib import Path
-
+from requests import Response
 from ctfcli.core.yamlstuff import Yaml
 from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 from ctfcli.core.apisession import APIHandler
@@ -220,21 +220,14 @@ class Challenge(Yaml):
         self.connection_info = kwargs.get("connection_info")
         # list of strings, each a challenge name to be completed before this one is allowed
         self.requirements = kwargs.get('requirements')
-        if self.attempts:
-            self.jsonpayload["max_attempts"] = self.attempts
-        if self.connection_info:
-            self.jsonpayload["connection_info"] = self.connection_info
+        self.attempts = kwargs.get('attempts')
 
-        #return the newly created challenge instance
-        #print(self.__repr__())
         return self
-        #super().__init__()
 
     def __repr__(self):
         '''
         printself
         '''
-        #asdf = [item for item in self.__dict__]
         for key in self.__dict__:
             print(str(key) + " : " + str(self.__dict__[key]))
 
@@ -250,27 +243,31 @@ class Challenge(Yaml):
                                 'minimum': self.extra['minimum']
                                 }
         elif (self.typeof == 'standard') or (self.typeof == 'static'):
-            self.scorepayload['value'] = self.value
+            #self.jsonpayload['value'] = self.value
+            pass
         # set final payload
         self.jsonpayload = {
-            "name":         self.name,
-            "category":     self.category,
-            "description":  self.description,
-            "type":         self.type,
+            "name":            self.name,
+            "category":        self.category,
+            "author" :         self.author,
+            "description":     self.description,
+            "type":            self.type,
+            "value":           self.value,
+            "state":           self.state,
+            #"max_attempts":    self.attempts,
+            #"connection_info": self.connection_info,
             # unpack "value + extra" OR "value"
-            **self.scorepayload,
-            "author" :      self.author
+            **self.scorepayload
             }
+        #self.jsonpayload["state"] = "visible"
         # Some challenge types (e.g. dynamic) override value.
         # We can't send it to CTFd because we don't know the current value
-        if self.value is None:
-            del self.jsonpayload['value']
+        #if self.value is None:
+        #    del self.jsonpayload['value']
         if self.attempts:
             self.jsonpayload["max_attempts"] = self.attempts
         if self.connection_info and self.connection_info:
             self.jsonpayload['connection_info'] = self.connection_info
-        #why?
-        self.datapayload["state"] = "hidden"
 
     def _processhandout(self):
         '''
@@ -290,14 +287,42 @@ class Challenge(Yaml):
         try:
             #make API call
             #apihandler = APIHandler()
-            self._setpayload
+            # create initial entry in CTFd Server to get a challenge ID
+            # the challenge ID is necessary for later
+            self._setpayload()
+            # set auth headers with token
+            apihandler._apiauth()
+            # send request
+            apiresponse = apihandler.postrequest('challenges',self.jsonpayload)
+
+            apiresponse.raise_for_status()
             # TODO: get return value for challenge id from a 
             # list synced challenges
             # after syncing everything and then sort by name
-            challengeid = self.processchallenge(apihandler,self.jsonpayload)
+            challengeid = apihandler
+            self.processchallenge(apihandler,self.jsonpayload)
             self.id = challengeid
         except Exception:
             errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
+
+    def apiGET(self, apiresponse:Response,selector):
+        """
+        Gets data from API
+        mirror api response structure
+        """
+        response = apiresponse.json()['data']
+        for challenge in response:
+            challengeid = challenge.get('id')
+            typeof = challenge.get('type')
+            name = challenge.get('name')
+            value = challenge.get('value')
+            solves = challenge.get('solves')
+            solved_by_me = challenge.get('solved_by_me')
+            category = challenge.get('category')
+            tags = challenge.get('tags')
+            template = challenge.get('template')
+            script = challenge.get('script')
+
 
     def processchallenge(self,apihandler:APIHandler,jsonpayload:dict):
         try:

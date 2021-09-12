@@ -55,7 +55,15 @@ class APICore(Session):
 						"user_id": int#1
 						}
 				}
-
+        # template for authentication packet
+        cls.authtemplate = {
+	        "name": str,
+	        "password": str,
+	        "_submit": "Submit",
+            # I think the nonce can be anything?
+            # try an empty one a few times with other fields fuzxzzed
+	        "nonce": str #"84e85c763320742797291198b9d52cf6c82d89f120e2551eb7bf951d44663977"
+        }
     def _apiauth(self):
         """
         Set auth headers for post administrative login
@@ -63,6 +71,17 @@ class APICore(Session):
         """
         # auth to server
         self.headers.update({"Authorization": "Token {}".format(self.authtoken)})
+
+    def _getroute(self, tag):
+        """
+        Gets API route string for Requests Session
+        Args:
+            tag (str): Route to send JSON/web request to
+        """
+        #dictofroutes = {}
+        if tag in self.routeslist:
+            #dictofroutes[tag] = f"{self.ctfdurl}{self.APIPREFIX}{tag}"
+            return f"{self.ctfdurl}{self.APIPREFIX}{tag}" #dictofroutes
 
     def authtoserver(self,adminusername,adminpassword):
         """
@@ -72,15 +91,7 @@ class APICore(Session):
         >>> APISession.authtoken
         """
         #apisession = APISession()
-        # template for authentication packet
-        authpayload = {
-	        "name": str,
-	        "password": str,
-	        "_submit": "Submit",
-            # I think the nonce can be anything?
-            # try an empty one a few times with other fields fuzxzzed
-	        "nonce": str #"84e85c763320742797291198b9d52cf6c82d89f120e2551eb7bf951d44663977"
-        }
+
         ################################################################
         # Logging in as Admin!
         ################################################################
@@ -94,14 +105,14 @@ class APICore(Session):
                 # the server was ok and responded with login
             else:
                 # Grab the nonce
-                authpayload['name'] = adminusername
-                authpayload['password'] = adminpassword
-                authpayload['nonce'] = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+                self.authtemplate['name'] = adminusername
+                self.authtemplate['password'] = adminpassword
+                self.authtemplate['nonce'] = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
         # make the api request to the login page
         # this logs us in as admin
         apiresponse = self.post(
             url=self._getroute("login"),
-            data = authpayload
+            data = self.authtemplate
             )#,allow_redirects=False,)
         if self.was_there_was_an_error(apiresponse.status_code) or (not apiresponse.headers["Location"].endswith("/challenges")):
             errorlog('invalid login credentials')

@@ -1,5 +1,5 @@
 import json,yaml
-#from requests import Session
+import requests
 from ctfcli.core.APICore import APICore
 from ctfcli.utils.utils import errorlogger, errorlog, greenprint
 #from utils.apifunctions import APIFunctions
@@ -23,7 +23,7 @@ class APIHandler(APICore):
             - flags
             - files
             - visibility
-
+        
         for dev use:
         useragent = 'Mozilla/5.0 (X11; Linux x86_64; rv:28.0) Gecko/20100101  Firefox/28.0'
     Args: 
@@ -35,27 +35,11 @@ class APIHandler(APICore):
         self.ctfdurl = ctfdurl
         self.authtoken = authtoken
 
-    def _getroute(self, tag):
-        """
-        Gets API route string for Requests Session
-        Args:
-            tag (str): Route to send JSON/web request to
-        """
-        #dictofroutes = {}
-        if tag in self.routeslist:
-            #dictofroutes[tag] = f"{self.ctfdurl}{self.APIPREFIX}{tag}"
-            return f"{self.ctfdurl}{self.APIPREFIX}{tag}" #dictofroutes
-
-    def handleresponse(self, response:dict):
-        '''
-        handles response
-        '''
-
-
     def getsyncedchallenges(self):
         """
         Gets a json container of all the challenges synced to the server
         """
+        self._apiauth()
         endpoint = self._getroute('challenges') + "?view=admin"
         return self.get(url = endpoint, json=True).json()["data"]
 
@@ -90,28 +74,25 @@ class APIHandler(APICore):
             challenge (str): The challenge to change state
         """
 
-    def processrequirements(self, jsonpayload):
+    def processrequirements(self, challengeid:int, jsonpayload:dict) -> requests.Response:
         """
         Use a PATCH request to modify the Challenge Requirements
         This is done towards the end
         """
-        syncedchallenges = self.getsyncedchallenges()
         required_challenges = []
         for requirements in jsonpayload.get("requirements"):
             # if the requirements are other challenges
             if type(requirements) == str:
-                for challenge in syncedchallenges:
-                        if jsonpayload.get("name") == requirements:
-                            required_challenges.append(challenge["id"])
+                required_challenges.append(challengeid)
             # if the requirement is a score value
             elif type(requirements) == int:
                 required_challenges.append(requirements)
         required_challenges = list(set(required_challenges))
         data = {"requirements": {"prerequisites": required_challenges}}
-        apiresponse = self.patch(f"/api/v1/challenges/{challenge.id}", json=data)
+        apiresponse = self.patch(self._getroute('challenges') + str(challengeid), json=data)
         apiresponse.raise_for_status()
 
-    def processtags(self, challengeid:int, jsonpayload:dict):
+    def processtags(self, challengeid:int, jsonpayload:dict) -> requests.Response:
         '''
         Processes tags for the challenges
         '''
@@ -132,23 +113,34 @@ class APIHandler(APICore):
         HARD MODE: ON
         """
 
-    def processhints(self, data):
+    def processhints(self,hints, challengeid:int, hintcost:int):
         '''
         process hints for the challenge
+        Hints are used to give players a way to buy or have suggestions. They are not
+        required but can be nice.
+        Can be removed if unused
+        Accepts dictionaries or strings
+        >>> self.hints = kwargs.get("hints")
+        #    - {
+        #        content: "This hint costs points",
+        #        cost: 10
+        #    }
+        #    - This hint is free
         '''
-        for hint in jsonpayload.get("hints"):
+        for hint in hints:
             if type(hint) == str:
-                data = {"content": hint, "cost": 0, "challenge_id": challenge_id}
+                self.hintstemplate["content"] = hint
+                self.hintstemplate["cost"] = hintcost
+                self.hintstemplate["challenge_id"] = challengeid
             else:
-                data = {
-                    "content": hint["content"],
-                    "cost": hint["cost"],
-                    "challenge_id": challenge_id,
-                }
-            apiresponse = self.post(self._getroute('hints'), json=data)
+                self.hintstemplate["content"] = hint["content"]
+                self.hintstemplate["cost"] = hint["cost"]
+                self.hintstemplate["challenge_id"] = challengeid
+            #make request with hints template
+            apiresponse = self.post(self._getroute('hints'), json=self.hintstemplate)
             apiresponse.raise_for_status()
 
-    def processtopics(self, data):
+    def processtopics(self, jsonpayload):
         '''
         process hints for the challenge
         '''
@@ -157,22 +149,25 @@ class APIHandler(APICore):
             apiresponse = self.post(self._getroute("topics"),
                 json= self.topictemplate)
             apiresponse.raise_for_status()
-    def processflags(self, data):
+
+    def processflags(self, challengeid:int, jsonpayload:dict) -> requests.Response:
         '''
         process hints for the challenge
         '''
-        if jsonpayload.get("flags") and "flags" not in ignore:
-            for flag in jsonpayload.get("flags"):
+        for flag in jsonpayload.get("flags"):
                 if type(flag) == str:
-                    data = {"content": flag, "type": "static", "challenge_id": challenge_id}
-                    apiresponse = self.post(f"/api/v1/flags", json=data)
+                    self.flagstemplate["content"] = flag
+                    self.flagstemplate["type"] = "static"
+                    self.flagstemplate["challenge_id"] = challengeid
+
+                    apiresponse = self.post(f"/api/v1/flags", json=jsonpayload)
                     apiresponse.raise_for_status()
                 elif type(flag) == dict:
-                    flag["challenge"] = challenge_id
+                    flag["challenge"] = challengeid
                     apiresponse = self.post(f"/api/v1/flags", json=flag)
                     apiresponse.raise_for_status()
 
-    def uploadfiles(self,data):
+    def uploadfiles(self, jsonpayload) -> requests.Response:
         """
         uploads files to the ctfd server
         """
@@ -226,16 +221,16 @@ class APIHandler(APICore):
         response = self.get("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
         response.raise_for_status()
 
-    def postrequest(self, endpoint, jsonpayload:json):
+    def postrequest(self, endpoint, jsonpayload:dict) -> requests.Response:
         '''
-        Makes a POST Request to the Specified Endpoint with jsonpayload['id']
+        Makes a POST Request to the Specified Endpoint
 
         Args:
-            endpoint (str): the API endpoint to send to , e.g. /api/vi/challenges
+            endpoint (str): the endpoint to send to , e.g. 'challenges'
             payload  (str): the json payload required for the post request
         '''
-        response = self.post("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
-        response.raise_for_status()
+        response = self.post(url = self._getroute(endpoint), json=jsonpayload)
+        return response
 
     def patchrequest(self, endpoint, jsonpayload:json):
         """
