@@ -274,24 +274,18 @@ class Challenge(Yaml):
                 - upload 
         '''
 
-    def sync(self):
+    def sync(self, apihandler: APIHandler):
         '''
-        These are the Actions that a Challenge folder can undergo, namely:
-
         Add(sync):
             Adds a challenge to CTFd server
-        Remove(unsync):
-            Removes a challenge from CTFd server
-        Delete:
-            Deletes a challenge from the local Repository
-        Write:
-            Writes a challenge to the local Repository
-        
+
+        Args:
+            apihandler (APIHandler): APIHandler class, instances a Requests.Session to CTFd url
         '''
         greenprint(f"Syncing challenge: {self.name}")
         try:
             #make API call
-            apihandler = APIHandler()
+            #apihandler = APIHandler()
             self._setpayload
             self.processchallenge(apihandler,self.jsonpayload)
         except Exception:

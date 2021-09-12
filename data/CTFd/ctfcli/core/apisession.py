@@ -4,7 +4,7 @@ from ctfcli.utils.utils import errorlogger, errorlog, greenprint
 #from utils.apifunctions import APIFunctions
 
 
-class APIHandler():
+class APIHandler(Session):
     """
     Handler for the APISession() class
         Provides a wrapper for the API Functions
@@ -25,6 +25,20 @@ class APIHandler():
         "hints", "flags","submissions","scoreboard",
         "teams","users","statistics","files", "notifications",
         "configs", "pages", "unlocks", "tokens", "comments"]
+        self.template = {"data": [
+            {
+                "id": 3,
+                "type": "multiple_choice",
+                "name": "Trivia",
+                "value": 42,
+                "solves": 4,
+                "solved_by_me": 'false',
+                "category": "Multiple Choice",
+                "tags": [],
+                "template": "/plugins/multiple_choice/assets/view.html",
+                "script": "/plugins/multiple_choice/assets/view.js"
+            }]
+        }
 
     def _getroute(self, tag):
         """
@@ -32,10 +46,51 @@ class APIHandler():
         Args:
             tag (str): Route to send JSON/web request to
         """
-        dictofroutes = {}
+        #dictofroutes = {}
         if tag in self.routeslist:
-            dictofroutes[tag] = f"{self.ctfdurl}{self.APIPREFIX}{tag}"
-        return dictofroutes
+            #dictofroutes[tag] = f"{self.ctfdurl}{self.APIPREFIX}{tag}"
+            return f"{self.ctfdurl}{self.APIPREFIX}{tag}" #dictofroutes
+
+    def handleresponse(self, response:dict):
+        '''
+        handles response
+        '''
+
+    def was_there_was_an_error(self, responsecode)-> bool:
+        """ Returns False if no error"""
+        # server side error]
+        set1 = [404,504,503,500]
+        set2 = [400,405,501]
+        set3 = [500]
+        if responsecode in set1 :
+            errorlogger("[-] Server side error - No Resource Available in REST response - Error Code {}".format(responsecode))
+            return True # "[-] Server side error - No resource Available in REST response"
+        if responsecode in set2:
+            errorlogger("[-] User error in Request - Error Code {}".format(responsecode))
+            return True # "[-] User error in Image Request"
+        if responsecode in set3:
+            #unknown error
+            errorlogger("[-] Unknown Server Error - No Resource Available in REST response - Error Code {}".format(responsecode)) 
+            return True # "[-] Unknown Server Error - No Image Available in REST response"
+        # no error!
+        if responsecode == 200:
+            return False
+
+            #except requests.exceptions.HTTPError as errh:
+            #    print(errh)
+            #except requests.exceptions.ConnectionError as errc:
+            #    print(errc)
+            #except requests.exceptions.Timeout as errt:
+            #    print(errt)
+            #except requests.exceptions.RequestException as err:
+            #    print(err)
+    def _apiauth(self):
+        """
+        Set auth headers for post administrative login
+        ?User creation must be done with admin login, not apiauth?
+        """
+        # auth to server
+        self.headers.update({"Authorization": "Token {}".format(self.authtoken)})
 
     def authtoserver(self,adminusername,adminpassword):
         """
@@ -130,15 +185,36 @@ class APIHandler():
             challenge (str): The challenge to change state
         """
 
-    def processrequirements(self, data):
+    def processrequirements(self, jsonpayload):
         """
         Use a PATCH request to modify the Challenge Requirements
         """
+        if jsonpayload.get("requirements"):
+            installed_challenges = load_installed_challenges()
+            required_challenges = []
+            for r in challenge["requirements"]:
+                if type(r) == str:
+                    for c in installed_challenges:
+                        if c["name"] == r:
+                            required_challenges.append(c["id"])
+                elif type(r) == int:
+                    required_challenges.append(r)
+
+            required_challenges = list(set(required_challenges))
+            data = {"requirements": {"prerequisites": required_challenges}}
+            r = s.patch(f"/api/v1/challenges/{challenge_id}", json=data)
+            r.raise_for_status()
 
     def processtags(self, data):
         '''
         Processes tags for the challenges
         '''
+        if jsonpayload.get("tags") and "tags" not in ignore:
+           for tag in challenge["tags"]:
+            r = s.post(
+                f"/api/v1/tags", json={"challenge_id": challenge_id, "value": tag}
+                )
+            r.raise_for_status()
 
     def deleteremotehints(self,challenge_id,data):
         """
@@ -150,19 +226,68 @@ class APIHandler():
         '''
         process hints for the challenge
         '''
+        if jsonpayload.get("hints") and "hints" not in ignore:
+            for hint in challenge["hints"]:
+                if type(hint) == str:
+                    data = {"content": hint, "cost": 0, "challenge_id": challenge_id}
+                else:
+                    data = {
+                        "content": hint["content"],
+                        "cost": hint["cost"],
+                        "challenge_id": challenge_id,
+                    }
+
+                r = s.post(f"/api/v1/hints", json=data)
+                r.raise_for_status()
 
     def processtopics(self, data):
         '''
         process hints for the challenge
         '''
+        for topic in challenge["topics"]:
+            apiresponse = self.post(
+                f"/api/v1/topics",
+                json={
+                    "value": topic,
+                    "type": "challenge",
+                    "challenge_id": challenge_id,
+                },
+            )
+            r.raise_for_status()
     def processflags(self, data):
         '''
         process hints for the challenge
         '''
+        if jsonpayload.get("flags") and "flags" not in ignore:
+            for flag in challenge["flags"]:
+                if type(flag) == str:
+                    data = {"content": flag, "type": "static", "challenge_id": challenge_id}
+                    r = s.post(f"/api/v1/flags", json=data)
+                    r.raise_for_status()
+                elif type(flag) == dict:
+                    flag["challenge"] = challenge_id
+                    r = s.post(f"/api/v1/flags", json=flag)
+                    r.raise_for_status()
+
     def uploadfiles(self,data):
         """
         uploads files to the ctfd server
         """
+        if jsonpayload.get("files") and "files" not in ignore:
+            files = []
+            for f in challenge["files"]:
+                file_path = Path(challenge.directory, f)
+                if file_path.exists():
+                    file_object = ("file", file_path.open(mode="rb"))
+                    files.append(file_object)
+                else:
+                    click.secho(f"File {file_path} was not found", fg="red")
+                    raise Exception(f"File {file_path} was not found")
+
+            data = {"challenge_id": challenge_id, "type": "challenge"}
+            # Specifically use data= here instead of json= to send multipart/form-data
+            r = s.post(f"/api/v1/files", files=files, data=data)
+            r.raise_for_status()
 
     def deleteremotefiles(self,file_path,data):
         """
@@ -170,25 +295,21 @@ class APIHandler():
         """
 
 
-class APISession(Session):
-    def __init__(self, *args, **kwargs):
-        """
-        Represents a connection to the CTFd API
+#class APISession(Session):
+#    def __init__(self, *args, **kwargs):
+#        """
+#        Represents a connection to the CTFd API
+#
+#        Args:
+#            
+#        """
+#        super(APISession, self).__init__(*args, **kwargs)
 
-        Args:
-            
-        """
-        super(APISession, self).__init__(*args, **kwargs)
-
-    def _apiauth(self):
-        """
-        Set auth headers for post administrative login
-        ?User creation must be done with admin login, not apiauth?
-        """
-        # auth to server
-        self.headers.update({"Authorization": "Token {}".format(self.AUTHTOKEN)})
 
     def checkforchallenge(self, endpoint, jsonpayload):
+        """
+        ("/api/v1/challenges?view=admin", json=True
+        """
         return self.get("{}{}".format(endpoint,self.id), json=jsonpayload).json()["data"]
 
     def getrequest(self, endpoint, jsonpayload:json):
@@ -236,49 +357,3 @@ class APISession(Session):
         response = self.delete("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
         response.raise_for_status()
     
-    def handleresponse(self, response:dict):
-        '''
-        handles response
-        '''
-        template = {"data": [
-            {
-                "id": 3,
-                "type": "multiple_choice",
-                "name": "Trivia",
-                "value": 42,
-                "solves": 4,
-                "solved_by_me": 'false',
-                "category": "Multiple Choice",
-                "tags": [],
-                "template": "/plugins/multiple_choice/assets/view.html",
-                "script": "/plugins/multiple_choice/assets/view.js"
-            }]
-        }
-    def was_there_was_an_error(self, responsecode):
-        """ Returns False if no error"""
-        # server side error]
-        set1 = [404,504,503,500]
-        set2 = [400,405,501]
-        set3 = [500]
-        if responsecode in set1 :
-            errorlogger("[-] Server side error - No Resource Available in REST response - Error Code {}".format(responsecode))
-            return True # "[-] Server side error - No resource Available in REST response"
-        if responsecode in set2:
-            errorlogger("[-] User error in Request - Error Code {}".format(responsecode))
-            return True # "[-] User error in Image Request"
-        if responsecode in set3:
-            #unknown error
-            errorlogger("[-] Unknown Server Error - No Resource Available in REST response - Error Code {}".format(responsecode)) 
-            return True # "[-] Unknown Server Error - No Image Available in REST response"
-        # no error!
-        if responsecode == 200:
-            return False
-
-            #except requests.exceptions.HTTPError as errh:
-            #    print(errh)
-            #except requests.exceptions.ConnectionError as errc:
-            #    print(errc)
-            #except requests.exceptions.Timeout as errt:
-            #    print(errt)
-            #except requests.exceptions.RequestException as err:
-            #    print(err)

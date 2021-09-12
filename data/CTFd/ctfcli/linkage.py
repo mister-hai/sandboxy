@@ -8,7 +8,7 @@ from cookiecutter.main import cookiecutter
 from ctfcli.core.challenge import Challenge
 from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
-from ctfcli.core.apisession import APISession
+from ctfcli.core.apisession import APIHandler
 #from ctfcli.utils.gitrepo import SandboxyGitRepository
 from ctfcli.core.ctfdrepo import SandboxyCTFdRepository
 from ctfcli.utils.utils import redprint,greenprint,CATEGORIES,makered
@@ -108,7 +108,14 @@ class SandBoxyCTFdLinkage():
         #except Exception:
         #    errorlogger("[-] Git Repository Creation Failed, check the logfile")
 
-    def listcategories(self,prints=True) -> list:
+    def listcategories(self):#,prints=True) -> list:
+        """
+        Test of scope change
+        """
+        if self._checkmasterlist():
+            self.repo.listcategories()
+
+    def _listcategories(self,prints=True) -> list:
         """
         Get the names of all Categories
         Supply "print=False" to return a variable instead of display to screen 
@@ -166,24 +173,34 @@ class SandBoxyCTFdLinkage():
                 for challenge in challengesack:
                     print(challenge)
             else:
-                # return a list of cchallenge for each category
+                # return a list of challenge for each category
                 return challengesack
-            
-    def syncchallenge(self, challenge:Challenge,ctfdurl,ctfdtoken):
+
+    def syncchallenge(self, challenge:Challenge,ctfdurl,ctfdtoken,adminusername,adminpassword):
         """
         Syncs a challenge with the CTFd server
+        Internal method
 
-        Usage:
-        >>> host@server$> ctfcli syncchallenge <challenge_id> --ctfdtoken <token> --ctfdurl <url>
+        Args:
+            challenge (Challenge): Challenge to syncronize with the CTFd server        
+        """
+        self._setauth(ctfdurl,ctfdtoken,adminusername,adminpassword)
+
+    def _syncchallenge(self, challenge:Challenge,ctfdurl,ctfdtoken,adminusername,adminpassword):
+        """
+        Syncs a challenge with the CTFd server
+        Internal method
 
         Args:
             challenge (Challenge): Challenge to syncronize with the CTFd server
         """
-        if self._checkmasterlist():
-            self._setauth(ctfdurl,ctfdtoken)        
-            challenge.sync(challenge.internalname)
+        
+        # create API handler for CTFd Server
+        apihandler = APIHandler(self.CTFD_URL, self.CTFD_TOKEN)
+        #self._setauth(ctfdurl,ctfdtoken)        
+        challenge.sync(challenge.internalname, apihandler)
 
-    def synccategory(self, category:str,ctfdurl,ctfdtoken):
+    def synccategory(self, category:str,ctfdurl,ctfdtoken,adminusername,adminpassword):
         """
         Maps to the command
         >>> host@server$> ctfcli synccategory <categoryname>
@@ -194,19 +211,18 @@ class SandBoxyCTFdLinkage():
             category (str): The name of the category to syncronize with the CTFd server
         """
         if self._checkmasterlist():
-            self._setauth(ctfdurl,ctfdtoken)
+            self._setauth(ctfdurl,ctfdtoken,adminusername,adminpassword)
             try:
                 greenprint("[+] Syncing Category: {}". format(category))
                 challenges = self.getchallengesbycategory(category)
                 for challenge in challenges:
                     greenprint(f"Syncing challenge: {challenge}")
-                    self.syncchallenge(challenge)
+                    self._syncchallenge(challenge)
             except Exception:
                 errorlogger("[-] Failure to sync category! {}".format(challenge))
 
-    def syncrepository(self, ctfdurl, ctfdtoken):
+    def syncrepository(self, ctfdurl, ctfdtoken,adminusername,adminpassword):
         '''
-        NOT IMPLEMENTED YET
         Syncs the entire Repository Folder
 
         Args:
@@ -214,15 +230,18 @@ class SandBoxyCTFdLinkage():
             ctfdtoken (str): Token given from Admin Panel > Config > Settings > Auth Token Form
         '''
         if self._checkmasterlist():
+            self._setauth(ctfdurl,ctfdtoken,adminusername,adminpassword)
+            apihandler = APIHandler(self.CTFD_URL, self.CTFD_TOKEN)
             challengesack = []
             self._setauth(ctfdurl,ctfdtoken)
             for challenge in self.getallchallenges(printscr=False):
                 challengesack.append(challenge)
             # throw it at the wall and watch the mayhem
             for challenge in challengesack:
-                challenge.sync()
+                #challenge.sync()
+                self._syncchallenge(challenge,apihandler)
 
-    def listsyncedchallenges(self, remote=False):
+    def listsyncedchallenges(self, ctfdurl, ctfdtoken,adminusername,adminpassword, remote=False):
         """
         NOT IMPLEMENTED YET
 
@@ -237,7 +256,8 @@ class SandBoxyCTFdLinkage():
         """
         if self._checkmasterlist():
             if remote == True:
-                apicall = APISession.generate_session()
+                self._setauth(ctfdurl,ctfdtoken,adminusername,adminpassword)
+                apicall = APIHandler( ctfdurl, ctfdtoken)
                 return apicall.get("/api/v1/challenges?view=admin", json=True).json()["data"]
             elif remote == False:
                 self.ctfdops.listsyncedchallenges()

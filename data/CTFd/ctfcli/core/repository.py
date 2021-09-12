@@ -1,5 +1,5 @@
 from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
-
+from ctfcli.core.category import Category
 # Tutorial
 class ClassA():
     def __init__(self, message):
@@ -88,3 +88,38 @@ class Repository(Repo):
         #setattr(self, 'location', location)
         self.location = location
 
+    def listcategories(self,prints=True) -> list:
+        """
+        Get the names of all Categories
+        Supply "print=False" to return a variable instead of display to screen 
+        """
+        catbag = []
+        # all items in repo
+        repositorycontents =  vars(self)
+        for repositoryitem in repositorycontents:
+            # if item is a category
+            if (type(repositorycontents.get(repositoryitem)) == Category):# getattr(self.repo, repositoryitem)) == Category):
+                catholder:Category = repositorycontents.get(repositoryitem)# getattr(repositoryitem, self.repo)
+                catbag.append(catholder)
+        if prints == True:
+            # print the category.__repr__ to screen
+            for each in catbag:
+                print(each)
+        else:
+            # return the object list itself
+            return catbag
+    
+    def getchallengesbycategory(self,categoryname,printscr=True) -> list:
+        """
+        Returns either a list of challenges or prints them to screen
+        """
+        # listcategories() returns a list of Categories 
+        for category in self.listcategories(prints=False):
+            # the bag with cats
+            if category.name == categoryname:
+                challengesack = category.listchallenges()
+        if printscr == True:
+            for challenge in challengesack:
+                print(challenge)
+        else:
+            return challengesack
