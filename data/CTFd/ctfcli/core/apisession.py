@@ -1,10 +1,12 @@
 import json,yaml
-from requests import Session
+#from requests import Session
+from ctfcli.core.APICore import APICore
 from ctfcli.utils.utils import errorlogger, errorlog, greenprint
 #from utils.apifunctions import APIFunctions
 
 
-class APIHandler(Session):
+
+class APIHandler(APICore):
     """
     Handler for the APISession() class
         Provides a wrapper for the API Functions
@@ -21,45 +23,7 @@ class APIHandler(Session):
         self.ctfdurl = ctfdurl
         self.authtoken = authtoken
         self.APIPREFIX = "/api/v1/"
-        self.routeslist = ["challenges","tags","topics","awards",
-        "hints", "flags","submissions","scoreboard",
-        "teams","users","statistics","files", "notifications",
-        "configs", "pages", "unlocks", "tokens", "comments"]
-        self.challengetemplate = {"data": [
-            {
-                "id": 3,
-                "type": "multiple_choice",
-                "name": "Trivia",
-                "value": 42,
-                "solves": 4,
-                "solved_by_me": 'false',
-                "category": "Multiple Choice",
-                "tags": [],
-                "template": "/plugins/multiple_choice/assets/view.html",
-                "script": "/plugins/multiple_choice/assets/view.js"
-            }]
-        }
-        self.flagstemplate = {
-            "success": true,
-            "data": [
-                {
-                    "content": "test{thisisatest}",
-                    "id": 1,
-                    "challenge_id": 1,
-                    "type": "static",
-                    "data": "",
-                    "challenge": 1
-                },
-                {
-                    "content": "test{thisisatest}",
-                    "id": 2,
-                    "challenge_id": 2,
-                    "type": "static",
-                    "data": "",
-                    "challenge": 2
-                }
-            ]
-        }
+
 
 
     def _getroute(self, tag):

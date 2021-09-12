@@ -1,6 +1,6 @@
 import yaml
 
-import os,sys
+import sys
 from pathlib import Path
 from ctfcli.core.repository import Repository
 from yaml import SafeDumper,MappingNode,Dumper,Loader
@@ -46,6 +46,7 @@ class Constructor():
         Construct an object based on yaml node input
         Part of the flow of YAML -> Python3
         """
+        # necessary for pyyaml to load files on windows
         if sys.platform == "win32":
             import pathlib
             pathlib.PosixPath = pathlib.WindowsPath

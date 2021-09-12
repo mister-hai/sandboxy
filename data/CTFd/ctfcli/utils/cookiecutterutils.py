@@ -1,5 +1,5 @@
 from cookiecutter.main import cookiecutter
-
+import os
 
 class Cookiehouses():
     def newfromtemplate(self, type=""):
