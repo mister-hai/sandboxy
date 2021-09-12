@@ -10,7 +10,19 @@ class APIHandler(APICore):
     """
     Handler for the APISession() class
         Provides a wrapper for the API Functions
-    
+
+        Process:
+
+            base challenge is created on server
+                returns a challenge ID
+                apply that ID to the challenge for the masterlist
+                use that ID for the processing of
+            - tags
+            - topics
+            - requirements
+            - flags
+            - files
+            - visibility
 
         for dev use:
         useragent = 'Mozilla/5.0 (X11; Linux x86_64; rv:28.0) Gecko/20100101  Firefox/28.0'
@@ -22,9 +34,6 @@ class APIHandler(APICore):
         #https://server.host.net/ctfd/
         self.ctfdurl = ctfdurl
         self.authtoken = authtoken
-        self.APIPREFIX = "/api/v1/"
-
-
 
     def _getroute(self, tag):
         """
@@ -42,103 +51,6 @@ class APIHandler(APICore):
         handles response
         '''
 
-    def was_there_was_an_error(self, responsecode)-> bool:
-        """ Returns False if no error"""
-        # server side error]
-        set1 = [404,504,503,500]
-        set2 = [400,405,501]
-        set3 = [500]
-        if responsecode in set1 :
-            errorlogger("[-] Server side error - No Resource Available in REST response - Error Code {}".format(responsecode))
-            return True # "[-] Server side error - No resource Available in REST response"
-        if responsecode in set2:
-            errorlogger("[-] User error in Request - Error Code {}".format(responsecode))
-            return True # "[-] User error in Image Request"
-        if responsecode in set3:
-            #unknown error
-            errorlogger("[-] Unknown Server Error - No Resource Available in REST response - Error Code {}".format(responsecode)) 
-            return True # "[-] Unknown Server Error - No Image Available in REST response"
-        # no error!
-        if responsecode == 200:
-            return False
-
-            #except requests.exceptions.HTTPError as errh:
-            #    print(errh)
-            #except requests.exceptions.ConnectionError as errc:
-            #    print(errc)
-            #except requests.exceptions.Timeout as errt:
-            #    print(errt)
-            #except requests.exceptions.RequestException as err:
-            #    print(err)
-    def _apiauth(self):
-        """
-        Set auth headers for post administrative login
-        ?User creation must be done with admin login, not apiauth?
-        """
-        # auth to server
-        self.headers.update({"Authorization": "Token {}".format(self.authtoken)})
-
-    def authtoserver(self,adminusername,adminpassword):
-        """
-        Performs a POST request to the server login page to begin
-        an administrative session, will login with admin credentials
-        and retrieve a token, then assign that token to
-        >>> APISession.authtoken
-        """
-        #apisession = APISession()
-        # template for authentication packet
-        authpayload = {
-	        "name": str,
-	        "password": str,
-	        "_submit": "Submit",
-            # I think the nonce can be anything?
-            # try an empty one a few times with other fields fuzxzzed
-	        "nonce": str #"84e85c763320742797291198b9d52cf6c82d89f120e2551eb7bf951d44663977"
-        }
-        ################################################################
-        # Logging in as Admin!
-        ################################################################
-        # get the login form
-        apiresponse = self.get(f"{self.ctfdurl}/login", allow_redirects=False)
-        # if the server responds ok and its a setup, pre install
-        if self.was_there_was_an_error(apiresponse.status_code):
-            if apiresponse.status_code == 302 and apiresponse.headers["Location"].endswith("/setup"):
-                errorlog(f"[-] CTFd installation has not been setup yet")
-                raise Exception
-                # the server was ok and responded with login
-            else:
-                # Grab the nonce
-                authpayload['name'] = adminusername
-                authpayload['password'] = adminpassword
-                authpayload['nonce'] = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
-        # make the api request to the login page
-        # this logs us in as admin
-        apiresponse = self.post(
-            url=self._getroute("login"),
-            data = authpayload
-            )#,allow_redirects=False,)
-        if self.was_there_was_an_error(apiresponse.status_code) or (not apiresponse.headers["Location"].endswith("/challenges")):
-            errorlog('invalid login credentials')
-            raise Exception
-        # grab a token and assign to self
-        self._gettoken()
-
-    def _gettoken(self):
-        """
-        Interfaces with the admin panel to retrieve a token
-        """
-        # get settings page in admin panel
-        apiresponse = self.get(self._getroute("settings"))
-        nonce = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
-        apiresponse = self.post(url=self._getroute("token"),json={},headers ={"CSRF-Token": nonce})
-        if self.was_there_was_an_error(apiresponse.status_code) or (not apiresponse.json()["success"]):
-            errorlog("[-] Token generation failed")
-            raise Exception
-
-        #greenprint("[+] Writing ctfd auth configuration")
-        self.authtoken = apiresponse.json()["data"]["value"]
-        #with open(".ctfd-auth", "w") as filp:
-        #    yaml.dump({"url": self.ctfdurl, "token": self.authtoken}, filp)
 
     def getsyncedchallenges(self):
         """
@@ -181,33 +93,38 @@ class APIHandler(APICore):
     def processrequirements(self, jsonpayload):
         """
         Use a PATCH request to modify the Challenge Requirements
+        This is done towards the end
         """
-        if jsonpayload.get("requirements"):
-            syncedchallenges = self.getsyncedchallenges()
-            required_challenges = []
-            for r in challenge["requirements"]:
-                if type(r) == str:
-                    for c in syncedchallenges:
-                        if c["name"] == r:
-                            required_challenges.append(c["id"])
-                elif type(r) == int:
-                    required_challenges.append(r)
+        syncedchallenges = self.getsyncedchallenges()
+        required_challenges = []
+        for requirements in jsonpayload.get("requirements"):
+            # if the requirements are other challenges
+            if type(requirements) == str:
+                for challenge in syncedchallenges:
+                        if jsonpayload.get("name") == requirements:
+                            required_challenges.append(challenge["id"])
+            # if the requirement is a score value
+            elif type(requirements) == int:
+                required_challenges.append(requirements)
+        required_challenges = list(set(required_challenges))
+        data = {"requirements": {"prerequisites": required_challenges}}
+        apiresponse = self.patch(f"/api/v1/challenges/{challenge.id}", json=data)
+        apiresponse.raise_for_status()
 
-            required_challenges = list(set(required_challenges))
-            data = {"requirements": {"prerequisites": required_challenges}}
-            r = s.patch(f"/api/v1/challenges/{challenge_id}", json=data)
-            r.raise_for_status()
-
-    def processtags(self, data):
+    def processtags(self, challengeid:int, jsonpayload:dict):
         '''
         Processes tags for the challenges
         '''
-        if jsonpayload.get("tags") and "tags" not in ignore:
-           for tag in challenge["tags"]:
-            r = s.post(
-                f"/api/v1/tags", json={"challenge_id": challenge_id, "value": tag}
-                )
-            r.raise_for_status()
+        #if jsonpayload.get("tags"):
+        for tag in jsonpayload.get("tags"):
+            apiresponse = self.post(
+                    self._getroute('tags'), 
+                    json={
+                        "challenge_id": challengeid,
+                        "value": tag
+                        }
+                    )
+            apiresponse.raise_for_status()
 
     def deleteremotehints(self,challenge_id,data):
         """
@@ -219,48 +136,41 @@ class APIHandler(APICore):
         '''
         process hints for the challenge
         '''
-        if jsonpayload.get("hints") and "hints" not in ignore:
-            for hint in challenge["hints"]:
-                if type(hint) == str:
-                    data = {"content": hint, "cost": 0, "challenge_id": challenge_id}
-                else:
-                    data = {
-                        "content": hint["content"],
-                        "cost": hint["cost"],
-                        "challenge_id": challenge_id,
-                    }
-
-                r = s.post(f"/api/v1/hints", json=data)
-                r.raise_for_status()
+        for hint in jsonpayload.get("hints"):
+            if type(hint) == str:
+                data = {"content": hint, "cost": 0, "challenge_id": challenge_id}
+            else:
+                data = {
+                    "content": hint["content"],
+                    "cost": hint["cost"],
+                    "challenge_id": challenge_id,
+                }
+            apiresponse = self.post(self._getroute('hints'), json=data)
+            apiresponse.raise_for_status()
 
     def processtopics(self, data):
         '''
         process hints for the challenge
         '''
-        for topic in challenge["topics"]:
-            apiresponse = self.post(
-                f"/api/v1/topics",
-                json={
-                    "value": topic,
-                    "type": "challenge",
-                    "challenge_id": challenge_id,
-                },
-            )
-            r.raise_for_status()
+        for topic in jsonpayload.get("topics"):
+            self.topictemplate['value'] = topic
+            apiresponse = self.post(self._getroute("topics"),
+                json= self.topictemplate)
+            apiresponse.raise_for_status()
     def processflags(self, data):
         '''
         process hints for the challenge
         '''
         if jsonpayload.get("flags") and "flags" not in ignore:
-            for flag in challenge["flags"]:
+            for flag in jsonpayload.get("flags"):
                 if type(flag) == str:
                     data = {"content": flag, "type": "static", "challenge_id": challenge_id}
-                    r = s.post(f"/api/v1/flags", json=data)
-                    r.raise_for_status()
+                    apiresponse = self.post(f"/api/v1/flags", json=data)
+                    apiresponse.raise_for_status()
                 elif type(flag) == dict:
                     flag["challenge"] = challenge_id
-                    r = s.post(f"/api/v1/flags", json=flag)
-                    r.raise_for_status()
+                    apiresponse = self.post(f"/api/v1/flags", json=flag)
+                    apiresponse.raise_for_status()
 
     def uploadfiles(self,data):
         """
@@ -268,7 +178,7 @@ class APIHandler(APICore):
         """
         if jsonpayload.get("files") and "files" not in ignore:
             files = []
-            for f in challenge["files"]:
+            for f in jsonpayload.get("files"):
                 file_path = Path(challenge.directory, f)
                 if file_path.exists():
                     file_object = ("file", file_path.open(mode="rb"))
@@ -279,8 +189,8 @@ class APIHandler(APICore):
 
             data = {"challenge_id": challenge_id, "type": "challenge"}
             # Specifically use data= here instead of json= to send multipart/form-data
-            r = s.post(f"/api/v1/files", files=files, data=data)
-            r.raise_for_status()
+            apiresponse = self.post(f"/api/v1/files", files=files, data=data)
+            apiresponse.raise_for_status()
 
     def deleteremotefiles(self,file_path,data):
         """
