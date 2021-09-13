@@ -1,3 +1,6 @@
+# there are two sets of functions to perform the same operations
+# one is procedural, the other is monolithic
+# choose which to use , suiting your specific situation
 from requests import Session
 from ctfcli.utils.utils import errorlogger, errorlog
 class APICore(Session):
@@ -65,24 +68,61 @@ class APICore(Session):
             # try an empty one a few times with other fields fuzxzzed
 	        "nonce": str #"84e85c763320742797291198b9d52cf6c82d89f120e2551eb7bf951d44663977"
         }
-    def _apiauth(self):
+    def _setauth(self):
         """
-        Set auth headers for post administrative login
-        ?User creation must be done with admin login, not apiauth?
+        Sets authorization headers with token
+        used during a session
+        >>> self.apisession.headers.update({"Authorization": "Token {}".format(authtoken)})
         """
-        # auth to server
-        self.headers.update({"Authorization": "Token {}".format(self.authtoken)})
+        self.apisession.headers.update({"Authorization": "Token {}".format(self.authtoken)})
 
-    def _getroute(self, tag):
+    def _getroute(self,tag, admin=False, schema='http'):
         """
         Gets API route string for Requests Session
         Args:
             tag (str): Route to send JSON/web request to
+            admin (bool): Add ?view=admin' to params
         """
-        #dictofroutes = {}
-        if tag in self.routeslist:
-            #dictofroutes[tag] = f"{self.ctfdurl}{self.APIPREFIX}{tag}"
-            return f"{self.ctfdurl}{self.APIPREFIX}{tag}" #dictofroutes
+        try:
+            #dictofroutes = {}
+            if tag in self.routeslist:
+                #dictofroutes[tag] = f"{self.ctfdurl}{self.APIPREFIX}{tag}"
+                self.schema = schema
+                self.route = f"{schema}://{self.serverurl}{self.APIPREFIX}{tag}"
+                if admin == True:
+                    print(f"[+] Route {self.route}")
+                    return f"{self.route}?view=admin"
+                else:
+                    print(f"[+] Route {self.route}?view=admin")
+                    return f"{self.route}" #dictofroutes
+        except Exception:
+            print("[-] Route not found in accepted list")
+            exit()
+
+    def _getchallengelist(self):
+        """
+        Gets a list of all synced challenges
+        used during a session
+        """
+        # get list of challenges
+        self.apiresponse = self.apisession.get(self._getroute('challenges',admin=True),json=True)
+        return self.apiresponse
+
+    def _getidbyname(self, challengename):#apiresponse:requests.Response, challengename="test"):
+        """
+        get challenge ID from server response to prevent collisions
+        used during a session
+        """
+
+        self._getchallengelist()
+        # list of all challenges
+        apidict = self.apiresponse.json()["data"]
+        for challenge in apidict:
+            if str(challenge.get('name')) == challengename:
+                # print data to STDOUT
+                print(f"NAME: {challenge.get('name')}")
+                print(f"ID: {str(challenge.get('id'))}")
+                return challenge.get('id')
 
     def authtoserver(self,adminusername,adminpassword):
         """
@@ -120,6 +160,48 @@ class APICore(Session):
             raise Exception
         # grab a token and assign to self
         self._gettoken()
+
+
+    def login(self):
+        """
+        ##############################################################
+        ## Login
+        # used during a session
+        # STEP 1
+        ##############################################################
+        """
+        # get login page
+        self.apiresponse = self.apisession.get(url=self.loginurl, allow_redirects=True)
+        # set auth fields
+        self.authpayload['name'] = "root"
+        self.authpayload['password'] ="password"
+        # set initial interaction nonce
+        self.nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+        print("============\nInitial Nonce: "+self.nonce + "\n===============")
+        self.authpayload['nonce'] =self.nonce
+        # send POST to Login URL
+        self.apiresponse = self.apisession.post(url=self.loginurl,data = self.authpayload)#,allow_redirects=False)
+        # grab admin login nonce
+
+    def gettoken(self):
+        """
+        ##############################################################
+        ## Get token
+        # used during a session
+        # STEP 2
+        ##############################################################
+        """
+        self.nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+        print(f"============\nAdmin Nonce: {self.nonce}\n===============")
+        # set csrf token in headers
+        self.apisession.headers.update({"CSRF-Token":self.nonce})
+        # POST to settings URL to generate token
+        self.apiresponse = self.apisession.get(url=self.settingsurl,json={})
+        # POST to tokensurl to obtain Token
+        self.apiresponse = self.apisession.post(url=self._getroute('tokens'),json={})
+        # Place token into headers for sessions to interact with WRITE permissions
+        self.authtoken = self.apiresponse.json()["data"]["value"]
+
 
     def _gettoken(self):
         """

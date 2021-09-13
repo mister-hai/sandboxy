@@ -316,40 +316,16 @@ class Challenge(Yaml):
             #make API call
             #apihandler = APIHandler()
             # create initial entry in CTFd Server to get a challenge ID
-            # the challenge ID is necessary for later
             self._setpayload()
-            # set auth headers with token
-            apihandler._apiauth()
             # send request
-            apiresponse = apihandler.postrequest('challenges',self.jsonpayload)
+            apiresponse = apihandler.createbasechallenge('challenges',self.jsonpayload)
             #get return value for challenge id from a 
-            # list synced challenges
-            # after syncing everything and then sort by name
-            self._getidbyname(apiresponse,challengename=self.name)
-            apiresponse.raise_for_status()
-            challengeid = apihandler
+            #apiresponse.raise_for_status()
+            challengeid = apihandler.challengeid
             self.processchallenge(apihandler,self.jsonpayload)
             self.id = challengeid
         except Exception:
             errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
-
-    def _getchallengeendpoint(self, apiresponse:Response):
-        """
-        Gets data from API
-        mirror api response structure
-        """
-        response = apiresponse.json()['data']
-        for challenge in response:
-            challengeid = challenge.get('id')
-            typeof = challenge.get('type')
-            name = challenge.get('name')
-            value = challenge.get('value')
-            solves = challenge.get('solves')
-            solved_by_me = challenge.get('solved_by_me')
-            category = challenge.get('category')
-            tags = challenge.get('tags')
-            template = challenge.get('template')
-            script = challenge.get('script')
 
     def _getidbyname(self,apiresponse:Response, challengename="test"):
         """
@@ -361,9 +337,6 @@ class Challenge(Yaml):
             if str(challenge.get('name')) == challengename:
                 return challenge.get('id')
             #challengeids = [{k: v} for x in apidict for k, v in x.items()]
-            #print('NAME: ' + each.get('name'))
-            #print("ID: " + str(each.get('id'))) 
-
 
     def processchallenge(self,apihandler:APIHandler,jsonpayload:dict):
         try:

@@ -27,6 +27,23 @@ class CTFdAPI():
             "hints", "flags","submissions","scoreboard", 'token',
             "teams","users","statistics","files", "notifications",
             "configs", "pages", "unlocks", "tokens", "comments"]
+        self.authpayload = {
+            "name": str,
+            "password": str,
+            "_submit": "Submit",
+            "nonce": str
+            }
+        self.challengetemplate = {
+                "name": 'command line test',
+                "category": 'test',
+                "value": "500",
+                ##seperate request"tags": 'commandlinetest',
+                'description':"A test of uploading via API CLI",
+                ##seperate request 'flags':r'''test{testflag}'''
+                "state":"hidden",
+                "type": 'standard',
+        }
+
         ##############################################################
         ## Start session
         ##############################################################
@@ -89,6 +106,7 @@ class CTFdAPI():
                 print(f"NAME: {challenge.get('name')}")
                 print(f"ID: {str(challenge.get('id'))}")
                 return challenge.get('id')
+
     def _getchallengeroutebyname(self, challengename):
         """
         request to the challenge endpoint ID
@@ -115,12 +133,6 @@ class CTFdAPI():
         # get login page
         self.apiresponse = self.apisession.get(url=self.loginurl, allow_redirects=True)
         # set auth fields
-        self.authpayload = {
-            "name": str,
-            "password": str,
-            "_submit": "Submit",
-            "nonce": str
-            }
         self.authpayload['name'] = "root"
         self.authpayload['password'] ="password"
         # set initial interaction nonce
@@ -155,32 +167,32 @@ class CTFdAPI():
         Creates the initial challenge entry, to be 
         updated with relevant additional information
         used during a session
-        STEP 3
+        STEP 3 overall
+        step 1 in challenge creation
+        POST /api/v1/challenges HTTP/1.1
         """
         ##############################################################
         # Challenge Creation
         ##############################################################
         # happens first
-        self.challengetemplate = {
-                "name": 'command line test',
-                "category": 'test',
-                "value": "500",
-                ##seperate request"tags": 'commandlinetest',
-                'description':"A test of uploading via API CLI",
-                ##seperate request 'flags':r'''test{testflag}'''
-                "state":"hidden",
-                "type": 'standard',
-        }
         # create new challenge
         self.apiresponse = self.apisession.post(url=self._getroute('challenges'), 
                                                 data=self.challengetemplate,
                                                 allow_redirects=True)
+        # original code
+        #r = s.post("/api/v1/challenges", json=data)
+        self.apiresponse.raise_for_status()
+        self.challenge_data = self.apiresponse.json()
+        self.challenge_id = self.challenge_data["data"]["id"]
 
-    def addflags(self):
+    def postflags(self):
         """
         Adds Flags to the newly created challenge
         used during a session
-        STEP 4
+        STEP 4 in overall
+        step 2 in challenge chain
+        POST /api/v1/flags HTTP/1.1
+
         """
         # get challenge ID from name , why they cant build it all at once is beyond me
         self.newchallengeID = self._getidbyname(self.apiresponse, 'command line test')
@@ -199,9 +211,80 @@ class CTFdAPI():
                                 data=self.challengetemplate,
                                 allow_redirects=False
                                 )
+        self.apiresponse.raise_for_status()
+
+    def patchchallengevisible(self):
+        """
+        Sets challenge to visible and returns server data on challenge entry
+        step 3
+        PATCH /api/v1/challenges/1 HTTP/1.1
+            {"state":"visible"}
+
+        returns 
+        HTTP/1.1 200 OK
+        new_challenge_id = apiresponse.json()["data"]["id"]
+        """
+        self.state = {"state":"visible"}
+        self.apiresponse = self.apisession.patch(self._getroute('challenges'), data=self.state)
+        self.apiresponse.raise_for_status()
+
+    def postflags(self, challengeid, flags):
+        """
+        Post to flags endpoint
+        """
+        data = {"content": flags, "type": "static", "challenge_id": challengeid}
+        r = self.apisession.post(url=self._getroute('flags'), json=data)
+
+    def initialsync(self):
+        self.login()
+        self.gettoken()
+        self.createbasechallenge()
+        self.addflags()
 
 ctfdconnection = CTFdAPI()
-ctfdconnection.login()
-ctfdconnection.gettoken()
-ctfdconnection.createbasechallenge()
-ctfdconnection.addflags()
+
+
+# returns 
+# HTTP/1.1 200 OK
+#new_challenge_id = apiresponse.json()["data"]["id"]
+{
+    "success": 'true',
+    "data": {
+        "id": 1, 
+        "name": "test",
+        "value": 500,
+        "description": "test 1",
+        "category": "test",
+        "state": "visible",
+        "max_attempts": 0,
+        "type": "standard",
+        "type_data": {
+            "id": "standard",
+            "name": "standard",
+            "templates": {
+                "create": "/plugins/challenges/assets/create.html", 
+                "update": "/plugins/challenges/assets/update.html",
+                "view": "/plugins/challenges/assets/view.html"
+                }, 
+            "scripts": {
+                "create": "/plugins/challenges/assets/create.js", 
+                "update": "/plugins/challenges/assets/update.js", 
+                "view": "/plugins/challenges/assets/view.js"
+                }
+            }
+        }
+    }
+#step 4
+# GET /admin/challenges/1 HTTP/1.1
+# GET /admin/challenges/1 HTTP/1.1
+# GET /api/v1/flags/types HTTP/1.1
+# GET /api/v1/challenges/1/tags HTTP/1.1
+# GET /api/v1/challenges?view=admin HTTP/1.1
+# GET /api/v1/challenges/1/requirements HTTP/1.1
+# HTTP/1.1 200 OK
+# {"success": true, "data": [{"data": "", "challenge": 1, "id": 1, "content": "test{thisisatest}", "challenge_id": 1, "type": "static"}]}
+
+# step 5
+# GET /api/v1/challenges/1/files HTTP/1.1
+# GET /api/v1/challenges/1/hints HTTP/1.1
+# HTTP/1.1 200 OK
