@@ -197,7 +197,7 @@ else
   cecho "%s" "[-] COULD NOT SET PWD, SOMETING SERIOUS IS WRONG" red;
 fi
 printf "[+] Setting project root in ${DIR}"
-PROJECT_ROOT = $DIR
+PROJECT_ROOT=$DIR
 #./start.sh
 SELFRELATIVE=$0
 printf "self:  %s \n " "$SELFRELATIVE"

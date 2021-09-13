@@ -1,9 +1,6 @@
 kctf/*
 !kctf/readme.md
 !kctf/VERSION
-.data/
-.vs/
-.vscode/
 data/mysql/*
 data/CTFd/logs/*
 data/redis/*
@@ -15,3 +12,6 @@ data/CTFd/build/*
 extra/ctf-challenges-master
 extra/ctf-2019-release-master
 extra/ctf-2020-release-master
+.data
+.vs*
+.vscode

@@ -1,6 +1,9 @@
 # DAILY PLAN
 
     Rewriting the entirety of ctfcli, API calls are all thats left for the most part
+
+    I have gotten a test of the uploading functionality working
+    it `should` be complete shortly
         
 
 # WEEKLY PLAN
@@ -20,6 +23,8 @@
 
         Currently, the masterlist is created, and read from, reflecting the repo
         and the rest is just api calls needing to be written
+
+        can upload challenges to ctfd now
 
 
 # PENTEST SANDBOX

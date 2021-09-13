@@ -48,8 +48,8 @@ class Challenge(Yaml):
     def __init__(self,
             category,
             challengeyaml,
-            handout,
-            solution,
+            handout:Path,
+            solution:Path,
             readme
             ):
         self.folderlocation  = Path(os.path.abspath(challengeyaml))
@@ -302,6 +302,10 @@ class Challenge(Yaml):
         TODO: scan for .tar.gz or folder
                 - upload 
         '''
+        challengehandout = []
+        for item in os.listdir(self.handout):
+            if item.endswith('.tar.gz'):
+                challengehandout.append(item)
 
     def sync(self, apihandler: APIHandler):
         '''

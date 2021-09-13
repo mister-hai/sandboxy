@@ -5,25 +5,33 @@ from requests import Session
 from ctfcli.utils.utils import errorlogger, errorlog
 class APICore(Session):
     def __cls__(cls):
+        cls.loginurl = "http://127.0.0.1:8000/login"
+        cls.settingsurl = "http://127.0.0.1:8000/settings#tokens"
+        cls.serverurl = "127.0.0.1:8000"
         cls.APIPREFIX = "/api/v1/"
         cls.routeslist = ["challenges","tags","topics","awards",
         "hints", "flags","submissions","scoreboard",
         "teams","users","statistics","files", "notifications",
         "configs", "pages", "unlocks", "tokens", "comments"]
-        cls.challengetemplate = {"data": [
-            {
-                "id": int,#3,
-                "type": str,#"multiple_choice",
-                "name": str,#"Trivia",
-                "value": int,#42,
+        cls.authpayload = {
+            "name": str,
+            "password": str,
+            "_submit": "Submit",
+            "nonce": str
+            }
+        cls.challengetemplate = {
+                "name": str,
+                "category": str,
+                "value": int,
+                'description':str,
+                "state":str,
+                "type": str,
+                #"tags": list,#[],
+                #'flags':r'''test{testflag}'''
                 #"solves": int,#4,
                 #"solved_by_me": str,#'false',
-                "category": str,#"Multiple Choice",
-                "tags": list,#[],
-                'flags':r'''test{testflag}'''
                 #"template": str,#"/plugins/multiple_choice/assets/view.html",
                 #"script": str#"/plugins/multiple_choice/assets/view.js"
-            }]
         }
         cls.topictemplate = {
                     "value": str,

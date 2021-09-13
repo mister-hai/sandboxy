@@ -1,4 +1,5 @@
 import json,yaml
+from pathlib import Path
 import requests
 from ctfcli.core.APICore import APICore
 from ctfcli.utils.utils import errorlogger, errorlog, greenprint
@@ -38,11 +39,35 @@ class APIHandler(APICore):
     def getsyncedchallenges(self):
         """
         Gets a json container of all the challenges synced to the server
+        This is step one for any procedure modifying challenges
+        We cant discern if a challenges attributes have been modified on the
+        server by an administrator or a hacker
         """
-        self._apiauth()
         endpoint = self._getroute('challenges') + "?view=admin"
-        return self.get(url = endpoint, json=True).json()["data"]
+        return self.getrequest(url = endpoint, json=True).json()["data"]
 
+    def createbasechallenge(self):
+        """
+        Creates the initial challenge entry, to be 
+        updated with relevant additional information
+        used during a session
+        STEP 3 overall
+        step 1 in challenge creation
+        POST /api/v1/challenges HTTP/1.1
+        """
+        ##############################################################
+        # Challenge Creation
+        ##############################################################
+        # happens first
+        # create new challenge
+        self.apiresponse = self.apisession.post(url=self._getroute('challenges'), 
+                                                json=self.challengetemplate,
+                                                allow_redirects=True)
+        # original code
+        #r = s.post("/api/v1/challenges", json=data)
+        self.apiresponse.raise_for_status()
+        self.challenge_data = self.apiresponse.json()
+        self.challenge_id = self.challenge_data["data"]["id"]
     def getusers(self):
         """ gets a list of all users"""
 
@@ -171,9 +196,9 @@ class APIHandler(APICore):
         """
         uploads files to the ctfd server
         """
-        if jsonpayload.get("files") and "files" not in ignore:
+        if self.handout != None:
             files = []
-            for f in jsonpayload.get("files"):
+            for file in self.handout:
                 file_path = Path(challenge.directory, f)
                 if file_path.exists():
                     file_object = ("file", file_path.open(mode="rb"))
@@ -192,66 +217,3 @@ class APIHandler(APICore):
         deletes files from ctfd server
         """
 
-
-#class APISession(Session):
-#    def __init__(self, *args, **kwargs):
-#        """
-#        Represents a connection to the CTFd API
-#
-#        Args:
-#            
-#        """
-#        super(APISession, self).__init__(*args, **kwargs)
-
-
-    def checkforchallenge(self, endpoint, jsonpayload):
-        """
-        ("/api/v1/challenges?view=admin", json=True
-        """
-        return self.get("{}{}".format(endpoint,self.id), json=jsonpayload).json()["data"]
-
-    def getrequest(self, endpoint, jsonpayload:json):
-        '''
-        Performs GET request to the Specified Endpoint with jsonpayload['id']
-
-        Args:
-            endpoint (str): the API endpoint to send to , e.g. /api/vi/challenges
-            payload  (str): the json payload required for the get request
-        '''
-        response = self.get("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
-        response.raise_for_status()
-
-    def postrequest(self, endpoint, jsonpayload:dict) -> requests.Response:
-        '''
-        Makes a POST Request to the Specified Endpoint
-
-        Args:
-            endpoint (str): the endpoint to send to , e.g. 'challenges'
-            payload  (str): the json payload required for the post request
-        '''
-        response = self.post(url = self._getroute(endpoint), json=jsonpayload)
-        return response
-
-    def patchrequest(self, endpoint, jsonpayload:json):
-        """
-        Makes a Patch Request to the Specified Endpoint with jsonpayload['id']
-
-        Args:
-            endpoint (str): the API endpoint to send to , e.g. /api/vi/challenges
-            payload  (str): the json payload required for the patch request
-                            
-        """
-        response = self.patch("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
-        response.raise_for_status()
-
-    def deleterequest(self, endpoint, jsonpayload:json):
-        '''
-        Makes a Delete Request to the Specified Endpoint with jsonpayload['id']
-
-        Args:
-            endpoint (str): the API endpoint to send to , e.g. /api/vi/challenges
-            payload  (str): the json payload required for the delete request
-        '''
-        response = self.delete("{}{}".format(endpoint,jsonpayload['id']), json=jsonpayload)
-        response.raise_for_status()
-    
