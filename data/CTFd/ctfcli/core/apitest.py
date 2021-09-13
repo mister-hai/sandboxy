@@ -10,7 +10,7 @@ class CTFdAPI():
         self.useragent = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:28.0) Gecko/20100101  Firefox/28.0'}
         self.APIPREFIX = "/api/v1/"
         self.routeslist = ["challenges","tags","topics","awards",
-            "hints", "flags","submissions","scoreboard",
+            "hints", "flags","submissions","scoreboard", 'token',
             "teams","users","statistics","files", "notifications",
             "configs", "pages", "unlocks", "tokens", "comments"]
         ##############################################################
@@ -28,7 +28,7 @@ class CTFdAPI():
         """
         self.apisession.headers.update({"Authorization": "Token {}".format(self.authtoken)})
 
-    def _getroute(self,tag, admin=False):
+    def _getroute(self,tag, admin=False, schema='http'):
         """
         Gets API route string for Requests Session
         Args:
@@ -39,7 +39,8 @@ class CTFdAPI():
             #dictofroutes = {}
             if tag in self.routeslist:
                 #dictofroutes[tag] = f"{self.ctfdurl}{self.APIPREFIX}{tag}"
-                self.route = f"{self.APIPREFIX}{self.APIPREFIX}{tag}"
+                self.schema = schema
+                self.route = f"{schema}://{self.serverurl}{self.APIPREFIX}{tag}"
                 if admin == True:
                     print(f"[+] Route {self.route}")
                     return f"{self.route}?view=admin"
@@ -58,6 +59,7 @@ class CTFdAPI():
         # get list of challenges
         self.apiresponse = self.apisession.get(self._getroute('challenges',admin=True),json=True)
         return self.apiresponse
+
     def _getidbyname(self, challengename):#apiresponse:requests.Response, challengename="test"):
         """
         get challenge ID from server response to prevent collisions
@@ -97,7 +99,7 @@ class CTFdAPI():
         ##############################################################
         """
         # get login page
-        self.apiresponse = self.apisession.get(url=self.loginurl, allow_redirects=False)
+        self.apiresponse = self.apisession.get(url=self.loginurl, allow_redirects=True)
         # set auth fields
         self.authpayload = {
             "name": str,
