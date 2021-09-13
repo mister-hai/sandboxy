@@ -34,6 +34,19 @@ class APIHandler(APICore):
         #https://server.host.net/ctfd/
         self.ctfdurl = ctfdurl
         self.authtoken = authtoken
+    
+    def getidbyname(apiresponse:requests.Response, challengename="test"):
+	    """
+	    get challenge ID to prevent collisions
+	    """
+	    # list of all challenges
+    	apidict = apiresponse.json()["data"]
+    	for each in apidict:
+            if str(each.get('name')) == challengename:
+                return each.get('id')
+            #challengeids = [{k: v} for x in apidict for k, v in x.items()]
+		    #print('NAME: ' + each.get('name'))
+		    #print("ID: " + str(each.get('id')))
 
     def getsyncedchallenges(self):
         """

@@ -1,5 +1,3 @@
-from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
-
 ###############################################################################
 #  Handout folder
 ###############################################################################

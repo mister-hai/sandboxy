@@ -13,12 +13,13 @@ class APICore(Session):
                 "type": str,#"multiple_choice",
                 "name": str,#"Trivia",
                 "value": int,#42,
-                "solves": int,#4,
-                "solved_by_me": str,#'false',
+                #"solves": int,#4,
+                #"solved_by_me": str,#'false',
                 "category": str,#"Multiple Choice",
                 "tags": list,#[],
-                "template": str,#"/plugins/multiple_choice/assets/view.html",
-                "script": str#"/plugins/multiple_choice/assets/view.js"
+                'flags':r'''test{testflag}'''
+                #"template": str,#"/plugins/multiple_choice/assets/view.html",
+                #"script": str#"/plugins/multiple_choice/assets/view.js"
             }]
         }
         cls.topictemplate = {

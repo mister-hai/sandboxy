@@ -121,7 +121,7 @@ class Challenge(Yaml):
         self.description = kwargs.get('description')
         self.value = kwargs.get('value')
         # can be from masterfile or server, not challenge.yaml
-        self.solves = kwargs.get('solves')
+        self.solves = int#kwargs.get('solves')
         self.solved_by_me = "false"
         # Topics are used to help tell what techniques/information a challenge involves
         # They are generally only visible to admins
