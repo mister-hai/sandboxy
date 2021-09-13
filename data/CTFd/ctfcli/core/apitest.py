@@ -6,8 +6,22 @@ class CTFdAPI():
         """
         self.loginurl = "http://127.0.0.1:8000/login"
         self.settingsurl = "http://127.0.0.1:8000/settings#tokens"
-        self.serverurl = "http://127.0.0.1:8000/"
+        self.serverurl = "127.0.0.1:8000"
         self.useragent = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:28.0) Gecko/20100101  Firefox/28.0'}
+        self.headers = {
+            'Connection': 'keep-alive', 
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) \
+                        AppleWebKit/537.36 (KHTML, like Gecko) \
+                        Chrome/93.0.4577.63 Safari/537.36',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Dest': 'empty',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'en-US,en;q=0.9'
+        }
+
         self.APIPREFIX = "/api/v1/"
         self.routeslist = ["challenges","tags","topics","awards",
             "hints", "flags","submissions","scoreboard", 'token',
@@ -132,7 +146,7 @@ class CTFdAPI():
         # POST to settings URL to generate token
         self.apiresponse = self.apisession.get(url=self.settingsurl,json={})
         # POST to tokensurl to obtain Token
-        self.apiresponse = self.apisession.post(url=self._getroute('token'),json={})
+        self.apiresponse = self.apisession.post(url=self._getroute('tokens'),json={})
         # Place token into headers for sessions to interact with WRITE permissions
         self.authtoken = self.apiresponse.json()["data"]["value"]
 
@@ -158,7 +172,9 @@ class CTFdAPI():
                 "type": 'standard',
         }
         # create new challenge
-        self.apiresponse = self.apisession.post(url=self._getroute('challenges'), data=self.challengetemplate,allow_redirects=False)
+        self.apiresponse = self.apisession.post(url=self._getroute('challenges'), 
+                                                data=self.challengetemplate,
+                                                allow_redirects=True)
 
     def addflags(self):
         """
