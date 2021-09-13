@@ -42,7 +42,6 @@
         "type": 'standard',
     }
 
-
 # STEP 2
 ## POST /api/v1/flags HTTP/1.1
     
@@ -67,6 +66,7 @@
 
 # RETURNS 
 ## HTTP/1.1 200 OK
+### this is how you obtain the challenge ID to use in subsequent requests
 
     {
         "success": 'true',
@@ -106,10 +106,44 @@
 
 # HTTP/1.1 200 OK
     
-    {"success": true, "data": [{"data": "", "challenge": 1, "id": 1, "content": "test{thisisatest}", "challenge_id": 1, "type": "static"}]}
+    {
+        "success": true,
+        "data": [
+            {
+                "data": "",
+                "challenge": 1,
+                "id": 1,
+                "content": "test{thisisatest}", 
+                "challenge_id": 1,
+                "type": "static"
+            }
+        ]
+    }
 
 # step 5
 
 ## GET /api/v1/challenges/1/files HTTP/1.1
-## GET /api/v1/challenges/1/hints HTTP/1.1
+
+# GET /api/v1/challenges/1/hints HTTP/1.1
+# RETURNS
 ## HTTP/1.1 200 OK
+
+    {
+    "success": true,
+    "data": {
+        "static": {
+            "name": "static",
+            "templates": {
+                "create": "/plugins/flags/assets/static/create.html",
+                "update": "/plugins/flags/assets/static/edit.html"
+            }
+        }, 
+            "regex": {
+                "name": "regex",
+                "templates": {
+                    "create": "/plugins/flags/assets/regex/create.html", 
+                    "update": "/plugins/flags/assets/regex/edit.html"
+                }
+            }
+        }
+    }

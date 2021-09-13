@@ -36,7 +36,7 @@ class CTFdAPI():
         self.challengetemplate = {
                 "name": 'command line test',
                 "category": 'test',
-                "value": "500",
+                "value": 500,
                 ##seperate request"tags": 'commandlinetest',
                 'description':"A test of uploading via API CLI",
                 ##seperate request 'flags':r'''test{testflag}'''
@@ -177,7 +177,7 @@ class CTFdAPI():
         # happens first
         # create new challenge
         self.apiresponse = self.apisession.post(url=self._getroute('challenges'), 
-                                                data=self.challengetemplate,
+                                                json=self.challengetemplate,
                                                 allow_redirects=True)
         # original code
         #r = s.post("/api/v1/challenges", json=data)
@@ -209,7 +209,7 @@ class CTFdAPI():
         self.apiresponse = self.apisession.post(
                                 url=self._getroute('flags'), 
                                 data=self.challengetemplate,
-                                allow_redirects=False
+                                allow_redirects=True
                                 )
         self.apiresponse.raise_for_status()
 
@@ -228,7 +228,7 @@ class CTFdAPI():
         self.apiresponse = self.apisession.patch(self._getroute('challenges'), data=self.state)
         self.apiresponse.raise_for_status()
 
-    def postflags(self, challengeid, flags):
+    def addflags(self, challengeid, flags):
         """
         Post to flags endpoint
         """
@@ -242,49 +242,4 @@ class CTFdAPI():
         self.addflags()
 
 ctfdconnection = CTFdAPI()
-
-
-# returns 
-# HTTP/1.1 200 OK
-#new_challenge_id = apiresponse.json()["data"]["id"]
-{
-    "success": 'true',
-    "data": {
-        "id": 1, 
-        "name": "test",
-        "value": 500,
-        "description": "test 1",
-        "category": "test",
-        "state": "visible",
-        "max_attempts": 0,
-        "type": "standard",
-        "type_data": {
-            "id": "standard",
-            "name": "standard",
-            "templates": {
-                "create": "/plugins/challenges/assets/create.html", 
-                "update": "/plugins/challenges/assets/update.html",
-                "view": "/plugins/challenges/assets/view.html"
-                }, 
-            "scripts": {
-                "create": "/plugins/challenges/assets/create.js", 
-                "update": "/plugins/challenges/assets/update.js", 
-                "view": "/plugins/challenges/assets/view.js"
-                }
-            }
-        }
-    }
-#step 4
-# GET /admin/challenges/1 HTTP/1.1
-# GET /admin/challenges/1 HTTP/1.1
-# GET /api/v1/flags/types HTTP/1.1
-# GET /api/v1/challenges/1/tags HTTP/1.1
-# GET /api/v1/challenges?view=admin HTTP/1.1
-# GET /api/v1/challenges/1/requirements HTTP/1.1
-# HTTP/1.1 200 OK
-# {"success": true, "data": [{"data": "", "challenge": 1, "id": 1, "content": "test{thisisatest}", "challenge_id": 1, "type": "static"}]}
-
-# step 5
-# GET /api/v1/challenges/1/files HTTP/1.1
-# GET /api/v1/challenges/1/hints HTTP/1.1
-# HTTP/1.1 200 OK
+ctfdconnection.initialsync()

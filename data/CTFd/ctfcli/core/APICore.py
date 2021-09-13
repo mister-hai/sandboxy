@@ -76,6 +76,16 @@ class APICore(Session):
         """
         self.apisession.headers.update({"Authorization": "Token {}".format(self.authtoken)})
 
+    def _obtainauthtoken(self):
+        """
+        Secondary code flow to obtain authentication
+        Can only be used post setup
+        """
+        self.login()
+        self.gettoken()
+        #self.createbasechallenge()
+        #self.addflags()
+
     def _getroute(self,tag, admin=False, schema='http'):
         """
         Gets API route string for Requests Session
