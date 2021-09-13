@@ -32,10 +32,13 @@ class CTFdAPI():
             #dictofroutes = {}
             if tag in self.routeslist:
                 #dictofroutes[tag] = f"{self.ctfdurl}{self.APIPREFIX}{tag}"
+                self.route = f"{self.APIPREFIX}{self.APIPREFIX}{tag}"
                 if admin == True:
-                    return f"{self.APIPREFIX}{self.APIPREFIX}{tag}?view=admin"
+                    print(f"[+] Route {self.route}")
+                    return f"{self.route}?view=admin"
                 else:
-                    return f"{self.serverurl}{self.APIPREFIX}{tag}" #dictofroutes
+                    print(f"[+] Route {self.route}?view=admin")
+                    return f"{self.route}" #dictofroutes
         except Exception:
             print("[-] Route not found in accepted list")
             exit()
@@ -49,6 +52,9 @@ class CTFdAPI():
         apidict = self.apiresponse.json()["data"]
         for challenge in apidict:
             if str(challenge.get('name')) == challengename:
+                # print data to STDOUT
+                print(f"NAME: {challenge.get('name')}")
+                print(f"ID: {str(challenge.get('id'))}")
                 return challenge.get('id')
 
     def login(self):
@@ -83,20 +89,27 @@ class CTFdAPI():
         # set csrf token in headers
         self.apisession.headers.update({"CSRF-Token": nonce})
         # POST to settings URL to generate token
-        apiresponse = self.apisession.get(url=self.settingsurl,json={})
+        self.apiresponse = self.apisession.get(url=self.settingsurl,json={})
         # POST to tokensurl to obtain Token
-        apiresponse = self.apisession.post(url=self._getroute('token'),json={})
+        self.apiresponse = self.apisession.post(url=self._getroute('token'),json={})
         # Place token into headers for sessions to interact with WRITE permissions
-        authtoken = apiresponse.json()["data"]["value"]
-        self.apisession.headers.update({"Authorization": "Token {}".format(authtoken)})
+        
+
+    def _setauth(self):
+        """
+        Sets authorization headers with token
+        >>> self.apisession.headers.update({"Authorization": "Token {}".format(authtoken)})
+        """
+        self.authtoken = self.apiresponse.json()["data"]["value"]
+        self.apisession.headers.update({"Authorization": "Token {}".format(self.authtoken)})
     
     def getchallengelist(self):
         """
         Gets a list of all synced challenges
         """
         # get list of challenges
-        apiresponse = self.apisession.get(self._getroute('challenges',admin=True),json=True)
-        return apiresponse
+        self.apiresponse = self.apisession.get(self._getroute('challenges',admin=True),json=True)
+        return self.apiresponse
         #self._getidbyname(apiresponse, 'test')
         #emptychallengesresponse = {"success": 'true', "data": []}
 
@@ -109,7 +122,7 @@ class CTFdAPI():
         # Challenge Creation
         ##############################################################
         # happens first
-        challengetemplate = {
+        self.challengetemplate = {
                 "name": 'command line test',
                 "category": 'test',
                 "value": "500",
@@ -120,23 +133,24 @@ class CTFdAPI():
                 "type": 'standard',
         }
         # create new challenge
-        self.apiresponse = self.apisession.post(url=self._getroute('challenges'), data=challengetemplate,allow_redirects=False)
+        self.apiresponse = self.apisession.post(url=self._getroute('challenges'), data=self.challengetemplate,allow_redirects=False)
 
     def addflags(self):
         """
         Adds Flags to the newly created challenge
         """
         # get challenge ID from name , why they cant build it all at once is beyond me
-        newchallengeID = self._getidbyname(self.apiresponse, 'command line test')
+        self.newchallengeID = self._getidbyname(self.apiresponse, 'command line test')
         ##############################################################
         # Flag Creation
         ##############################################################
         # this is sent second
         flagstemplate = {
-            "challenge_id":newchallengeID,
+            "challenge_id":self.newchallengeID,
             "content":r'''test{testflag}''',
             "type":"static",
             "data":""
         }
 
-asdf = CTFdAPI()
+ctfdconnection = CTFdAPI()
+ctfdconnection.login()
