@@ -322,18 +322,18 @@ class Challenge(Yaml):
             apihandler._apiauth()
             # send request
             apiresponse = apihandler.postrequest('challenges',self.jsonpayload)
-
-            apiresponse.raise_for_status()
-            # TODO: get return value for challenge id from a 
+            #get return value for challenge id from a 
             # list synced challenges
             # after syncing everything and then sort by name
+            self._getidbyname(apiresponse,challengename=self.name)
+            apiresponse.raise_for_status()
             challengeid = apihandler
             self.processchallenge(apihandler,self.jsonpayload)
             self.id = challengeid
         except Exception:
             errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
 
-    def _getid(self, apiresponse:Response):
+    def _getchallengeendpoint(self, apiresponse:Response):
         """
         Gets data from API
         mirror api response structure
@@ -350,7 +350,19 @@ class Challenge(Yaml):
             tags = challenge.get('tags')
             template = challenge.get('template')
             script = challenge.get('script')
-            
+
+    def _getidbyname(self,apiresponse:Response, challengename="test"):
+        """
+        get challenge ID from server response to prevent collisions
+        """
+        # list of all challenges
+        apidict = apiresponse.json()["data"]
+        for challenge in apidict:
+            if str(challenge.get('name')) == challengename:
+                return challenge.get('id')
+            #challengeids = [{k: v} for x in apidict for k, v in x.items()]
+            #print('NAME: ' + each.get('name'))
+            #print("ID: " + str(each.get('id'))) 
 
 
     def processchallenge(self,apihandler:APIHandler,jsonpayload:dict):

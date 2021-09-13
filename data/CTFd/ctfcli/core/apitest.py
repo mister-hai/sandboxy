@@ -1,61 +1,142 @@
 import requests
-loginurl = "http://127.0.0.1:8000/login"
-#loginurl = "http://127.0.0.1:8000/api/v1/login"
-settingsurl = "http://127.0.0.1:8000/settings#tokens"
-tokensurl = "http://127.0.0.1:8000/api/v1/tokens"
-adminchallengesendpoint = 'http://127.0.0.1:8000/api/v1/challenges?view=admin'
-challengesurl = "http://127.0.0.1:8000/api/v1/challenges"
-useragent = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:28.0) Gecko/20100101  Firefox/28.0'}
-authpayload = {
-	"name": str,
-	"password": str,
-	"_submit": "Submit",
-	"nonce": str
-}
-challengetemplate = {
-                "type": 'standard',
-                "name": 'command line test',
-                "value": 500,
-                "category": 'test',
-                "tags": 'commandlinetest',
-				'description':"A test of uploading via API CLI",
-				'flags':r'''test{testflag}'''
-}
-def getidbyname(apiresponse:requests.Response):
-	"""
-	get challenge ID to prevent collisions
-	"""
-	# list of all challenges
-	apidict = apiresponse.json()["data"]
-	for each in apidict:
-		#challengeids = [{k: v} for x in apidict for k, v in x.items()]
-		print('NAME: ' + each.get('name'))
-		print("ID: " + str(each.get('id')))
 
-# start session
-apisession = requests.Session()
-apisession.headers.update(useragent)
-apiresponse = apisession.get(url=loginurl, allow_redirects=False)
-# set auth fields
-authpayload['name'] = "root"
-authpayload['password'] ="password"
-# set initial interaction nonce
-nonce = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
-print("============\nInitial Nonce: "+ nonce + "\n===============")
-authpayload['nonce'] = nonce
-# send POST to Login URL
-apiresponse = apisession.post(url=loginurl,data = authpayload)#,allow_redirects=False)
-# grab admin login nonce
-nonce = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
-print("============\nAdmin Nonce: "+ nonce + "\n===============")
-# POST to tokensurl to obtain Token
-apiresponse = apisession.post(url=tokensurl,json={},headers ={"CSRF-Token": nonce})
-# Place token into headers for sessions to interact with WRITE permissions
-authtoken = apiresponse.json()["data"]["value"]
-apisession.headers.update({"Authorization": "Token {}".format(authtoken)})
-# get list of challenges
-apiresponse = apisession.get(adminchallengesendpoint,json=True)
-getidbyname(apiresponse)
-#emptychallengesresponse = {"success": 'true', "data": []}
-# create new challenge
-apiresponse = apisession.post(url=adminchallengesendpoint, data=challengetemplate,allow_redirects=False)
+class CTFdAPI():
+    def __init__(self):
+        """
+        API calls for ctfd
+        """
+        self.loginurl = "http://127.0.0.1:8000/login"
+        self.settingsurl = "http://127.0.0.1:8000/settings#tokens"
+        self.serverurl = "http://127.0.0.1:8000/"
+        self.useragent = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:28.0) Gecko/20100101  Firefox/28.0'}
+        self.APIPREFIX = "/api/v1/"
+        self.routeslist = ["challenges","tags","topics","awards",
+            "hints", "flags","submissions","scoreboard",
+            "teams","users","statistics","files", "notifications",
+            "configs", "pages", "unlocks", "tokens", "comments"]
+        ##############################################################
+        ## Start session
+        ##############################################################
+        # start session
+        self.apisession = requests.Session()
+        self.apisession.headers.update(self.useragent)
+
+    def _getroute(self,tag, admin=False):
+        """
+        Gets API route string for Requests Session
+        Args:
+            tag (str): Route to send JSON/web request to
+            admin (bool): Add ?view=admin' to params
+        """
+        try:
+            #dictofroutes = {}
+            if tag in self.routeslist:
+                #dictofroutes[tag] = f"{self.ctfdurl}{self.APIPREFIX}{tag}"
+                if admin == True:
+                    return f"{self.APIPREFIX}{self.APIPREFIX}{tag}?view=admin"
+                else:
+                    return f"{self.serverurl}{self.APIPREFIX}{tag}" #dictofroutes
+        except Exception:
+            print("[-] Route not found in accepted list")
+            exit()
+
+    def _getidbyname(self, challengename):#apiresponse:requests.Response, challengename="test"):
+        """
+        get challenge ID from server response to prevent collisions
+        """
+        self.getchallengelist()
+        # list of all challenges
+        apidict = self.apiresponse.json()["data"]
+        for challenge in apidict:
+            if str(challenge.get('name')) == challengename:
+                return challenge.get('id')
+
+    def login(self):
+        ##############################################################
+        ## Login
+        ##############################################################
+        # get login page
+        self.apiresponse = self.get(url=self.loginurl, allow_redirects=False)
+        # set auth fields
+        self.authpayload = {
+            "name": str,
+            "password": str,
+            "_submit": "Submit",
+            "nonce": str
+            }
+        self.authpayload['name'] = "root"
+        self.authpayload['password'] ="password"
+        # set initial interaction nonce
+        nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+        print("============\nInitial Nonce: "+ nonce + "\n===============")
+        self.authpayload['nonce'] = nonce
+        # send POST to Login URL
+        apiresponse = self.apisession.post(url=self.loginurl,data = self.authpayload)#,allow_redirects=False)
+        # grab admin login nonce
+
+    def gettoken(self):
+        ##############################################################
+        ## Get token
+        ##############################################################
+        nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+        print("============\nAdmin Nonce: "+ nonce + "\n===============")
+        # set csrf token in headers
+        self.apisession.headers.update({"CSRF-Token": nonce})
+        # POST to settings URL to generate token
+        apiresponse = self.apisession.get(url=self.settingsurl,json={})
+        # POST to tokensurl to obtain Token
+        apiresponse = self.apisession.post(url=self._getroute('token'),json={})
+        # Place token into headers for sessions to interact with WRITE permissions
+        authtoken = apiresponse.json()["data"]["value"]
+        self.apisession.headers.update({"Authorization": "Token {}".format(authtoken)})
+    
+    def getchallengelist(self):
+        """
+        Gets a list of all synced challenges
+        """
+        # get list of challenges
+        apiresponse = self.apisession.get(self._getroute('challenges',admin=True),json=True)
+        return apiresponse
+        #self._getidbyname(apiresponse, 'test')
+        #emptychallengesresponse = {"success": 'true', "data": []}
+
+    def createbasechallenge(self):
+        """
+        Creates the initial challenge entry, to be 
+        updated with relevant additional information
+        """
+        ##############################################################
+        # Challenge Creation
+        ##############################################################
+        # happens first
+        challengetemplate = {
+                "name": 'command line test',
+                "category": 'test',
+                "value": "500",
+                ##seperate request"tags": 'commandlinetest',
+                'description':"A test of uploading via API CLI",
+                ##seperate request 'flags':r'''test{testflag}'''
+                "state":"hidden",
+                "type": 'standard',
+        }
+        # create new challenge
+        self.apiresponse = self.apisession.post(url=self._getroute('challenges'), data=challengetemplate,allow_redirects=False)
+
+    def addflags(self):
+        """
+        Adds Flags to the newly created challenge
+        """
+        # get challenge ID from name , why they cant build it all at once is beyond me
+        newchallengeID = self._getidbyname(self.apiresponse, 'command line test')
+        ##############################################################
+        # Flag Creation
+        ##############################################################
+        # this is sent second
+        flagstemplate = {
+            "challenge_id":newchallengeID,
+            "content":r'''test{testflag}''',
+            "type":"static",
+            "data":""
+        }
+
+asdf = CTFdAPI()
