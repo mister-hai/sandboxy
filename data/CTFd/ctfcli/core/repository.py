@@ -117,7 +117,7 @@ class Repository(Repo):
             # return a list of challenge for each category
             return challengesack
 
-    def synccategory(self, category:str, apihandler:APIHandler):#,adminusername,adminpassword):
+    def synccategory(self, category:str, CTFD_URL, CTFD_TOKEN):
         """
         Sync Category:
         Synchronize all challenges in the given category, 
@@ -128,7 +128,9 @@ class Repository(Repo):
             ctftoken (str): Token provided by CTFd
         """
         try:
+            apihandler = APIHandler(CTFD_URL, CTFD_TOKEN)
             greenprint("[+] Syncing Category: {}". format(category))
+            # with printscr false, it returns the challenge class
             challenges = self.getchallengesbycategory(category,printscr=False)
             for challenge in challenges:
                 greenprint(f"Syncing challenge: {challenge.name}")
@@ -137,7 +139,8 @@ class Repository(Repo):
         except Exception:
             errorlogger(f"[-] Failure to sync category! {category.name}")
     
-    def syncrepository(self,apihandler:APIHandler):
+    def syncrepository(self,CTFD_URL,CTFD_TOKEN):
+
         '''
         Syncs the entire Repository Folder
 

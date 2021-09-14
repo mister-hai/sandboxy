@@ -1,7 +1,9 @@
+import json
 import os
 from hashlib import sha256
 from pathlib import Path
 from tarfile import TarFile
+import tarfile
 from requests import Response
 from ctfcli.core.yamlstuff import Yaml
 from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
@@ -68,11 +70,11 @@ class Challenge(Yaml):
         self.internalname = "Challenge_" + str(sha256(self.name.encode("ascii")).hexdigest())
         self.__name = self.internalname
         self.__qualname__ = self.internalname
-        yellowboldprint(f'[+] Internal name: %s' % self.internalname)
+        yellowboldprint(f'[+] Internal name: {self.internalname}')
         #self.challengesrc       = challengesrc
         #self.deployment         = deployment
-        self.solutiondir = self._processsolution(solution)
-        self.handout     = self._processhandout(handout)
+        self.solution = self._processfoldertotarfile(folder = solution, filename = 'solution.tar.gz')
+        self.handout  = self._processfoldertotarfile(folder = handout, filename = 'folder.tar.gz')
         # this is set after syncing by the ctfd server, it increments by one per
         # challenge upload so it's predictable
         self.id = int
@@ -297,28 +299,24 @@ class Challenge(Yaml):
         # package handout if not already packaged
         self._processhandout()
         self.jsonpayload['handout'] = self.handout
-        
-    def _processhandout(self)-> TarFile:
+
+    def _processfoldertotarfile(self,folder:Path,filename='default.tar.gz')-> TarFile:
         '''
-        creates a tarfile of the handout folder 
-        if a tarfile or single file handout already exists, it simply returns that
+        creates a tarfile of the provided folder 
+        if a tarfile already exists, it simply returns that
         '''
-        import tarfile
-        self.challengehandout = []
         # make an array of Paths to folder contents
-        dirlisting = [Path(os.path.abspath(item)) for item in os.listdir(self.handoutfolder)]
+        dirlisting = [Path(os.path.abspath(item)) for item in os.listdir(folder)]
         if len(dirlisting) == 1:
-            if dirlisting[0].endswith('.tar.gz'):
-                return dirlisting[0]
+            if str(dirlisting[0]).endswith('.tar.gz'):
+                return Path(dirlisting[0])
             # create a tarfile of the handout directory
             else:
-                with tarfile.open(self.handout, "w:gz")as tar:
+                with tarfile.open(Path(folder,filename), "w:gz")as tar:
                     for item in dirlisting:
                         tar.add(item)
-                    self.handout = tar
                     tar.close()
-        return self.handout
-            
+                    return tar.handout
 
     def sync(self, apihandler: APIHandler):
         '''
@@ -336,8 +334,6 @@ class Challenge(Yaml):
             self._setpayload()
             # send request
             apiresponse = apihandler.createbasechallenge('challenges',self.jsonpayload)
-            #get return value for challenge id from a 
-            #apiresponse.raise_for_status()
             challengeid = apihandler.challenge_id
             self.processchallenge(apihandler,self.jsonpayload)
             self.id = challengeid
@@ -347,9 +343,9 @@ class Challenge(Yaml):
 
     def processchallenge(self,apihandler:APIHandler,jsonpayload:dict):
         try:
-            for each in [self.flags,self.topics,self.tags,self.files,self.hints,self.requirements]:
-                if each != None:
-                    apihandler
+            for each in ['flags','topics','tags','files','hints','requirements']:
+                if jsonpayload.get(each) != None:
+                    apihandler.process(each,jsonpayload)
             # Create new flags
             if self.flags:
                 apihandler.processflags(self,self.id,jsonpayload)
