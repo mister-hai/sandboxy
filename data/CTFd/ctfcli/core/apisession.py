@@ -11,6 +11,12 @@ class APIHandler(APICore):
     """
     Handler for the APISession() class
         Provides a wrapper for the API Functions
+        
+        This is NOT designed with an asynchronous focus
+        
+        This IS stateful
+            the class attributes will reflect the operation in progress. 
+            Thread this operation if you need asynchronous functionality
 
         Process:
 
@@ -50,7 +56,7 @@ class APIHandler(APICore):
         endpoint = self._getroute('challenges') + "?view=admin"
         return self.getrequest(url = endpoint, json=True).json()["data"]
 
-    def createbasechallenge(self):
+    def _createbasechallenge(self):
         """
         Creates the initial challenge entry, to be 
         updated with relevant additional information
@@ -74,7 +80,34 @@ class APIHandler(APICore):
         # Everything below happens AFTER the challenge is created
         ##############################################################
 
-    def processrequirements(self, challengeid:int, jsonpayload:dict) -> requests.Response:
+    def _process(self,tag:str,jsonpayload:dict):
+        """
+        Uploads/sets sattributes on challenge on server after initial creation
+        of the challenge entry
+
+        Some challenges may have more or less information to sync depending
+        on the challenge creators intents and designs
+        """
+        # Create new flags
+        if tag == 'flags':
+            self._processflags(self.challenge_id,jsonpayload)
+        # Update topics
+        if tag == 'topics':
+            self._processtopics(self.challenge_id,jsonpayload)
+        # Update tags
+        if tag == 'tags':
+            self._processtopics(self.challenge_id,jsonpayload)
+        # Upload files
+        if tag == 'files':
+            self._uploadfiles(self.challenge_id,jsonpayload)
+        # Create hints
+        if tag == 'hints':
+            self._processhints(self.challenge_id,jsonpayload)
+        # Update requirements
+        if tag == 'requirements':
+            self._processrequirements(self.challenge_id,jsonpayload)
+
+    def _processrequirements(self, challengeid:int, jsonpayload:dict) -> requests.Response:
         """
         Use a PATCH request to modify the Challenge Requirements
         This is done towards the end
@@ -92,7 +125,7 @@ class APIHandler(APICore):
         apiresponse = self.patch(self._getroute('challenges') + str(challengeid), json=data)
         apiresponse.raise_for_status()
 
-    def processtags(self, challengeid:int, jsonpayload:dict) -> requests.Response:
+    def _processtags(self, challengeid:int, jsonpayload:dict) -> requests.Response:
         '''
         Processes tags for the challenges
         '''
@@ -107,7 +140,7 @@ class APIHandler(APICore):
                     )
             apiresponse.raise_for_status()
 
-    def processhints(self,hints, challengeid:int, hintcost:int):
+    def _processhints(self,hints, challengeid:int, hintcost:int):
         '''
         process hints for the challenge
         Hints are used to give players a way to buy or have suggestions. They are not
@@ -131,19 +164,19 @@ class APIHandler(APICore):
                 self.hintstemplate["cost"] = hint["cost"]
                 self.hintstemplate["challenge_id"] = challengeid
             #make request with hints template
-            apiresponse = self.post(self._getroute('hints'), json=self.hintstemplate)
-            apiresponse.raise_for_status()
+            self.apiresponse = self.post(self._getroute('hints'), json=self.hintstemplate)
+            self.apiresponse.raise_for_status()
 
-    def processtopics(self, jsonpayload:dict):
+    def _processtopics(self, jsonpayload:dict):
         '''
         process hints for the challenge
         '''
         for topic in jsonpayload.get("topics"):
             self.topictemplate['value'] = topic
-            apiresponse = self.post(self._getroute("topics"),json=self.topictemplate)
-            apiresponse.raise_for_status()
+            self.apiresponse = self.post(self._getroute("topics"),json=self.topictemplate)
+            self.apiresponse.raise_for_status()
 
-    def processflags(self, challengeid:int, jsonpayload:dict) -> requests.Response:
+    def _processflags(self, challengeid:int, jsonpayload:dict) -> requests.Response:
         '''
         process hints for the challenge
         '''
@@ -152,20 +185,23 @@ class APIHandler(APICore):
                     self.flagstemplate["content"] = flag
                     self.flagstemplate["type"] = "static"
                     self.flagstemplate["challenge_id"] = challengeid
-                    apiresponse = self.post(self._getroute("flags"), json=self.flagstemplate)
-                    apiresponse.raise_for_status()
+                    self.apiresponse = self.post(self._getroute("flags"), json=self.flagstemplate)
+                    self.apiresponse.raise_for_status()
                 elif type(flag) == dict:
                     self.flagstemplate["challenge_id"] = challengeid
-                    apiresponse = self.post(self._getroute("flags"), json=flag)
-                    apiresponse.raise_for_status()
+                    self.apiresponse = self.post(self._getroute("flags"), json=flag)
+                    self.apiresponse.raise_for_status()
 
-    def uploadfiles(self, handout):
+    def _uploadfiles(self, file):
         """
         uploads files to the ctfd server
-        Only the handout should be uploaded
+        Only the handout.tar.gz should be uploaded as of now
+
+        Args:
+            file (TarFile): The file to upload to accompany the challenge
         """
         data = {"challenge_id": self.challenge_id, "type": "challenge"}
         # Specifically use data= here instead of json= to send multipart/form-data
-        self.apiresponse = self.post(url = self._getroute('files'), files=handout, data=data)
+        self.apiresponse = self.post(url = self._getroute('files'), files=file, data=data)
         self.apiresponse.raise_for_status()
 

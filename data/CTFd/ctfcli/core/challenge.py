@@ -1,14 +1,11 @@
-import json
 import os
 from hashlib import sha256
 from pathlib import Path
 from tarfile import TarFile
 import tarfile
-from requests import Response
 from ctfcli.core.yamlstuff import Yaml
 from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 from ctfcli.core.apisession import APIHandler
-from ctfcli.core.challengefolders import Handout, Solution
 
 ###############################################################################
 #  CHALLENGEYAML
@@ -53,7 +50,7 @@ class Challenge(Yaml):
     def __init__(self,
             category,
             challengeyaml,
-            handout:Handout,
+            handout:Path,
             solution:Path,
             readme
             ):
@@ -297,7 +294,7 @@ class Challenge(Yaml):
             self.jsonpayload['connection_info'] = self.connection_info
         
         # package handout if not already packaged
-        self._processhandout()
+        #self._processhandout()
         self.jsonpayload['handout'] = self.handout
 
     def _processfoldertotarfile(self,folder:Path,filename='default.tar.gz')-> TarFile:
@@ -309,14 +306,15 @@ class Challenge(Yaml):
         dirlisting = [Path(os.path.abspath(item)) for item in os.listdir(folder)]
         if len(dirlisting) == 1:
             if str(dirlisting[0]).endswith('.tar.gz'):
-                return Path(dirlisting[0])
+                # TODO: this might be a problem later
+                return TarFile(filename,"r:gz",os.path.abspath(dirlisting[0]))
             # create a tarfile of the handout directory
             else:
                 with tarfile.open(Path(folder,filename), "w:gz")as tar:
                     for item in dirlisting:
                         tar.add(item)
                     tar.close()
-                    return tar.handout
+                    return tar
 
     def sync(self, CTFD_URL, CTFD_TOKEN):
         '''
@@ -332,111 +330,21 @@ class Challenge(Yaml):
             # create initial entry in CTFd Server to get a challenge ID
             self._setpayload()
             # send request
-            apihandler.createbasechallenge('challenges',self.jsonpayload)
+            apihandler._createbasechallenge('challenges',self.jsonpayload)
             self.id = apihandler.challenge_id
-            self.processchallenge(apihandler,self.jsonpayload)
+            self._processchallenge(apihandler,self.jsonpayload)
         except Exception:
             errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
 
-
-    def processchallenge(self,apihandler:APIHandler,jsonpayload:dict):
+    def _processchallenge(self,apihandler:APIHandler,jsonpayload:dict):
         try:
             for each in ['flags','topics','tags','files','hints','requirements']:
                 if jsonpayload.get(each) != None:
-                    apihandler.process(each,jsonpayload)
-            # Create new flags
-            if self.flags:
-                apihandler.processflags(self,self.id,jsonpayload)
-            # Update topics
-            if self.topics:
-                apihandler.processtopics(self,self.id,jsonpayload)
-            # Update tags
-            if self.tags:
-                apihandler.processtopics(self,self.id,jsonpayload)
-            # Upload files
-            if self.files:
-                apihandler.uploadfiles(self,self.id,jsonpayload)
-            # Create hints
-            if self.hints:
-                apihandler.processhints(self,self.id,jsonpayload)
-            # Update requirements
-            if self.requirements:
-                apihandler.processrequirements(self,self.id,jsonpayload)
+                    apihandler._process(each,jsonpayload)
+            # we are not providing solutions to the users by default
+            if self.solution != None:
+                pass
+            if self.handout != None:
+                apihandler._uploadfiles()
         except Exception:
             errorlogger("[-] Error in Challenge.processchallenge()")
-
-    def create(self,
-               connection_info,
-               attempts,
-               max_attempts,
-               value,
-               dynamic,
-               initial,
-               decay,
-               minimum,
-               name,
-               category,
-               description,
-               author,
-               flags,
-               topics,
-               tags,
-               hints,
-               files,
-               requirements
-    ):
-        '''
-        host@server$> python ./ctfcli/ ctfcli ctfdops repo <category name> challenge create
-        Creates a Manually crafted Challenge from supplied arguments
-        on the command line
-
-        Not Implemented yet
-        '''
-        self.id = 1
-        self.type = type
-        self.name = name
-        self.description = description
-        self.value = value
-        #if its a dynamic scoring
-        self.dynamic = dynamic
-        self.initial = initial
-        self.decay = decay
-        self.minimum = minimum
-        self.solved_by_me = "false"
-        self.category = category
-        self.tags = tags
-        self.attempts = attempts
-        self.connection_info = connection_info
-
-        self.jsonpayload = {}
-        if self.attempts:
-            self.jsonpayload["max_attempts"] = self.max_attempts
-        if connection_info:
-            self.jsonpayload["connection_info"] = self.connection_info
-        # Some challenge types (e.g. dynamic) override value.
-        # We can't send it to CTFd because we don't know the current value
-        if self.dynamic == True:
-            self.scorepayload = {
-                        'extra': {
-                            'initial': self.initial,
-                            'decay'  : self.decay,
-                            'minimum': self.minimum
-                            }
-                        }
-        elif self.dynamic == False:
-            self.scorepayload = {'value':value}
-            self.jsonpayload = {
-                "name":         self.name,
-                "category":     self.category,
-                "description":  self.description,
-                "type":         self.type,
-                **self.scorepayload,
-                "author" :      self.author
-                }
-        greenprint(f"Syncing challenge: {self.name}")
-        try:
-            #make API call
-            apihandler = APIHandler()
-            self.processchallenge(apihandler,self.jsonpayload)
-        except Exception:
-            errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))

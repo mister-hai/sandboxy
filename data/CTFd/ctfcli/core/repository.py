@@ -135,7 +135,7 @@ class Repository(Repo):
             for challenge in challenges:
                 greenprint(f"Syncing challenge: {challenge.name}")
                 #self._syncchallenge(challenge,apihandler)
-                challenge.sync(CTFD_URL, CTFD_TOKEN)
+                challenge._sync(CTFD_URL, CTFD_TOKEN)
         except Exception:
             errorlogger(f"[-] Failure to sync category! {category.name}")
     
