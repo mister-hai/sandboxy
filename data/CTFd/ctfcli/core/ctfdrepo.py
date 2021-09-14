@@ -6,6 +6,7 @@ from ctfcli.core.category import Category
 from ctfcli.core.challenge import Challenge
 from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
+from ctfcli.core.challengefolders import Handout, Solution
 from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 from ctfcli.utils.utils import redprint,logger
 #this class get imported up from another file, then pulled in from there 
@@ -101,6 +102,7 @@ class SandboxyCTFdRepository():
         challengeitempath = lambda challengedata: Path(os.path.abspath(os.path.join(challengefolderpath,challengedata)))
         kwargs = {}
         contentslist = ["handout","solution","challenge"] #.yaml","challenge.yml"]
+        # TODO: Flesh this out some for more validations
         try:
             # for list of all item in dir
             for item in challengedirlist:
@@ -108,7 +110,7 @@ class SandboxyCTFdRepository():
                 # if the item is in the list of approved items
                 if itempath.stem in contentslist:
                     greenprint(f"[+] Found : {item}")
-                    kwargs[str(itempath.stem).lower()] = itempath
+                    kwargs[str(itempath.stem).lower()] =  itempath
                 # if its a readme
                 elif itempath.stem == "README":
                     kwargs[str(itempath.stem).lower()] = itempath
@@ -129,7 +131,7 @@ class SandboxyCTFdRepository():
                 challengeyaml = kwargs.pop("challenge"),
                 handout= kwargs.pop('handout'),
                 solution= kwargs.pop('solution'),
-                readme = kwargs.get('readme')
+                readme = kwargs.get('README')
                 )
             return newchallenge
         except Exception:

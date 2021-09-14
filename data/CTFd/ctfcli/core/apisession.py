@@ -2,6 +2,7 @@ import json,yaml
 from pathlib import Path
 import requests
 from ctfcli.core.APICore import APICore
+from ctfcli.utils.challengeactions import ChallengeActions
 from ctfcli.utils.utils import errorlogger, errorlog, greenprint
 #from utils.apifunctions import APIFunctions
 
@@ -35,7 +36,11 @@ class APIHandler(APICore):
         #https://server.host.net/ctfd/
         self.ctfdurl = ctfdurl
         self.authtoken = authtoken
-    
+
+    def getusers(self):
+        """ gets a list of all users"""
+
+
     def getsyncedchallenges(self):
         """
         Gets a json container of all the challenges synced to the server
@@ -55,9 +60,6 @@ class APIHandler(APICore):
         step 1 in challenge creation
         POST /api/v1/challenges HTTP/1.1
         """
-        ##############################################################
-        # Challenge Creation
-        ##############################################################
         # happens first
         # create new challenge
         self.apiresponse = self.apisession.post(url=self._getroute('challenges'), 
@@ -68,36 +70,10 @@ class APIHandler(APICore):
         self.apiresponse.raise_for_status()
         self.challenge_data = self.apiresponse.json()
         self.challenge_id = self.challenge_data["data"]["id"]
-    def getusers(self):
-        """ gets a list of all users"""
 
-    def getvisibility(self, challengeid, jsonpayload):
-        """
-        Gets the visibility of a challenge
-        Hidden , Visible
-        TODO: make it work
-        """
-
-    def togglevisibility(self, challenge):
-        """
-        Toggles a Challenge between hidden and visible
-        """
-    
-    def makevisible(self,challenge,challenge_id):
-        """
-        Makes a Challenge Visible
-
-        Args:
-            challenge (str): The challenge to change state
-        """
-
-    def makehidden(self, challenge):
-        """
-        Makes a Challenge Hidden
-
-        Args:
-            challenge (str): The challenge to change state
-        """
+        ##############################################################
+        # Everything below happens AFTER the challenge is created
+        ##############################################################
 
     def processrequirements(self, challengeid:int, jsonpayload:dict) -> requests.Response:
         """
@@ -132,12 +108,6 @@ class APIHandler(APICore):
                     )
             apiresponse.raise_for_status()
 
-    def deleteremotehints(self,challenge_id,data):
-        """
-        deletes all hints from ctfd
-        HARD MODE: ON
-        """
-
     def processhints(self,hints, challengeid:int, hintcost:int):
         '''
         process hints for the challenge
@@ -165,7 +135,7 @@ class APIHandler(APICore):
             apiresponse = self.post(self._getroute('hints'), json=self.hintstemplate)
             apiresponse.raise_for_status()
 
-    def processtopics(self, jsonpayload):
+    def processtopics(self, jsonpayload:dict):
         '''
         process hints for the challenge
         '''
@@ -192,28 +162,13 @@ class APIHandler(APICore):
                     apiresponse = self.post(f"/api/v1/flags", json=flag)
                     apiresponse.raise_for_status()
 
-    def uploadfiles(self, jsonpayload) -> requests.Response:
+    def uploadfiles(self, handout):
         """
         uploads files to the ctfd server
+        Only the handout should be uploaded
         """
-        if self.handout != None:
-            files = []
-            for file in self.handout:
-                file_path = Path(challenge.directory, f)
-                if file_path.exists():
-                    file_object = ("file", file_path.open(mode="rb"))
-                    files.append(file_object)
-                else:
-                    click.secho(f"File {file_path} was not found", fg="red")
-                    raise Exception(f"File {file_path} was not found")
-
-            data = {"challenge_id": challenge_id, "type": "challenge"}
-            # Specifically use data= here instead of json= to send multipart/form-data
-            apiresponse = self.post(f"/api/v1/files", files=files, data=data)
-            apiresponse.raise_for_status()
-
-    def deleteremotefiles(self,file_path,data):
-        """
-        deletes files from ctfd server
-        """
+        data = {"challenge_id": self.challenge_id, "type": "challenge"}
+        # Specifically use data= here instead of json= to send multipart/form-data
+        self.apiresponse = self.post(url = self._getroute('files'), files=handout, data=data)
+        self.apiresponse.raise_for_status()
 

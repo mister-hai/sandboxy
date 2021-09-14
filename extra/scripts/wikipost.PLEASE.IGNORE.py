@@ -23,6 +23,11 @@ except ImportError as derp:
     print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
     COLORMEQUALIFIED = False
 
+   
+################################################################################
+##############                 INTERNAL FUNkS                  #################
+################################################################################
+
 #######################
 # Check for root
 #######################
@@ -41,10 +46,7 @@ parser.add_argument('--file_input',
                                  action  = "store" ,
                                  default = "cowtest", 
                                  help    = "Binary file" )
-   
-################################################################################
-##############                 INTERNAL FUNkS                  #################
-################################################################################
+
 def error_printer(message):
     exc_type, exc_value, exc_tb = sys.exc_info()
     trace = traceback.TracebackException(exc_type, exc_value, exc_tb) 
@@ -74,56 +76,53 @@ def exec_command(command, blocking = True, shell_env = True):
         error_printer("[-] Interpreter Message: exec_command() failed!")
         return False
 
-        
+################################################################################
+##############            METACLASSING TUTORIAL                #################
+################################################################################
+# Tutorial
 class ClassA():
     def __init__(self, message):
         print(message)
 
 class ClassB():
-    '''
+    """
     An example of how to dynamically create classes based on params
 
     Args:
         codeobject (object): An arbitrary function or bit of code as a single object
-    '''
+    """
     def __init__(self, codeobject, message:str):
-        codeobject(message)
+        self.codeobject = codeobject
+        self.codeobject(message)
 
-class Repo():
-    '''
-    Proto class for holding the class methods and internal attributes of the Repository
-    '''
-    def __new__(cls,**kwargs):
-        cls.__name__ = "Repo"
-        cls.__qualname__= 'Repo'
-        cls.tag = '!Repo'
-        return super().__new__(cls)
-
-class Repository(Repo):
-    '''
-    The Class used to represent a repository
-    '''
+class Proto2():
+    """
+    The Class Accepts a dict of {Classname:Class(params)}
+    The Class calls ClassB(ClassA, Message) -> ClassA(message)
+    """
     def __init__(self,**entries):
         self.__dict__.update(entries)
         self.ClassA(self.message)
 
+class ProtoClass():
+    '''
+    Prototype base class , set name with "name = str".
+    '''
+    def __new__(cls,*args, **kwargs):
+        cls.__name__ = kwargs.pop('name',)
+        cls.__qualname__= kwargs.pop('name')
+        return super(cls.__name__, cls).__new__(cls, *args, **kwargs)
+
 # Quick test to check if modifications have affected base function
 testinstance = ClassB(ClassA,message="this message is piped through the scope to an arbitrary class")
-asdf = {"id":1,"name":"testrepository","ClassA": testinstance ,"tag":'!Repo'}
-qwer = Repository(**asdf)
+protopayload = {"ClassA": testinstance}
+qwer = Proto2(**protopayload)
 qwer
 
 
-class ProtoClass():
-    '''
-    Prototype base class for all Yaml -> Python Conversions.
-    '''
-    def __new__(cls,tag = '!Masterlist',*args, **kwargs):
-        cls.__name__ = 'repo'
-        cls.__qualname__= 'repo'
-        cls.tag = tag
-        return super(cls.__name__, cls).__new__(cls, *args, **kwargs)
-
+################################################################################
+##############            SHELLCODE GENERATION                 #################
+################################################################################
 
 # metaclass to represent a disassembled file
 class DisassembledFile():

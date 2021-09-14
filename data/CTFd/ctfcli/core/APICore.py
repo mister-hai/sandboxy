@@ -56,6 +56,7 @@ class APICore(Session):
                 }
             ]
         }
+        # this is returned from a token request
         cls.tokentemplate = {
 				"success": str,#'true', 
 				"data": {
@@ -72,8 +73,6 @@ class APICore(Session):
 	        "name": str,
 	        "password": str,
 	        "_submit": "Submit",
-            # I think the nonce can be anything?
-            # try an empty one a few times with other fields fuzxzzed
 	        "nonce": str #"84e85c763320742797291198b9d52cf6c82d89f120e2551eb7bf951d44663977"
         }
     def _setauth(self):
@@ -91,8 +90,6 @@ class APICore(Session):
         """
         self.login()
         self.gettoken()
-        #self.createbasechallenge()
-        #self.addflags()
 
     def _getroute(self,tag, admin=False, schema='http'):
         """
@@ -135,6 +132,7 @@ class APICore(Session):
         self._getchallengelist()
         # list of all challenges
         apidict = self.apiresponse.json()["data"]
+        #challengeids = [{k: v} for x in apidict for k, v in x.items()]
         for challenge in apidict:
             if str(challenge.get('name')) == challengename:
                 # print data to STDOUT
@@ -267,3 +265,8 @@ class APICore(Session):
             #except requests.exceptions.RequestException as err:
             #    print(err)
 
+
+    def deleteremotefiles(self,token):
+        """
+        deletes files from ctfd server
+        """

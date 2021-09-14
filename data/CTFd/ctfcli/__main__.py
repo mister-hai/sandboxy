@@ -43,21 +43,6 @@ else:
 ###############################################################################
 class Ctfcli():
     '''
-        DO NOT MOVE THIS FILE
-
-        This program uses the "fire" plugin from Google, this plugin is very powerful
-        and many of the options you will see listed are for backend scripting purposes
-        and you should refer to the documentation for thier usage
-
-        Please, I urge you, to read the basic usage and follow the instructions
-
-        Flags to Fire should be separated from the Fire command by an isolated -- in 
-        order to distinguish between flags and named arguments to the program itself.
-        
-        So, for example, to enter interactive mode append "-- -i" or "-- --interactive"
-        to any command. To use Fire in verbose mode, append "-- --verbose". 
-        (without quotes, :) stuff like that confuses me too)
-
         Proper Usage is as follows
         
         FIRST RUN, if you have not modified the repository this is not necessary!

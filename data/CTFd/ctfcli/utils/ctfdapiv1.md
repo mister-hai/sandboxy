@@ -57,12 +57,8 @@
     
     {"state":"visible"}
 
-# RETURNS 
-## HTTP/1.1 200 OK
-
-    Sets challenge to visible and returns server data on challenge entry?
-    new_challenge_id = apiresponse.json()["data"]["id"]
-
+### RETURNS 
+#### HTTP/1.1 200 OK
 
 # RETURNS 
 ## HTTP/1.1 200 OK

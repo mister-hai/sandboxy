@@ -6,7 +6,7 @@ This tool
 
     /ctfcli/repository_settings.py
 
-    host@server$> ctfd.py ctfcli init
+    host@server$> python ./ctfd/ ctfcli init
 
         This will install the challenges residing in the /data/CTFd/challenges folder
 
@@ -29,7 +29,7 @@ This tool
 
 # Development criteria
 
-    To generate Documentation:
+### To generate Documentation:
 
     We use sphinx with google docstrings currently
 
@@ -37,7 +37,23 @@ This tool
     sphinx-apidoc.exe -f -o source ctfcli
     make html
 
-# Creating a Dcoumentation Github Repo
+### Challenges
+
+    Challenge folders must contain a challenge.yaml file and "handout" and "solution" folders
+
+### handouts and solutions
+
+    Handouts and solutions should be in a folder named "handout" or "solution" 
+
+    Handouts will be tar'd and gzipped if they are not already
+        - if there is a single file, it will be uploaded as is
+        - if there is a group of files, they will be put in a tar.gz archive
+    
+    Solutions must be complete-ish enough to teach how to do the thing
+        - If there is a single file, it must be either a solution.md file or .tar.gz
+
+
+## Creating a Dcoumentation Github Repo
 
     In ~/sandboxy/data/CTFD
         
@@ -46,13 +62,13 @@ This tool
         <upload to git>
         lol
 
-## Packages
+# Packages
 
     gitpython, docker-compose, python-docker, fire, cookiecutter
     pyyaml, Pygments, colorama, dotenv
 
 
-## Make a remote repository then
+## Make a remote repository
 
     echo "# sandboxy_cods" >> README.md
     git init
@@ -61,4 +77,3 @@ This tool
     git branch -M main
     git remote add origin https://github.com/mister-hai/sandboxy_docs.git
     git push -u origin main
-

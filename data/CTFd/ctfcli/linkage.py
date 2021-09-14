@@ -152,6 +152,12 @@ class SandBoxyCTFdLinkage():
         if self._checkmasterlist():
             self.repo.getallchallenges(category, printscr)
 
+    def deleteremotehints(self,challenge_id,data):
+        """
+        deletes all hints from ctfd
+        HARD MODE: ON lmao
+        """
+
 #    def syncchallenge(self, challenge:Challenge,ctfdurl,ctfdtoken,adminusername,adminpassword):
 #        """
 #        Syncs a challenge with the CTFd server

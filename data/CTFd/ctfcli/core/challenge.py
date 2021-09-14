@@ -1,10 +1,13 @@
 import os
 from hashlib import sha256
 from pathlib import Path
+from tarfile import TarFile
 from requests import Response
 from ctfcli.core.yamlstuff import Yaml
 from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
 from ctfcli.core.apisession import APIHandler
+from ctfcli.core.challengefolders import Handout, Solution
+
 ###############################################################################
 #  CHALLENGEYAML
 ###############################################################################
@@ -48,30 +51,19 @@ class Challenge(Yaml):
     def __init__(self,
             category,
             challengeyaml,
-            handout:Path,
+            handout:Handout,
             solution:Path,
             readme
             ):
-        self.folderlocation  = Path(os.path.abspath(challengeyaml))
-        self.challengefile = challengeyaml
-        self.solutiondir = solution
-        self.handout = handout
-        self.readme = readme
         self.tag = "!Challenge:"
-
-        # this is set after syncing by the ctfd server, it increments by one per
-        # challenge upload so it's predictable
-        self.id = int
-        if category not in CATEGORIES:
-            errorlogger("[-] Inconsistancy in inputs {}".format(category))
-        else:
-            self.category = category
+        self.readme = readme
+        self.category = category
+        self.challengefile = challengeyaml
+        self.folderlocation  = Path(os.path.abspath(challengeyaml))
         #get a representation of the challenge.yaml file
         yamlcontents = self.loadyaml(self.challengefile)
         #load the challenge yaml dict into the class
         self._initchallenge(**yamlcontents)
-        # unpack supplied dict
-        #self.__dict__.update(entries)
         # the new classname is defined by the name tag in the Yaml now
         self.internalname = "Challenge_" + str(sha256(self.name.encode("ascii")).hexdigest())
         self.__name = self.internalname
@@ -79,6 +71,11 @@ class Challenge(Yaml):
         yellowboldprint(f'[+] Internal name: %s' % self.internalname)
         #self.challengesrc       = challengesrc
         #self.deployment         = deployment
+        self.solutiondir = self._processsolution(solution)
+        self.handout     = self._processhandout(handout)
+        # this is set after syncing by the ctfd server, it increments by one per
+        # challenge upload so it's predictable
+        self.id = int
 
     def _initchallenge(self,**kwargs):
         """
@@ -296,16 +293,32 @@ class Challenge(Yaml):
             self.jsonpayload["max_attempts"] = self.attempts
         if self.connection_info and self.connection_info:
             self.jsonpayload['connection_info'] = self.connection_info
-
-    def _processhandout(self):
+        
+        # package handout if not already packaged
+        self._processhandout()
+        self.jsonpayload['handout'] = self.handout
+        
+    def _processhandout(self)-> TarFile:
         '''
-        TODO: scan for .tar.gz or folder
-                - upload 
+        creates a tarfile of the handout folder 
+        if a tarfile or single file handout already exists, it simply returns that
         '''
-        challengehandout = []
-        for item in os.listdir(self.handout):
-            if item.endswith('.tar.gz'):
-                challengehandout.append(item)
+        import tarfile
+        self.challengehandout = []
+        # make an array of Paths to folder contents
+        dirlisting = [Path(os.path.abspath(item)) for item in os.listdir(self.handoutfolder)]
+        if len(dirlisting) == 1:
+            if dirlisting[0].endswith('.tar.gz'):
+                return dirlisting[0]
+            # create a tarfile of the handout directory
+            else:
+                with tarfile.open(self.handout, "w:gz")as tar:
+                    for item in dirlisting:
+                        tar.add(item)
+                    self.handout = tar
+                    tar.close()
+        return self.handout
+            
 
     def sync(self, apihandler: APIHandler):
         '''
@@ -325,25 +338,18 @@ class Challenge(Yaml):
             apiresponse = apihandler.createbasechallenge('challenges',self.jsonpayload)
             #get return value for challenge id from a 
             #apiresponse.raise_for_status()
-            challengeid = apihandler.challengeid
+            challengeid = apihandler.challenge_id
             self.processchallenge(apihandler,self.jsonpayload)
             self.id = challengeid
         except Exception:
             errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
 
-    def _getidbyname(self,apiresponse:Response, challengename="test"):
-        """
-        get challenge ID from server response to prevent collisions
-        """
-        # list of all challenges
-        apidict = apiresponse.json()["data"]
-        for challenge in apidict:
-            if str(challenge.get('name')) == challengename:
-                return challenge.get('id')
-            #challengeids = [{k: v} for x in apidict for k, v in x.items()]
 
     def processchallenge(self,apihandler:APIHandler,jsonpayload:dict):
         try:
+            for each in [self.flags,self.topics,self.tags,self.files,self.hints,self.requirements]:
+                if each != None:
+                    apihandler
             # Create new flags
             if self.flags:
                 apihandler.processflags(self,self.id,jsonpayload)
