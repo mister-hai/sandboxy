@@ -2,7 +2,6 @@ import json,yaml
 from pathlib import Path
 import requests
 from ctfcli.core.APICore import APICore
-from ctfcli.utils.challengeactions import ChallengeActions
 from ctfcli.utils.utils import errorlogger, errorlog, greenprint
 #from utils.apifunctions import APIFunctions
 
@@ -141,8 +140,7 @@ class APIHandler(APICore):
         '''
         for topic in jsonpayload.get("topics"):
             self.topictemplate['value'] = topic
-            apiresponse = self.post(self._getroute("topics"),
-                json= self.topictemplate)
+            apiresponse = self.post(self._getroute("topics"),json=self.topictemplate)
             apiresponse.raise_for_status()
 
     def processflags(self, challengeid:int, jsonpayload:dict) -> requests.Response:
@@ -154,12 +152,11 @@ class APIHandler(APICore):
                     self.flagstemplate["content"] = flag
                     self.flagstemplate["type"] = "static"
                     self.flagstemplate["challenge_id"] = challengeid
-
-                    apiresponse = self.post(f"/api/v1/flags", json=jsonpayload)
+                    apiresponse = self.post(self._getroute("flags"), json=self.flagstemplate)
                     apiresponse.raise_for_status()
                 elif type(flag) == dict:
-                    flag["challenge"] = challengeid
-                    apiresponse = self.post(f"/api/v1/flags", json=flag)
+                    self.flagstemplate["challenge_id"] = challengeid
+                    apiresponse = self.post(self._getroute("flags"), json=flag)
                     apiresponse.raise_for_status()
 
     def uploadfiles(self, handout):

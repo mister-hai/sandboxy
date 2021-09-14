@@ -46,16 +46,6 @@ class CliActions():
         checks for existance and integrity of master list and loads it into self
         TODO: add integrity checks, currently just checks if it exists
         then loads it into self
-
-        The following function has that property and could be considered the simplest decorator one could possibly write:
-
-        >>> def null_decorator(func):
-        >>> return func
-        >>> def greet():
-        >>>     return 'Hello!'
-        >>> greet = null_decorator(greet)
-        >>> greet()
-        >>> "Hello!"
         """
         try:
             greenprint("[+] Checking masterlist")
@@ -86,7 +76,7 @@ class CliActions():
         newrepo = Repository(**dictofcategories)
         masterlist._writenewmasterlist(self.repo,filemode="w")
 
-    def _syncchallenge(self, challenge,ctfdurl,ctfdtoken):#,adminusername,adminpassword):
+    def _syncchallenge(self, challenge,ctfdurl,ctfdtoken):
         """
         DO NOT USE
         saved for later
@@ -97,9 +87,5 @@ class CliActions():
                                    Please put this in the correct category
             ctfurl    (str): Url to CTFd Server
             ctfdtoken (str): CTFd Server token
-        """
-        
-        # create API handler for CTFd Server
-        apihandler = APIHandler(self.CTFD_URL, self.CTFD_TOKEN)
-        #self._setauth(ctfdurl,ctfdtoken)        
-        self.repo._syncchallenge(challenge, apihandler)
+        """      
+        self.repo._syncchallenge(challenge, ctfdurl,ctfdtoken)

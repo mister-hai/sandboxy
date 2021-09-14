@@ -38,7 +38,7 @@ class Repository(Repo):
     def __init__(self,**entries): 
         self.__dict__.update(entries)
 
-    def _syncchallenge(self, challenge:Challenge, apihandler:APIHandler):
+    def _syncchallenge(self, challenge:Challenge,CTFD_URL,CTFD_TOKEN):
         """
         currently not being called
         keep it around please
@@ -47,8 +47,8 @@ class Repository(Repo):
 
         Args:
             challenge (Challenge): Challenge to syncronize with the CTFd server
-        """   
-        challenge.sync(apihandler)
+        """
+        challenge.sync(CTFD_URL, CTFD_TOKEN)
 
     def _setlocation(self, location):
         """
@@ -128,14 +128,14 @@ class Repository(Repo):
             ctftoken (str): Token provided by CTFd
         """
         try:
-            apihandler = APIHandler(CTFD_URL, CTFD_TOKEN)
+            
             greenprint("[+] Syncing Category: {}". format(category))
             # with printscr false, it returns the challenge class
             challenges = self.getchallengesbycategory(category,printscr=False)
             for challenge in challenges:
                 greenprint(f"Syncing challenge: {challenge.name}")
                 #self._syncchallenge(challenge,apihandler)
-                challenge.sync(apihandler)
+                challenge.sync(CTFD_URL, CTFD_TOKEN)
         except Exception:
             errorlogger(f"[-] Failure to sync category! {category.name}")
     
@@ -155,4 +155,4 @@ class Repository(Repo):
         for challenge in challengesack:
             #challenge.sync()
             #self._syncchallenge(challenge,apihandler)
-            challenge.sync(apihandler)
+            challenge.sync(CTFD_URL,CTFD_TOKEN)

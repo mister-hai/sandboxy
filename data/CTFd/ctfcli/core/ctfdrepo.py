@@ -1,4 +1,3 @@
-from genericpath import isdir
 import os
 from pathlib import Path
 from ctfcli.utils.utils import getsubdirs
@@ -6,12 +5,7 @@ from ctfcli.core.category import Category
 from ctfcli.core.challenge import Challenge
 from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
-from ctfcli.core.challengefolders import Handout, Solution
-from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
-from ctfcli.utils.utils import redprint,logger
-#this class get imported up from another file, then pulled in from there 
-# sideways after some operations have been performed
-#from utils.challenge import Challenge
+from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint,logger
 
 ###############################################################################
 #
@@ -19,7 +13,6 @@ from ctfcli.utils.utils import redprint,logger
 class SandboxyCTFdRepository():
     """
     Backend to CTFd Repository
-    Companion to the SandboxyCTFdRepository
     """
     def __init__(self,
                 repositoryfolder:Path 

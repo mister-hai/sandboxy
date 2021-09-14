@@ -318,10 +318,9 @@ class Challenge(Yaml):
                     tar.close()
                     return tar.handout
 
-    def sync(self, apihandler: APIHandler):
+    def sync(self, CTFD_URL, CTFD_TOKEN):
         '''
-        Add(sync):
-            Adds a challenge to CTFd server
+        Adds a challenge to CTFd server
 
         Args:
             apihandler (APIHandler): APIHandler class, instances a Requests.Session to CTFd url
@@ -329,14 +328,13 @@ class Challenge(Yaml):
         greenprint(f"Syncing challenge: {self.name}")
         try:
             #make API call
-            #apihandler = APIHandler()
+            apihandler = APIHandler(CTFD_URL, CTFD_TOKEN)
             # create initial entry in CTFd Server to get a challenge ID
             self._setpayload()
             # send request
-            apiresponse = apihandler.createbasechallenge('challenges',self.jsonpayload)
-            challengeid = apihandler.challenge_id
+            apihandler.createbasechallenge('challenges',self.jsonpayload)
+            self.id = apihandler.challenge_id
             self.processchallenge(apihandler,self.jsonpayload)
-            self.id = challengeid
         except Exception:
             errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
 

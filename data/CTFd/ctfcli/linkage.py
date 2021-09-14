@@ -1,7 +1,5 @@
 import os
-from pathlib import Path
 from ctfcli.core.masterlist import Masterlist
-from ctfcli.core.apisession import APIHandler
 #from ctfcli.utils.gitrepo import SandboxyGitRepository
 from ctfcli.utils.utils import redprint,greenprint,CATEGORIES, errorlogger
 from ctfcli.core.ctfdcliactions import CliActions
@@ -55,9 +53,12 @@ class SandBoxyCTFdLinkage(CliActions):
         #    errorlogger("[-] Git Repository Creation Failed, check the logfile")
 
     #@_checkmasterlist
-    def listcategories(self,prints=True) -> list:
+    def listcategories(self,prints=True, remote=False) -> list:
         """
         Lists all currently installed categories
+
+        Args:
+            printscr (bool): if false, returns python objects
         """
         if self._checkmasterlist():
             return self.repo.listcategories(prints=prints)
@@ -65,6 +66,9 @@ class SandBoxyCTFdLinkage(CliActions):
     def getchallengesbycategory(self,categoryname,printscr=True) -> list:
         """
         Returns either a list of challenges or prints them to screen
+
+        Args:
+            printscr (bool): if false, returns python objects
         """
         if self._checkmasterlist():
             self.repo.getchallengesbycategory(categoryname, printscr)
@@ -72,7 +76,9 @@ class SandBoxyCTFdLinkage(CliActions):
     def getallchallenges(self, category, printscr=True) -> list:
         """
         Lists ALL challenges in repo
-        Supply "print=False" to return a variable instead of text 
+
+        Args:
+            printscr (bool): if false, returns python objects 
         """
         if self._checkmasterlist():
             self.repo.getallchallenges(category, printscr)
@@ -115,18 +121,18 @@ class SandBoxyCTFdLinkage(CliActions):
         """
         if self._checkmasterlist():
             self._setauth(ctfdurl,ctfdtoken)
-            self.repo.synccategory(category, self.CTFD_URL, self.CTFD_TOKEN)
+            self.repo.synccategory(category, ctfdurl,ctfdtoken)
 
     def syncrepository(self, ctfdurl, ctfdtoken):
         '''
         Syncs the entire Repository Folder
-
+        This should not be necessary unless you are performing
+        first time setup. 
         Args:
             ctfdurl (str):   The URL of the CTFd Server instance
             ctfdtoken (str): Token given from Admin Panel > Config > Settings > Auth Token Form
 v        '''
         if self._checkmasterlist():
-            apihandler = APIHandler(self.CTFD_URL, self.CTFD_TOKEN)
             if (ctfdtoken == None) and (ctfdurl == None):
                 self._setauth(self.CTFD_URL, self.CTFD_TOKEN)
                 self.repo.syncrepository(self.CTFD_URL, self.CTFD_TOKEN)
@@ -134,7 +140,7 @@ v        '''
                 self._setauth(ctfdurl,ctfdtoken)
                 self.repo.syncrepository(ctfdurl,ctfdtoken)
 
-    def listsyncedchallenges(self, ctfdurl, ctfdtoken,adminusername,adminpassword, remote=False):
+    def listsyncedchallenges(self, ctfdurl, ctfdtoken, remote=False):
         """
         NOT IMPLEMENTED YET
 
@@ -149,7 +155,8 @@ v        '''
         """
         if self._checkmasterlist():
             if remote == True:
-                self._setauth(ctfdurl,ctfdtoken,adminusername,adminpassword)
+                from ctfcli.core.apisession import APIHandler
+                self._setauth(ctfdurl,ctfdtoken)#,adminusername,adminpassword)
                 apicall = APIHandler( ctfdurl, ctfdtoken)
                 return apicall.get("/api/v1/challenges?view=admin", json=True).json()["data"]
             elif remote == False:
