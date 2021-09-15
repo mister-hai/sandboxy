@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from ctfcli.core.repository import Repository
 from yaml import SafeDumper,MappingNode,Dumper,Loader
-from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
+from ctfcli.utils.utils import errorlogger
 from yaml import SafeDumper,MappingNode
 from ctfcli.core.repository import Repository
 

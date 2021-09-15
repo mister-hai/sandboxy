@@ -75,12 +75,12 @@ class SandboxyCTFdRepository():
             greenprint(f"[+] Found Challenge folder {challengefolderpath.name}")
             yellowboldprint(f'[+] {challengefolderpath}')
             # create new Challenge() class from folder contents
-            newchallenge = self.createchallengefromfolder(challengefolderpath,newcategory.name)
+            newchallenge = self._createchallengefromfolder(challengefolderpath,newcategory.name)
             #assign challenge to category
             newcategory._addchallenge(newchallenge)                    
         return newcategory
         
-    def createchallengefromfolder(self, challengefolderpath:Path,category:str) -> Challenge:
+    def _createchallengefromfolder(self, challengefolderpath:Path,category:str) -> Challenge:
         '''
         Process the contents of the challenge folder given into a new Challenge() class
         This is essentially where the definition of a challenge folder itself
@@ -129,35 +129,6 @@ class SandboxyCTFdRepository():
             return newchallenge
         except Exception:
             errorlogger("[-] ERROR: Could not Create new Challenge from supplied data, Please check the log file")
-        
-    def listcategories(self):
-        """
-        Lists all categories
-        """
-        selflist = self.repo
-        categorylist = []
-        for item in selflist:
-            if type(item) == Category:
-                categorylist.append(item)
-
-
-    def removecategory(self, category:str):
-        """
-        Removes a category from the repository
-
-        Args:
-
-            category (str): Name of the category to unlink
-        """
-
-    def addcategory(self, category:Path):
-        """
-        Adds a Category to the repository
-
-        Args:
-            category (Path): path to category folder, in category level of repository
-        """        
-        #TODO: add entry to masterlist.yaml
 
     def _setcategory(self, repo:Repository, category:Category):
         """
@@ -168,7 +139,7 @@ class SandboxyCTFdRepository():
         
     def _getcategory(self,repo:Repository, category:str)-> Category:
         """
-        Returns The Category, use getattr and a filter
+        Returns The Category
         
         Args:
             repo (Repository) : Repository object created by masterlist
@@ -182,38 +153,3 @@ class SandboxyCTFdRepository():
             if (type(selfmember) == Category):#in CATEGORIES) and (selfmember.startswith("__") != True):
                 return getattr(repo,selfmember)
                 
-    def synccategory(self):
-        """
-    Updates all challenges in CTFd with the versions in the repository
-    Operates on the entire category 
-        """
-            #call 
-    
-    def listchallenges(self):
-        """
-        Returns a list of all the installed challenges
-
-        """
-
-    def listsyncedchallenges(self):
-        """
-        Lists challenges on the server
-        """
-
-
-    def removechallenge(self):
-        """
-        Removes a challenge from the repository
-        Does not delete files, only unlinks
-        """
-
-    def syncchallenge(self):
-        """
-        
-        """
-    def updaterepository(self, challenge):
-        """
-    Updates the repository with any new content added to the category given
-    if it doesnt fit the spec, it will issue an error    
-    Try not to let your repo get cluttered
-        """

@@ -1,10 +1,10 @@
 import os,sys,fire
 sys.path.insert(0, os.path.abspath('.'))
 from ctfcli.linkage import SandBoxyCTFdLinkage
+from ctfcli.core.ctfdcliactions import CliActions
 from ctfcli.utils.utils import CATEGORIES
-#from dotenv import load_dotenv
 from pathlib import Path
-from ctfcli.utils.utils import redprint,greenprint,yellowboldprint, CATEGORIES
+from ctfcli.utils.utils import yellowboldprint, CATEGORIES
 
 
 ###############################################################################
@@ -45,11 +45,24 @@ class Ctfcli():
     '''
         Proper Usage is as follows
         
-        FIRST RUN, if you have not modified the repository this is not necessary!
-        >>> host@server$> ctfd.py ctfcli init
+        FIRST RUN, If you have not modified the repository this is not necessary!
+        This will generate a Masterlist.yaml file that contains the contents of the 
+        repository for loading into the program
+        >>> host@server$> python ./ctfcli/ ctfcli init
 
-        To sync to CTFd Server:
-        >>> host@server$> ctfd.py ctfcli syncrepository --ctfdurl <URL> --ctfdtoken <TOKEN>
+        you should provide token and url when running the tool, it will store 
+        token only for a limited time. This is intentional and will not be changed
+        This tool is capable of getting its own tokens given an administrative username
+        and password
+
+        for SINGLE operations, with NO authentication persistance:
+        >>> host@server$> python ./ctfcli/ ctfcli --ctfdurl <URL> --ctfdtoken <TOKEN>
+
+        for multiple operations, WITH authentication persistance:
+        >>> host@server$> python ./ctfcli/ ctfcli --adminusername moop --adminpassword password
+
+        To sync repository contents to CTFd Server:
+        >>> host@server$> python ./ctfcli/ ctfcli syncrepository --ctfdurl <URL> --ctfdtoken <TOKEN>
 
         Replacing <URL> with your CTFd website url
         and replacing <TOKEN> with your CTFd website token
@@ -62,12 +75,11 @@ class Ctfcli():
         >>> host@server$> ctfd.py gitops createremoterepo https://REMOTE_REPO_URL.git
 
         Generating a completion script and adding it to ~/.bashrc
-        >>> host@server$> ctfd.py ctfcli -- --completion > ~/.ctfcli-completion
+        >>> host@server$>python ./ctfcli/ ctfcli -- --completion > ~/.ctfcli-completion
         >>> host@server$> echo "source ~/.ctfcli-completion" >> ~/.bashrc  
 
         To generate a completion script for the Fish shell. 
         (fish is nice but incompatible with bash scripts so far as I know so start.sh wont work)
-
         >>> -- --completion fish 
 
         If the commands available in the Fire CLI change, you'll have to regenerate the 
@@ -76,22 +88,20 @@ class Ctfcli():
         / NOT IMPLEMENTED YET /
         IF YOU ARE MOVING YOUR INSTALLATION AFTER USING THE PACKER/UNPACKER
         IN START.SH, PERFORM THE FOLLOWING ACTIONS/COMMANDS
-        >>> host@server$> ctfd.py ctfcli check_install
+        >>> host@server$>python ./ctfcli/ ctfcli check_install
         / NOT IMPLEMENTED YET /
     '''
     def __init__(self):
         # challenge templates
         self.TEMPLATESDIR = os.path.join(CTFDDATAROOT, "ctfcli", "templates")    
-
         # modify the structure of the program here by reassigning classes
-        ctfcli = SandBoxyCTFdLinkage(challengeroot)
+        #ctfcli = SandBoxyCTFdLinkage(challengeroot)
+        ctfcli = CliActions(challengeroot)
         self.ctfcli = ctfcli
-        #self.ctfdops = SandboxyCTFdRepository()
         #self.gitops = SandboxyGitRepository()
 
 def main():
    fire.Fire(Ctfcli)
-
 
 if __name__ == "__main__":
     main()

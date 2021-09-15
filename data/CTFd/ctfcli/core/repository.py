@@ -1,7 +1,6 @@
-from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
+from ctfcli.utils.utils import errorlogger,greenprint,CATEGORIES
 from ctfcli.core.category import Category
 from ctfcli.core.challenge import Challenge
-from ctfcli.core.apisession import APIHandler
 
 ###############################################################################
 #  CTFd Repository

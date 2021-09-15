@@ -8,6 +8,7 @@
 # USER FUNCTIONS , THIS FILE must BE alongside START.SH
 # This file gets imported to the launcher for cleanlyness
 # the launcher will have some features making it unsuitable for modification
+# ( 100mb+ text file)
 # you should modify this to suit your preferences
 #
 # This line adds the .env variables to the environment... very danger

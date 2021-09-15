@@ -3,6 +3,7 @@ from pathlib import Path
 from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
 from ctfcli.core.apisession import APIHandler
+import configparser
 
 #from ctfcli.utils.gitrepo import SandboxyGitRepository
 from ctfcli.core.ctfdrepo import SandboxyCTFdRepository
@@ -11,9 +12,23 @@ from ctfcli.utils.utils import redprint,greenprint,CATEGORIES, errorlogger
 class CliActions():
     """
     internal actions the ctfcli uses
+
+        for SINGLE operations, with NO authentication persistance:
+        >>> host@server$> python ./ctfcli/ ctfcli --ctfdurl <URL> --ctfdtoken <TOKEN>
+
+        for multiple operations, WITH authentication persistance:
+        >>> host@server$> python ./ctfcli/ ctfcli --adminusername moop --adminpassword password
+
+        To sync repository contents to CTFd Server:
+        >>> host@server$> python ./ctfcli/ ctfcli syncrepository --ctfdurl <URL> --ctfdtoken <TOKEN>
+
     """    
     def __init__(self,
-                repositoryfolder:Path 
+                repositoryfolder:Path,
+                ctfdurl,
+                ctfdtoken,
+                adminusername,
+                adminpassword
                 ):
         self.repo = Repository
         self.repofolder = repositoryfolder
@@ -21,9 +36,16 @@ class CliActions():
         try:
             greenprint("[+] Instancing a SandboxyCTFdLinkage()")
             self.ctfdops = SandboxyCTFdRepository(self.repofolder)
-            #setattr(self, 'ctfdops',SandboxyCTFdRepository(self.repofolder))
         except Exception as e:
             errorlogger(f"[-] FAILED: Instancing a SandboxyCTFdLinkage()\n{e}")
+        
+        self.cfgfilepath = Path(self.repofolder.parent,"config.cfg")
+        self.config = configparser.ConfigParser()
+
+        self.ctfdurl = ctfdurl
+        self.ctfdtoken = ctfdtoken
+        self.adminpassword = adminpassword
+        self.adminusername = adminusername
 
     def _setauth(self,ctfdurl,ctfdtoken,adminusername,adminpassword):
         """
@@ -33,13 +55,33 @@ class CliActions():
             ctfdurl (str): URI for CTFd server
             ctfdtoken (str): Token provided by admin panel in ctfd
         """
-        # TODO: TIMESTAMPS AND IDS!!! create API call and push data
         # store url and token
+        self._readauthconfig(self.cfgfilepath)
         self.CTFD_TOKEN    = ctfdtoken #os.getenv("CTFD_TOKEN")
         self.CTFD_URL      = ctfdurl #os.getenv("CTFD_URL")
         self.adminusername = adminusername
         self.adminpassword = adminpassword
         self.ctfdauth      = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
+
+    def _setauthconfig(self, cfgfile:Path):
+        """
+        Sets auth information in config file, yeah its dangerous
+        if this project gets hacked, you're screwed worse in other
+        ways than losing access to ctfd
+        DO NOT RECYCLE PASSWORDS, PERIOD!
+        """
+        self.cfgfile = open(cfgfile, 'w')
+        self.config.add_section('AUTH')
+        self.config.set('AUTH','username',self.adminusername)
+        self.config.set('AUTH','password', self.adminpassword)
+        self.config.write(self.cfgfile)
+        self.cfgfile.close()
+
+    def _readauthconfig(self, cfgfile:Path):
+        self.config.read(cfgfile)
+        self.adminusername = self.config.get('AUTH', 'username')
+        self.adminusername = self.config.get('AUTH', 'password')
+        self.ctfdurl = self.config.get('client', 'ctfdurl')
 
     def _checkmasterlist(self):
         """
@@ -74,7 +116,7 @@ class CliActions():
         # create new repo and push to new masterlist, overwriting old one
         masterlist = Masterlist(self.masterlistlocation)
         newrepo = Repository(**dictofcategories)
-        masterlist._writenewmasterlist(self.repo,filemode="w")
+        masterlist._writenewmasterlist(newrepo,filemode="w")
 
     def _syncchallenge(self, challenge,ctfdurl,ctfdtoken):
         """
