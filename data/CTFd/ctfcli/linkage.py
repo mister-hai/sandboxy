@@ -22,10 +22,6 @@ class SandBoxyCTFdLinkage():
 
     def __init__(self,
                 repositoryfolder:Path,
-                ctfdurl:str=None,
-                ctfdtoken:str=None,
-                adminusername:str=None,
-                adminpassword:str=None
                 ):
         self.repo = Repository
         self.repofolder = repositoryfolder
@@ -64,6 +60,7 @@ class SandBoxyCTFdLinkage():
         if (adminpassword != None) and (adminusername != None):
             self.adminpassword = adminpassword
             self.adminusername = adminusername
+            self.CTFD_URL      = ctfdurl
             self._setauthconfig(self, self.cfgfilepath)
 
         # set auth headers, i forgot what this is for
@@ -82,6 +79,7 @@ class SandBoxyCTFdLinkage():
             self.config.add_section('AUTH')
             self.config.set('AUTH','username',self.adminusername)
             self.config.set('AUTH','password', self.adminpassword)
+            self.config.set('AUTH','ctfdurl', self.CTFD_URL)
             self.config.write(self.cfgfile)
             self.cfgfile.close()
         except Exception:
@@ -91,7 +89,8 @@ class SandBoxyCTFdLinkage():
         self.config.read(cfgfile)
         self.adminusername = self.config.get('AUTH', 'username')
         self.adminusername = self.config.get('AUTH', 'password')
-        self.ctfdurl = self.config.get('AUTH', 'ctfdurl')
+        self.CTFD_URL = self.config.get('AUTH', 'ctfdurl')
+        self.cfgfile.close()
 
     def _checkmasterlist(self):
         """
@@ -145,22 +144,21 @@ class SandBoxyCTFdLinkage():
 
     def init(self):
         """
-        Link to CTFd instance with token and URI
-
         >>> host@server$> python ./ctfcli/ ctfcli init
 
         - Creates a masterlist of challenges in the repository
         - Creates a git repository and adds all the files
         - links repository with CTFd instance via disposable token
-
-        TODO: Add Oauth via discord
         """
         # returns a Repo() object with Category() objects attached
         try:
+            greenprint("[+] Beginning Initial Setup")
             # returns a repository object,
             repository = self.ctfdops._createrepo()
+            greenprint("[+] Repository Scanned!")
             repository._setlocation(self.repofolder)
             # create a new masterlist
+            greenprint("[+] Creating Masterlist")
             masterlist = Masterlist(self.repofolder.parent)
             # write the masterlist with all the repo data to disk
             masterlist._writenewmasterlist(repository,filemode="w")

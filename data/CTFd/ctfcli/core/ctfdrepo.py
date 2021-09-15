@@ -36,9 +36,11 @@ class SandboxyCTFdRepository():
         Masterlist, Repo (Tuple): Two new data objects
 
         '''
+        greenprint("[+] Beginning Repository Scan")
         dictofcategories = {}
         #repocategoryfolders = os.listdir(os.path.abspath(self.repofolder))
         repocategoryfolders = getsubdirs(self.repofolder)
+        greenprint(f"[+] Categories: {[f'{folder}\n' for folder in repocategoryfolders]}")
         # itterate over folders in challenge directory
         for category in repocategoryfolders:
             categorypath = Path(os.path.join(self.repofolder, category))

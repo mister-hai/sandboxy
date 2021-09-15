@@ -1,3 +1,4 @@
+from genericpath import isfile
 import sys
 import json
 import yaml
@@ -61,9 +62,9 @@ def getsubdirs(directory):
     Returns folders in a directory as Paths
     '''
     wat = []
-    for item in os.listdir(os.path.normpath(directory)):
-       if (not os.path.isfile(os.path.join(directory, item))) and not re.match(r'\..*', item):
-           wat.append(item)
+    for filepath in pathlib.Path(directory).iterdir():
+       if (Path(filepath).is_dir()):
+           wat.append(Path(filepath))
     return wat
 
 def getsubfiles(directory):
@@ -71,9 +72,9 @@ def getsubfiles(directory):
     Returns files in a directory as Paths
     '''
     wat = []
-    for item in os.listdir(os.path.normpath(directory)):
-       if (os.path.isfile(os.path.join(directory, item))) and not re.match(r'\..*', item):
-           wat.append(item)
+    for filepath in pathlib.Path(directory).glob('**/*'):
+        #if not re.match(r'\..*', filepath.stem):
+            wat.append(filepath.absolute())
     return wat
 # open with read operation
 challengeyamlbufferr = lambda category,challenge: open(os.path.join(category,challenge,basechallengeyaml),'r')

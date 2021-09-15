@@ -58,7 +58,7 @@ class Challenge(Yaml):
         self.readme = readme
         self.category = category
         self.challengefile = challengeyaml
-        self.folderlocation  = Path(os.path.abspath(challengeyaml))
+        self.folderlocation  = Path(os.path.abspath(challengeyaml)).parent
         #get a representation of the challenge.yaml file
         yamlcontents = self.loadyaml(self.challengefile)
         #load the challenge yaml dict into the class
@@ -70,8 +70,10 @@ class Challenge(Yaml):
         yellowboldprint(f'[+] Internal name: {self.internalname}')
         #self.challengesrc       = challengesrc
         #self.deployment         = deployment
-        self.solution = self._processfoldertotarfile(folder = solution, filename = 'solution.tar.gz')
-        self.handout  = self._processfoldertotarfile(folder = handout, filename = 'folder.tar.gz')
+        self.solutionfolder =   Path(self.folderlocation, 'solution')
+        self.handoutfolder =    Path(self.folderlocation, 'handout')
+        self.solution = self._processfoldertotarfile(folder = self.solutionfolder, filename = 'solution.tar.gz')
+        self.handout  = self._processfoldertotarfile(folder = self.handoutfolder, filename = 'handout.tar.gz')
         # this is set after syncing by the ctfd server, it increments by one per
         # challenge upload so it's predictable
         self.id = int
@@ -178,7 +180,10 @@ class Challenge(Yaml):
         #        data: "case_insensitive",
         #    }
         try:
-            self.flags = kwargs.pop('flags')
+            # despite flags being REQUIRED people just dont add them?
+            # need to fix the repo files
+            #self.flags = kwargs.pop('flags')
+            self.flags = kwargs.get('flags')
         except Exception:
             try:
                 self.flags = kwargs.pop('flag')
@@ -302,8 +307,10 @@ class Challenge(Yaml):
         creates a tarfile of the provided folder 
         if a tarfile already exists, it simply returns that
         '''
+        from ctfcli.utils.utils import getsubdirs,getsubfiles
         # make an array of Paths to folder contents
-        dirlisting = [Path(os.path.abspath(item)) for item in os.listdir(folder)]
+        dirlisting = getsubfiles(folder)
+        #dirlisting = [Path(os.path.abspath(item)) for item in os.listdir(folder)]
         if len(dirlisting) == 1:
             if str(dirlisting[0]).endswith('.tar.gz'):
                 # TODO: this might be a problem later
@@ -312,7 +319,7 @@ class Challenge(Yaml):
             else:
                 with tarfile.open(Path(folder,filename), "w:gz")as tar:
                     for item in dirlisting:
-                        tar.add(item)
+                        tar.add(os.path.abspath(item))
                     tar.close()
                     return tar
 
