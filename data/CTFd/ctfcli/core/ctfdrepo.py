@@ -40,12 +40,12 @@ class SandboxyCTFdRepository():
         dictofcategories = {}
         #repocategoryfolders = os.listdir(os.path.abspath(self.repofolder))
         repocategoryfolders = getsubdirs(self.repofolder)
-        greenprint(f"[+] Categories: {[f'{folder}\n' for folder in repocategoryfolders]}")
+        #greenprint(f"[+] Categories: {[f'{folder}\n' for folder in repocategoryfolders]}")
         # itterate over folders in challenge directory
         for category in repocategoryfolders:
             categorypath = Path(os.path.join(self.repofolder, category))
             # if its a repository category folder in aproved list
-            if category in CATEGORIES:
+            if category.stem in CATEGORIES:
                 # process the challenges in that category
                 newcategory = self._processcategory(categorypath)
                 # this dict contains the entire repository now

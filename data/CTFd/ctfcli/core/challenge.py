@@ -309,17 +309,18 @@ class Challenge(Yaml):
         '''
         from ctfcli.utils.utils import getsubdirs,getsubfiles
         # make an array of Paths to folder contents
-        dirlisting = getsubfiles(folder)
+        dirlisting = [item for item in Path(folder).glob('**/*')] #getsubfiles(folder)
         #dirlisting = [Path(os.path.abspath(item)) for item in os.listdir(folder)]
-        if len(dirlisting) == 1:
-            if str(dirlisting[0]).endswith('.tar.gz'):
-                # TODO: this might be a problem later
-                return TarFile(filename,"r:gz",os.path.abspath(dirlisting[0]))
-            # create a tarfile of the handout directory
+        for filepath in dirlisting:#Path(folder).iterdir():
+            # if its named filename.tar.gz
+            if filepath.suffixes[0] == '.tar' and filepath.suffixes[1] == '.gz' and filepath.stem == filename:
+                return TarFile(filename,"r:gz",filepath)
+            # they didnt zip the handout or solution up like requested so we have to do that for them now
             else:
+                # no tar.gz in folder, create archive
                 with tarfile.open(Path(folder,filename), "w:gz")as tar:
                     for item in dirlisting:
-                        tar.add(os.path.abspath(item))
+                        tar.add(item)
                     tar.close()
                     return tar
 

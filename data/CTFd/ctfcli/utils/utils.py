@@ -62,7 +62,7 @@ def getsubdirs(directory):
     Returns folders in a directory as Paths
     '''
     wat = []
-    for filepath in pathlib.Path(directory).iterdir():
+    for filepath in pathlib.Path(directory).glob('**/*'):#.iterdir():
        if (Path(filepath).is_dir()):
            wat.append(Path(filepath))
     return wat
@@ -71,11 +71,9 @@ def getsubfiles(directory):
     '''
     Returns files in a directory as Paths
     '''
-    wat = []
-    for filepath in pathlib.Path(directory).glob('**/*'):
-        #if not re.match(r'\..*', filepath.stem):
-            wat.append(filepath.absolute())
+    wat = [Path(filepath) for filepath in pathlib.Path(directory).glob('**/*')]
     return wat
+
 # open with read operation
 challengeyamlbufferr = lambda category,challenge: open(os.path.join(category,challenge,basechallengeyaml),'r')
 # open with write operation
