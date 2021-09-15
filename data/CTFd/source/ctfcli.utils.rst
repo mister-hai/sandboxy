@@ -4,18 +4,26 @@ ctfcli.utils package
 Submodules
 ----------
 
-ctfcli.utils.apifunctions module
---------------------------------
+ctfcli.utils.apitest module
+---------------------------
 
-.. automodule:: ctfcli.utils.apifunctions
+.. automodule:: ctfcli.utils.apitest
    :members:
    :undoc-members:
    :show-inheritance:
 
-ctfcli.utils.gitrepo module
----------------------------
+ctfcli.utils.cookiecutterutils module
+-------------------------------------
 
-.. automodule:: ctfcli.utils.gitrepo
+.. automodule:: ctfcli.utils.cookiecutterutils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ctfcli.utils.lintchallenge module
+---------------------------------
+
+.. automodule:: ctfcli.utils.lintchallenge
    :members:
    :undoc-members:
    :show-inheritance:
@@ -24,6 +32,14 @@ ctfcli.utils.models module
 --------------------------
 
 .. automodule:: ctfcli.utils.models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ctfcli.utils.securityutils module
+---------------------------------
+
+.. automodule:: ctfcli.utils.securityutils
    :members:
    :undoc-members:
    :show-inheritance:

@@ -4,6 +4,14 @@ ctfcli.core package
 Submodules
 ----------
 
+ctfcli.core.APICore module
+--------------------------
+
+.. automodule:: ctfcli.core.APICore
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 ctfcli.core.apisession module
 -----------------------------
 
@@ -28,10 +36,18 @@ ctfcli.core.challenge module
    :undoc-members:
    :show-inheritance:
 
-ctfcli.core.challengefolders module
+ctfcli.core.challengeactions module
 -----------------------------------
 
-.. automodule:: ctfcli.core.challengefolders
+.. automodule:: ctfcli.core.challengeactions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ctfcli.core.ctfdcliactions module
+---------------------------------
+
+.. automodule:: ctfcli.core.ctfdcliactions
    :members:
    :undoc-members:
    :show-inheritance:
@@ -44,10 +60,26 @@ ctfcli.core.ctfdrepo module
    :undoc-members:
    :show-inheritance:
 
+ctfcli.core.gitrepo module
+--------------------------
+
+.. automodule:: ctfcli.core.gitrepo
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 ctfcli.core.masterlist module
 -----------------------------
 
 .. automodule:: ctfcli.core.masterlist
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ctfcli.core.repoactions module
+------------------------------
+
+.. automodule:: ctfcli.core.repoactions
    :members:
    :undoc-members:
    :show-inheritance:

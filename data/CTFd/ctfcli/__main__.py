@@ -1,7 +1,6 @@
 import os,sys,fire
 sys.path.insert(0, os.path.abspath('.'))
 from ctfcli.linkage import SandBoxyCTFdLinkage
-from ctfcli.core.ctfdcliactions import CliActions
 from ctfcli.utils.utils import CATEGORIES
 from pathlib import Path
 from ctfcli.utils.utils import yellowboldprint, CATEGORIES
@@ -59,6 +58,7 @@ class Ctfcli():
         >>> host@server$> python ./ctfcli/ ctfcli --ctfdurl <URL> --ctfdtoken <TOKEN>
 
         for multiple operations, WITH authentication persistance:
+        This configuraiton will be able to obtain tokens via CLI
         >>> host@server$> python ./ctfcli/ ctfcli --adminusername moop --adminpassword password
 
         To sync repository contents to CTFd Server:
@@ -96,7 +96,7 @@ class Ctfcli():
         self.TEMPLATESDIR = os.path.join(CTFDDATAROOT, "ctfcli", "templates")    
         # modify the structure of the program here by reassigning classes
         #ctfcli = SandBoxyCTFdLinkage(challengeroot)
-        ctfcli = CliActions(challengeroot)
+        ctfcli = SandBoxyCTFdLinkage(challengeroot)
         self.ctfcli = ctfcli
         #self.gitops = SandboxyGitRepository()
 
