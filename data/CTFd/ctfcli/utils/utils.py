@@ -1,8 +1,7 @@
-from genericpath import isfile
 import sys
 import json
 import yaml
-import os,re
+import os
 import getpass
 import tempfile
 import pathlib
@@ -13,10 +12,6 @@ from pathlib import Path
 
 from collections import namedtuple
 from urllib.parse import urlparse
-from pygments import highlight
-from pygments.formatters import TerminalFormatter
-from pygments.lexers import IniLexer, JsonLexer
-import configparser
 
 try:
     #import colorama
@@ -142,7 +137,19 @@ def registry(challenge, host):
     tag = f"{url.netloc}{url.path}"
     subprocess.call(["docker", "tag", image_name, tag])
     subprocess.call(["docker", "push", tag])
-    
+
+CATEGORIES = [
+    "exploitation",
+    "reversing",
+    "web",
+    "forensics",
+    "scripting",
+    "crypto",
+    "networking",
+    "linux",
+    "miscellaneous"
+    ]
+
 ctfdurl = str
 APIPREFIX = "/api/v1/"
 CTFd_API_ROUTES = {"challenges": f"{APIPREFIX}challenges",
@@ -163,271 +170,3 @@ CTFd_API_ROUTES = {"challenges": f"{APIPREFIX}challenges",
     "unlocks":f"{APIPREFIX}unlocks", 
     "tokens":f"{APIPREFIX}tokens", 
     "comments":f"{APIPREFIX}comments"}
-
-DEPLOY_HANDLERS = {"ssh": ssh, "registry": registry}
-
-
-def sanitize_name(name):
-    """
-    Function to sanitize names to docker safe image names
-    TODO: Good enough but probably needs to be more conformant with docker
-    """
-    return name.lower().replace(" ", "-")
-
-
-def build_image(challenge):
-    name = sanitize_name(challenge["name"])
-    path = Path(challenge.file_path).parent.absolute()
-    print(f"Building {name} from {path}")
-    subprocess.call(["docker", "build", "-t", name, "."], cwd=path)
-    return name
-
-
-def export_image(challenge):
-    name = sanitize_name(challenge["name"])
-    temp = tempfile.NamedTemporaryFile(delete=False, suffix=f"_{name}.docker.tar")
-    subprocess.call(["docker", "save", "--output", temp.name, name])
-    return temp.name
-
-def get_exposed_ports(challenge):
-    image_name = sanitize_name(challenge["name"])
-    output = subprocess.check_output(
-        ["docker", "inspect", "--format={{json .Config.ExposedPorts }}", image_name,]
-    )
-    output = json.loads(output)
-    if output:
-        ports = list(output.keys())
-        if ports:
-            # Split '2323/tcp'
-            port = ports[0]
-            port = port.split("/")
-            port = port[0]
-            return port
-        else:
-            return None
-    else:
-        return None
-CATEGORIES = [
-    "exploitation",
-    "reversing",
-    "web",
-    "forensics",
-    "scripting",
-    "crypto",
-    "networking",
-    "linux",
-    "miscellaneous"
-    ]
-
-APIPREFIX = "/api/v1/"
-CTFd_API_ROUTES = {"challenges": f"{APIPREFIX}challenges",
-              "tags":f"{APIPREFIX}tags", 
-              "topics":f"{APIPREFIX}topics", 
-              "awards":f"{APIPREFIX}awards", 
-              "hints":f"{APIPREFIX}hints", 
-              "flags":f"{APIPREFIX}flags", 
-              "submissions":f"{APIPREFIX}submissions", 
-              "scoreboard":f"{APIPREFIX}scoreboard", 
-              "teams":f"{APIPREFIX}teams", 
-              "users":f"{APIPREFIX}users", 
-              "statistics":f"{APIPREFIX}statistics",
-              "files":f"{APIPREFIX}files", 
-              "notifications":f"{APIPREFIX}notifications", 
-              "configs":f"{APIPREFIX}configs", 
-              "pages":f"{APIPREFIX}pages", 
-              "unlocks":f"{APIPREFIX}unlocks", 
-              "tokens":f"{APIPREFIX}tokens", 
-              "comments":f"{APIPREFIX}comments"}
-              
-
-CHALLENGE_SPEC_DOCS = {
-    "name": Prompt(
-        text="Challenge name or identifier",
-        type=None,
-        default=None,
-        required=True,
-        multiple=False,
-    ),
-    "author": Prompt(
-        text="Your name or handle",
-        type=None,
-        default=getpass.getuser(),
-        required=True,
-        multiple=False,
-    ),
-    "category": Prompt(
-        text="Challenge category",
-        type=None,
-        default=None,
-        required=True,
-        multiple=False,
-    ),
-    "description": Prompt(
-        text="Challenge description shown to the user",
-        type=None,
-        default=None,
-        required=True,
-        multiple=False,
-    ),
-    "value": Prompt(
-        text="How many points your challenge should be worth",
-        type=int,
-        default=None,
-        required=True,
-        multiple=False,
-    ),
-    "version": Prompt(
-        text="What version of the challenge specification was used",
-        type=None,
-        default="0.1",
-        required=False,
-        multiple=False,
-    ),
-    "image": Prompt(
-        text="Docker image used to deploy challenge",
-        type=None,
-        default=None,
-        required=False,
-        multiple=False,
-    ),
-    "type": Prompt(
-        text="Type of challenge",
-        type=None,
-        default="standard",
-        required=True,
-        multiple=False,
-    ),
-    "attempts": Prompt(
-        text="How many attempts should the player have",
-        type=int,
-        default=None,
-        required=False,
-        multiple=False,
-    ),
-    "flags": Prompt(
-        text="Flags that mark the challenge as solved",
-        type=None,
-        default=None,
-        required=False,
-        multiple=True,
-    ),
-    "tags": Prompt(
-        text="Tag that denotes a challenge topic",
-        type=None,
-        default=None,
-        required=False,
-        multiple=True,
-    ),
-    "files": Prompt(
-        text="Files to be shared with the user",
-        type=None,
-        default=None,
-        required=False,
-        multiple=True,
-    ),
-    "hints": Prompt(
-        text="Hints to be shared with the user",
-        type=None,
-        default=None,
-        required=False,
-        multiple=True,
-    ),
-    "requirements": Prompt(
-        text="Challenge dependencies that must be solved before this one can be attempted",
-        type=None,
-        default=None,
-        required=False,
-        multiple=True,
-    ),
-}
-
-
-def blank_challenge_spec():
-    pwd = Path(__file__)
-    spec = pwd.parent.parent / "spec" / "challenge-example.yml"
-    with open(spec) as f:
-        blank = yaml.safe_load(f)
-
-    for k in blank:
-        if k != "version":
-            blank[k] = None
-
-    return blank
-
-
-class Config():
-    '''
-Config class
-Maps to the command
-host@server$> ctfcli config <command>
-    '''
-    def __init__(self, configpath):
-        self.configpath = configpath
-        parser = configparser.ConfigParser()
-        # Preserve case in configparser
-        parser.optionxform = str
-        parser.read(Path(self.configpath))
-        return parser
-
-    def edit(self, editor="micro"):
-        '''
-        ctfcli config edit
-            Edit config with $EDITOR
-        '''
-        # set environment variables for editor
-        editor = os.getenv("EDITOR", editor)
-        command = editor, 
-        subprocess.call(command)
-
-    def path(self):
-        '''
-        ctfcli config path
-            Show config path
-        '''
-        print("[+] Config located at {}".format(self.configpath))
-    
-    def loadalternativeconfig(self, configpath:str):
-        '''
-        Loads an alternative configuration
-        ctfcli config loadalternativeconfig <configpath>
-        '''
-        #path = self.configpath
-        parser = configparser.ConfigParser()
-        # Preserve case in configparser
-        parser.optionxform = str
-        parser.read(Path(configpath))
-        return parser
-
-    def previewconfig(self, as_string=False):
-        '''
-        Shows current configuration
-        ctfcli config previewconfig
-        '''
-        config = self.load_config(self.configpath)
-        d = {}
-        for section in config.sections():
-            d[section] = {}
-            for k, v in config.items(section):
-                d[section][k] = v
-        preview = json.dumps(d, sort_keys=True, indent=4)
-        if as_string is True:
-            return preview
-        else:
-            print(preview)
-    
-    def view(self, color=True, json=False):
-        
-        '''
-        view the config
-        ctfcli config view
-        '''
-        with open(self.configlocation) as f:
-            if json is True:
-                config = self.preview_config(as_string=True)
-                if color:
-                    config = highlight(config, JsonLexer(), TerminalFormatter())
-            else:
-                config = f.read()
-                if color:
-                    config = highlight(config, IniLexer(), TerminalFormatter())
-            print(config)

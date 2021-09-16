@@ -4,10 +4,15 @@
 from requests import Session
 from ctfcli.utils.utils import errorlogger, errorlog
 class APICore(Session):
-    def __cls__(cls):
-        cls.loginurl = "http://127.0.0.1:8000/login"
-        cls.settingsurl = "http://127.0.0.1:8000/settings#tokens"
-        cls.serverurl = "127.0.0.1:8000"
+    def __cls__(cls,
+        loginurl = "http://127.0.0.1:8000/login",
+        settingsurl = "http://127.0.0.1:8000/settings#tokens",
+        serverurl = "127.0.0.1:8000",
+        APIPREFIX = "/api/v1/"
+        ):
+        cls.loginurl = loginurl
+        cls.settingsurl = settingsurl
+        cls.serverurl = serverurl
         cls.APIPREFIX = "/api/v1/"
         cls.routeslist = ["challenges","tags","topics","awards",
         "hints", "flags","submissions","scoreboard",
