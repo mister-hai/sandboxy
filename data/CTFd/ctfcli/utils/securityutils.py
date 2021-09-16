@@ -1,9 +1,16 @@
 # Firewall rules for visible challenges
 # with google cloud
 import os
+import json
+import os
+import tempfile
+import subprocess
+from pathlib import Path
+
+from collections import namedtuple
+from urllib.parse import urlparse
 
 
-DEPLOY_HANDLERS = {"ssh": ssh, "registry": registry}
 def firewall(visible, hidden):
     """
     NOT IMPLEMENTED YET
@@ -117,3 +124,5 @@ def registry(challenge, host):
     tag = f"{url.netloc}{url.path}"
     subprocess.call(["docker", "tag", image_name, tag])
     subprocess.call(["docker", "push", tag])
+
+DEPLOY_HANDLERS = {"ssh": ssh, "registry": registry}

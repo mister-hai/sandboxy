@@ -26,14 +26,27 @@ class SandBoxyCTFdLinkage():
         self.repo = Repository
         self.repofolder = repositoryfolder
         self.masterlistlocation = Path(self.repofolder.parent, "masterlist.yaml")
+
         try:
             greenprint("[+] Instancing a SandboxyCTFdLinkage()")
             self.ctfdops = SandboxyCTFdRepository(self.repofolder)
         except Exception as e:
             errorlogger(f"[-] FAILED: Instancing a SandboxyCTFdLinkage()\n{e}")
-        
+
+        try:
+            greenprint("[+] Reading Config")
+            self._initconfig()
+        except Exception as e:
+            errorlogger(f"[-] FAILED: Reading Config\n{e}")
+
+    def _initconfig(self):
+        """
+        Initializes the configuration file into class attributes
+        """
         self.cfgfilepath = Path(self.repofolder.parent,"config.cfg")
         self.config = configparser.ConfigParser()
+        # split into array
+        self.allowedcategories = self.config['REPO'].get('categories').split(",")
 
     def setauth(self,
                 ctfdurl:str=None,
@@ -79,7 +92,7 @@ class SandBoxyCTFdLinkage():
             self.config.add_section('AUTH')
             self.config.set('AUTH','username',self.adminusername)
             self.config.set('AUTH','password', self.adminpassword)
-            self.config.set('AUTH','ctfdurl', self.CTFD_URL)
+            self.config.set('AUTH','url', self.CTFD_URL)
             self.config.write(self.cfgfile)
             self.cfgfile.close()
         except Exception:
@@ -89,7 +102,7 @@ class SandBoxyCTFdLinkage():
         self.config.read(cfgfile)
         self.adminusername = self.config.get('AUTH', 'username')
         self.adminusername = self.config.get('AUTH', 'password')
-        self.CTFD_URL = self.config.get('AUTH', 'ctfdurl')
+        self.CTFD_URL = self.config.get('AUTH', 'url')
         self.cfgfile.close()
 
     def _checkmasterlist(self):
@@ -153,8 +166,8 @@ class SandBoxyCTFdLinkage():
         # returns a Repo() object with Category() objects attached
         try:
             greenprint("[+] Beginning Initial Setup")
-            # returns a repository object,
-            repository = self.ctfdops._createrepo()
+            # returns a repository object
+            repository = self.ctfdops._createrepo(self.allowedcategories)
             greenprint("[+] Repository Scanned!")
             repository._setlocation(self.repofolder)
             # create a new masterlist
@@ -245,7 +258,7 @@ class SandBoxyCTFdLinkage():
             ctftoken (str): Token provided by CTFd
         """
         if self._checkmasterlist():
-            self._setauth(ctfdurl,ctfdtoken)
+            self.setauth(ctfdurl,ctfdtoken)
             self.repo.synccategory(category, ctfdurl,ctfdtoken)
 
     def syncrepository(self, ctfdurl, ctfdtoken):

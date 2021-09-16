@@ -1,5 +1,12 @@
 from pathlib import Path
 import subprocess
+import yaml
+import getpass
+import subprocess
+from pathlib import Path
+from collections import namedtuple
+
+Prompt = namedtuple("Prompt", ["text", "type", "default", "required", "multiple"])
 
 CHALLENGE_SPEC_DOCS = {
     "name": Prompt(

@@ -24,8 +24,7 @@ class SandboxyCTFdRepository():
         except Exception:
             errorlogger("[-] FAILED: Instancing a SandboxyCTFdRepository()")
 
-    
-    def _createrepo(self)-> Repository:
+    def _createrepo(self, allowedcategories)-> Repository:
         '''
         Performs all the actions necessary to create a repository
         From the Challenges Folder in the DATAROOT
@@ -45,7 +44,7 @@ class SandboxyCTFdRepository():
         for category in repocategoryfolders:
             categorypath = Path(os.path.join(self.repofolder, category))
             # if its a repository category folder in aproved list
-            if category.stem in CATEGORIES:
+            if category.stem in allowedcategories:
                 # process the challenges in that category
                 newcategory = self._processcategory(categorypath)
                 # this dict contains the entire repository now
