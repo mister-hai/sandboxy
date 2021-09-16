@@ -5,6 +5,7 @@ from tarfile import TarFile
 import tarfile
 from ctfcli.core.yamlstuff import Yaml
 from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
+from ctfcli.utils.utils import redprint
 from ctfcli.core.apisession import APIHandler
 
 ###############################################################################
@@ -302,27 +303,37 @@ class Challenge(Yaml):
         #self._processhandout()
         self.jsonpayload['handout'] = self.handout
 
-    def _processfoldertotarfile(self,folder:Path,filename='default.tar.gz')-> TarFile:
+    def _processfoldertotarfile(self,folder:Path,filename='default')-> TarFile:
         '''
         creates a tarfile of the provided folder 
         if a tarfile already exists, it simply returns that
         '''
-        from ctfcli.utils.utils import getsubdirs,getsubfiles
-        # make an array of Paths to folder contents
-        dirlisting = [item for item in Path(folder).glob('**/*')] #getsubfiles(folder)
-        #dirlisting = [Path(os.path.abspath(item)) for item in os.listdir(folder)]
-        for filepath in dirlisting:#Path(folder).iterdir():
-            # if its named filename.tar.gz
-            if filepath.suffixes[0] == '.tar' and filepath.suffixes[1] == '.gz' and filepath.stem == filename:
-                return TarFile(filename,"r:gz",filepath)
-            # they didnt zip the handout or solution up like requested so we have to do that for them now
-            else:
-                # no tar.gz in folder, create archive
-                with tarfile.open(Path(folder,filename), "w:gz")as tar:
+        import shutil
+        dirlisting = [item for item in Path(folder).glob('**/*')]
+        # folder is not empty
+        if len(dirlisting) != 0:
+                # first, scan for the file.tar.gz
+                for item in dirlisting:
+                    # if its named filename.tar.gz
+                    if item.suffixes[0] == '.tar' and item.suffixes[1] == '.gz' and item.stem == filename:
+                        return TarFile.open(item,"r:gz",item)
+                    #else:
+                    #    continue
+                # if its not there, create archive and add all files
+                newtarfilepath = Path(folder,filename)
+                with tarfile.open(newtarfilepath, "w:gz") as tar:
                     for item in dirlisting:
-                        tar.add(item)
-                    tar.close()
-                    return tar
+                        tar.addfile(tarfile.TarInfo(item.name), open(item.resolve()))
+                tar.close()
+                return tar
+        elif len(dirlisting) == 0:
+            #TODO: add manual tar upload to challenge by name
+            yellowboldprint(f"[?] No files in {folder} Folder. This must be uploaded manually if its a mistake")
+            # cheat code for exiting a function?
+            return None
+        else:
+            redprint("[-] Something WIERD happened, throw a banana and try again!")
+            raise Exception
 
     def sync(self, CTFD_URL, CTFD_TOKEN):
         '''
