@@ -95,7 +95,7 @@ class Repository(Repo):
         else:
             return challengesack
 
-    def getallchallenges(self, category, printscr=True) -> list:
+    def getallchallenges(self, printscr=True) -> list:
         """
         Lists ALL challenges in repo
         Supply "print=False" to return a variable instead of text 

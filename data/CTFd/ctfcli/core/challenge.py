@@ -281,7 +281,7 @@ class Challenge(Yaml):
             "category":        self.category,
             "author" :         self.author,
             "description":     self.description,
-            "type":            self.type,
+            "type":            self.typeof,
             "value":           self.value,
             "state":           self.state,
             #"max_attempts":    self.attempts,

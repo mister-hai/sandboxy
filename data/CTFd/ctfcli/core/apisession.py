@@ -159,7 +159,7 @@ class APIHandler(requests.Session):
         used during a session
         """
         # get list of challenges
-        self.apiresponse = self.apisession.get(self._getroute('challenges',admin=True),json=True)
+        self.apiresponse = self.get(self._getroute('challenges',admin=True),json=True)
         return self.apiresponse
 
     def _getidbyname(self, challengename):#apiresponse:requests.Response, challengename="test"):
@@ -335,7 +335,7 @@ class APIHandler(requests.Session):
         """
         # happens first
         # create new challenge
-        self.apiresponse = self.apisession.post(url=self._getroute('challenges'), 
+        self.apiresponse = self.post(url=self._getroute('challenges'), 
                                                 json=self.challengetemplate,
                                                 allow_redirects=True)
         # original code
