@@ -145,9 +145,10 @@ class APIHandler(requests.Session):
                 self.route = f"{schema}://{self.serverurl}{self.APIPREFIX}{tag}"
                 if admin == True:
                     print(f"[+] Route {self.route}")
-                    return f"{self.route}?view=admin"
+                    #return f"{self.route}?view=admin"
+                    self.route = f"{self.route}?view=admin"
                 else:
-                    print(f"[+] Route {self.route}?view=admin")
+                    print(f"[+] Route {self.route}")
                     return f"{self.route}" #dictofroutes
         except Exception:
             print("[-] Route not found in accepted list")
@@ -324,7 +325,7 @@ class APIHandler(requests.Session):
         endpoint = self._getroute('challenges') + "?view=admin"
         return self.getrequest(url = endpoint, json=True).json()["data"]
 
-    def _createbasechallenge(self):
+    def _createbasechallenge(self,jsonpayload:dict):
         """
         Creates the initial challenge entry, to be 
         updated with relevant additional information
@@ -336,7 +337,7 @@ class APIHandler(requests.Session):
         # happens first
         # create new challenge
         self.apiresponse = self.post(url=self._getroute('challenges'), 
-                                                json=self.challengetemplate,
+                                                json=jsonpayload,
                                                 allow_redirects=True)
         # original code
         #r = s.post("/api/v1/challenges", json=data)

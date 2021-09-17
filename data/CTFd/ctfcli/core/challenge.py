@@ -200,7 +200,10 @@ class Challenge(Yaml):
         # The state of the challenge.
         # If the field is omitted, the challenge is visible by default.
         # If provided, the field can take one of two values: hidden, visible.
-        self.state = kwargs.get("state")
+        if kwargs.get("state") != None:
+            self.state = kwargs.get("state")
+        else:
+            self.state = "visible"
         #state: hidden
         
         # Specifies what version of the challenge specification was used.
@@ -253,6 +256,9 @@ class Challenge(Yaml):
         ################################
         self.files = kwargs.get('files')
         return self
+        # package handout if not already packaged
+        #self._processhandout()
+        #self.jsonpayload['handout'] = self.handout
 
     #def __repr__(self):
     #    '''
@@ -298,10 +304,7 @@ class Challenge(Yaml):
             self.jsonpayload["max_attempts"] = self.attempts
         if self.connection_info and self.connection_info:
             self.jsonpayload['connection_info'] = self.connection_info
-        
-        # package handout if not already packaged
-        #self._processhandout()
-        self.jsonpayload['handout'] = self.handout
+
 
     def _processfoldertotarfile(self,folder:Path,filename='default')-> TarFile:
         '''
@@ -363,7 +366,7 @@ class Challenge(Yaml):
             # create initial entry in CTFd Server to get a challenge ID
             self._setpayload()
             # send request
-            apihandler._createbasechallenge('challenges',self.jsonpayload)
+            apihandler._createbasechallenge(self.jsonpayload)
             self.id = apihandler.challenge_id
             self._processchallenge(apihandler,self.jsonpayload)
         except Exception:
