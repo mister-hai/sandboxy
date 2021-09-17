@@ -4,7 +4,7 @@ from pathlib import Path
 from tarfile import TarFile
 import tarfile
 from ctfcli.core.yamlstuff import Yaml
-from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint
+from ctfcli.utils.utils import errorlogger,yellowboldprint,greenprint
 from ctfcli.utils.utils import redprint
 from ctfcli.core.apisession import APIHandler
 
@@ -310,12 +310,19 @@ class Challenge(Yaml):
         '''
         import shutil
         dirlisting = [item for item in Path(folder).glob('**/*')]
+        #for each in dirlisting:
+        #    if each.stem == ".gitignore":
         # folder is not empty
         if len(dirlisting) != 0:
                 # first, scan for the file.tar.gz
                 for item in dirlisting:
+                    # if its a hidden file
+                    if item.stem.startswith("."):# == ".gitignore":
+                        continue
                     # if its named filename.tar.gz
-                    if item.suffixes[0] == '.tar' and item.suffixes[1] == '.gz' and item.stem == filename:
+                    if len(item.suffixes) == 0:
+                        pass #continue
+                    elif item.suffixes[0] == '.tar' and item.suffixes[1] == '.gz' and item.stem == filename:
                         return TarFile.open(item,"r:gz",item)
                     #else:
                     #    continue

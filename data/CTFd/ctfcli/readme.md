@@ -7,18 +7,22 @@ This tool
 
 #### usage
 
+    - perform setup and create an admin account on CTFd before running this tool
+
+    - You must set the url of the CTFd server in the config.cfg
+
         FIRST RUN, If you have not modified the repository this is not necessary!
         This will generate a Masterlist.yaml file that contains the contents of the 
         repository for loading into the program
         
         >>> host@server$> python ./ctfcli/ ctfcli init
 
+#### Authentication
+
         you should provide token and url when running the tool, it will store 
         token only for a limited time. This is intentional and will not be changed
         This tool is capable of getting its own tokens given an administrative username
         and password
-
-#### Authentication
 
         for SINGLE operations, with NO authentication persistance:
         
@@ -26,6 +30,7 @@ This tool
 
         for multiple operations, WITH authentication persistance:
         This configuraiton will be able to obtain tokens via CLI
+        This is not advised if you are not using a cloud provider for the deployment
         
         >>> host@server$> python ./ctfcli/ ctfcli --adminusername moop --adminpassword password
 

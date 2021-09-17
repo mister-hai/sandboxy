@@ -92,15 +92,3 @@ def errorlogger(message):
     lineno = 'LINE NUMBER >>>' + str(exc_tb.tb_lineno)
     logger.error(lineno+errormesg)
     print(lineno+errormesg + ''.join(trace.format_exception_only()))
-
-CATEGORIES = [
-    "exploitation",
-    "reversing",
-    "web",
-    "forensics",
-    "scripting",
-    "crypto",
-    "networking",
-    "linux",
-    "miscellaneous"
-    ]

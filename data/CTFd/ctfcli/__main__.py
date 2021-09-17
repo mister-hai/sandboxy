@@ -1,10 +1,20 @@
 import os,sys,fire
 sys.path.insert(0, os.path.abspath('.'))
 from ctfcli.linkage import SandBoxyCTFdLinkage
-from ctfcli.utils.utils import CATEGORIES
 from pathlib import Path
-from ctfcli.utils.utils import yellowboldprint, CATEGORIES
+from ctfcli.utils.utils import yellowboldprint
 
+CATEGORIES = [
+    "exploitation",
+    "reversing",
+    "web",
+    "forensics",
+    "scripting",
+    "crypto",
+    "networking",
+    "linux",
+    "miscellaneous"
+    ]
 
 ###############################################################################
 #Before we load the menu, we need to do some checks
@@ -16,10 +26,7 @@ from ctfcli.utils.utils import yellowboldprint, CATEGORIES
 # check location
 PWD = os.path.realpath(".")
 PWD_LIST = os.listdir(PWD)
-for each in PWD_LIST:
-    #Check categories
-    if (each in CATEGORIES) or ():
-        pass
+
 #CHALLENGEREPOROOT=/home/moop/sandboxy/data/CTFd
 os.environ["CHALLENGEREPOROOT"] = str(Path(f'{os.getcwd()}'))
 if os.getenv("CHALLENGEREPOROOT") != None:
@@ -97,6 +104,8 @@ class Ctfcli():
         # modify the structure of the program here by reassigning classes
         #ctfcli = SandBoxyCTFdLinkage(challengeroot)
         ctfcli = SandBoxyCTFdLinkage(challengeroot)
+        # process config file
+        ctfcli._initconfig()
         self.ctfcli = ctfcli
         #self.gitops = SandboxyGitRepository()
 

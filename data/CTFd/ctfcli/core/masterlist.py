@@ -1,7 +1,5 @@
-import os, yaml
-from pathlib import Path
 from ctfcli.ClassConstructor import Constructor
-from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
+from ctfcli.utils.utils import errorlogger,yellowboldprint,greenprint
 from ctfcli.core.repository import Repository
 ###############################################################################
 #  MASTERLIST

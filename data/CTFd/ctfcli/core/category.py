@@ -1,6 +1,6 @@
 
 from ctfcli.core.challenge import Challenge
-from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint,CATEGORIES
+from ctfcli.utils.utils import errorlogger,redprint,yellowboldprint,greenprint
 
 ###############################################################################
 #  CTFd CATEGORY: representation of folder in repository

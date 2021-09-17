@@ -5,7 +5,9 @@ from ctfcli.core.category import Category
 from ctfcli.core.challenge import Challenge
 from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
-from ctfcli.utils.utils import errorlogger, CATEGORIES,yellowboldprint,greenprint,logger
+from ctfcli.core.apisession import APIHandler
+
+from ctfcli.utils.utils import errorlogger,yellowboldprint,greenprint,logger
 
 ###############################################################################
 #
@@ -18,11 +20,12 @@ class SandboxyCTFdRepository():
                 repositoryfolder:Path 
                 ):
         self.repofolder = repositoryfolder
+        self.allowedcategories = list
         try:
             greenprint("[+] Instancing a SandboxyCTFdRepository()")
             super(SandboxyCTFdRepository, self).__init__()
-        except Exception:
-            errorlogger("[-] FAILED: Instancing a SandboxyCTFdRepository()")
+        except Exception as e:
+            errorlogger(f"[-] FAILED: Instancing a SandboxyCTFdLinkage(){e}")
 
     def _createrepo(self, allowedcategories)-> Repository:
         '''
@@ -35,7 +38,7 @@ class SandboxyCTFdRepository():
         Masterlist, Repo (Tuple): Two new data objects
 
         '''
-        greenprint("[+] Beginning Repository Scan")
+        greenprint("[+] Starting Repository Scan")
         dictofcategories = {}
         #repocategoryfolders = os.listdir(os.path.abspath(self.repofolder))
         repocategoryfolders = getsubdirs(self.repofolder)
@@ -190,17 +193,34 @@ class SandboxyCTFdRepository():
         """
             #call 
     
-    def listchallenges(self):
+    def _listchallenges(self):
         """
         Returns a list of all the installed challenges
 
+        This is for local only, and is called by self.listchallenges()
         """
 
-    def listsyncedchallenges(self):
+    def listchallenges(self, ctfdurl, ctfdtoken, remote=False):
         """
-        Lists challenges on the server
-        """
+        NOT IMPLEMENTED YET
 
+        Lists the challenges installed to the server
+        Use 
+        >>> --remote=False 
+        to check the LOCAL repository
+        For git operations, use `gitops` or your preferred terminal workflow
+
+        Args:
+            remote (bool): If True, Checks CTFd server for installed challenges
+        """
+        if remote == True:
+            self.setauth(ctfdurl,ctfdtoken)#,adminusername,adminpassword)
+            apicall = APIHandler( ctfdurl, ctfdtoken)
+            challenges = apicall.get(apicall._getroute('challenges', admin=True), json=True).json()["data"]
+            print(challenges)
+        elif remote == False:
+            #self.listsyncedchallenges()
+            pass
 
     def removechallenge(self):
         """

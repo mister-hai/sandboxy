@@ -1,11 +1,6 @@
-import json,yaml
-from pathlib import Path
 import requests
 from ctfcli.core.APICore import APICore
-from ctfcli.utils.utils import errorlogger, errorlog, greenprint
-#from utils.apifunctions import APIFunctions
-
-
+from ctfcli.utils.utils import errorlog, greenprint
 
 class APIHandler(APICore):
     """

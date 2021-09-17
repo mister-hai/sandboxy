@@ -5,7 +5,7 @@ from ctfcli.core.masterlist import Masterlist
 from ctfcli.core.repository import Repository
 from ctfcli.core.ctfdrepo import SandboxyCTFdRepository
 #from ctfcli.utils.gitrepo import SandboxyGitRepository
-from ctfcli.utils.utils import redprint,greenprint,CATEGORIES, errorlogger
+from ctfcli.utils.utils import redprint,greenprint, errorlogger
 
 
 class SandBoxyCTFdLinkage():
@@ -26,29 +26,47 @@ class SandBoxyCTFdLinkage():
         self.repo = Repository
         self.repofolder = repositoryfolder
         self.masterlistlocation = Path(self.repofolder.parent, "masterlist.yaml")
+        self.ctfdops = SandboxyCTFdRepository(self.repofolder)
 
-        try:
-            greenprint("[+] Instancing a SandboxyCTFdLinkage()")
-            self.ctfdops = SandboxyCTFdRepository(self.repofolder)
-        except Exception as e:
-            errorlogger(f"[-] FAILED: Instancing a SandboxyCTFdLinkage()\n{e}")
-
-        try:
-            greenprint("[+] Reading Config")
-            self._initconfig()
-        except Exception as e:
-            errorlogger(f"[-] FAILED: Reading Config\n{e}")
-
-    def _initconfig(self):
+    def _initconfig(self,configfile = "config.cfg", auth=False):
         """
         Initializes the configuration file into class attributes
         """
-        self.cfgfilepath = Path(self.repofolder.parent,"config.cfg")
-        self.config = configparser.ConfigParser()
-        # split into array
-        self.allowedcategories = self.config['REPO'].get('categories').split(",")
+        try:
+            greenprint("[+] Reading Config")
+            self.cfgfilepath = Path(self.repofolder.parent,configfile)
+            self.config = configparser.ConfigParser()
+            # set categories
+            self._readconfig()
+            self._setallowedcategories()
+            # set auth information
+            if auth==True:
+                self.setauth(config=True)
+                self._writeconfig()
 
+        except Exception as e:
+            errorlogger(f"[-] FAILED: Reading Config\n{e}")
+
+    def _readconfig(self):
+        """
+        Reads from config and sets data to class attribute
+        """
+        #with open(self.cfgfilepath, 'r') as self.configfile:
+            #config = open(self.cfgfilepath)
+        self.config.read(self.cfgfilepath)
+        #self.configfile.close()
+
+    def _writeconfig(self):
+        """
+        Writes data from self.config to self.configfilepath
+        """
+        #with open(self.cfgfilepath, 'w') as self.configfile:
+            #config = open(self.cfgfilepath)
+        self.config.write(self.configfile)
+        #self.configfile.close()
+    
     def setauth(self,
+                config:bool=False,
                 ctfdurl:str=None,
                 ctfdtoken:str=None,
                 adminusername:str=None,
@@ -56,54 +74,82 @@ class SandBoxyCTFdLinkage():
                 ):
         """
         Sets variables on the class instance to allow for authentication
-        to the CTFd server instance
+        to the CTFd server instance.
+
+        Set to use command line arguments by default, but uses config=True
+        for loading
+
         Args:
-            ctfdurl (str): URI for CTFd server
-            ctfdtoken (str): Token provided by admin panel in ctfd
+            config          (bool): If true, uses config file for values
+                                    if False, uses supplied parameters
+            ctfdurl         (str):  URI for CTFd server
+            ctfdtoken       (str):  Token provided by admin panel in ctfd
+            adminpassword   (str):  admin pass
+            adminusername   (str):  admin name
         """
         # open file and parse config within
-        self._readauthconfig(self.cfgfilepath)
+        if config == True:
+            self._readauthconfig()
+        else:
+            if (ctfdurl != None) and (ctfdtoken != None):
+                self.CTFD_TOKEN    = ctfdtoken
+                self.CTFD_URL      = ctfdurl
+                self._setauthconfig(self)
 
-        # filter authentication information                
-        if (ctfdurl != None) and (ctfdtoken != None):
-            self.CTFD_TOKEN    = ctfdtoken #os.getenv("CTFD_TOKEN")
-            self.CTFD_URL      = ctfdurl #os.getenv("CTFD_URL")
-            self._setauthconfig(self, self.cfgfilepath)
-
-        if (adminpassword != None) and (adminusername != None):
-            self.adminpassword = adminpassword
-            self.adminusername = adminusername
-            self.CTFD_URL      = ctfdurl
-            self._setauthconfig(self, self.cfgfilepath)
+            if (adminpassword != None) and (adminusername != None):
+                self.adminpassword = adminpassword
+                self.adminusername = adminusername
+                self.CTFD_URL      = ctfdurl
+                self._setauthconfig(self)
 
         # set auth headers, i forgot what this is for
         self.ctfdauth      = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
-
-    def _setauthconfig(self, cfgfile:Path):
+    
+    def _storetoken(self, token):
         """
-        Sets auth information in config file, yeah its dangerous
-        if this project gets hacked, you're screwed worse in other
-        ways than losing access to ctfd
+        Stores Access tokens from CTFd
+        Only one at a time though. You should rotate them per access, also
+
+        Args:
+            token  (str): The token you have been provided
+        """
+        try:
+            greenprint("[+] Storing Authentication information")
+            #self.cfgfile = open(cfgfile, 'w')
+            #self.config.add_section('auth')
+            self.token = token
+            self.config.set('auth','token',self.token)
+        except Exception:
+            errorlogger("[-] Failed to store authentication information")
+        
+    def _setauthconfig(self):#, cfgfile:Path):
+        """
+        Sets auth information in config file
+        If the containers are breached, this doesnt matter
         DO NOT RECYCLE PASSWORDS, PERIOD!
         """
         try:
             greenprint("[+] Storing Authentication information")
-            self.cfgfile = open(cfgfile, 'w')
-            self.config.add_section('AUTH')
-            self.config.set('AUTH','username',self.adminusername)
-            self.config.set('AUTH','password', self.adminpassword)
-            self.config.set('AUTH','url', self.CTFD_URL)
-            self.config.write(self.cfgfile)
-            self.cfgfile.close()
+            #self.cfgfile = open(cfgfile, 'w')
+            #self.config.add_section('auth')
+            self.config.set('auth','username',self.adminusername)
+            self.config.set('auth','password', self.adminpassword)
+            self.config.set('auth','token', self.token)
+            self.config.set('auth','url', self.CTFD_URL)
         except Exception:
             errorlogger("[-] Failed to store authentication information")
 
-    def _readauthconfig(self, cfgfile:Path):
-        self.config.read(cfgfile)
-        self.adminusername = self.config.get('AUTH', 'username')
-        self.adminusername = self.config.get('AUTH', 'password')
-        self.CTFD_URL = self.config.get('AUTH', 'url')
-        self.cfgfile.close()
+    def _readauthconfig(self):#, cfgfile:Path):
+        #self.config.read(cfgfile)
+        try:
+            greenprint("[+] Setting suthentication informatin from config file")
+            self.adminusername = self.config.get('auth', 'username')
+            self.adminusername = self.config.get('auth', 'password')
+            self.token = self.config.get('auth','token')
+            self.CTFD_URL = self.config.get('auth', 'url')
+            #self.config.close()
+        except Exception as e:
+            errorlogger(f"[-] Failed to set authentication information from config file: {e}")
 
     def _checkmasterlist(self):
         """
@@ -130,15 +176,25 @@ class SandBoxyCTFdLinkage():
 
         Any changes to the repository are reflected in this
         """
-        dictofcategories = {}
-        # get all of the categories in memory/server
-        # not categories in file
-        for cat in self.listcategories(prints=False):
-            dictofcategories[cat.name] = cat
-        # create new repo and push to new masterlist, overwriting old one
-        masterlist = Masterlist(self.masterlistlocation)
-        newrepo = Repository(**dictofcategories)
-        masterlist._writenewmasterlist(newrepo,filemode="w")
+        try:
+            dictofcategories = {}
+            # get all of the categories in memory/server
+            # not categories in file
+            for cat in self.listcategories(prints=False):
+                dictofcategories[cat.name] = cat
+            # create new repo and push to new masterlist, overwriting old one
+            masterlist = Masterlist(self.masterlistlocation)
+            newrepo = Repository(**dictofcategories)
+            masterlist._writenewmasterlist(newrepo,filemode="w")
+        except Exception as e:
+            errorlogger(f"[-] Failed to Update Masterlist : {e}")
+
+    def _setallowedcategories(self):
+        """
+        Reads allowed categories from config file
+        use during reload when scanning for changes
+        """
+        self.allowedcategories = self.config.get('repo','categories').split(",")
 
     def _syncchallenge(self, challenge,ctfdurl,ctfdtoken):
         """
@@ -277,25 +333,3 @@ v        '''
             elif (ctfdtoken != None) and (ctfdurl != None):
                 self._setauth(ctfdurl,ctfdtoken)
                 self.repo.syncrepository(ctfdurl,ctfdtoken)
-
-    def listsyncedchallenges(self, ctfdurl, ctfdtoken, remote=False):
-        """
-        NOT IMPLEMENTED YET
-
-        Lists the challenges installed to the server
-        Use 
-        >>> --remote=False 
-        to check the LOCAL repository
-        For git operations, use `gitops` or your preferred terminal workflow
-
-        Args:
-            remote (bool): If True, Checks CTFd server for installed challenges
-        """
-        if self._checkmasterlist():
-            if remote == True:
-                from ctfcli.core.apisession import APIHandler
-                self._setauth(ctfdurl,ctfdtoken)#,adminusername,adminpassword)
-                apicall = APIHandler( ctfdurl, ctfdtoken)
-                return apicall.get("/api/v1/challenges?view=admin", json=True).json()["data"]
-            elif remote == False:
-                self.ctfdops.listsyncedchallenges()

@@ -9,19 +9,19 @@ import json
 import subprocess
 from pathlib import Path
 
-class Config():
+class Config(configparser.ConfigParser()):
     '''
 Config class
 Maps to the command
 host@server$> ctfcli config <command>
     '''
-    def __init__(self, configpath):
+    def __init__(self, configpath:Path):
         self.configpath = configpath
-        parser = configparser.ConfigParser()
+        #parser = configparser.ConfigParser()
         # Preserve case in configparser
-        parser.optionxform = str
-        parser.read(Path(self.configpath))
-        return parser
+        self.optionxform = str
+        self.read(self.configpath)
+        super(self).__init__(configpath)
 
     def edit(self, editor="micro"):
         '''

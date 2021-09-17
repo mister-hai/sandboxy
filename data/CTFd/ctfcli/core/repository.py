@@ -1,4 +1,4 @@
-from ctfcli.utils.utils import errorlogger,greenprint,CATEGORIES
+from ctfcli.utils.utils import errorlogger,greenprint
 from ctfcli.core.category import Category
 from ctfcli.core.challenge import Challenge
 
