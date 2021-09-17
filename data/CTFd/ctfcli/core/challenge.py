@@ -117,7 +117,7 @@ class Challenge(Yaml):
                 rejecting. Please check the error log.")
         #self.challengesrc = kwargs.get('challengesrc')
         #self.deployment   = kwargs.get('deployment')
-        self.description = kwargs.get('description')
+        #self.description = kwargs.get('description')
         self.value = kwargs.get('value')
         # can be from masterfile or server, not challenge.yaml
         self.solves = int#kwargs.get('solves')
@@ -285,7 +285,7 @@ class Challenge(Yaml):
         self.jsonpayload = {
             "name":            self.name,
             "category":        self.category,
-            "author" :         self.author,
+            #"author" :         self.author,
             "description":     self.description,
             "type":            self.typeof,
             "value":           self.value,
@@ -381,7 +381,7 @@ class Challenge(Yaml):
             if self.solution != None:
                 pass
             if self.handout != None:
-                apihandler._uploadfiles()
+                apihandler._uploadfiles(self.handout)
         except Exception:
             errorlogger("[-] Error in Challenge.processchallenge()")
 

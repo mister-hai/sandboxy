@@ -1,4 +1,5 @@
 import requests
+from pathlib import Path
 from ctfcli.utils.utils import errorlog, greenprint, errorlogger
 
 class APIHandler(requests.Session):
@@ -144,9 +145,9 @@ class APIHandler(requests.Session):
                 self.schema = schema
                 self.route = f"{schema}://{self.serverurl}{self.APIPREFIX}{tag}"
                 if admin == True:
-                    print(f"[+] Route {self.route}")
-                    #return f"{self.route}?view=admin"
+                    print(f"[+] Route {self.route}?view=admin")
                     self.route = f"{self.route}?view=admin"
+                    return f"{self.route}"
                 else:
                     print(f"[+] Route {self.route}")
                     return f"{self.route}" #dictofroutes
@@ -461,7 +462,7 @@ class APIHandler(requests.Session):
                     self.apiresponse = self.post(self._getroute("flags"), json=flag)
                     self.apiresponse.raise_for_status()
 
-    def _uploadfiles(self, file):
+    def _uploadfiles(self, file:Path):
         """
         uploads files to the ctfd server
         Only the handout.tar.gz should be uploaded as of now
@@ -470,6 +471,7 @@ class APIHandler(requests.Session):
             file (TarFile): The file to upload to accompany the challenge
         """
         data = {"challenge_id": self.challenge_id, "type": "challenge"}
+        file = {"files":open(file.absolute())}
         # Specifically use data= here instead of json= to send multipart/form-data
         self.apiresponse = self.post(url = self._getroute('files'), files=file, data=data)
         self.apiresponse.raise_for_status()

@@ -20,7 +20,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - barcoder
     - challenge.yaml
     connection_info: null
-    description: null
+    description: Reveal my identity! What's the flag encoded in the badge?
     files: null
     flags: CTF{way_too_common}
     folderlocation: !!python/object/apply:pathlib.WindowsPath
@@ -103,7 +103,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     solved_by_me: 'false'
     solves: *id001
-    state: null
+    state: visible
     synched: *id002
     tag: '!Challenge:'
     tags:
@@ -133,7 +133,21 @@ crypto: !!python/object:ctfcli.core.category.Category
     - Modern Clueless Child
     - challenge.yaml
     connection_info: null
-    description: null
+    description: '''I was surfing the crimson wave and oh my gosh I was totally bugging.
+      I also tried out the lilac hair trend but it didn''t work out.
+
+      That''s not to say you are any better, you are a snob and a half. But let''s
+      get back to the main question here-
+
+      Who am I? (You don''t know my name)''
+
+
+      Ciphertext = "52f41f58f51f47f57f49f48f5df46f6ef53f43f57f6cf50f6df53f53f40f58f51f6ef42f56f43f41f5ef5cf4e"
+      (hex)
+
+      Key = "12123"
+
+      '
     extra:
       decay: 450
       initial: 500
@@ -221,7 +235,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     solved_by_me: 'false'
     solves: *id001
-    state: null
+    state: visible
     synched: *id002
     tag: '!Challenge:'
     tags:
@@ -250,7 +264,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - Quick Math
     - challenge.yaml
     connection_info: null
-    description: null
+    description: "Ben has encrypted a message with the same value of 'e' for 3 public\
+      \ moduli -\nn1 = 86812553978993\nn2 = 81744303091421 \nn3 = 83695120256591 \n\
+      and got the cipher texts - \nc1 = 8875674977048\nc2 = 70744354709710\nc3 = 29146719498409.\n\
+      Find the original message. (Wrap it with csictf{})\n"
     extra:
       decay: 450
       initial: 500
@@ -338,7 +355,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     solved_by_me: 'false'
     solves: *id001
-    state: null
+    state: visible
     synched: *id002
     tag: '!Challenge:'
     tags:
@@ -367,7 +384,9 @@ crypto: !!python/object:ctfcli.core.category.Category
     - decrypto-1
     - challenge.yaml
     connection_info: null
-    description: null
+    description: '[Kerckhoffs''s principle](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
+      states that "A cryptosystem should be secure even if everything about the system,
+      except the key, is public knowledge."  So here''s our unbreakable cipher.'
     files: null
     flags: null
     folderlocation: !!python/object/apply:pathlib.WindowsPath
@@ -450,7 +469,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     solved_by_me: 'false'
     solves: *id001
-    state: null
+    state: visible
     synched: *id002
     tag: '!Challenge:'
     tags:
@@ -480,7 +499,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     - Rivest Shamir Adleman
     - challenge.yaml
     connection_info: null
-    description: null
+    description: These 3 guys encrypted my flag, but they didn't tell me how to decrypt
+      it.
     extra:
       decay: 450
       initial: 500
@@ -569,7 +589,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     solved_by_me: 'false'
     solves: *id001
-    state: null
+    state: visible
     synched: *id002
     tag: '!Challenge:'
     tags:
@@ -598,7 +618,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - decrypto-2
     - challenge.yaml
     connection_info: null
-    description: null
+    description: '[Kerckhoffs''s principle](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
+      states that "A cryptosystem should be secure even if everything about the system,
+      except the key, is public knowledge."  So here''s our **really** unbreakable
+      cipher.'
     files: null
     flags: null
     folderlocation: !!python/object/apply:pathlib.WindowsPath
@@ -681,7 +704,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     solved_by_me: 'false'
     solves: *id001
-    state: null
+    state: visible
     synched: *id002
     tag: '!Challenge:'
     tags:
@@ -710,7 +733,11 @@ crypto: !!python/object:ctfcli.core.category.Category
     - Mein Kampf
     - challenge.yaml
     connection_info: null
-    description: null
+    description: "\"We have intercepted the enemy's communications, but unfortunately,\
+      \ some data was corrupted during transmission. Can you recover the message?\"\
+      \nM4 \nUKW $\nGamma 2 4 \n$ 5 9 \n$ 14 3 \n$ 5 20 \nfv cd hu ik es op yl wq\
+      \ jm\n\n\"Ciphertext: zkrtwvvvnrkulxhoywoj\"\n(Words in the flag are separated\
+      \ by underscores)\n"
     extra:
       decay: 450
       initial: 500
@@ -798,7 +825,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     solved_by_me: 'false'
     solves: *id001
-    state: null
+    state: visible
     synched: *id002
     tag: '!Challenge:'
     tags:
@@ -828,7 +855,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - little RSA
     - challenge.yaml
     connection_info: null
-    description: null
+    description: The flag.zip contains the flag I am looking for but it is password
+      protected. The password is the encrypted message which has to be correctly decrypted
+      so I can useit to open the zip file. I tried using RSA but the zip doesn't open
+      by it. Can you help me get the flag please?
     extra:
       decay: 450
       initial: 500
@@ -948,7 +978,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     - anagrams
     - challenge.yaml
     connection_info: null
-    description: null
+    description: Check out the BSidesSF CTF program.  We got a chance to put a puzzle
+      in there. If you're good with permutations, you'll get this once.
     extra:
       decay: 100
       initial: 500
@@ -1022,7 +1053,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     solved_by_me: 'false'
     solves: *id001
-    state: null
+    state: visible
     synched: *id002
     tag: '!Challenge:'
     tags:
@@ -1051,7 +1082,9 @@ crypto: !!python/object:ctfcli.core.category.Category
     - decrypto-3
     - challenge.yaml
     connection_info: null
-    description: null
+    description: Fine, I learned not to roll my own crypto.  I hear OpenSSL is good
+      and easy to use, so I'll use that to encrypt my secrets.  Unfortunately, I keep
+      crashing. Can you help me figure out what the bug is?
     files: null
     flags: null
     folderlocation: !!python/object/apply:pathlib.WindowsPath
@@ -1134,7 +1167,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     solved_by_me: 'false'
     solves: *id001
-    state: null
+    state: visible
     synched: *id002
     tag: '!Challenge:'
     tags:
@@ -1164,7 +1197,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - config-me
     - challenge.yaml
     connection_info: null
-    description: null
+    description: Find the password encrypted in the configuration file
     files: null
     flags: null
     folderlocation: !!python/object/apply:pathlib.WindowsPath
@@ -1247,7 +1280,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     solved_by_me: 'false'
     solves: *id001
-    state: null
+    state: visible
     synched: *id002
     tag: '!Challenge:'
     tags:
@@ -1277,7 +1310,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     - The Climb
     - challenge.yaml
     connection_info: null
-    description: null
+    description: We are not lost, we're right here somewhere on this little blue line.
+      Wait, why do I feel like I'm being watched?
     extra:
       decay: 450
       initial: 500
@@ -1367,7 +1401,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     solved_by_me: 'false'
     solves: *id001
-    state: null
+    state: visible
     synched: *id002
     tag: '!Challenge:'
     tags:

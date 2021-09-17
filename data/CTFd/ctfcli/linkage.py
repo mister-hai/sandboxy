@@ -236,11 +236,13 @@ class SandBoxyCTFdLinkage():
             # write the masterlist with all the repo data to disk
             masterlist._writenewmasterlist(self.masterlistlocation,repository,filemode="w")
             # read masterlist to verify it was saved properly
-            repositoryobject = masterlist._loadmasterlist()
-            #assigns repository to self for use in interactive mode
+            repositoryobject = masterlist._loadmasterlist(self.masterlistlocation)
+            #assigns repository to self for use in 
+            # case the user started in interactive mode
             #self.repo = repositoryobject
             setattr(self,"repo",repositoryobject)
-
+            # if the user has not, the program will simply exit as it 
+            # has reached the end of the logic flow
         except Exception:
             errorlogger("[-] Failed to create CTFd Repository, check the logfile")
         #try:
