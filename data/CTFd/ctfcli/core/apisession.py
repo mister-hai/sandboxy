@@ -32,7 +32,7 @@ class APIHandler(APICore):
         ctfdurl (str): The URL of the CTFd Server instance you are operating
         authtoken (str): The authentication Token given in the settings page of the admin panel on the CTFd server
     """
-    def __init__(self, ctfdurl,authtoken):
+    def __init__(self, ctfdurl:str=None,authtoken:str=None):
         #https://server.host.net/ctfd/
         self.ctfdurl = ctfdurl
         self.authtoken = authtoken

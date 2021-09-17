@@ -1,9 +1,10 @@
-import os
+import os,sys
 import configparser
 from pathlib import Path
 from ctfcli.core.masterlist import Masterlist
 from ctfcli.core.repository import Repository
 from ctfcli.core.ctfdrepo import SandboxyCTFdRepository
+from ctfcli.core.apisession import APIHandler
 #from ctfcli.utils.gitrepo import SandboxyGitRepository
 from ctfcli.utils.utils import redprint,greenprint, errorlogger
 
@@ -26,7 +27,7 @@ class SandBoxyCTFdLinkage():
         self.repo = Repository
         self.repofolder = repositoryfolder
         self.masterlistlocation = Path(self.repofolder.parent, "masterlist.yaml")
-        self.ctfdops = SandboxyCTFdRepository(self.repofolder)
+        self.ctfdops = SandboxyCTFdRepository(self.repofolder, self.masterlistlocation)
 
     def _initconfig(self,configfile = "config.cfg", auth=False):
         """
@@ -77,7 +78,10 @@ class SandBoxyCTFdLinkage():
         to the CTFd server instance.
 
         Set to use command line arguments by default, but uses config=True
-        for loading
+        for loading, config does not require URL of CTFd server
+
+        Will optionally take a token, or username/password combination
+        BOTH METHODS REQUIRE URL
 
         Args:
             config          (bool): If true, uses config file for values
@@ -94,16 +98,15 @@ class SandBoxyCTFdLinkage():
             if (ctfdurl != None) and (ctfdtoken != None):
                 self.CTFD_TOKEN    = ctfdtoken
                 self.CTFD_URL      = ctfdurl
-                self._setauthconfig(self)
 
             if (adminpassword != None) and (adminusername != None):
                 self.adminpassword = adminpassword
                 self.adminusername = adminusername
                 self.CTFD_URL      = ctfdurl
-                self._setauthconfig(self)
-
+        
+        self._setauthconfig(self)
         # set auth headers, i forgot what this is for
-        self.ctfdauth      = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
+        #self.ctfdauth      = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
     
     def _storetoken(self, token):
         """
@@ -142,7 +145,7 @@ class SandBoxyCTFdLinkage():
     def _readauthconfig(self):#, cfgfile:Path):
         #self.config.read(cfgfile)
         try:
-            greenprint("[+] Setting suthentication informatin from config file")
+            greenprint("[+] Setting suthentication information from config file")
             self.adminusername = self.config.get('auth', 'username')
             self.adminusername = self.config.get('auth', 'password')
             self.token = self.config.get('auth','token')
@@ -160,7 +163,8 @@ class SandBoxyCTFdLinkage():
         try:
             greenprint("[+] Checking masterlist")
             if os.path.exists(self.masterlistlocation):
-                repository = Masterlist(self.masterlistlocation)._loadmasterlist()
+                repository = Masterlist()
+                repository = repository._loadmasterlist(self.masterlistlocation)
                 setattr(self,"repo", repository)
                 return True
             else: 
@@ -183,9 +187,9 @@ class SandBoxyCTFdLinkage():
             for cat in self.listcategories(prints=False):
                 dictofcategories[cat.name] = cat
             # create new repo and push to new masterlist, overwriting old one
-            masterlist = Masterlist(self.masterlistlocation)
+            masterlist = Masterlist()
             newrepo = Repository(**dictofcategories)
-            masterlist._writenewmasterlist(newrepo,filemode="w")
+            masterlist._writenewmasterlist(self.masterlistlocation, newrepo,filemode="w")
         except Exception as e:
             errorlogger(f"[-] Failed to Update Masterlist : {e}")
 
@@ -228,9 +232,9 @@ class SandBoxyCTFdLinkage():
             repository._setlocation(self.repofolder)
             # create a new masterlist
             greenprint("[+] Creating Masterlist")
-            masterlist = Masterlist(self.repofolder.parent)
+            masterlist = Masterlist()
             # write the masterlist with all the repo data to disk
-            masterlist._writenewmasterlist(repository,filemode="w")
+            masterlist._writenewmasterlist(self.masterlistlocation,repository,filemode="w")
             # read masterlist to verify it was saved properly
             repositoryobject = masterlist._loadmasterlist()
             #assigns repository to self for use in interactive mode
@@ -317,19 +321,31 @@ class SandBoxyCTFdLinkage():
             self.setauth(ctfdurl,ctfdtoken)
             self.repo.synccategory(category, ctfdurl,ctfdtoken)
 
-    def syncrepository(self, ctfdurl, ctfdtoken):
+    def syncrepository(self, ctfdtoken=None):
         '''
-        Syncs the entire Repository Folder
-        This should not be necessary unless you are performing
-        first time setup. 
+        Syncs the masterlist.yaml with the server
+        This "uploads" the challenges
+
+        use this after init, unless you are using the default set
+
+        If no token is given, the password and username in the 
+        config.cfg file will be used
+        
         Args:
-            ctfdurl (str):   The URL of the CTFd Server instance
             ctfdtoken (str): Token given from Admin Panel > Config > Settings > Auth Token Form
-v        '''
-        if self._checkmasterlist():
-            if (ctfdtoken == None) and (ctfdurl == None):
-                self._setauth(self.CTFD_URL, self.CTFD_TOKEN)
-                self.repo.syncrepository(self.CTFD_URL, self.CTFD_TOKEN)
-            elif (ctfdtoken != None) and (ctfdurl != None):
-                self._setauth(ctfdurl,ctfdtoken)
-                self.repo.syncrepository(ctfdurl,ctfdtoken)
+        '''
+        try:
+            if self._checkmasterlist():
+                #make API handler to manage session
+                apihandler = APIHandler(CTFD_URL, CTFD_TOKEN)
+                # if they want to use the password/username combination
+                if (ctfdtoken == None):
+                    self.setauth(config=True)
+                    self.repo.syncrepository(self.CTFD_TOKEN)
+                # if they want to use a token
+                elif (ctfdtoken != None):
+                    self.setauth(ctfdtoken)
+                    self.repo.syncrepository(self.ctfdtoken)
+        except Exception as e:
+            errorlogger(f'[-] Error syncing challenge: {e}')
+            sys.exit()

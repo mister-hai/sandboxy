@@ -17,8 +17,10 @@ class SandboxyCTFdRepository():
     Backend to CTFd Repository
     """
     def __init__(self,
-                repositoryfolder:Path 
+                repositoryfolder:Path ,
+                masterlistlocation
                 ):
+        self.masterlistlocation = masterlistlocation
         self.repofolder = repositoryfolder
         self.allowedcategories = list
         try:

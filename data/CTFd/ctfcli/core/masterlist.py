@@ -11,10 +11,7 @@ class Masterlist():
     https://matthewpburruss.com/post/yaml/
 
     """
-    def __init__(self, repofolder):
-        # filename for the full challenge index
-        #self.masterlistfile      = "masterlist.yaml"
-        self.masterlistlocation  = repofolder#Path(repofolder,"masterlist.yaml") #Path(os.path.join(repository.location, self.masterlistfile))
+    def __init__(self):
         # tag for yaml file object
         self.tag = "!Masterlist:"
         self.repotag = "!Repo:"
@@ -22,7 +19,7 @@ class Masterlist():
         self.challengetag = "!Challenge:"
         #super().__init__()
 
-    def _loadmasterlist(self) -> Repository:#, tag):
+    def _loadmasterlist(self,masterlistlocation) -> Repository:#, tag):
         """
         Loads the masterlist.yaml into Masterlist.data
 
@@ -32,17 +29,17 @@ class Masterlist():
         tag = "!Repo:"
         try:
             workcrew = Constructor()
-            return workcrew._loadyaml(tag,self.masterlistlocation)
+            return workcrew._loadyaml(tag,masterlistlocation)
         except Exception:
             errorlogger("[-] ERROR:File = Masterlist")
 
-    def _writenewmasterlist(self, pythoncode,filemode="w"):
+    def _writenewmasterlist(self, masterlistlocation, pythoncode,filemode="w"):
         """
         Creates a New Masterlist.yaml file from an init command
         remember to assign data to the file with
         
         >>> thing = Masterlist(filepath)
-        >>> thing._writenewmasterlist(pythoncodeobject, filename = "masterlist.yaml", filemode="a")
+        >>> thing._writenewmasterlist(repofolder, pythoncodeobject, filemode="w")
 
         Args: 
             filepath (Path): path to masterfile
@@ -51,10 +48,13 @@ class Masterlist():
                              so you can manually fix the repo list
 
         """
+        # filename for the full challenge index
+        #self.masterlistfile      = "masterlist.yaml"
+        self.location  = masterlistlocation#Path(repofolder,"masterlist.yaml") #Path(os.path.join(repository.location, self.masterlistfile))
         workcrew = Constructor()
         try:
                 yellowboldprint("[+] Attempting To Write Masterlist.yaml")
-                workcrew._writeyaml(self.masterlistlocation, pythoncode, Repository, filemode)
+                workcrew._writeyaml(self.location, pythoncode, Repository, filemode)
                 greenprint("[+] Masterlist.yaml written to disk!")
         except Exception:
             errorlogger("[-] ERROR: Could not Write .yml file, check the logs!")

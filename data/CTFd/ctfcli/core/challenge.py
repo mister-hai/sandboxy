@@ -327,7 +327,8 @@ class Challenge(Yaml):
                             continue
                         # if its named filename.tar.gz
                         elif item.suffixes[0] == '.tar' and item.suffixes[1] == '.gz' and item.stem == filename:
-                            return TarFile.open(item,"r:gz",item)
+                            #return TarFile.open(item,"r:gz",item)
+                            return item
                         #else:
                         #    continue
                     # if its not there, create archive and add all files
@@ -339,7 +340,7 @@ class Challenge(Yaml):
                             else:
                                 tar.addfile(tarfile.TarInfo(item.name), open(item))
                     tar.close()
-                    return tar
+                    return newtarfilepath
             elif len(dirlisting) == 0:
                 #TODO: add manual tar upload to challenge by name
                 yellowboldprint(f"[?] No files in {folder} Folder. This must be uploaded manually if its a mistake")
@@ -350,7 +351,7 @@ class Challenge(Yaml):
                 raise Exception
         except Exception as e:
             errorlogger(f'[-] Could not process challenge: {e}')
-    def sync(self, CTFD_URL, CTFD_TOKEN):
+    def sync(self, apihandler:APIHandler):
         '''
         Adds a challenge to CTFd server
 
@@ -359,8 +360,6 @@ class Challenge(Yaml):
         '''
         greenprint(f"Syncing challenge: {self.name}")
         try:
-            #make API call
-            apihandler = APIHandler(CTFD_URL, CTFD_TOKEN)
             # create initial entry in CTFd Server to get a challenge ID
             self._setpayload()
             # send request
