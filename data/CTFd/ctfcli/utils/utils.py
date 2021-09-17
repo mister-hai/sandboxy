@@ -52,7 +52,7 @@ def getsubdirs(directory):
     Returns folders in a directory as Paths
     '''
     wat = []
-    for filepath in pathlib.Path(directory).glob('**/*'):#.iterdir():
+    for filepath in pathlib.Path(directory).iterdir():
        if (Path(filepath).is_dir()):
            wat.append(Path(filepath))
     return wat

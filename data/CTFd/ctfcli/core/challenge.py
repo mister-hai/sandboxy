@@ -254,12 +254,12 @@ class Challenge(Yaml):
         self.files = kwargs.get('files')
         return self
 
-    def __repr__(self):
-        '''
-        printself
-        '''
-        for key in self.__dict__:
-            print(str(key) + " : " + str(self.__dict__[key]))
+    #def __repr__(self):
+    #    '''
+    #    printself
+    #    '''
+    #    for key in self.__dict__:
+    #        print(str(key) + " : " + str(self.__dict__[key]))
 
     def _setpayload(self):
         """
@@ -308,40 +308,48 @@ class Challenge(Yaml):
         creates a tarfile of the provided folder 
         if a tarfile already exists, it simply returns that
         '''
-        import shutil
-        dirlisting = [item for item in Path(folder).glob('**/*')]
-        #for each in dirlisting:
-        #    if each.stem == ".gitignore":
-        # folder is not empty
-        if len(dirlisting) != 0:
-                # first, scan for the file.tar.gz
-                for item in dirlisting:
-                    # if its a hidden file
-                    if item.stem.startswith("."):# == ".gitignore":
-                        continue
-                    # if its named filename.tar.gz
-                    if len(item.suffixes) == 0:
-                        pass #continue
-                    elif item.suffixes[0] == '.tar' and item.suffixes[1] == '.gz' and item.stem == filename:
-                        return TarFile.open(item,"r:gz",item)
-                    #else:
-                    #    continue
-                # if its not there, create archive and add all files
-                newtarfilepath = Path(folder,filename)
-                with tarfile.open(newtarfilepath, "w:gz") as tar:
+        try:
+            dirlisting = [item for item in Path(folder).glob('**/*')]
+            #for each in dirlisting:
+            #    if each.stem == ".gitignore":
+            # folder is not empty
+            if len(dirlisting) != 0:
+                    # first, scan for the file.tar.gz
                     for item in dirlisting:
-                        tar.addfile(tarfile.TarInfo(item.name), open(item.resolve()))
-                tar.close()
-                return tar
-        elif len(dirlisting) == 0:
-            #TODO: add manual tar upload to challenge by name
-            yellowboldprint(f"[?] No files in {folder} Folder. This must be uploaded manually if its a mistake")
-            # cheat code for exiting a function?
-            return None
-        else:
-            redprint("[-] Something WIERD happened, throw a banana and try again!")
-            raise Exception
-
+                        # if its a hidden file
+                        if item.stem.startswith("."):# == ".gitignore":
+                            continue
+                        # if its a file without an extension
+                        if len(item.suffixes) == 0 and item.is_file():
+                            continue
+                        # a directory
+                        if item.is_dir():
+                            continue
+                        # if its named filename.tar.gz
+                        elif item.suffixes[0] == '.tar' and item.suffixes[1] == '.gz' and item.stem == filename:
+                            return TarFile.open(item,"r:gz",item)
+                        #else:
+                        #    continue
+                    # if its not there, create archive and add all files
+                    newtarfilepath = Path(folder,filename)
+                    with tarfile.open(newtarfilepath, "w:gz") as tar:
+                        for item in dirlisting:
+                            if item.is_dir():
+                                tar.add(item)
+                            else:
+                                tar.addfile(tarfile.TarInfo(item.name), open(item))
+                    tar.close()
+                    return tar
+            elif len(dirlisting) == 0:
+                #TODO: add manual tar upload to challenge by name
+                yellowboldprint(f"[?] No files in {folder} Folder. This must be uploaded manually if its a mistake")
+                # cheat code for exiting a function?
+                return None
+            else:
+                redprint("[-] Something WIERD happened, throw a banana and try again!")
+                raise Exception
+        except Exception as e:
+            errorlogger(f'[-] Could not process challenge: {e}')
     def sync(self, CTFD_URL, CTFD_TOKEN):
         '''
         Adds a challenge to CTFd server

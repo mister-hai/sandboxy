@@ -78,10 +78,15 @@ class SandboxyCTFdRepository():
             challengefolderpath = Path(self.repofolder,categorypath.name, challengefolder)
             greenprint(f"[+] Found Challenge folder {challengefolderpath.name}")
             yellowboldprint(f'[+] {challengefolderpath}')
-            # create new Challenge() class from folder contents
-            newchallenge = self._createchallengefromfolder(challengefolderpath,newcategory.name)
-            #assign challenge to category
-            newcategory._addchallenge(newchallenge)                    
+            try:
+                # create new Challenge() class from folder contents
+                newchallenge = self._createchallengefromfolder(challengefolderpath,newcategory.name)
+                #assign challenge to category
+            except Exception:
+                errorlogger('[-] Error Creating Challenge!')
+                continue
+            
+            newcategory._addchallenge(newchallenge)
         return newcategory
         
     def _createchallengefromfolder(self, challengefolderpath:Path,category:str) -> Challenge:
