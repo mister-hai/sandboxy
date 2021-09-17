@@ -104,7 +104,7 @@ class SandBoxyCTFdLinkage():
                 self.adminusername = adminusername
                 self.CTFD_URL      = ctfdurl
         
-        self._setauthconfig(self)
+        self._setauthconfig()
         # set auth headers, i forgot what this is for
         #self.ctfdauth      = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
     
@@ -147,7 +147,7 @@ class SandBoxyCTFdLinkage():
         try:
             greenprint("[+] Setting suthentication information from config file")
             self.adminusername = self.config.get('auth', 'username')
-            self.adminusername = self.config.get('auth', 'password')
+            self.adminpassword = self.config.get('auth', 'password')
             self.token = self.config.get('auth','token')
             self.CTFD_URL = self.config.get('auth', 'url')
             #self.config.close()
@@ -337,15 +337,19 @@ class SandBoxyCTFdLinkage():
         try:
             if self._checkmasterlist():
                 #make API handler to manage session
-                apihandler = APIHandler(CTFD_URL, CTFD_TOKEN)
-                # if they want to use the password/username combination
+                # change apihandler to grab token
                 if (ctfdtoken == None):
                     self.setauth(config=True)
-                    self.repo.syncrepository(self.CTFD_TOKEN)
-                # if they want to use a token
+                    apihandler = APIHandler(self.CTFD_URL)
+                    # if they want to use the password/username combination
+                    # get token anyways, only use password to login once
+                    apihandler._obtainauthtoken()
+                    self.repo.syncrepository(apihandler)
+                # if they have a token already
                 elif (ctfdtoken != None):
                     self.setauth(ctfdtoken)
-                    self.repo.syncrepository(self.ctfdtoken)
+                    apihandler = APIHandler(self.CTFD_URL)
+                    self.repo.syncrepository(apihandler)
         except Exception as e:
             errorlogger(f'[-] Error syncing challenge: {e}')
             sys.exit()

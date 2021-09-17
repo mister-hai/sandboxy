@@ -5,7 +5,7 @@ import ctfcli.core.apisession
 from ctfcli.linkage import SandBoxyCTFdLinkage
 #from ctfcli.utils.ctfdrepo import SandboxyCTFdRepository
 #from ctfcli.utils.gitrepo import SandboxyGitRepository
-from ctfcli.core.apisession import APICore,APIHandler
+from ctfcli.core.apisession import APIHandler
 import ctfcli.ClassConstructor
 #from ctfcli.ClassConstructor import *
 import ctfcli

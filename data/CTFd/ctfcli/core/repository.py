@@ -1,3 +1,4 @@
+from ctfcli.core.apisession import APIHandler
 from ctfcli.utils.utils import errorlogger,greenprint
 from ctfcli.core.category import Category
 from ctfcli.core.challenge import Challenge
@@ -138,7 +139,7 @@ class Repository(Repo):
         except Exception:
             errorlogger(f"[-] Failure to sync category! {category.name}")
     
-    def syncrepository(self,CTFD_URL,CTFD_TOKEN):
+    def syncrepository(self,apihandler:APIHandler):
 
         '''
         Syncs the entire Repository Folder
@@ -154,4 +155,4 @@ class Repository(Repo):
         for challenge in challengesack:
             #challenge.sync()
             #self._syncchallenge(challenge,apihandler)
-            challenge.sync(CTFD_URL,CTFD_TOKEN)
+            challenge.sync(apihandler)
