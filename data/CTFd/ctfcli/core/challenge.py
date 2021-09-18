@@ -7,6 +7,8 @@ from ctfcli.core.yamlstuff import Yaml
 from ctfcli.utils.utils import errorlogger,yellowboldprint,greenprint
 from ctfcli.utils.utils import redprint
 from ctfcli.core.apisession import APIHandler
+from ctfcli.core.apitemplates import hintstemplate
+
 
 ###############################################################################
 #  CHALLENGEYAML
@@ -273,29 +275,25 @@ class Challenge(Yaml):
         This is the /challenge endpoint template
         """
         if self.typeof == 'dynamic':
-            self.scorepayload['extra'] = {
+            self.scorepayload = {
+                                'value'  : self.value,
                                 'initial': self.extra['initial'],
                                 'decay'  : self.extra['decay'],
                                 'minimum': self.extra['minimum']
                                 }
         elif (self.typeof == 'standard') or (self.typeof == 'static'):
-            #self.jsonpayload['value'] = self.value
-            pass
+            self.jsonpayload['value'] = self.value
+            #pass
         # set final payload
         self.jsonpayload = {
             "name":            self.name,
             "category":        self.category,
-            #"author" :         self.author,
             "description":     self.description,
             "type":            self.typeof,
-            "value":           self.value,
+            **self.scorepayload,
+            #"value":           self.value,
             "state":           self.state,
-            #"max_attempts":    self.attempts,
-            #"connection_info": self.connection_info,
-            # unpack "value + extra" OR "value"
-            **self.scorepayload
             }
-        #self.jsonpayload["state"] = "visible"
         # Some challenge types (e.g. dynamic) override value.
         # We can't send it to CTFd because we don't know the current value
         #if self.value is None:
@@ -354,6 +352,7 @@ class Challenge(Yaml):
                 raise Exception
         except Exception as e:
             errorlogger(f'[-] Could not process challenge: {e}')
+
     def sync(self, apihandler:APIHandler):
         '''
         Adds a challenge to CTFd server

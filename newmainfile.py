@@ -72,16 +72,7 @@ class Sandboxy():
         Proper Usage is as follows
         
         FIRST RUN, if you have not modified the repository this is not necessary!
-        >>> host@server$> python ./ctfcli.py init
-
-        Generating a completion script and adding it to ~/.bashrc
-        >>> host@server$> python ./ctfd.py ctfcli -- --completion > ~/.ctfcli-completion
-        >>> host@server$> echo "source ~/.ctfcli-completion" >> ~/.bashrc  
-
-        To generate a completion script for the Fish shell. 
-        (fish is nice but incompatible with bash scripts so far as I know so start.sh wont work)
-
-        >>> python ./ctfcli.py -- --completion fish 
+        >>> host@server$> python ./mainfile.py cleantempfiles
 
         If the commands available in the Fire CLI change, you'll have to regenerate the 
         completion script and source it again.

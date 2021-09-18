@@ -1,7 +1,7 @@
 import requests
 from pathlib import Path
 from ctfcli.utils.utils import errorlog, greenprint, errorlogger
-
+from ctfcli.core.apitemplates import hintstemplate,topictemplate, flagstemplate
 class APIHandler(requests.Session):
     """
     Handler for the APISession() class
@@ -57,63 +57,22 @@ class APIHandler(requests.Session):
             "_submit": "Submit",
             "nonce": str
             }
-        self.challengetemplate = {
-                "name": str,
-                "category": str,
-                "value": int,
-                'description':str,
-                "state":str,
-                "type": str,
-                #"tags": list,#[],
-                #'flags':r'''test{testflag}'''
-                #"solves": int,#4,
-                #"solved_by_me": str,#'false',
-                #"template": str,#"/plugins/multiple_choice/assets/view.html",
-                #"script": str#"/plugins/multiple_choice/assets/view.js"
-        }
-        self.topictemplate = {
-                    "value": str,
-                    "type": str,#"challenge",
-                    "challenge_id": int,
-                }
-        self.hintstemplate = {
-                    "content": str,
-                    "cost": int,
-                    "challenge_id": int,
-                }
-        self.flagstemplate = {
-            "success": str,#'true',
-            "data": [
-                {
-                    "content": str,#"test{thisisatest}",
-                    "id": int,#1,
-                    "challenge_id": int,#1,
-                    "type": str,#"static",
-                    "data": str,#"",
-                    "challenge": int#1
-                }
-            ]
-        }
-        # this is returned from a token request
-        self.tokentemplate = {
-				"success": str,#'true', 
-				"data": {
-						"created": str,#"2021-09-12T08:59:52.421062+00:00", 
-						"value": str,#"e2c1cb51859e5d7afad6c2cd82757277077a564166d360b48cafd5fcc1e4e015", 
-						"type": str,#"user",
-						"id": int,#1,
-						"expiration":str,#"2021-10-12T08:59:52.421073+00:00",
-						"user_id": int#1
-						}
-				}
-        # template for authentication packet
-        self.authtemplate = {
-	        "name": str,
-	        "password": str,
-	        "_submit": "Submit",
-	        "nonce": str #"84e85c763320742797291198b9d52cf6c82d89f120e2551eb7bf951d44663977"
-        }
+
         super().__init__()
+
+    def _setheaders(self):
+        """
+        Sets the headers to allow for file uploads?
+        """
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) \
+                                AppleWebKit/537.36 (KHTML, like Gecko) \
+                                Chrome/93.0.4577.82 Safari/537.36',
+                    #'Origin': 'http://127.0.0.1:8000',
+                    #'Referer': 'http://127.0.0.1:8000/admin/challenges/11',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Accept-Language': 'en-US,en;q=0.9' 
+                }
+        self.headers.update(headers)
 
     def _setauth(self):
         """
@@ -189,11 +148,18 @@ class APIHandler(requests.Session):
         >>> APISession.authtoken
         """
         #apisession = APISession()
-
+        # template for authentication packet
+        self.authtemplate = {
+	        "name": str,
+	        "password": str,
+	        "_submit": "Submit",
+	        "nonce": str #"84e85c763320742797291198b9d52cf6c82d89f120e2551eb7bf951d44663977"
+        }
         ################################################################
         # Logging in as Admin!
         ################################################################
         # get the login form
+
         apiresponse = self.get(f"{self.ctfdurl}/login", allow_redirects=False)
         # if the server responds ok and its a setup, pre install
         if self.was_there_was_an_error(apiresponse.status_code):
@@ -324,7 +290,7 @@ class APIHandler(requests.Session):
         server by an administrator or a hacker
         """
         endpoint = self._getroute('challenges') + "?view=admin"
-        return self.getrequest(url = endpoint, json=True).json()["data"]
+        return self.get(url = endpoint, json=True).json()["data"]
 
     def _createbasechallenge(self,jsonpayload:dict):
         """
@@ -424,45 +390,48 @@ class APIHandler(requests.Session):
         #    }
         #    - This hint is free
         '''
+        self.hintstempl = hintstemplate()
         for hint in hints:
             if type(hint) == str:
-                self.hintstemplate["content"] = hint
-                self.hintstemplate["cost"] = hintcost
-                self.hintstemplate["challenge_id"] = challengeid
+                self.hintstempl["content"] = hint
+                self.hintstempl["cost"] = hintcost
+                self.hintstempl["challenge_id"] = challengeid
             else:
-                self.hintstemplate["content"] = hint["content"]
-                self.hintstemplate["cost"] = hint["cost"]
-                self.hintstemplate["challenge_id"] = challengeid
+                self.hintstempl["content"] = hint["content"]
+                self.hintstempl["cost"] = hint["cost"]
+                self.hintstempl["challenge_id"] = challengeid
             #make request with hints template
-            self.apiresponse = self.post(self._getroute('hints'), json=self.hintstemplate)
+            self.apiresponse = self.post(self._getroute('hints'), json=self.hintstempl)
             self.apiresponse.raise_for_status()
 
     def _processtopics(self, jsonpayload:dict):
         '''
         process hints for the challenge
         '''
+        self.topictempl = topictemplate()
         for topic in jsonpayload.get("topics"):
-            self.topictemplate['value'] = topic
-            self.apiresponse = self.post(self._getroute("topics"),json=self.topictemplate)
+            self.topictempl['value'] = topic
+            self.apiresponse = self.post(self._getroute("topics"),json=self.topictempl)
             self.apiresponse.raise_for_status()
 
     def _processflags(self, challengeid:int, jsonpayload:dict) -> requests.Response:
         '''
         process hints for the challenge
         '''
+        self.flagstempl = flagstemplate()
         for flag in jsonpayload.get("flags"):
                 if type(flag) == str:
-                    self.flagstemplate["content"] = flag
-                    self.flagstemplate["type"] = "static"
-                    self.flagstemplate["challenge_id"] = challengeid
-                    self.apiresponse = self.post(self._getroute("flags"), json=self.flagstemplate)
+                    self.flagstempl["content"] = flag
+                    self.flagstempl["type"] = "static"
+                    self.flagstempl["challenge_id"] = challengeid
+                    self.apiresponse = self.post(self._getroute("flags"), json=self.flagstempl)
                     self.apiresponse.raise_for_status()
                 elif type(flag) == dict:
-                    self.flagstemplate["challenge_id"] = challengeid
+                    self.flagstempl["challenge_id"] = challengeid
                     self.apiresponse = self.post(self._getroute("flags"), json=flag)
                     self.apiresponse.raise_for_status()
 
-    def _uploadfiles(self, file:Path):
+    def _uploadfiles(self, file:Path, challenge_id:str=None):
         """
         uploads files to the ctfd server
         Only the handout.tar.gz should be uploaded as of now
@@ -470,9 +439,24 @@ class APIHandler(requests.Session):
         Args:
             file (TarFile): The file to upload to accompany the challenge
         """
-        data = {"challenge_id": self.challenge_id, "type": "challenge"}
-        file = {"files":open(file.absolute())}
-        # Specifically use data= here instead of json= to send multipart/form-data
-        self.apiresponse = self.post(url = self._getroute('files'), files=file, data=data)
-        self.apiresponse.raise_for_status()
+        try:
+            greenprint(f"[+] Uploading {file}")
+            jsonpayload = {
+                "challenge_id": challenge_id if challenge_id is not None else self.challenge_id, 
+                "type": "challenge"
+                }
+            # buffer data and pack into json container
+            data = open(file.absolute(),"r",encoding="latin-1", closefd=True)
+            files = {"file": data}
+
+            # set headers for file upload
+            self._setauth()
+            self._setheaders()
+            # Specifically use data= here instead of json= to send multipart/form-data
+            # the data field sends json encoded strings describing what to do with the files
+            # the files field is the binary blob (or blobs) we want to have uploaded
+            self.apiresponse = self.post(url = self._getroute('files'), files=files, data=jsonpayload)
+            self.apiresponse.raise_for_status()
+        except Exception as e:
+            errorlogger(f"[-] Could not upload file: {e}")
 
