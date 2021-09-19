@@ -1,10 +1,11 @@
 # DAILY PLAN
 
-    Rewriting the entirety of ctfcli, API calls are all thats left for the most part
-
+    
     I have gotten a test of the uploading functionality working
     it `should` be complete shortly
-        
+    ![alt text](https://github.com/mister-hai/sandboxy/blob/extra/docs/terminal.png?raw=true)
+
+    ![alt text](https://github.com/mister-hai/sandboxy/blob/extra/docs/ctfd.png?raw=true)
 
 # WEEKLY PLAN
     

@@ -423,11 +423,16 @@ class APIHandler(requests.Session):
                 if type(flag) == str:
                     self.flagstempl["content"] = flag
                     self.flagstempl["type"] = "static"
-                    self.flagstempl["challenge_id"] = challengeid
-                    self.apiresponse = self.post(self._getroute("flags"), json=self.flagstempl)
+                    self.flagstempl["challenge"] = challengeid
+                    self.apiresponse = self.post(
+                                                self._getroute("flags"),
+                                                json=dict(self.flagstempl),
+                                                allow_redirects=True
+                                                )
+                                            
                     self.apiresponse.raise_for_status()
                 elif type(flag) == dict:
-                    self.flagstempl["challenge_id"] = challengeid
+                    self.flagstempl["challenge"] = challengeid
                     self.apiresponse = self.post(self._getroute("flags"), json=flag)
                     self.apiresponse.raise_for_status()
 
