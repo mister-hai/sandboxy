@@ -4,9 +4,9 @@
     I have gotten a test of the uploading functionality working
     it `should` be complete shortly
 
-![terminal output](https://github.com/mister-hai/sandboxy/blob/extra/docs/terminal.png)
+![terminal output](https://github.com/mister-hai/sandboxy/blob/extra/docs/terminal.png?raw=true)
 
-![platform display](https://github.com/mister-hai/sandboxy/blob/extra/docs/ctfd.png)
+![platform display](https://github.com/mister-hai/sandboxy/blob/extra/docs/ctfd.png?raw=true)
 
 # WEEKLY PLAN
     
