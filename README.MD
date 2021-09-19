@@ -4,7 +4,7 @@
     I have gotten a test of the uploading functionality working
     it `should` be complete shortly
 
-![terminal output](https://raw.githubusercontent.com/mister-hai/sandboxy/blob/extra/docs/terminal.png?raw=true)
+![terminal output](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/terminal.png)
 
 ![platform display](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/ctfd.png))
 
