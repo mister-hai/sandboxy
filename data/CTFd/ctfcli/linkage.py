@@ -23,10 +23,11 @@ class SandBoxyCTFdLinkage():
 
     def __init__(self,
                 repositoryfolder:Path,
+                masterlistlocation:Path
                 ):
         self.repo = Repository
         self.repofolder = repositoryfolder
-        self.masterlistlocation = Path(self.repofolder.parent, "masterlist.yaml")
+        self.masterlistlocation = masterlistlocation #Path(self.repofolder.parent, "masterlist.yaml")
         self.ctfdops = SandboxyCTFdRepository(self.repofolder, self.masterlistlocation)
 
     def _initconfig(self,configfile = "config.cfg", auth=False):
@@ -45,8 +46,8 @@ class SandBoxyCTFdLinkage():
                 self.setauth(config=True)
                 self._writeconfig()
 
-        except Exception as e:
-            errorlogger(f"[-] FAILED: Reading Config\n{e}")
+        except Exception:
+            errorlogger("[-] FAILED: Reading Config")
 
     def _readconfig(self):
         """
@@ -151,8 +152,8 @@ class SandBoxyCTFdLinkage():
             self.token = self.config.get('auth','token')
             self.CTFD_URL = self.config.get('auth', 'url')
             #self.config.close()
-        except Exception as e:
-            errorlogger(f"[-] Failed to set authentication information from config file: {e}")
+        except Exception:
+            errorlogger("[-] Failed to set authentication information from config file:")
 
     def _checkmasterlist(self):
         """
@@ -167,7 +168,7 @@ class SandBoxyCTFdLinkage():
                 repository = repository._loadmasterlist(self.masterlistlocation)
                 setattr(self,"repo", repository)
                 return True
-            else: 
+            else:
                 raise Exception
         except Exception:
             errorlogger("[-] Masterlist not located! Run 'ctfcli init' first!")
@@ -181,6 +182,7 @@ class SandBoxyCTFdLinkage():
         Any changes to the repository are reflected in this
         """
         try:
+            greenprint("[+] Updating masterlist.yaml")
             dictofcategories = {}
             # get all of the categories in memory/server
             # not categories in file
@@ -190,8 +192,8 @@ class SandBoxyCTFdLinkage():
             masterlist = Masterlist()
             newrepo = Repository(**dictofcategories)
             masterlist._writenewmasterlist(self.masterlistlocation, newrepo,filemode="w")
-        except Exception as e:
-            errorlogger(f"[-] Failed to Update Masterlist : {e}")
+        except Exception:
+            errorlogger("[-] Failed to Update Masterlist :")
 
     def _setallowedcategories(self):
         """
@@ -352,6 +354,8 @@ class SandBoxyCTFdLinkage():
                     self.setauth(ctfdtoken)
                     apihandler = APIHandler(self.CTFD_URL)
                     self.repo.syncrepository(apihandler)
-        except Exception as e:
-            errorlogger(f'[-] Error syncing challenge: {e}')
+            #update masterlist with server generated information
+            self._updatemasterlist()
+        except Exception:
+            errorlogger('[-] Error syncing challenge:')
             sys.exit()

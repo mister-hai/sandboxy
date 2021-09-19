@@ -112,11 +112,12 @@ class Challenge(Yaml):
         # a KeyError will be raised if the key does not exist
         try:
             self.name = kwargs.pop("name")
-            self.author = kwargs.pop('author')
+            #self.author = kwargs.pop('author')
             self.description = kwargs.pop('description')
         except Exception:
             errorlogger("[-] Challenge.yaml does not conform to specification, \
                 rejecting. Please check the error log.")
+        self.author = kwargs.get('author')
         #self.challengesrc = kwargs.get('challengesrc')
         #self.deployment   = kwargs.get('deployment')
         #self.description = kwargs.get('description')
@@ -182,16 +183,12 @@ class Challenge(Yaml):
         #        content: "(.*)STUFF(.*)",
         #        data: "case_insensitive",
         #    }
+        # despite flags being REQUIRED people just dont add them?
+        # need to fix the repo files
+        self.flags = str
+        #self.flags = kwargs.get('flags')
         try:
-            # despite flags being REQUIRED people just dont add them?
-            # need to fix the repo files
-            #self.flags = kwargs.pop('flags')
-            self.flags = kwargs.get('flags')
-        except Exception:
-            try:
-                self.flags = kwargs.pop('flag')
-            except Exception:
-                pass
+            self.flags = kwargs.pop('flag')
         except Exception:
             errorlogger('[-] ERROR: No flag in challenge')
             pass
@@ -282,10 +279,10 @@ class Challenge(Yaml):
                                 'minimum': self.extra['minimum']
                                 }
         elif (self.typeof == 'standard') or (self.typeof == 'static'):
-            self.jsonpayload['value'] = self.value
+            self.scorepayload = {'value' : self.value}
             #pass
-        # set final payload
-        self.jsonpayload = {
+        # set base challenge payload
+        self.basepayload = {
             "name":            self.name,
             "category":        self.category,
             "description":     self.description,
@@ -294,6 +291,15 @@ class Challenge(Yaml):
             #"value":           self.value,
             "state":           self.state,
             }
+        # the rest of the challenge information
+        self.jsonpayload = {
+            'flags':self.flags,
+            'topics':self.topics,
+            'tags':self.tags,
+            'files':self.files,
+            'hints':self.hints,
+            'requirements':self.requirements
+        }
         # Some challenge types (e.g. dynamic) override value.
         # We can't send it to CTFd because we don't know the current value
         #if self.value is None:
@@ -364,16 +370,24 @@ class Challenge(Yaml):
         try:
             # create initial entry in CTFd Server to get a challenge ID
             self._setpayload()
-            # send request
-            apihandler._createbasechallenge(self.jsonpayload)
+            # send request for base challenge creation
+            apihandler._createbasechallenge(self.basepayload)
+            # get challenge ID from Response and assign to self for later 
+            # re-combination into the repository masterlist
             self.id = apihandler.challenge_id
+            # process the rest of the challenge data
             self._processchallenge(apihandler,self.jsonpayload)
         except Exception:
-            errorlogger("[-] Error syncing challenge: API Request was {}".format(self.jsonpayload))
+            errorlogger(f"[-] Error syncing challenge: API Request was {self.jsonpayload}")
 
     def _processchallenge(self,apihandler:APIHandler,jsonpayload:dict):
+        """
+        Handles uploading the rest of the challenge information
+        
+        'flags''topics''tags''files''hints''requirements'
+        """
         try:
-            for each in ['flags','topics','tags','files','hints','requirements']:
+            for each in self.jsonpayload:
                 if jsonpayload.get(each) != None:
                     apihandler._process(each,jsonpayload)
             # we are not providing solutions to the users by default

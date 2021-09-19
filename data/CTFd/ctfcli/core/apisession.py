@@ -332,7 +332,7 @@ class APIHandler(requests.Session):
             self._processtopics(self.challenge_id,jsonpayload)
         # Update tags
         if tag == 'tags':
-            self._processtopics(self.challenge_id,jsonpayload)
+            self._processtags(self.challenge_id,jsonpayload)
         # Upload files
         if tag == 'files':
             self._uploadfiles(self.challenge_id,jsonpayload)

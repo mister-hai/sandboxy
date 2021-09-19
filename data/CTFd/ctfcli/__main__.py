@@ -1,6 +1,7 @@
 import os,sys,fire
 sys.path.insert(0, os.path.abspath('.'))
 from ctfcli.linkage import SandBoxyCTFdLinkage
+#from ctfcli.utils.config import Config
 from pathlib import Path
 from ctfcli.utils.utils import yellowboldprint
 
@@ -17,34 +18,40 @@ CATEGORIES = [
     ]
 
 ###############################################################################
-#Before we load the menu, we need to do some checks
-# The .env needs to be reloaded in the case of other alterations
-# and rotating/changing access keys
-#projectroot = os.getenv("PROJECT_ROOT")
-#dotenv_path = Path('path/to/.env')
-#load_dotenv(dotenv_path=dotenv_path)
-# check location
 PWD = os.path.realpath(".")
 PWD_LIST = os.listdir(PWD)
 
-#CHALLENGEREPOROOT=/home/moop/sandboxy/data/CTFd
-os.environ["CHALLENGEREPOROOT"] = str(Path(f'{os.getcwd()}'))
-if os.getenv("CHALLENGEREPOROOT") != None:
-    CTFDDATAROOT = Path(os.getenv("CHALLENGEREPOROOT"))
-    yellowboldprint(f'[+] Repository root ENV variable is {CTFDDATAROOT}')
-    challengeroot = Path(CTFDDATAROOT, "challenges")# os.path.join(CTFDDATAROOT, "challenges")
-    yellowboldprint(f'[+] Challenge root is {challengeroot}')
+# Master values
+# alter these accordingly
+toolfolder = Path(os.path.dirname(__file__))
+reporoot   = toolfolder.parent
+challengesfolder = Path(reporoot, "challenges")
+docsfolder = Path(reporoot, "build", "singlehtml")
+masterlist = Path(reporoot, "masterlist.yaml")
+configfile = Path(reporoot, "config.cfg")
+
+
+# this gets set before the tool runs if sandboxy is being used
+# when this is ready, this line gets commented and then this 
+# gets set by start.sh
+#REPOROOT=/home/moop/sandboxy/data/CTFd
+os.environ["REPOROOT"] = str(reporoot)
+
+if os.getenv("REPOROOT") != None:
+    yellowboldprint(f'[+] Repository root ENV variable is {os.getenv("REPOROOT")}')
+    yellowboldprint(f'[+] Challenge root is {challengesfolder}')
 # this code is inactive currently
+
 else:
-    yellowboldprint("[+] CHALLENGEREPOROOT variable not set, checking one directory higher")
+    yellowboldprint("[+] REPOROOT variable not set, checking one directory higher")
     # ugly but it works
-    onelevelup = Path(f'{os.getcwd()}').parent
+    onelevelup = Path(PWD).parent
     oneleveluplistdir = os.listdir(onelevelup)
     if ('challenges' in oneleveluplistdir):
         if os.path.isdir(oneleveluplistdir.get('challenges')):
             yellowboldprint("[+] Challenge Folder Found, presuming to be repository location")
             CTFDDATAROOT = onelevelup
-            repofolder = os.path.join(CTFDDATAROOT, "challenges")
+            challengesfolder = os.path.join(CTFDDATAROOT, "challenges")
 
 ###############################################################################
 class Ctfcli():
@@ -100,12 +107,12 @@ class Ctfcli():
     '''
     def __init__(self):
         # challenge templates
-        self.TEMPLATESDIR = os.path.join(CTFDDATAROOT, "ctfcli", "templates")    
+        self.TEMPLATESDIR = Path(toolfolder, "ctfcli", "templates")    
         # modify the structure of the program here by reassigning classes
-        #ctfcli = SandBoxyCTFdLinkage(challengeroot)
-        ctfcli = SandBoxyCTFdLinkage(challengeroot)
+        ctfcli = SandBoxyCTFdLinkage(challengesfolder, masterlist)
         # process config file
         ctfcli._initconfig()
+        #self.config = Config()
         self.ctfcli = ctfcli
         #self.gitops = SandboxyGitRepository()
 

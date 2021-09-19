@@ -82,7 +82,7 @@ class Constructor():
         Yaml -> Python3
 
         Args:
-            masterlistfile (str): The file to load as masterlist, defaults to masterlist.yamlw
+            masterlistfile (str): The file to load as masterlist, defaults to masterlist.yaml
         """
         try:
             #open the yml
@@ -94,7 +94,7 @@ class Constructor():
 
     def _writeyaml(self,filepath, pythoncode, classtype,filemode="w"):
         """
-        Creates a New Masterlist.yaml file from an init command
+        Creates a New Masterlist.yaml file
         remember to assign data to the file with
         
         >>> thing = yamlconstructor(filepath)

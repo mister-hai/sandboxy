@@ -29,6 +29,16 @@ def challengetemplate():
             #"script": str#"/plugins/multiple_choice/assets/view.js"
     }
 
+def commentstemplate():
+    """
+    POST, one per comment
+    """
+    return {
+        "content": str, #"stinky peepers in my nipple satchel",
+        "type":"challenge",
+        "challenge_id":int #4
+        }
+        
 def dynamicchallengetemplate():
     return {
             "name":"dynamic test",
@@ -49,15 +59,40 @@ def topictemplate():
                 }
 def hintstemplate():
     return {
+            "challenge_id":int,
             "content": str,
-            "cost": int,
-            "challenge_id": int,
-                }
-def flagstemplate():
+            "cost": int
+            }
+def tagstemplate():
+    """
+    POST, every flag needs its own single post
+    """
     return {
-
+            "value":str,
+            "challenge":int
         }
-        
+
+def flagstemplate():
+    """
+    POST
+    """
+    return {
+        "content":str,
+        "data":str,
+        "type":str, #"static",
+        "challenge":int
+    }
+def requirementstemplate():
+    """
+    PATCH to CHALLENGES of all places
+    """
+    return {
+        "requirements":{
+            "prerequisites": list,#[],
+            "anonymize": str #true
+            }
+        }
+
 def tokentemplate():
     # this is returned from a token request
     return {

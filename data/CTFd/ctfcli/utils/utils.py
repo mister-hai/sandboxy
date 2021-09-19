@@ -5,8 +5,6 @@ import pathlib
 import logging
 import traceback
 from pathlib import Path
-from collections import namedtuple
-from urllib.parse import urlparse
 
 try:
     #import colorama
@@ -91,4 +89,4 @@ def errorlogger(message):
     #traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
     lineno = 'LINE NUMBER >>>' + str(exc_tb.tb_lineno)
     logger.error(lineno+errormesg)
-    print(lineno+errormesg + ''.join(trace.format_exception_only()))
+    redprint(errormesg + lineno + ''.join(trace.format_exception_only()))

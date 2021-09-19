@@ -13,7 +13,7 @@ class Config(configparser.ConfigParser()):
     '''
 Config class
 Maps to the command
-host@server$> ctfcli config <command>
+host@server$> python ./ctfcli/ config <command>
     '''
     def __init__(self, configpath:Path):
         self.configpath = configpath

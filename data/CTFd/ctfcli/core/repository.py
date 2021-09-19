@@ -36,7 +36,9 @@ class Repository(Repo):
         **kwargs (dict): Feed it a dict of Category()'s with Challenge()'s appended
     """
     def __init__(self,**entries): 
+        greenprint("[+] Generating new repository")
         self.__dict__.update(entries)
+        
 
     def _syncchallenge(self, challenge:Challenge,CTFD_URL,CTFD_TOKEN):
         """

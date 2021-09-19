@@ -1423,13 +1423,3 @@ crypto: !!python/object:ctfcli.core.category.Category
   - crypto
   name: crypto
   tag: '!Category:'
-location: !!python/object/apply:pathlib.WindowsPath
-- C:\
-- Users
-- moop
-- Desktop
-- repositories
-- sandboxy
-- data
-- CTFd
-- challenges
