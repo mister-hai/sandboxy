@@ -3,9 +3,10 @@
     
     I have gotten a test of the uploading functionality working
     it `should` be complete shortly
-    ![alt text](https://github.com/mister-hai/sandboxy/blob/extra/docs/terminal.png?raw=true)
 
-    ![alt text](https://github.com/mister-hai/sandboxy/blob/extra/docs/ctfd.png?raw=true)
+![terminal output](https://github.com/mister-hai/sandboxy/blob/extra/docs/terminal.png)
+
+![platform display](https://github.com/mister-hai/sandboxy/blob/extra/docs/ctfd.png)
 
 # WEEKLY PLAN
     
