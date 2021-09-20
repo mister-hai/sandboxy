@@ -6,13 +6,10 @@ description: We are not lost, we're right here somewhere on this little blue lin
 
 flags:
   - csictf{hillshaveeyes}
-
 tags:
   - crypto
-
-files:
-  - theclimb.txt"
-  - theclimb.java"
+  - java
+  - hill cipher
 
 value: 500
 type: dynamic

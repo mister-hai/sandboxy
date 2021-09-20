@@ -87,6 +87,9 @@ def errorlogger(message):
     trace = traceback.TracebackException(exc_type, exc_value, exc_tb) 
     errormesg = message + ''.join(trace.format_exception_only())
     #traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
-    lineno = 'LINE NUMBER >>>' + str(exc_tb.tb_lineno)
-    logger.error(lineno+errormesg)
-    redprint(errormesg + lineno + ''.join(trace.format_exception_only()))
+    lineno = 'LINE NUMBER : ' + str(exc_tb.tb_lineno)
+    logger.error(
+        redprint(
+            errormesg +"\n" + lineno + ''.join(trace.format_exception_only()) +"\n"
+            )
+        )

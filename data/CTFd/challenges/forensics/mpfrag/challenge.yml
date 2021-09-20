@@ -10,10 +10,9 @@
 version: beta1
 name: mpfrag
 author: symmetric
-flag: 'CTF{bridge_ext2_gaps}'
+flags: 'CTF{bridge_ext2_gaps}'
 description: 'Was MPEG ever good?'
 type: static
 value: 500
 tags:
   - Forensics
-notes: Private notes on deployment, setup, etc.

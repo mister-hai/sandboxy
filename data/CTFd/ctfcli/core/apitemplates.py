@@ -38,19 +38,23 @@ def commentstemplate():
         "type":"challenge",
         "challenge_id":int #4
         }
-        
-def dynamicchallengetemplate():
-    return {
-            "name":"dynamic test",
-            "category":str,
-            "description":str,
-            "initial":str,
-            "decay":str,
-            "minimum":str,
-            "state":"hidden",
-            "type":"dynamic"
-            }
-
+    """
+    Test meta for templating engine for generic api calling
+    part of the vuln scanner code
+    """
+'''
+def metatemplate(**kwargs):
+    try:
+    # api calls with one layer can be expressed as csv
+        templatefields = "name,category,description,state,type"
+        template = {}
+        for field in templatefields.split(','):
+            template[field] = kwargs.pop(field)
+        return template
+    except Exception:
+        print("[-] ERROR: template input not valid:")
+metatemplate()
+'''
 def topictemplate():
     return {
                     "value": str,
@@ -78,9 +82,9 @@ def flagstemplate():
     """
     return {
         "content":str,
-        "data":str,
+        #"data":str,
         "type":str, #"static",
-        "challenge":int
+        "challenge":str#int
     }
 def requirementstemplate():
     """

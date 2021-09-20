@@ -12,14 +12,11 @@ extra:
   minimum: 50
 flags:
   - csictf{esreverisjustreverseinreverseright}
-
 tags:
   - crypto
   - reversing
-
-files:
-  - "reversing/Esrever/esrever.py"
-  - "reversing/Esrever/esrever.txt"
-
-state: hidden
+#files:
+#  - "reversing/Esrever/esrever.py"
+#  - "reversing/Esrever/esrever.txt"
+state: visible
 version: "0.1"

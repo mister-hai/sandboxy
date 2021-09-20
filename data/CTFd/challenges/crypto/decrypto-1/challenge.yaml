@@ -10,7 +10,8 @@
 version: beta1
 name: decrypto-1
 author: matir
-flag: 'CTF{plz_dont_r0ll_ur_own_crypto}'
+flags: 
+  - CTF{plz_dont_r0ll_ur_own_crypto}
 description:
   "[Kerckhoffs's principle](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
   states that \"A cryptosystem should be secure even if everything about the
@@ -19,5 +20,6 @@ type: standard
 value: 500
 tags:
   - Crypto
-  - "101"
+  - python
+  - easy
 notes: Private notes on deployment, setup, etc.

@@ -2,17 +2,17 @@ name: "In Your Eyes"
 author: "SrishtiGohain"
 category: Forensics
 
-description: |
-  'I talk of wondrous things I see,
+description: 
+  "I talk of wondrous things I see,
   You picture purely out of imagination,
   You wonder how your light is spent,
   Days seem bright but you don't know for sure.
   I stand in your place and close my eyes,
   What do I see?
-  (Open your windows to see the secret message)'
+  (Open your windows to see the secret message)"
 
-value: 500
 type: dynamic
+value: 500
 extra:
   initial: 500
   decay: 50
@@ -21,12 +21,16 @@ extra:
 flags:
   - csictf{ucbr4ill3}
 
-files:
-  - "forensics/In Your Eyes/coolguy.bmp"
-
 tags:
   - forensics
   - steganography
 
-state: hidden
+hints:
+    - {
+        content: "braille encoded text",
+        cost: 100
+    }
+    - open with a stego tool!
+
+state: visible
 version: "0.1"

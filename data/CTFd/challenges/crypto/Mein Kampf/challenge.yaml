@@ -13,10 +13,16 @@ description: |
   fv cd hu ik es op yl wq jm
 
   "Ciphertext: zkrtwvvvnrkulxhoywoj"
-  (Words in the flag are separated by underscores)
-
+#(Words in the flag are separated by underscores)
 flags:
   - csictf{no_shit_sherlock}
+
+hints:
+    - {
+        content: Words in the flag are separated by underscores,
+        cost: 100
+    }
+    - This hint is free
 
 tags:
   - crypto

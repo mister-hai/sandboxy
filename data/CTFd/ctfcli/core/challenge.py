@@ -183,16 +183,17 @@ class Challenge(Yaml):
         #        content: "(.*)STUFF(.*)",
         #        data: "case_insensitive",
         #    }
-        # despite flags being REQUIRED people just dont add them?
-        # need to fix the repo files
-        self.flags = str
-        #self.flags = kwargs.get('flags')
         try:
-            self.flags = kwargs.pop('flag')
+            self.flags = kwargs.pop('flags')
         except Exception:
-            errorlogger('[-] ERROR: No flag in challenge')
-            pass
+            try:
+                self.flags = kwargs.pop('flag')
+            except Exception:
+                errorlogger('[-] ERROR: No flag in challenge')
+                pass
         
+        #if type(self.flags) == list:
+
         self.requirements = kwargs.get("requirements")
         #    - "Warmup"
         #    - "Are you alive"
@@ -224,7 +225,12 @@ class Challenge(Yaml):
             raise TypeError
         else:
             self.value = kwargs.pop('value')
+
+        # older versions have "static" as value for "standard"?
         self.typeof = kwargs.pop('type')
+        if self.typeof == 'static':
+            self.typeof = 'standard'
+        # get extra field if exists
         if self.typeof == 'dynamic':
             self.extra = kwargs.pop("extra")
         #raise ValueError(f"Unknown type {typeof} in Classconstructor.Challenge._initchallenge()")
@@ -376,27 +382,32 @@ class Challenge(Yaml):
             # re-combination into the repository masterlist
             self.id = apihandler.challenge_id
             # process the rest of the challenge data
-            self._processchallenge(apihandler,self.jsonpayload)
+            self._processchallenge(apihandler)#,self.jsonpayload)
         except Exception:
             errorlogger(f"[-] Error syncing challenge: API Request was {self.jsonpayload}")
 
-    def _processchallenge(self,apihandler:APIHandler,jsonpayload:dict):
+    def _processchallenge(self,apihandler:APIHandler):#,jsonpayload:dict):
         """
         Handles uploading the rest of the challenge information
         
         'flags''topics''tags''files''hints''requirements'
+        
         """
         try:
-            for each in self.jsonpayload:
-                if jsonpayload.get(each) != None:
-                    apihandler._process(each,jsonpayload)
+            for each in ['flags','topics','tags','hints','requirements']:#'files',
+                # hints
+                if self.jsonpayload.get(each) != None:
+                    apihandler._process(each,self.id,self.jsonpayload)
             # we are not providing solutions to the users by default
             if self.solution != None:
                 pass
             if self.handout != None:
-                apihandler._uploadfiles(self.handout)
+                apihandler._uploadfiles(self.id,self.handout)
         except Exception:
+            print(each)
+            print(self.jsonpayload.get(each))
             errorlogger("[-] Error in Challenge.processchallenge()")
+
 
     def getvisibility(self, challengeid, jsonpayload):
         """

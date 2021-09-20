@@ -13,12 +13,13 @@ description: |
   c3 = 29146719498409.
   Find the original message. (Wrap it with csictf{})
 
-flags:
+flags: 
   - csictf{h45t4d}
 
 tags:
   - crypto
-
+  - python
+  - easy
 
 value: 500
 type: dynamic

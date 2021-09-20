@@ -1,8 +1,8 @@
 name: "Gradient sky"
 author: "tangobeer"
 category: Forensics
-description: Gradient sky is a beginner level ctf challenge which is aimed towards rookies.
-
+description: Gradient Skies is a beginner level forensics CTF challenge aimed towards rookies
+  which can be solved which can be solved with basic steganography.
 value: 500
 type: dynamic
 extra:
@@ -18,7 +18,8 @@ files:
 tags: 
   - forensics 
   - steganography
-  - Easy
+  - easy
+  - binwalk
 
 state: visible
 version: "0.1"

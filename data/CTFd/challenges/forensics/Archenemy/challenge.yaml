@@ -1,4 +1,4 @@
-version: 0.1
+version: '0.1'
 name: Archenemy
 author: roerohan
 category: Forensics
@@ -12,10 +12,10 @@ extra:
   decay: 50
   minimum: 50
 
-flag: csictf{1_h0pe_y0u_don't_s33_m3_here}
+flags: 
+  - csictf{1_h0pe_y0u_don't_s33_m3_here}
 
 tags:
   - forensics
-
-files:
-  - "forensics/Archenemy/handout/arched.png"
+  - steghide
+  - john the ripper

@@ -22,7 +22,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     connection_info: null
     description: Reveal my identity! What's the flag encoded in the badge?
     files: null
-    flags: CTF{way_too_common}
+    flags:
+    - CTF{way_too_common}
     folderlocation: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -108,7 +109,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - Forensics
-    - '101'
+    - easy
     topics: null
     typeof: standard
     value: 500
@@ -194,7 +195,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - Modern Clueless Child
     - handout
-    hints: null
+    hints:
+    - content: This hint costs points, points you can never get back! muahahaha!
+      cost: 10
+    - This hint is free
     host: null
     id: *id001
     image: null
@@ -360,6 +364,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - crypto
+    - python
+    - easy
     topics: null
     typeof: dynamic
     value: 500
@@ -388,7 +394,8 @@ crypto: !!python/object:ctfcli.core.category.Category
       states that "A cryptosystem should be secure even if everything about the system,
       except the key, is public knowledge."  So here''s our unbreakable cipher.'
     files: null
-    flags: null
+    flags:
+    - CTF{plz_dont_r0ll_ur_own_crypto}
     folderlocation: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -474,7 +481,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - Crypto
-    - '101'
+    - python
+    - easy
     topics: null
     typeof: standard
     value: 500
@@ -505,8 +513,7 @@ crypto: !!python/object:ctfcli.core.category.Category
       decay: 450
       initial: 500
       minimum: 100
-    files:
-    - enc.txt
+    files: null
     flags:
     - csictf{sh0uld'v3_t4k3n_b1gg3r_pr1m3s}
     folderlocation: !!python/object/apply:pathlib.WindowsPath
@@ -594,6 +601,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - crypto
+    - python
     topics: null
     typeof: dynamic
     value: 500
@@ -623,7 +631,8 @@ crypto: !!python/object:ctfcli.core.category.Category
       except the key, is public knowledge."  So here''s our **really** unbreakable
       cipher.'
     files: null
-    flags: null
+    flags:
+    - CTF{but_even_I_couldnt_break_IT}
     folderlocation: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -709,10 +718,11 @@ crypto: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - Crypto
+    - python
     topics: null
     typeof: standard
     value: 500
-    version: beta1
+    version: null
   Challenge_b6648a9eb88d867f19609235cd9b82d115b0ba1a894a9cc0c2442599dca39c9c: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_b6648a9eb88d867f19609235cd9b82d115b0ba1a894a9cc0c2442599dca39c9c
     __qualname__: Challenge_b6648a9eb88d867f19609235cd9b82d115b0ba1a894a9cc0c2442599dca39c9c
@@ -736,8 +746,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     description: "\"We have intercepted the enemy's communications, but unfortunately,\
       \ some data was corrupted during transmission. Can you recover the message?\"\
       \nM4 \nUKW $\nGamma 2 4 \n$ 5 9 \n$ 14 3 \n$ 5 20 \nfv cd hu ik es op yl wq\
-      \ jm\n\n\"Ciphertext: zkrtwvvvnrkulxhoywoj\"\n(Words in the flag are separated\
-      \ by underscores)\n"
+      \ jm\n\n\"Ciphertext: zkrtwvvvnrkulxhoywoj\"\n"
     extra:
       decay: 450
       initial: 500
@@ -784,7 +793,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - Mein Kampf
     - handout
-    hints: null
+    hints:
+    - content: Words in the flag are separated by underscores
+      cost: 100
+    - This hint is free
     host: null
     id: *id001
     image: null
@@ -863,9 +875,7 @@ crypto: !!python/object:ctfcli.core.category.Category
       decay: 450
       initial: 500
       minimum: 100
-    files:
-    - crypto/little RSA/a.txt
-    - crypto/little RSA/flag.zip
+    files: null
     flags:
     - csictf{gr34t_m1nds_th1nk_4l1ke}
     folderlocation: !!python/object/apply:pathlib.WindowsPath
@@ -907,7 +917,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - little RSA
     - handout
-    hints: null
+    hints:
+    - content: Try looking up Wiener's attack
+      cost: 50
+    - This hint is free
     host: null
     id: *id001
     image: null
@@ -948,16 +961,17 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     solved_by_me: 'false'
     solves: *id001
-    state: hidden
+    state: visible
     synched: *id002
     tag: '!Challenge:'
     tags:
     - crypto
     - RSA
+    - easy
     topics: null
     typeof: dynamic
     value: 500
-    version: '0.1'
+    version: null
   Challenge_b7b607ee0bbfbdc8f9b764255e62930da990c77118eb5f30ca4ae78271f7d054: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_b7b607ee0bbfbdc8f9b764255e62930da990c77118eb5f30ca4ae78271f7d054
     __qualname__: Challenge_b7b607ee0bbfbdc8f9b764255e62930da990c77118eb5f30ca4ae78271f7d054
@@ -1057,126 +1071,12 @@ crypto: !!python/object:ctfcli.core.category.Category
     synched: *id002
     tag: '!Challenge:'
     tags:
-    - Misc
+    - language
+    - english
     topics: null
     typeof: dynamic
     value: 500
     version: '0.1'
-  Challenge_c23f5d380165697e1bab49d7348abbe75ae5f44c805db0d490cc2bb405b88f46: !!python/object:ctfcli.core.challenge.Challenge
-    _Challenge__name: Challenge_c23f5d380165697e1bab49d7348abbe75ae5f44c805db0d490cc2bb405b88f46
-    __qualname__: Challenge_c23f5d380165697e1bab49d7348abbe75ae5f44c805db0d490cc2bb405b88f46
-    attempts: null
-    author: matir
-    category: crypto
-    challengefile: !!python/object/apply:pathlib.WindowsPath
-    - C:\
-    - Users
-    - moop
-    - Desktop
-    - repositories
-    - sandboxy
-    - data
-    - CTFd
-    - challenges
-    - crypto
-    - decrypto-3
-    - challenge.yaml
-    connection_info: null
-    description: Fine, I learned not to roll my own crypto.  I hear OpenSSL is good
-      and easy to use, so I'll use that to encrypt my secrets.  Unfortunately, I keep
-      crashing. Can you help me figure out what the bug is?
-    files: null
-    flags: null
-    folderlocation: !!python/object/apply:pathlib.WindowsPath
-    - C:\
-    - Users
-    - moop
-    - Desktop
-    - repositories
-    - sandboxy
-    - data
-    - CTFd
-    - challenges
-    - crypto
-    - decrypto-3
-    handout: !!python/object/apply:pathlib.WindowsPath
-    - C:\
-    - Users
-    - moop
-    - Desktop
-    - repositories
-    - sandboxy
-    - data
-    - CTFd
-    - challenges
-    - crypto
-    - decrypto-3
-    - handout
-    - handout.tar.gz
-    handoutfolder: !!python/object/apply:pathlib.WindowsPath
-    - C:\
-    - Users
-    - moop
-    - Desktop
-    - repositories
-    - sandboxy
-    - data
-    - CTFd
-    - challenges
-    - crypto
-    - decrypto-3
-    - handout
-    hints: null
-    host: null
-    id: *id001
-    image: null
-    installed: *id002
-    internalname: Challenge_c23f5d380165697e1bab49d7348abbe75ae5f44c805db0d490cc2bb405b88f46
-    jsonpayload: {}
-    name: decrypto-3
-    readme: null
-    requirements: null
-    scorepayload: {}
-    script: *id003
-    solution: !!python/object/apply:pathlib.WindowsPath
-    - C:\
-    - Users
-    - moop
-    - Desktop
-    - repositories
-    - sandboxy
-    - data
-    - CTFd
-    - challenges
-    - crypto
-    - decrypto-3
-    - solution
-    - solution.tar.gz
-    solutionfolder: !!python/object/apply:pathlib.WindowsPath
-    - C:\
-    - Users
-    - moop
-    - Desktop
-    - repositories
-    - sandboxy
-    - data
-    - CTFd
-    - challenges
-    - crypto
-    - decrypto-3
-    - solution
-    solved_by_me: 'false'
-    solves: *id001
-    state: visible
-    synched: *id002
-    tag: '!Challenge:'
-    tags:
-    - Crypto
-    - Reversing
-    topics: null
-    typeof: standard
-    value: 500
-    version: beta1
   Challenge_e4dd07cfc028dc0f60400e4237aafaa9af32f393e316589210d8272e1b9f4f69: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_e4dd07cfc028dc0f60400e4237aafaa9af32f393e316589210d8272e1b9f4f69
     __qualname__: Challenge_e4dd07cfc028dc0f60400e4237aafaa9af32f393e316589210d8272e1b9f4f69
@@ -1199,7 +1099,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     connection_info: null
     description: Find the password encrypted in the configuration file
     files: null
-    flags: null
+    flags: CTF{my_rust_is_rusty}
     folderlocation: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -1285,7 +1185,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - Reversing
-    - '101'
+    - rust
+    - easy
     topics: null
     typeof: standard
     value: 500
@@ -1316,9 +1217,7 @@ crypto: !!python/object:ctfcli.core.category.Category
       decay: 450
       initial: 500
       minimum: 100
-    files:
-    - theclimb.txt"
-    - theclimb.java"
+    files: null
     flags:
     - csictf{hillshaveeyes}
     folderlocation: !!python/object/apply:pathlib.WindowsPath
@@ -1406,6 +1305,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - crypto
+    - java
+    - hill cipher
     topics: null
     typeof: dynamic
     value: 500
@@ -1422,4 +1323,2229 @@ crypto: !!python/object:ctfcli.core.category.Category
   - challenges
   - crypto
   name: crypto
+  tag: '!Category:'
+forensics: !!python/object:ctfcli.core.category.Category
+  Challenge_097c0082169f3514b8daf45692851050ce20eb19bb384298e0fb96191eb78da5: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_097c0082169f3514b8daf45692851050ce20eb19bb384298e0fb96191eb78da5
+    __qualname__: Challenge_097c0082169f3514b8daf45692851050ce20eb19bb384298e0fb96191eb78da5
+    attempts: null
+    author: SrishtiGohain
+    category: forensics
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - In Your Eyes
+    - challenge.yml
+    connection_info: null
+    description: I talk of wondrous things I see, You picture purely out of imagination,
+      You wonder how your light is spent, Days seem bright but you don't know for
+      sure. I stand in your place and close my eyes, What do I see? (Open your windows
+      to see the secret message)
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files: null
+    flags:
+    - csictf{ucbr4ill3}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - In Your Eyes
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - In Your Eyes
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - In Your Eyes
+    - handout
+    hints:
+    - content: braille encoded text
+      cost: 100
+    - open with a stego tool!
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_097c0082169f3514b8daf45692851050ce20eb19bb384298e0fb96191eb78da5
+    jsonpayload: {}
+    name: In Your Eyes
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: null
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - In Your Eyes
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - forensics
+    - steganography
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  Challenge_3be7a505483c0050243c5cbad4700da13925aa4137a55e9e33efd8bc4d05850f: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_3be7a505483c0050243c5cbad4700da13925aa4137a55e9e33efd8bc4d05850f
+    __qualname__: Challenge_3be7a505483c0050243c5cbad4700da13925aa4137a55e9e33efd8bc4d05850f
+    attempts: null
+    author: symmetric
+    category: forensics
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - magic
+    - challenge.yaml
+    connection_info: null
+    description: Much magic, so rainbow, wow!
+    files: null
+    flags: CTF{magical_unicorn_gait}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - magic
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - magic
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - magic
+    - handout
+    hints:
+    - content: take a histogram to find the color
+      cost: 50
+    - open with a stego tool!
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_3be7a505483c0050243c5cbad4700da13925aa4137a55e9e33efd8bc4d05850f
+    jsonpayload: {}
+    name: magic
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - magic
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - magic
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - Forensics
+    topics: null
+    typeof: standard
+    value: 500
+    version: null
+  Challenge_4192dd56ef44e2e787648920ee53c2e3bb92b9fd7430b1807dd43093312544dc: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_4192dd56ef44e2e787648920ee53c2e3bb92b9fd7430b1807dd43093312544dc
+    __qualname__: Challenge_4192dd56ef44e2e787648920ee53c2e3bb92b9fd7430b1807dd43093312544dc
+    attempts: null
+    author: roerohan
+    category: forensics
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Archenemy
+    - challenge.yaml
+    connection_info: null
+    description: John likes Arch Linux. What is he hiding?
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files: null
+    flags:
+    - csictf{1_h0pe_y0u_don't_s33_m3_here}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Archenemy
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Archenemy
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Archenemy
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_4192dd56ef44e2e787648920ee53c2e3bb92b9fd7430b1807dd43093312544dc
+    jsonpayload: {}
+    name: Archenemy
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Archenemy
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Archenemy
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - forensics
+    - steghide
+    - john the ripper
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  Challenge_5e25943333030d82c3d65b06c2ed33d0e1dbe2838a8c41462ce30ad1e217376f: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_5e25943333030d82c3d65b06c2ed33d0e1dbe2838a8c41462ce30ad1e217376f
+    __qualname__: Challenge_5e25943333030d82c3d65b06c2ed33d0e1dbe2838a8c41462ce30ad1e217376f
+    attempts: null
+    author: tangobeer
+    category: forensics
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Gradient sky
+    - challenge.yaml
+    connection_info: null
+    description: Gradient Skies is a beginner level forensics CTF challenge aimed
+      towards rookies which can be solved which can be solved with basic steganography.
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files:
+    - forensics/Gradient sky/sky.jpg
+    flags:
+    - csictf{j0ker_w4snt_happy}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Gradient sky
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Gradient sky
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Gradient sky
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_5e25943333030d82c3d65b06c2ed33d0e1dbe2838a8c41462ce30ad1e217376f
+    jsonpayload: {}
+    name: Gradient sky
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: null
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Gradient sky
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - forensics
+    - steganography
+    - easy
+    - binwalk
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  Challenge_6861ed54cbcdfd19f8df0900c376b65382e668e1f4d3c8927ec672d7d1247c77: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_6861ed54cbcdfd19f8df0900c376b65382e668e1f4d3c8927ec672d7d1247c77
+    __qualname__: Challenge_6861ed54cbcdfd19f8df0900c376b65382e668e1f4d3c8927ec672d7d1247c77
+    attempts: null
+    author: symmetric
+    category: forensics
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - earota
+    - challenge.yaml
+    connection_info: null
+    description: "01\xCE\xB9"
+    files: null
+    flags: CTF{one_iota_away_from_riches}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - earota
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - earota
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - earota
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_6861ed54cbcdfd19f8df0900c376b65382e668e1f4d3c8927ec672d7d1247c77
+    jsonpayload: {}
+    name: earota
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - earota
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - earota
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - Forensics
+    - golang
+    - go
+    - multimedia
+    - encoding
+    topics: null
+    typeof: standard
+    value: 500
+    version: beta1
+  Challenge_796c985cc82da7e0cb4bfcb45d43c893fbd29b79e7602fb7cb595b153aef731c: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_796c985cc82da7e0cb4bfcb45d43c893fbd29b79e7602fb7cb595b153aef731c
+    __qualname__: Challenge_796c985cc82da7e0cb4bfcb45d43c893fbd29b79e7602fb7cb595b153aef731c
+    attempts: null
+    author: 21StWarlock
+    category: forensics
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - unseen
+    - challenge.yml
+    connection_info: null
+    description: With his dying breath, Prof. Ter Stegen hands us an image and a recording.
+      He tells us that the image is least significant, but is a numerical key to the
+      recording and the recording hides the answer. It may seem as though it's all
+      for nothing, but trust me it's not. https://mega.nz/file/cmhnAQDB#9dbHojKcxzliZ5NAYtGBN7N8WHCqtoU7kKa5yuJzG0w
+      https://mega.nz/file/h75UCIRJ#YGF3yCViKSQpwogmMgkdPQ1DXMez9Sv2DZBUWvCueSY
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files: null
+    flags:
+    - csictf{7h47_15_h0w_y0u_c4n_83c0m3_1nv151813}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - unseen
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - unseen
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - unseen
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_796c985cc82da7e0cb4bfcb45d43c893fbd29b79e7602fb7cb595b153aef731c
+    jsonpayload: {}
+    name: unseen
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - unseen
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - unseen
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: hidden
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - forensics
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  Challenge_866f08119f6cb6770d41da98c5c7d78623883ba996c5455365d337b401bf85c7: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_866f08119f6cb6770d41da98c5c7d78623883ba996c5455365d337b401bf85c7
+    __qualname__: Challenge_866f08119f6cb6770d41da98c5c7d78623883ba996c5455365d337b401bf85c7
+    attempts: null
+    author: symmetric
+    category: forensics
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - mpfrag
+    - challenge.yml
+    connection_info: null
+    description: Was MPEG ever good?
+    files: null
+    flags: CTF{bridge_ext2_gaps}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - mpfrag
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - mpfrag
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - mpfrag
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_866f08119f6cb6770d41da98c5c7d78623883ba996c5455365d337b401bf85c7
+    jsonpayload: {}
+    name: mpfrag
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - mpfrag
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - mpfrag
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - Forensics
+    topics: null
+    typeof: standard
+    value: 500
+    version: beta1
+  Challenge_d7ecdf25eaf3deba0f2628771dbdd22d4138ab6cf38f91ed02a2ca0dec7c8ab7: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_d7ecdf25eaf3deba0f2628771dbdd22d4138ab6cf38f91ed02a2ca0dec7c8ab7
+    __qualname__: Challenge_d7ecdf25eaf3deba0f2628771dbdd22d4138ab6cf38f91ed02a2ca0dec7c8ab7
+    attempts: null
+    author: corgi
+    category: forensics
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - open-sesame
+    - challenge.yml
+    connection_info: null
+    description: 'Can you crack the device password? I bet you can, cos'' you rock!
+      P.s, flag is not in CTF{} format. If you run into an error when running the
+      avd, make sure the pixel_2 skin is available. Device image: https://storage.googleapis.com/bsides-sf-ctf-2020-attachments/avd.zip'
+    files: null
+    flags: lifeinchinatown
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - open-sesame
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - open-sesame
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - open-sesame
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_d7ecdf25eaf3deba0f2628771dbdd22d4138ab6cf38f91ed02a2ca0dec7c8ab7
+    jsonpayload: {}
+    name: open-sesame
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - open-sesame
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - open-sesame
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - Mobile
+    - Forensics
+    topics: null
+    typeof: standard
+    value: 500
+    version: beta1
+  Challenge_f7d9ea7f3980635237d6ea58048057c33a218f2670e0ff45af5f4f670e9aa6f4: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_f7d9ea7f3980635237d6ea58048057c33a218f2670e0ff45af5f4f670e9aa6f4
+    __qualname__: Challenge_f7d9ea7f3980635237d6ea58048057c33a218f2670e0ff45af5f4f670e9aa6f4
+    attempts: null
+    author: ashikka
+    category: forensics
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Panda
+    - challenge.yml
+    connection_info: null
+    description: I wanted to send this file to AJ1479 but I did not want anyone else
+      to see what's inside it, so I protected it with a pin.
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files:
+    - forensics/Panda/panda.zip
+    flags:
+    - csictf{kung_fu_p4nd4}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Panda
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Panda
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Panda
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_f7d9ea7f3980635237d6ea58048057c33a218f2670e0ff45af5f4f670e9aa6f4
+    jsonpayload: {}
+    name: Panda
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: null
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Panda
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: hidden
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - forensics
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  location: !!python/object/apply:pathlib.WindowsPath
+  - C:\
+  - Users
+  - moop
+  - Desktop
+  - repositories
+  - sandboxy
+  - data
+  - CTFd
+  - challenges
+  - forensics
+  name: forensics
+  tag: '!Category:'
+miscellaneous: !!python/object:ctfcli.core.category.Category
+  Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794
+    __qualname__: Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794
+    attempts: null
+    author: harsoh
+    category: miscellaneous
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - Machine Fix
+    - challenge.yml
+    connection_info: null
+    description: 'We ran a code on a machine a few years ago. It is still running
+      however we forgot what it was meant for. It completed n=523693181734689806809285195318
+      iterations of the loop and broke down. We want the answer but cannot wait a
+      few more years. Find the answer after n iterations to get the flag.
+
+      The flag would be of the format csictf{answer_you_get_from_above}.'
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files:
+    - miscellaneous/Machine Fix/code.py
+    flags:
+    - csictf{785539772602034710213927792950}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - Machine Fix
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - Machine Fix
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - Machine Fix
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794
+    jsonpayload: {}
+    name: Machine Fix
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - Machine Fix
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - Machine Fix
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: hidden
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - miscellaneous
+    - algo
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  Challenge_8f18b5409b7741b41244bc0401a7ffcc01eaec23b8eb449a43957a700b338f3c: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_8f18b5409b7741b41244bc0401a7ffcc01eaec23b8eb449a43957a700b338f3c
+    __qualname__: Challenge_8f18b5409b7741b41244bc0401a7ffcc01eaec23b8eb449a43957a700b338f3c
+    attempts: null
+    author: Matir
+    category: miscellaneous
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - mini-matroyshka
+    - challenge.yaml
+    connection_info: null
+    description: A lot of the computer world is just layers of abstraction.  Layers
+      and layers and layers and layers and layers and layers and layers and layers
+      and ... layers and layers and ...
+    files: null
+    flags: CTF{so_easy_an_ogre_could_do_it}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - mini-matroyshka
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - mini-matroyshka
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - mini-matroyshka
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_8f18b5409b7741b41244bc0401a7ffcc01eaec23b8eb449a43957a700b338f3c
+    jsonpayload: {}
+    name: mini-matroyshka
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - mini-matroyshka
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - mini-matroyshka
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - Misc
+    topics: null
+    typeof: standard
+    value: 500
+    version: beta1
+  location: !!python/object/apply:pathlib.WindowsPath
+  - C:\
+  - Users
+  - moop
+  - Desktop
+  - repositories
+  - sandboxy
+  - data
+  - CTFd
+  - challenges
+  - miscellaneous
+  name: miscellaneous
+  tag: '!Category:'
+reversing: !!python/object:ctfcli.core.category.Category
+  Challenge_1ebe04d280ba028ce026ac0bd5cd350bd540413f9feb53237a08994f163301c7: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_1ebe04d280ba028ce026ac0bd5cd350bd540413f9feb53237a08994f163301c7
+    __qualname__: Challenge_1ebe04d280ba028ce026ac0bd5cd350bd540413f9feb53237a08994f163301c7
+    attempts: null
+    author: AJ1479
+    category: reversing
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Scrambled Eggs
+    - challenge.yaml
+    connection_info: null
+    description: I like my eggs sunny side up, but I ended up scrambling them.
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files:
+    - reversing/Scrambled Eggs/scrambledeggs.py
+    - reversing/Scrambled Eggs/scrambledeggs.txt
+    flags:
+    - csictf{all_the_kings_horses}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Scrambled Eggs
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Scrambled Eggs
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Scrambled Eggs
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_1ebe04d280ba028ce026ac0bd5cd350bd540413f9feb53237a08994f163301c7
+    jsonpayload: {}
+    name: Scrambled Eggs
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Scrambled Eggs
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Scrambled Eggs
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: hidden
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - crypto
+    - reversing
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  Challenge_2d62e7d1e987384761ace68734964d8b164176271c1fd92981e160f5d7f8451b: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_2d62e7d1e987384761ace68734964d8b164176271c1fd92981e160f5d7f8451b
+    __qualname__: Challenge_2d62e7d1e987384761ace68734964d8b164176271c1fd92981e160f5d7f8451b
+    attempts: null
+    author: 21StWarlock#1598
+    category: reversing
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - pydis2ctf
+    - challenge.yaml
+    connection_info: null
+    description: I learnt Python in school but I have no clue what this is!
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files:
+    - reversing/pydis2ctf/encodedflag.txt
+    - reversing/pydis2ctf/C1cipher.txt
+    - reversing/pydis2ctf/C2cipher.txt
+    flags:
+    - csictf{T#a+_wA5_g0oD_d155aSe^^bLy}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - pydis2ctf
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - pydis2ctf
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - pydis2ctf
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_2d62e7d1e987384761ace68734964d8b164176271c1fd92981e160f5d7f8451b
+    jsonpayload: {}
+    name: pydis2ctf
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - pydis2ctf
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - pydis2ctf
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: hidden
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - reversing
+    - ciphers
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  Challenge_4a832402101de1b3f176d1dfbe5ce47ff67efd22d711738e8bd6629ab466267f: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_4a832402101de1b3f176d1dfbe5ce47ff67efd22d711738e8bd6629ab466267f
+    __qualname__: Challenge_4a832402101de1b3f176d1dfbe5ce47ff67efd22d711738e8bd6629ab466267f
+    attempts: null
+    author: itsC0rg1
+    category: reversing
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker2
+    - challenge.yaml
+    connection_info: null
+    description: You found the first flag, can you find the second one?
+    files: null
+    flags: CTF{T00_Many_S3cr3t5}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker2
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker2
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker2
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_4a832402101de1b3f176d1dfbe5ce47ff67efd22d711738e8bd6629ab466267f
+    jsonpayload: {}
+    name: toast-clicker2
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker2
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker2
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - Mobile
+    - Reversing
+    topics: null
+    typeof: standard
+    value: 500
+    version: beta1
+  Challenge_746c4a027e6ad633345a26c5417b7b004e24bf3e07d2b5dd3dc987f0b98ec6de: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_746c4a027e6ad633345a26c5417b7b004e24bf3e07d2b5dd3dc987f0b98ec6de
+    __qualname__: Challenge_746c4a027e6ad633345a26c5417b7b004e24bf3e07d2b5dd3dc987f0b98ec6de
+    attempts: null
+    author: itsC0rg1
+    category: reversing
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker3
+    - challenge.yaml
+    connection_info: null
+    description: You are on a roll! Why not find the final flag hidden in the APK?
+    files: null
+    flags: CTF{makingbaconpancakes}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker3
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker3
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker3
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_746c4a027e6ad633345a26c5417b7b004e24bf3e07d2b5dd3dc987f0b98ec6de
+    jsonpayload: {}
+    name: toast-clicker3
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker3
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker3
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - Mobile
+    - Reversing
+    topics: null
+    typeof: standard
+    value: 500
+    version: beta1
+  Challenge_a75021e59f268fbe0f51194c49cdf15004b06c60701a05bd2d2b640482f49bff: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_a75021e59f268fbe0f51194c49cdf15004b06c60701a05bd2d2b640482f49bff
+    __qualname__: Challenge_a75021e59f268fbe0f51194c49cdf15004b06c60701a05bd2d2b640482f49bff
+    attempts: null
+    author: Matir
+    category: reversing
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - maltty
+    - challenge.yaml
+    connection_info: null
+    description: In December of 2019, many of the hosts in the BSidesSF organization
+      were compromised.  We think we traced it to this modified version of PuTTY,
+      but we can't figure out what data was being sent.  When we analyze it on another
+      host, we see nothing strange, but on the management hosts, we think it was beaconing
+      home.  Can you find out what it was sending?
+    files: null
+    flags: CTF{notJustCCleaner}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - maltty
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - maltty
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - maltty
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_a75021e59f268fbe0f51194c49cdf15004b06c60701a05bd2d2b640482f49bff
+    jsonpayload: {}
+    name: maltty
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: null
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - maltty
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - Reversing
+    - Windows
+    topics: null
+    typeof: standard
+    value: 500
+    version: beta1
+  Challenge_afe341a793dae04a8a3830d4009700856040bc0f55053677f54c843e9b064ef7: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_afe341a793dae04a8a3830d4009700856040bc0f55053677f54c843e9b064ef7
+    __qualname__: Challenge_afe341a793dae04a8a3830d4009700856040bc0f55053677f54c843e9b064ef7
+    attempts: null
+    author: itsC0rg1
+    category: reversing
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker1
+    - challenge.yaml
+    connection_info: null
+    description: A fun toast clicker game for your enjoyment. While you are at it,
+      can you find the first flag?  Android challenge, one APK three flags
+    files: null
+    flags: CTF{Bready_To_Crumble}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker1
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker1
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker1
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_afe341a793dae04a8a3830d4009700856040bc0f55053677f54c843e9b064ef7
+    jsonpayload: {}
+    name: toast-clicker1
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker1
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker1
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - Mobile
+    - Reversing
+    - Android
+    - apk
+    topics: null
+    typeof: standard
+    value: 500
+    version: beta1
+  Challenge_df36a820a5dc8aa10e406346d2a0ff47574c7ece9c2ee026469b90e83f1a215a: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_df36a820a5dc8aa10e406346d2a0ff47574c7ece9c2ee026469b90e83f1a215a
+    __qualname__: Challenge_df36a820a5dc8aa10e406346d2a0ff47574c7ece9c2ee026469b90e83f1a215a
+    attempts: null
+    author: iagox86
+    category: reversing
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - strace-me
+    - challenge.yaml
+    connection_info: null
+    description: This program seems to be sending us a hidden message. Can you find
+      it?
+    files: null
+    flags: CTF{the_longer_the_flag_is_the_more_interesting_output_you_are_seeing_so_the_long_flag_is_long!}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - strace-me
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - strace-me
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - strace-me
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_df36a820a5dc8aa10e406346d2a0ff47574c7ece9c2ee026469b90e83f1a215a
+    jsonpayload: {}
+    name: strace-me
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - strace-me
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - strace-me
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - Reversing
+    - '101'
+    - easy
+    topics: null
+    typeof: standard
+    value: 500
+    version: beta1
+  Challenge_ef846b8fd21e40fd7173a14798275968cf2af35d3ad9a3c448784a39964848f1: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_ef846b8fd21e40fd7173a14798275968cf2af35d3ad9a3c448784a39964848f1
+    __qualname__: Challenge_ef846b8fd21e40fd7173a14798275968cf2af35d3ad9a3c448784a39964848f1
+    attempts: null
+    author: roerohan
+    category: reversing
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Esrever
+    - challenge.yml
+    connection_info: null
+    description: I encrypted my flag so that nobody can see it, but now I realize
+      I don't know how to decrypt it. Can you help me?
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files: null
+    flags:
+    - csictf{esreverisjustreverseinreverseright}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Esrever
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Esrever
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Esrever
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_ef846b8fd21e40fd7173a14798275968cf2af35d3ad9a3c448784a39964848f1
+    jsonpayload: {}
+    name: Esrever
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Esrever
+    - solution
+    - solution.tar.gz
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Esrever
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: visible
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - crypto
+    - reversing
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  location: !!python/object/apply:pathlib.WindowsPath
+  - C:\
+  - Users
+  - moop
+  - Desktop
+  - repositories
+  - sandboxy
+  - data
+  - CTFd
+  - challenges
+  - reversing
+  name: reversing
   tag: '!Category:'

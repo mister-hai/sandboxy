@@ -16,7 +16,8 @@ description: Check out the BSidesSF CTF program.  We got a chance to put a puzzl
 value: 500
 #min_value: 50
 tags:
-  - Misc
+  - language
+  - english
 notes: Word Jumble/Anagram challenge for program.
 type: dynamic
 extra:

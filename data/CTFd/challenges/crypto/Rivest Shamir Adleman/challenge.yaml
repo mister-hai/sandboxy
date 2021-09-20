@@ -1,18 +1,14 @@
 name: "Rivest Shamir Adleman"
 author: "roerohan"
 category: Crypto
-
 description: These 3 guys encrypted my flag, but they didn't tell me how to decrypt it.
-
 flags:
   - csictf{sh0uld'v3_t4k3n_b1gg3r_pr1m3s}
-
 tags:
   - crypto
-
-files:
-  - enc.txt
-
+  - python
+#files:
+#  - enc.txt
 value: 500
 type: dynamic
 extra:

@@ -1,0 +1,18 @@
+version: '0.1'
+name: exec(print("you got haxed"))
+author: exec(print("you got haxed"))
+flags: 
+  - CTF{multi}
+  - CTF{flag}
+  - CTF{test}
+description: testing shit
+type: dynamic
+value: 500
+extra:
+  initial: 500
+  decay: 50
+  minimum: 50
+
+tags:
+  - exec(print("you got haxed"))
+  - easy

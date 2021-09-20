@@ -11,10 +11,13 @@ version: beta1
 name: earota
 scoreboard_name: earota
 author: symmetric
-flag: 'CTF{one_iota_away_from_riches}'
+flags: 'CTF{one_iota_away_from_riches}'
 description: '01ι'
 type: static
 value: 500
 tags:
   - Forensics
-notes: This is just a file for download
+  - golang
+  - go
+  - multimedia
+  - encoding

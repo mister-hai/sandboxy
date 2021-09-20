@@ -11,10 +11,17 @@ description: |
   Key = "12123"
 
 flags:
- - csictf{you_are_a_basic_person}
+  - csictf{you_are_a_basic_person}
 
 tags:
  - crypto
+
+hints:
+    - {
+        content: "This hint costs points, points you can never get back! muahahaha!",
+        cost: 10
+    }
+    - This hint is free
 
 value: 500
 type: dynamic
