@@ -439,11 +439,11 @@ show_menus()
   cecho "## |   OPTIONS IN RED ARE EITHER NOT IMPLEMENTED YET OR OUTRIGHT DANGEROUS"
   cecho "## | 1> Install Prerequisites" green
   cecho "## | 2> Clone CTFd challenges" green
-  cecho "## | 3> Update Containers (docker-compose build)" green
-  cecho "## | 4> Run Project (docker-compose up)" green
-  cecho "## | 5> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" yellow
-  cecho "## | 6> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" red
-  cecho "## | 7> CTFd CLI (use after install only!)" green
+  cecho "## | 2> Update Containers (docker-compose build)" green
+  cecho "## | 3> Run Project (docker-compose up)" green
+  cecho "## | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" yellow
+  cecho "## | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" red
+  cecho "## | 6> CTFd CLI (use after install only!)" green
   cecho "## | 8> List Data Sections/Files Appended to script" green
   cecho "## | 8> Append Data To Script (compresses project directory into start.sh)" red
   cecho "## | 9> Retrieve Data From Script (list sections to see the filenames)" red

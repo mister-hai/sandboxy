@@ -12,6 +12,14 @@ ctfcli.utils.apitest module
    :undoc-members:
    :show-inheritance:
 
+ctfcli.utils.config module
+--------------------------
+
+.. automodule:: ctfcli.utils.config
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 ctfcli.utils.cookiecutterutils module
 -------------------------------------
 

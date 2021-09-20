@@ -20,6 +20,14 @@ ctfcli.core.apisession module
    :undoc-members:
    :show-inheritance:
 
+ctfcli.core.apitemplates module
+-------------------------------
+
+.. automodule:: ctfcli.core.apitemplates
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 ctfcli.core.category module
 ---------------------------
 
@@ -32,22 +40,6 @@ ctfcli.core.challenge module
 ----------------------------
 
 .. automodule:: ctfcli.core.challenge
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ctfcli.core.challengeactions module
------------------------------------
-
-.. automodule:: ctfcli.core.challengeactions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ctfcli.core.ctfdcliactions module
----------------------------------
-
-.. automodule:: ctfcli.core.ctfdcliactions
    :members:
    :undoc-members:
    :show-inheritance:
@@ -72,14 +64,6 @@ ctfcli.core.masterlist module
 -----------------------------
 
 .. automodule:: ctfcli.core.masterlist
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ctfcli.core.repoactions module
-------------------------------
-
-.. automodule:: ctfcli.core.repoactions
    :members:
    :undoc-members:
    :show-inheritance:
