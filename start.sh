@@ -91,13 +91,21 @@ menu()
 #            Colorization stuff
 #=========================================================
 black='\E[30;47m'
-red='\E[31;47m'
-green='\E[32;47m'
-yellow='\E[33;47m'
-blue='\E[34;47m'
-magenta='\E[35;47m'
-cyan='\E[36;47m'
-white='\E[37;47m'
+#red='\E[31;47m'
+#green='\E[32;47m'
+#yellow='\E[33;47m'
+#blue='\E[34;47m'
+#magenta='\E[35;47m'
+#cyan='\E[36;47m'
+#white='\E[37;47m'
+magenta=$(tput setaf 5)
+blue=$(tput setaf 4)
+cyan=$(tput setaf 6)
+green="$(tput setaf 2)"
+purple=$(tput setaf 5)
+red=$(tput setaf 1)
+white=$(tput setaf 7)
+yellow=$(tput setaf 3)
 
 cecho ()
 {

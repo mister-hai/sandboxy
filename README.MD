@@ -1,9 +1,10 @@
 # DAILY PLAN
 
+    Working opn getting the packer/unpacker/installer/main-menu working
     
     I have gotten a test of the uploading functionality working
     it `should` be complete shortly
-
+![terminal output](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/startscript.png)
 ![terminal output](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/terminal.png)
 
 ![platform display](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/ctfd.png))
