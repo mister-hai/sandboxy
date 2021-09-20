@@ -30,7 +30,8 @@
 ## | -f, --composefile      Name of the compose file to use     (Default: ./MAIN.yaml)
 ## | -c, --extraslocation   Location of the lib.sh              (Default: ./lib.sh)
 ## | -s, --setup            Sets required OS settings
-## | -v, -composeversion    Sets the Version to Install         (Default:1.25.4)
+## | -v, --composeversion   Sets the Version to Install         (Default:1.25.4)
+## | -m, --menu             Displays the program menu           (Default: ignore)
 ## | Commands:
 ## |   -h, --help             Displays this help and exists
 ## |   -v, --version          Displays output version and exits
@@ -80,9 +81,12 @@ composeversion()
     DOCKER_COMPOSE_VERSION=1.29.2
   fi
 }
-###############################################################################
-## Menu parsing and output colorization
-###############################################################################
+menu()
+{
+  main
+}
+#=========================================================
+# Menu parsing and output colorization
 #=========================================================
 #            Colorization stuff
 #=========================================================
@@ -102,7 +106,7 @@ white='\E[37;47m'
 RED_BACK=$'\E[101m'c
 GREEN_BACK=$'\E[102m'
 YELLOW_BACK=$'\E[103m'
-alias Reset="tput sgr0"      #  Reset text attributes to normal
+#alias Reset="tput sgr0"      #  Reset text attributes to normal
                              #+ without clearing screen.
 cecho ()
 {
@@ -114,8 +118,8 @@ cecho ()
   # color is second argument
   message=${1:-$default_msg}   # Defaults to default message.
   color=${2:-$black}           # Defaults to black, if not specified.
-  printf "%s%s" "${color}${message}"
-  Reset                      # Reset to normal.
+  printf "%s%s" "${color}" "${message}"
+  tput sgr0 #Reset # Reset to normal.
 } 
 
 #greps all "##" at the start of a line and displays it in the help text
@@ -171,25 +175,25 @@ while [ $# -gt 0 ]; do
   shift; 
   eval "$CMD" "$@" || shift $? 2> /dev/null
 done
-###############################################################################
+#
 #Every bash script that uses the cd command with a relative path needs 
 # 
 #   unset CDPATH
 # 
 # or else it may not work correctly. 
-#Scripts that don’t use cd should probably do it anyway, in case someone 
-#puts a cd in later.
+# Scripts that don’t use cd should probably do it anyway, in case someone 
+# puts a cd in later.
 
-#For users: Never export CDPATH from your shell to the environment. If you 
-#use CDPATH then set it in your .bashrc file and don’t export it, so that it’s
-#only set in interactive shells.
+# For users: Never export CDPATH from your shell to the environment. If you 
+# use CDPATH then set it in your .bashrc file and don’t export it, so that it’s
+# only set in interactive shells.
 
-#CDPATH is not a bash-specific feature; it’s actually specified by POSIX.
+# CDPATH is not a bash-specific feature; it’s actually specified by POSIX.
 unset CDPATH
 
-###############################################################################
-## IMPORT USER DEFINED FUNCTIONS FROM SCRIPT DIR AND SET LOCATION
-###############################################################################
+#
+# IMPORT USER DEFINED FUNCTIONS FROM SCRIPT DIR AND SET LOCATION
+#
 # gets pwd
 if [ DIR = $( cd -P "$( dirname "$SOURCE" )" && pwd ) ]; then
   cecho "[+] pwd: ${DIR} \n DEVS NEED TO ADD CHECKS FOR RELEVANT FILES" red;
@@ -209,9 +213,9 @@ printf "SELF: %s \n " "$SELF"
 #import lib
 source "${DIR}"/"${EXTRASLOCATION}"
 
-###############################################################################
-## SELF ARCHIVING FEATURES
-###############################################################################
+#
+# SELF ARCHIVING FEATURES
+#
 
 # returns an int representing seconds since first epoch
 # The 'date' command provides the option to display the time in seconds since 
@@ -320,9 +324,9 @@ listappendedsections()
 {
   grep "${TOKEN}" < "${SELF}"
 }
-###############################################################################
-## FUNCTIONS GETTING USER INPUT
-###############################################################################
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# FUNCTIONS GETTING USER INPUT
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 installprerequisites()
 {
   while true; do
@@ -426,35 +430,35 @@ ctfclifunction()
 cd $CHALLENGEREPOROOT
 python3 ctfd.py --help
 }
-###############################################################################
+#
 # MAIN LOOP, CONTAINS MENU THEN INFINITE LOOP, AFTER THAT IS DATA SECTION
-###############################################################################
+#
 
 # Trap CTRL+C, CTRL+Z and quit singles
-trap '' SIGINT SIGQUIT SIGTSTP
+#trap '' SIGINT SIGQUIT SIGTSTP
 show_menus()
 {
 	clear
-  cecho "## |-- BEGIN MESSAGE -- ////##################################################" green
-  cecho "## |   OPTIONS IN RED ARE EITHER NOT IMPLEMENTED YET OR OUTRIGHT DANGEROUS"
-  cecho "## | 1> Install Prerequisites" green
-  cecho "## | 2> Clone CTFd challenges" green
-  cecho "## | 2> Update Containers (docker-compose build)" green
-  cecho "## | 3> Run Project (docker-compose up)" green
-  cecho "## | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" yellow
-  cecho "## | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" red
-  cecho "## | 6> CTFd CLI (use after install only!)" green
-  cecho "## | 8> List Data Sections/Files Appended to script" green
-  cecho "## | 8> Append Data To Script (compresses project directory into start.sh)" red
-  cecho "## | 9> Retrieve Data From Script (list sections to see the filenames)" red
-  cecho "## | 10> Install kctf" green
-  cecho "## | 11> Install GoogleCloud SDK" green
-  cecho "## | 12> Activate Cluster" green
-# cecho "## | 13> NOT IMPLEMENTED Build Cluster" red
-# cecho "## | 14> NOT IMPLEMENTED Run Cluster" red
-# cecho "## | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!)" red
-  cecho "## | 16> Quit Program" red
-  cecho "## |-- END MESSAGE -- ////#####################################################" green
+  echo -e "# |-- BEGIN MESSAGE -- ////################################################## " #green
+  echo -e "# |   OPTIONS IN RED ARE EITHER NOT IMPLEMENTED YET OR OUTRIGHT DANGEROUS "
+  echo -e "# | 1> Install Prerequisites "# green
+  echo -e "# | 2> Clone CTFd challenges "# green
+  echo -e "# | 2> Update Containers (docker-compose build) "# green
+  echo -e "# | 3> Run Project (docker-compose up) "# green
+  echo -e "# | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers) "# yellow
+  echo -e "# | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING) "# red
+  echo -e "# | 6> CTFd CLI (use after install only!) "# green
+  echo -e "# | 8> List Data Sections/Files Appended to script "# green
+  echo -e "# | 8> Append Data To Script (compresses project directory into start.sh) "# red
+  echo -e "# | 9> Retrieve Data From Script (list sections to see the filenames) "# red
+  echo -e "# | 10> Install kctf "# green
+  echo -e "# | 11> Install GoogleCloud SDK " #green
+  echo -e "# | 12> Activate Cluster " #green
+  echo -e "# | 13> NOT IMPLEMENTED Build Cluster " #red
+  echo -e "# | 14> NOT IMPLEMENTED Run Cluster " #red
+  echo -e "# | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!) " #red
+  echo -e "# | 16> Quit Program " #red
+  echo -e "# |-- END MESSAGE -- ////##################################################### " #green
 }
 getselection()
 {
@@ -522,9 +526,10 @@ main()
 }
 while true
 do
-	main
+  main
 done
+exit
 
-###############################################################################
-## BEGIN DATA STORAGE SECTION
-###############################################################################
+#______________________________________________________________________________
+# BEGIN DATA STORAGE SECTION
+#______________________________________________________________________________
