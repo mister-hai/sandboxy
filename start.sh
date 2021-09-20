@@ -98,16 +98,7 @@ blue='\E[34;47m'
 magenta='\E[35;47m'
 cyan='\E[36;47m'
 white='\E[37;47m'
-# color
-#RESET=$'\E[1;0m'
-#RED=$'\E[1;31m'
-#GREEN=$'\E[1;32m'
-#YELLOW=$'\E[1;33m'
-RED_BACK=$'\E[101m'c
-GREEN_BACK=$'\E[102m'
-YELLOW_BACK=$'\E[103m'
-#alias Reset="tput sgr0"      #  Reset text attributes to normal
-                             #+ without clearing screen.
+
 cecho ()
 {
   # Argument $1 = message
@@ -118,13 +109,13 @@ cecho ()
   # color is second argument
   message=${1:-$default_msg}   # Defaults to default message.
   color=${2:-$black}           # Defaults to black, if not specified.
-  printf "%b%b" "${color}" "${message} \n "
+  printf "%b" "${color}${message} \n"
   tput sgr0 #Reset # Reset to normal.
 } 
 
 #greps all "##" at the start of a line and displays it in the help text
 help() {
-  grep "^##" "$0" | sed -e "s/^...//" -e "s/\$PROG/$PROG/g"; exit 0
+  head -n 100 | grep "^##" "$0" | sed -e "s/^...//" -e "s/\$PROG/$PROG/g"; exit 0
 }
 #Runs the help function and only displays the first line
 version() {
@@ -196,9 +187,9 @@ unset CDPATH
 #
 # gets pwd
 if [ DIR = $( cd -P "$( dirname "$SOURCE" )" && pwd ) ]; then
-  cecho "[+] pwd: ${DIR} \n DEVS NEED TO ADD CHECKS FOR RELEVANT FILES" red;
+  cecho "[+] pwd: ${DIR} \n DEVS NEED TO ADD CHECKS FOR RELEVANT FILES" "$red";
 else
-  cecho "%s" "[-] COULD NOT SET PWD, SOMETING SERIOUS IS WRONG" red;
+  cecho "%s" "[-] COULD NOT SET PWD, SOMETING SERIOUS IS WRONG" "$red";
 fi
 printf "[+] Setting project root in ${DIR}"
 PROJECT_ROOT=$DIR
@@ -248,7 +239,7 @@ readselfarchive()
 appendtoselfasbase64()
 {
   currentdatetime=getepochseconds
-  cecho "[+] APPENDING: ${currentdatetime}" yellow
+  cecho "[+] APPENDING: ${currentdatetime}" "$yellow"
   # add token with filename for identifier
   printf "%s" "==${TOKEN}==${currentdatetime}==START==" >> "$SELF"
   # add the contents of the current directory
@@ -271,7 +262,7 @@ appendtoselfasbase64()
 appenddatafolder()
 {
   currentdatetime=getepochseconds
-  cecho "[+] APPENDING: ${currentdatetime}" yellow
+  cecho "[+] APPENDING: ${currentdatetime}" "$yellow"
   # add token with filename for identifier
   printf "%s" "==${TOKEN}==${currentdatetime}==START==" >> "$SELF"
   # add the contents of the current directory
@@ -330,33 +321,33 @@ listappendedsections()
 installprerequisites()
 {
   while true; do
-    cecho "[!] This action is about use quite a bit of time and internet data." red
-    cecho "[!] Do you wish to use lots of data and time downloading and installing things?" red
-    cecho "[?]" red; cecho "y/N ?" yellow
+    cecho "[!] This action is about use quite a bit of time and internet data." "$red"
+    cecho "[!] Do you wish to use lots of data and time downloading and installing things?" "$red"
+    cecho "[?]" "$red"; cecho "y/N ?" "$yellow"
     read -r -e -i "n" yesno
-    cecho "[?] Are You Sure? (y/N)" yellow
+    cecho "[?] Are You Sure? (y/N)" "$yellow"
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     case $yesno in
         [Yy]* ) installeverything;;
         [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." red;;
+        * ) cecho "Please answer yes or no." "$red";;
     esac
   done
 }
 buildproject()
 {
   while true; do
-    cecho "[!] This action will create multiple containers and volumes" red
-    cecho "[!] cleanup may be required if modifications are made while down" red
-    cecho "[!] Do you wish to continue?" red
-    cecho "[?]" red; cecho "y/N ?" yellow
+    cecho "[!] This action will create multiple containers and volumes" "$red"
+    cecho "[!] cleanup may be required if modifications are made while down" "$red"
+    cecho "[!] Do you wish to continue?" "$red"
+    cecho "[?]" "$red"; cecho "y/N ?" "$yellow"
     read -e -i "n" yesno
-    cecho "[?] Are You Sure? (y/N)" yellow
+    cecho "[?] Are You Sure? (y/N)" "$yellow"
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     case $yesno in
         [Yy]* ) composebuild;;
         [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." red;;
+        * ) cecho "Please answer yes or no." "$red";;
     esac
   done
 }
@@ -364,46 +355,46 @@ buildproject()
 asktoappend()
 {
   while true; do
-    cecho "[!] APPENDING ARCHIVE!" red
-    cecho "[!] Do you wish to continue?" red
-    cecho "[?]" red; cecho "y/N ?" yellow
+    cecho "[!] APPENDING ARCHIVE!" "$red"
+    cecho "[!] Do you wish to continue?" "$red"
+    cecho "[?]" "$red"; cecho "y/N ?" "$yellow"
     read -e -i "n" yesno
-    cecho "[?] Are You Sure? (y/N)" yellow
+    cecho "[?] Are You Sure? (y/N)" "$yellow"
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     case $yesno in
         [Yy]* ) appendtoselfasbase64;;
         [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." red;;
+        * ) cecho "Please answer yes or no." "$red";;
     esac
   done
 }
 askforappendfile()
 {
   while true; do
-    cecho "[!] This Action will compress the current directory's contents into an archive" red
+    cecho "[!] This Action will compress the current directory's contents into an archive" "$red"
     read -e -i "n" yesno
-    cecho "[?] Are You Sure? (y/N)" yellow
+    cecho "[?] Are You Sure? (y/N)" "$yellow"
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     case $yesno in
         [Yy]* ) asktoappend;;
         [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." red;;
+        * ) cecho "Please answer yes or no." "$red";;
     esac
   done
 }
 asktorecall()
 {
   while true; do
-    cecho "[!] RECALLING : ${1}" red
-    cecho "[!] Do you wish to continue?" red
-    cecho "[?]" red; cecho "y/N ?" yellow
+    cecho "[!] RECALLING : ${1}" "$red"
+    cecho "[!] Do you wish to continue?" "$red"
+    cecho "[?]" "$red"; cecho "y/N ?" "$yellow"
     read -e -i "n" yesno
-    cecho "[?] Are You Sure? (y/N)" yellow
+    cecho "[?] Are You Sure? (y/N)" "$yellow"
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     case $yesno in
         [Yy]* ) grabsectionfromself "${1}";;
         [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." red;;
+        * ) cecho "Please answer yes or no." "$red";;
     esac
   done
 }
@@ -411,14 +402,14 @@ askforrecallfile()
 {
   listappendedsections
   while true; do
-    cecho "[!] Please Input the label you wish to retrieve" red
+    cecho "[!] Please Input the label you wish to retrieve" "$red"
     read -e -i "n" archivelabel
-    cecho "[?] Are You Sure? (y/N)" yellow
+    cecho "[?] Are You Sure? (y/N)" "$yellow"
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     case $archivelabel in
         [Yy]* ) asktorecall "${archivelabel}";;
         [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." red;;
+        * ) cecho "Please answer yes or no." "$red";;
     esac
   done
 }
@@ -439,26 +430,26 @@ python3 ctfd.py --help
 show_menus()
 {
 	clear
-  cecho "# |-- BEGIN MESSAGE -- ////################################################## " green
+  cecho "# |-- BEGIN MESSAGE -- ////################################################## " "$green"
   cecho "# |   OPTIONS IN RED ARE EITHER NOT IMPLEMENTED YET OR OUTRIGHT DANGEROUS "
-  cecho "# | 1> Install Prerequisites " green
-  #cecho "# | 2> Clone CTFd challenges " green
-  cecho "# | 2> Update Containers (docker-compose build) " green
-  cecho "# | 3> Run Project (docker-compose up) " green
-  cecho "# | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers) " yellow
-  cecho "# | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING) " red
-  cecho "# | 6> CTFd CLI (use after install only!) " green
-  cecho "# | 7> List Data Sections/Files Appended to script " green
-  cecho "# | 8> Append Data To Script (compresses project directory into start.sh) " red
-  cecho "# | 9> Retrieve Data From Script (list sections to see the filenames) " red
-  cecho "# | 10> Install kctf " green
-  cecho "# | 11> Install GoogleCloud SDK " green
-  cecho "# | 12> Activate Cluster " green
-  cecho "# | 13> NOT IMPLEMENTED Build Cluster " red
-  cecho "# | 14> NOT IMPLEMENTED Run Cluster " red
-  cecho "# | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!) " red
-  cecho "# | 16> Quit Program " red
-  cecho "# |-- END MESSAGE -- ////##################################################### " green
+  cecho "# | 1> Install Prerequisites " "$green"
+  #cecho "# | 2> Clone CTFd challenges " "$green"
+  cecho "# | 2> Update Containers (docker-compose build) " "$green"
+  cecho "# | 3> Run Project (docker-compose up) " "$green"
+  cecho "# | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers) " "$yellow"
+  cecho "# | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING) " "$red"
+  cecho "# | 6> CTFd CLI (use after install only!) " "$green"
+  cecho "# | 7> List Data Sections/Files Appended to script " "$green"
+  cecho "# | 8> Append Data To Script (compresses project directory into start.sh) " "$red"
+  cecho "# | 9> Retrieve Data From Script (list sections to see the filenames) " "$red"
+  cecho "# | 10> Install kctf " "$green"
+  cecho "# | 11> Install GoogleCloud SDK " "$green"
+  cecho "# | 12> Activate Cluster " "$green"
+  cecho "# | 13> NOT IMPLEMENTED Build Cluster " "$red"
+  cecho "# | 14> NOT IMPLEMENTED Run Cluster " "$red"
+  cecho "# | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!) " "$red"
+  cecho "# | 16> Quit Program " "$red"
+  cecho "# |-- END MESSAGE -- ////##################################################### " "$green"
 }
 getselection()
 {
