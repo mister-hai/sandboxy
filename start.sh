@@ -118,7 +118,7 @@ cecho ()
   # color is second argument
   message=${1:-$default_msg}   # Defaults to default message.
   color=${2:-$black}           # Defaults to black, if not specified.
-  printf "%s%s" "${color}" "${message}"
+  printf "%b%b" "${color}" "${message} \n "
   tput sgr0 #Reset # Reset to normal.
 } 
 
@@ -439,33 +439,32 @@ python3 ctfd.py --help
 show_menus()
 {
 	clear
-  echo -e "# |-- BEGIN MESSAGE -- ////################################################## " #green
-  echo -e "# |   OPTIONS IN RED ARE EITHER NOT IMPLEMENTED YET OR OUTRIGHT DANGEROUS "
-  echo -e "# | 1> Install Prerequisites "# green
-  echo -e "# | 2> Clone CTFd challenges "# green
-  echo -e "# | 2> Update Containers (docker-compose build) "# green
-  echo -e "# | 3> Run Project (docker-compose up) "# green
-  echo -e "# | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers) "# yellow
-  echo -e "# | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING) "# red
-  echo -e "# | 6> CTFd CLI (use after install only!) "# green
-  echo -e "# | 8> List Data Sections/Files Appended to script "# green
-  echo -e "# | 8> Append Data To Script (compresses project directory into start.sh) "# red
-  echo -e "# | 9> Retrieve Data From Script (list sections to see the filenames) "# red
-  echo -e "# | 10> Install kctf "# green
-  echo -e "# | 11> Install GoogleCloud SDK " #green
-  echo -e "# | 12> Activate Cluster " #green
-  echo -e "# | 13> NOT IMPLEMENTED Build Cluster " #red
-  echo -e "# | 14> NOT IMPLEMENTED Run Cluster " #red
-  echo -e "# | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!) " #red
-  echo -e "# | 16> Quit Program " #red
-  echo -e "# |-- END MESSAGE -- ////##################################################### " #green
+  cecho "# |-- BEGIN MESSAGE -- ////################################################## " green
+  cecho "# |   OPTIONS IN RED ARE EITHER NOT IMPLEMENTED YET OR OUTRIGHT DANGEROUS "
+  cecho "# | 1> Install Prerequisites " green
+  #cecho "# | 2> Clone CTFd challenges " green
+  cecho "# | 2> Update Containers (docker-compose build) " green
+  cecho "# | 3> Run Project (docker-compose up) " green
+  cecho "# | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers) " yellow
+  cecho "# | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING) " red
+  cecho "# | 6> CTFd CLI (use after install only!) " green
+  cecho "# | 7> List Data Sections/Files Appended to script " green
+  cecho "# | 8> Append Data To Script (compresses project directory into start.sh) " red
+  cecho "# | 9> Retrieve Data From Script (list sections to see the filenames) " red
+  cecho "# | 10> Install kctf " green
+  cecho "# | 11> Install GoogleCloud SDK " green
+  cecho "# | 12> Activate Cluster " green
+  cecho "# | 13> NOT IMPLEMENTED Build Cluster " red
+  cecho "# | 14> NOT IMPLEMENTED Run Cluster " red
+  cecho "# | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!) " red
+  cecho "# | 16> Quit Program " red
+  cecho "# |-- END MESSAGE -- ////##################################################### " green
 }
 getselection()
 {
   show_menus
   PS3="Choose your doom:"
-  select option in install \
-cloner \
+  select option in install \ #cloner \
 build \
 run \
 clean \
@@ -477,17 +476,16 @@ recall \
 instkctf \
 installgcloud \
 clusteractivate \
+clusterbuild \
+clusterrun \
+kctfcli \
 quit
-#clusterbuild \
-#clusterrun \
-#kctfcli \
-#quit
   do
 	  case $option in
       install) 
 	  		installprerequisites;;
-      cloner)
-        cloneallchallengerepos;;
+#      cloner)
+#        cloneallchallengerepos;;
       build)
         composebuild;;
       run)
@@ -510,10 +508,10 @@ quit
         installgooglecloudsdk;;
       clusteractivate)
         k8sclusterinit;;
-#      clusterbuild)
-#        placeholder;;
-#      clusterrun)
-#        placeholder;;
+      clusterbuild)
+        placeholder;;
+      clusterrun)
+        placeholder;;
       quit)
         break;;
       esac
