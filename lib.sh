@@ -67,7 +67,7 @@ cecho ()
 
 placeholder()
 {
-  cecho "[x] NOT IMPLEMENTED YET" red
+  cecho "[x] NOT IMPLEMENTED YET" "${red}"
 }
 
 ###############################################################################
@@ -99,16 +99,21 @@ startproject()
 #FULL SYSTEM PURGE
 dockerpurge()
 {
-  docker system prune --force --all
+  cmd='docker system prune --force --all'
+  runcommand cmd
 }
 #docker selective pruning
 dockerprune()
 {
-  cecho "[+] pruning everything" yellow
-  docker-compose -f "${PROJECTFILENAME}" down
-  docker network prune -f
-  docker container prune -f
-  docker volume prune -f
+  cecho "[+] pruning everything" "${yellow}"
+  cmd="docker-compose -f '${PROJECTFILENAME}' down"
+  runcommand cmd
+  cmd='docker network prune -f'
+  runcommand cmd
+  cmd='docker container prune -f'
+  runcommand cmd
+  cmd='docker volume prune -f'
+  runcommand cmd
 }
 dockersoftrefresh()
 {
@@ -124,17 +129,12 @@ dockerhardreset()
 # installs for debian amd64
 installapt()
 {
-  sudo apt-get install \
-    python3\
-    python3-pip\
-    git\
-    tmux\
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release ufw\
-    xxd wget curl netcat
+  packages=("python3 python3-pip git tmux apt-transport-https ca-certificates curl gnupg lsb-release ufw xxd wget curl netcat")
+  for item in "$packages";
+  do
+    cmd="sudo apt-get install -y ${item}"
+    runcommand "$cmd"
+    done;
 }
 #requires sudo
 # specifically for debian
