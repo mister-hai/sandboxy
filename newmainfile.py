@@ -5,11 +5,20 @@
 import os,sys,fire
 from pathlib import Path
 import sys
-import yaml
 import os
 import pathlib
 import logging
 import traceback
+from pathlib import Path
+
+import configparser
+from pygments import highlight
+from pygments.formatters import TerminalFormatter
+from pygments.lexers import IniLexer, JsonLexer
+import os
+import json
+
+import subprocess
 from pathlib import Path
 
 try:
@@ -21,6 +30,41 @@ try:
 except ImportError as derp:
     print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
     COLORMEQUALIFIED = False
+
+################################################################################
+##############                   Master Values                 #################
+################################################################################
+
+sys.path.insert(0, os.path.abspath('.'))
+
+#Before we load the menu, we need to do some checks
+# The .env needs to be reloaded in the case of other alterations
+PWD = os.path.realpath(".")
+PWD_LIST = os.listdir(PWD)
+PROJECT_ROOT = Path(PWD)
+CHALLENGEREPOROOT=Path(PROJECT_ROOT,'/data/CTFd')
+
+# Master values
+# alter these accordingly
+toolfolder = Path(os.path.dirname(__file__))
+reporoot   = toolfolder.parent
+challengesfolder = Path(reporoot, "challenges")
+docsfolder = Path(reporoot, "build", "singlehtml")
+masterlist = Path(reporoot, "masterlist.yaml")
+configfile = Path(reporoot, "config.cfg")
+
+CATEGORIES = [
+    "exploitation",
+    "reversing",
+    "web",
+    "forensics",
+    "scripting",
+    "crypto",
+    "networking",
+    "linux",
+    "miscellaneous"
+    ]
+
 
 ################################################################################
 ##############               LOGGING AND ERRORS                #################
@@ -84,23 +128,15 @@ def errorlogger(message):
     trace = traceback.TracebackException(exc_type, exc_value, exc_tb) 
     errormesg = message + ''.join(trace.format_exception_only())
     #traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
-    lineno = 'LINE NUMBER >>>' + str(exc_tb.tb_lineno)
-    logger.error(lineno+errormesg)
-    print(lineno+errormesg + ''.join(trace.format_exception_only()))
+    lineno = 'LINE NUMBER : ' + str(exc_tb.tb_lineno)
+    logger.error(
+        redprint(
+            errormesg +"\n" + lineno + ''.join(trace.format_exception_only()) +"\n"
+            )
+        )
 
-sys.path.insert(0, os.path.abspath('.'))
+###############################################################################
 
-#Before we load the menu, we need to do some checks
-# The .env needs to be reloaded in the case of other alterations
-# and rotating/changing access keys
-PWD = os.path.realpath(".")
-PROJECT_ROOT = Path(PWD)
-CHALLENGEREPOROOT=Path(PROJECT_ROOT,'/data/CTFd')
-PWD_LIST = os.listdir(PWD)
-# check project integrity
-#for each in PWD_LIST:
-#    if (each == each):
-#        pass
 
 class Project():
     def __init__(self,projectroot:Path):
@@ -134,6 +170,84 @@ class Project():
             # clean redis
             #for file in os.listdir(self.mysql):
             #    os.remove(Path(os.path.abspath(file)))
+
+
+class Config(configparser.ConfigParser()):
+    '''
+Config class
+Maps to the command
+host@server$> python ./ctfcli/ config <command>
+    '''
+    def __init__(self, configpath:Path):
+        self.configpath = configpath
+        #parser = configparser.ConfigParser()
+        # Preserve case in configparser
+        self.optionxform = str
+        self.read(self.configpath)
+        super(self).__init__(configpath)
+
+    def edit(self, editor="micro"):
+        '''
+        ctfcli config edit
+            Edit config with $EDITOR
+        '''
+        # set environment variables for editor
+        editor = os.getenv("EDITOR", editor)
+        command = editor, 
+        subprocess.call(command)
+
+    def path(self):
+        '''
+        ctfcli config path
+            Show config path
+        '''
+        print("[+] Config located at {}".format(self.configpath))
+    
+    def loadalternativeconfig(self, configpath:str):
+        '''
+        Loads an alternative configuration
+        ctfcli config loadalternativeconfig <configpath>
+        '''
+        #path = self.configpath
+        parser = configparser.ConfigParser()
+        # Preserve case in configparser
+        parser.optionxform = str
+        parser.read(Path(configpath))
+        return parser
+
+    def previewconfig(self, as_string=False):
+        '''
+        Shows current configuration
+        ctfcli config previewconfig
+        '''
+        config = self.load_config(self.configpath)
+        d = {}
+        for section in config.sections():
+            d[section] = {}
+            for k, v in config.items(section):
+                d[section][k] = v
+        preview = json.dumps(d, sort_keys=True, indent=4)
+        if as_string is True:
+            return preview
+        else:
+            print(preview)
+    
+    def view(self, color=True, json=False):
+        
+        '''
+        view the config
+        ctfcli config view
+        '''
+        with open(self.configlocation) as f:
+            if json is True:
+                config = self.preview_config(as_string=True)
+                if color:
+                    config = highlight(config, JsonLexer(), TerminalFormatter())
+            else:
+                config = f.read()
+                if color:
+                    config = highlight(config, IniLexer(), TerminalFormatter())
+            print(config)
 
 class Sandboxy():
     '''

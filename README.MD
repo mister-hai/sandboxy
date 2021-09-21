@@ -1,6 +1,8 @@
+    LINKS/CREDITS ARE IN LICENSE, README IS FOR INFORMATION
+
 # DAILY PLAN
 
-    Working opn getting the packer/unpacker/installer/main-menu working
+    Working on getting the packer/unpacker/installer/main-menu working
     
     I have gotten a test of the uploading functionality working
     it `should` be complete shortly
@@ -11,23 +13,16 @@
 
 # WEEKLY PLAN
     
-    well gee golly am I glad all those tutorials had THIS laying around!
-    https://docs.docker.com/network/proxy/#configure-the-docker-client
-    but really no, they didnt... proxy issues solved? NO THEY WERE NOT
-
-    THEY WERE NOT SOLVED AT ALL
-
     PROGRESS:
-        set of challenges seperated into data directory and organized mostly
 
-        working on script to upload them easily according to ctfcli spec
-        Script generates a masterlist of all challenges in repo and 
-        can upload them singly or en masse.
+        ctfcli almost completely rewritten, it uploads challenges, and creates a 
+        handout.tar.gz and solution.tar.gz and a masterlist.yaml of all the challenges
 
-        Currently, the masterlist is created, and read from, reflecting the repo
-        and the rest is just api calls needing to be written
+        installer semi-funcitonal
 
-        can upload challenges to ctfd now
+        ctfd server operational
+
+        nginx proxy still not scrubbing port number from uri
 
 
 # PENTEST SANDBOX
@@ -67,7 +62,6 @@
 
     important data
     system prep
-    ctfdcli instructions
     KCTF INSTRUCTIONS
     NETWORK LAYOUT 
 
@@ -113,27 +107,6 @@
             kubernetes
             nsjail
             
-            kctf from Google
-                https://google.github.io/kctf/
-        
-            CTFd 
-                https://ctfd.io/ © Copyright CTFd LLC 2017 - 2020
-                https://github.com/sigpwny/ctfd-discord-webhook-plugin.git
-        
-            UIUCTF-2021-PUBLIC challenge set
-                https://github.com/sigpwny/UIUCTF-2021-Public
-
-            CSIVTU challenge set
-                https://github.com/csivitu/ctf-challenges.git
-                https://medium.com/csictf/automate-deployment-using-ci-cd-eeadd3d47ca7
-
-        May I enable user namespaces?
-            if a user manages to run code in the host namespace
-            it will have an interesting UID/GID possibly
-        
-        May I enable umask a+rx
-            puts 666+x on all files created from that shell
-
         TODO:
             - add option to start.sh to include/build/init
                 https://echoctf.red/
@@ -162,34 +135,6 @@
     
     Docker compose command before "docker-compose -f main-compose.yaml up"
     docker-compose -f main-compose.yaml run --rm -v "./data/certbot/conf:/etc/letsencrypt" -v "./data/certbot/www:/var/www/certbot" -v "./data/log/letsencrypt:/var/log/letsencrypt" nginx --entrypoint certbot --nginx --noninteractive --agree-tos --register-unsafely-without-email -d fightbiscuits.firewall-gateway.net 
-
-# ctfdcli instructions
-
-    THE CHALLENGES MUST BE UPLOADED TO CTFD FIRST BEFORE ACTIVATING THE KCTF ENVIRONMENT
-
-    from anywhere:
-        > pip3 install ctfcli
-        - I needed to downgrade requests and pyyaml after pip install
-    
-    in a clean directory, above the sandbox repository:
-        ctf init
-            - it will ask you for the url of the CTFd competition
-            - it will then ask for an access token
-                - the token is found in the settings tab of the admin panel
-            - it will create an empty git repo in that directory
-
-        ctf challenge add https://github.com/sigpwny/UIUCTF-2021-Public.git
-            - will show error, IGNORE IT, lines are added to the 
-                ./.ctf/config
-            ERROR: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree. Working tree has modifications.  Cannot add.
-
-    
-    EXAMPLE:
-        moop@fightbiscuits:~/challengedir$ ctf challenge install ./UIUCTF-2021-Public/jail/baby_python
-        Found UIUCTF-2021-Public/jail/baby_python/challenge.yml
-        Loaded baby_python
-        Installing baby_python
-        Success!
 
 # KCTF INSTRUCTIONS
     
@@ -247,99 +192,12 @@
 
         kctf chal debug port-forward &
     
-    You will see the followong output:
+    You will see the following output:
 
         moop@fightbiscuits:~/pwnyide$ kctf chal debug port-forward &
         [1] 131556
         moop@fightbiscuits:~/pwnyide$ [*] starting port-forward, ctrl+c to exit
         Forwarding from 127.0.0.1:42743 -> 1337
-
-
-
-# NETWORK LAYOUT 
-
-    - parrotOS/security (development/learning version)
-        172.18.0.2
-    - nginx reverse proxy 
-        172.18.0.2
-            - ctfd
-                172.18.0.3
-            - redis
-                172.18.0.x
-            - mysql
-                172.18.0.x
-            - bwapp
-                172.18.0.x
-            - dvwa
-                172.18.0.x
-            - JuiceShop
-                172.168.0.x
-        NETWORKGAME
-            192.168.0.1/24
-                - ponyDB UIUCTF 2021
-                    192.168.0.2
-                - miniponyDB UIUCTF 2021
-                    192.168.0.3
-
-# start.sh --help
-    #!/bin/bash
-    ## $PROG SANDBOXY.SH v1.0
-    ## |-- BEGIN MESSAGE -- ////##################################################
-    ## | This program is an installer and manager for a sandboxing system based on
-    ## |    ~ linux
-    ## |       ~ debian
-    ## |    ~ Kubernetes
-    ## |    ~ Docker
-    ## |    ~ Docker-compose
-    ## |    ~ kctf from Google
-    ## |       ~ https://google.github.io/kctf/
-    ## |    ~ CTFd (https://ctfd.io/) © Copyright CTFd LLC 2017 - 2020
-    ## |       ~ UIUCTF-2021-PUBLIC challenge set
-    ## |       ~ https://github.com/sigpwny/UIUCTF-2021-Public
-    ## |    
-    ## |    
-    ## |    EDIT THE .ENV FILE TO REFLECT YOUR CURRENT ENVIRONMENT/CHOICES
-    ## | Usage: $PROG --flag1 value --flag2 value
-    ## | Options:
-    ## |
-    ## | -l, --location         Full Path to install location       (Default: /sandboxy)
-    ## | -e, --extractlocation  Path to Archive Extraction Location (Default: /tmp)
-    ## | -t, --token            Token for data storage              (Default: DATA)
-    ## | -n, --network          Name of the network to create       (Default: net)
-    ## | -f, --composefile      Name of the compose file to use     (Default: ./sandbox-compose.yaml)
-    ## | -c, --extraslocation   Location of the lib.sh              (Default: ./lib.sh)
-    ## | -s, --setup            Sets required OS settings
-    ## | -v, -composeversion    Sets the Version to Install         (Default:1.25.4)
-    ## | Commands:
-    ## |   -h, --help             Displays this help and exists
-    ## |   -v, --version          Displays output version and exits
-    ## | Examples:
-    ## |  $PROG -i myscrip-simple.sh > myscript-full.sh
-    ## |  $PROG -r myscrip-full.sh   > myscript-simple.sh
-    ## | 
-    ## |-- END MESSAGE -- ////#####################################################
-
-# START.SH
-
-    ## |-- BEGIN MESSAGE -- ////##################################################
-    ## | 1> Install Prerequisites" 
-    ## | 2> Clone CTFd challenges" 
-    ## | 3> Update Containers (docker-compose build)" 
-    ## | 4> Run Project (docker-compose up)" 
-    ## | 5> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers)" 
-    ## | 6> REFRESH Container Cluster (WARNING: RESETS EVERYTHING)" 
-    ## | 7> CTFd CLI (use after install only!)" 
-    ## | 8> List Data Sections/Files Appended to script" 
-    ## | 8> Append Data To Script (compresses project directory into start.sh)" 
-    ## | 9> Retrieve Data From Script (list sections to see the filenames)" 
-    ## | 10> Install kctf" 
-    ## | 11> Install GoogleCloud SDK" 
-    ## | 12> Activate Cluster" 
-    ## | 13> NOT IMPLEMENTED Build Cluster" 
-    ## | 14> NOT IMPLEMENTED Run Cluster" 
-    ## | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!)" 
-    ## | 16> Quit Program" ed
-    ## |-- END MESSAGE -- ////#####################################################" 
 
 ## Some Notes
 

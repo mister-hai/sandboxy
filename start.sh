@@ -25,65 +25,79 @@
 ## | Usage: $PROG --flag1 value --flag2 value
 ## | Options:
 ## |
-## | -e, --extractlocation  Path to Archive Extraction Location (Default: /tmp)
-## | -t, --token            Token for data storage              (Default: DATA)
-## | -f, --composefile      Name of the compose file to use     (Default: ./MAIN.yaml)
-## | -c, --extraslocation   Location of the lib.sh              (Default: ./lib.sh)
-## | -s, --setup            Sets required OS settings
-## | -v, --composeversion   Sets the Version to Install         (Default:1.25.4)
 ## | -m, --menu             Displays the program menu           (Default: ignore)
 ## | Commands:
 ## |   -h, --help             Displays this help and exists
 ## |   -v, --version          Displays output version and exits
 ## | Examples:
-## |  $PROG -i myscrip-simple.sh > myscript-full.sh
-## |  $PROG -r myscrip-full.sh   > myscript-simple.sh
-## | 
+## |  $PROG --help myscrip-simple.sh > help_text.txt
+## |  $PROG --menu myscrip-full.sh
+## |  
+## | https://stackoverflow.com/questions/14786984/best-way-to-parse-command-line-args-in-bash
 ## |-- END MESSAGE -- ////#####################################################
-# https://stackoverflow.com/questions/14786984/best-way-to-parse-command-line-args-in-bash
+# 
 #
 #  THESE GET CREATED TO REFLECT THE OPTIONS ABOVE, EVERYTHING IS PARSED WITH SED
-#
-
-# import env variables
-source .env
 #set program name
 PROG=${0##*/}
 #set logfile name
 LOGFILE="$0.logfile"
+
+#
+# IMPORT USER DEFINED FUNCTIONS FROM SCRIPT DIR AND SET LOCATION
+#
+# import env variables
+#source .env
+
+# dirname returns the directory a file is in
+# realpath returns the absolute path of a file
+# $0 means THIS file that you are reading
+# So this function returns the directory this file is running in
+# this is project root
+SELF=$(dirname realpath "$0")
+echo "[+] Setting project root in ${SELF}" #"$green"
+PROJECT_ROOT=$SELF
+export PROJECT_ROOT
+# now that we have set that variable, we can reassign self to point to
+# the absolute path of the file for usage elsewhere
+SELF=$(realpath "$0")
+printf "SELF: %s \n " "$SELF"
+userlibrary=$(realpath ./lib.sh)
+echo "[+] Loading $userlibrary" #"$green"
+#import lib
+source "${userlibrary}"
 #set exit command
 die() { echo "$@" >&2; exit 2; }
+#greps all "##" at the start of a line and displays it in the help text
+help() {
+  head -n 100 | grep "^##" "$0" | sed -e "s/^...//" -e "s/\$PROG/$PROG/g"; exit 0
+}
+#Runs the help function and only displays the first line
+version() {
+  help | head -1
+}
+# Once it gets to here, if you havent used a flag, it displays the help and then exits
+# run the [ test command; if it succeeds, run the help command. $# is the number of arguments
+[ $# = 0 ] && help
 
-tarinstalldir(){
-    INSTALLDIR="/tmp"
-}
-token()
-{
-    TOKEN="DATA"
-}
-composefile()
-{
+# set token for data retrieval
+TOKEN="DATA"
+#composefile(){
   # ignore the shellcheck error
   # the assignment prevents shit from collapsing
-  PROJECT_FILE=$PROJECT_FILE
-}
-extraslocation()
-{
-  EXTRANAME="./lib.sh"
-}
-setup()
-{
-  SETUP=true
-}
-composeversion()
-{
-  if [ -z "$DOCKER_COMPOSE_VERSION" ]; then
-    DOCKER_COMPOSE_VERSION=1.29.2
-  fi
-}
+#  PROJECT_FILE=$PROJECT_FILE
+#}
 menu()
 {
-  main
+  # This simply returns from the function
+  # allowing the program flow to continue, this will eventually
+  # end up at the menu, down at the bottom.
+  while true
+  do
+    main
+  done
+  exit
+  #return
 }
 #=========================================================
 # Menu parsing and output colorization
@@ -98,13 +112,13 @@ black='\E[30;47m'
 #magenta='\E[35;47m'
 #cyan='\E[36;47m'
 #white='\E[37;47m'
-magenta=$(tput setaf 5)
-blue=$(tput setaf 4)
-cyan=$(tput setaf 6)
+#magenta=$(tput setaf 5)
+#blue=$(tput setaf 4)
+#cyan=$(tput setaf 6)
 green="$(tput setaf 2)"
-purple=$(tput setaf 5)
+#purple=$(tput setaf 5)
 red=$(tput setaf 1)
-white=$(tput setaf 7)
+#white=$(tput setaf 7)
 yellow=$(tput setaf 3)
 
 cecho ()
@@ -117,20 +131,11 @@ cecho ()
   # color is second argument
   message=${1:-$default_msg}   # Defaults to default message.
   color=${2:-$black}           # Defaults to black, if not specified.
-  printf "%b" "${color}${message} \n"
+  printf "%b \n" "${color}${message}"
+  #printf "%b \n" "${color}${message}"
   tput sgr0 #Reset # Reset to normal.
 } 
 
-#greps all "##" at the start of a line and displays it in the help text
-help() {
-  head -n 100 | grep "^##" "$0" | sed -e "s/^...//" -e "s/\$PROG/$PROG/g"; exit 0
-}
-#Runs the help function and only displays the first line
-version() {
-  help | head -1
-}
-# run the [ test command; if it succeeds, run the help command. $# is the number of arguments
-[ $# = 0 ] && help
 
 # While there are arguments to parse:
 # WHILE number of arguments passed to script is greater than 0 
@@ -190,27 +195,6 @@ done
 # CDPATH is not a bash-specific feature; it’s actually specified by POSIX.
 unset CDPATH
 
-#
-# IMPORT USER DEFINED FUNCTIONS FROM SCRIPT DIR AND SET LOCATION
-#
-# gets pwd
-if [ DIR = $( cd -P "$( dirname "$SOURCE" )" && pwd ) ]; then
-  cecho "[+] pwd: ${DIR} \n DEVS NEED TO ADD CHECKS FOR RELEVANT FILES" "$red";
-else
-  cecho "%s" "[-] COULD NOT SET PWD, SOMETING SERIOUS IS WRONG" "$red";
-fi
-printf "[+] Setting project root in ${DIR}"
-PROJECT_ROOT=$DIR
-#./start.sh
-SELFRELATIVE=$0
-printf "self:  %s \n " "$SELFRELATIVE"
-
-#/pwd/start.sh
-SELF=$(realpath $0)
-printf "SELF: %s \n " "$SELF"
-
-#import lib
-source "${DIR}"/"${EXTRASLOCATION}"
 
 #
 # SELF ARCHIVING FEATURES
@@ -281,10 +265,10 @@ appenddatafolder()
   cd "$DIR" || { printf "%s" $! && exit ;}
   cd ../
   if sudo tar -czvf - ./sandboxy/data | base64 >> "$SELF"; then
-    cecho "[+] Project packed into archive!"
+    cecho "[+] Project packed into archive!"  "$red"
     # seal with an ending token
   else
-    cecho "[-] Failed to tar directory into archive"
+    cecho "[-] Failed to tar directory into archive" "$red"
   fi
   cecho "[+] Sealing archive"
   if printf "%s" "==${TOKEN}==${currentdatetime}==END==" >> "$SELF"; then
@@ -323,9 +307,9 @@ listappendedsections()
 {
   grep "${TOKEN}" < "${SELF}"
 }
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+###############################################################################
 # FUNCTIONS GETTING USER INPUT
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+###############################################################################
 installprerequisites()
 {
   while true; do
@@ -426,22 +410,18 @@ askforrecallfile()
 # the .env file should be setting all these
 ctfclifunction()
 {
-cd $CHALLENGEREPOROOT
+cd "$CHALLENGEREPOROOT" || cecho "[-] Cannot step into CLI, exiting." "$red" ; exit 1
 python3 ctfd.py --help
 }
-#
+################################################################################
 # MAIN LOOP, CONTAINS MENU THEN INFINITE LOOP, AFTER THAT IS DATA SECTION
-#
-
-# Trap CTRL+C, CTRL+Z and quit singles
-#trap '' SIGINT SIGQUIT SIGTSTP
+###############################################################################
 show_menus()
 {
-	clear
+	#clear
   cecho "# |-- BEGIN MESSAGE -- ////################################################## " "$green"
   cecho "# |   OPTIONS IN RED ARE EITHER NOT IMPLEMENTED YET OR OUTRIGHT DANGEROUS "
   cecho "# | 1> Install Prerequisites " "$green"
-  #cecho "# | 2> Clone CTFd challenges " "$green"
   cecho "# | 2> Update Containers (docker-compose build) " "$green"
   cecho "# | 3> Run Project (docker-compose up) " "$green"
   cecho "# | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers) " "$yellow"
@@ -463,7 +443,7 @@ getselection()
 {
   show_menus
   PS3="Choose your doom:"
-  select option in install \ #cloner \
+  select option in install \
 build \
 run \
 clean \
@@ -483,8 +463,6 @@ quit
 	  case $option in
       install) 
 	  		installprerequisites;;
-#      cloner)
-#        cloneallchallengerepos;;
       build)
         composebuild;;
       run)
@@ -521,11 +499,6 @@ main()
 {
   getselection
 }
-while true
-do
-  main
-done
-exit
 
 #______________________________________________________________________________
 # BEGIN DATA STORAGE SECTION

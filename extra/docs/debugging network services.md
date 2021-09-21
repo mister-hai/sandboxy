@@ -4,6 +4,6 @@
     as docker communicates internally with the host
 
     Filter for loopback
-    (tcp.srcport == 8000) || (tcp.dstport == 8000)
+    (tcp.srcport == 8000) || (tcp.dstport == 8000) && (http)
 
     

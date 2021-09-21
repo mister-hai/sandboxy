@@ -7,7 +7,6 @@ from ctfcli.core.yamlstuff import Yaml
 from ctfcli.utils.utils import errorlogger,yellowboldprint,greenprint
 from ctfcli.utils.utils import redprint
 from ctfcli.core.apisession import APIHandler
-from ctfcli.core.apitemplates import hintstemplate
 
 
 ###############################################################################

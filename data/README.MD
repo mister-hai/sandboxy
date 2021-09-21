@@ -8,14 +8,3 @@ Archives of the mysql/redis/ctfd server are backed up before cleaning and timest
 
 # Repository structure
     
-        Repository  -> Reversing -> Challenge_SHA256HASHSTRING
-                                 -> Challenge_SHA256HASHSTRING
-                                 -> Challenge_SHA256HASHSTRING
-                                 -> Challenge_SHA256HASHSTRING
-                    -> Forensics 
-                                 -> Challenge_SHA256HASHSTRING
-                                 -> Challenge_SHA256HASHSTRING
-                                 -> Challenge_SHA256HASHSTRING
-                    -> Web 
-                                 -> Challenge_SHA256HASHSTRING
-                                 -> Challenge_SHA256HASHSTRING

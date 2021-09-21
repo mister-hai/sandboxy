@@ -12,28 +12,35 @@
 # you should modify this to suit your preferences
 #
 # This line adds the .env variables to the environment... very danger
-#source ./.env
+# posix compliant is using the dot "." operator like
+# . .env
+source .env
 
-#this is from the development environment
-#set this to whatever
-PROJECT_ROOT=/home/moop/sandboxy
-PROJECTFILE=./main-compose.yaml
-DATAROOT=/home/moop/sandboxy/data
-CHALLENGEREPOROOT=/home/moop/sandboxy/data/CTFd
-CTFD_TOKEN=ASDFJKLOL.BN64.AES420.PIZZA.LOL
-CTFD_URL=http://127.0.0.1:8000
-CERTBOTCONFVOLUMES=$DATAROOT/certbot/conf
-CERTBOTDATAVOLUMES=$DATAROOT/certbot/www
-CERTBOTLOGVOLUMES=$DATAROOT/log/certbot
 ###############################################################################
+
+# runs commands displaying shell output
+# commands must be mostly simple unless you wanna debug forever
+runcommand()
+{
+  cmd=${1}
+  runcmd=$(eval "$cmd")
+  if printf "%b\n" "$runcmd"; then
+    return
+  else
+    printf "%s : %s \n" "[-] Failed to run command" "$cmd"
+  fi
+}
+
 # required for nsjail, kubernetes
 # run this before running 
 systemparams()
 {
     umask a+rx
     echo 'kernel.unprivileged_userns_clone=1' | sudo tee -a /etc/sysctl.d/00-local-userns.conf
-    sudo service procps restart
-    sudo modprobe br_netfilter
+    cmd='sudo service procps restart'
+    runcommand cmd
+    cmd='sudo modprobe br_netfilter'
+    runcommand cmd
 }
 #=========================================================
 #            Colorization stuff
@@ -62,13 +69,15 @@ placeholder()
 {
   cecho "[x] NOT IMPLEMENTED YET" red
 }
+
 ###############################################################################
 # use this if adding/removing from configs for containers
 composebuild()
 {
   #set -ev
   if docker-compose config ;then
-    docker-compose -f "${PROJECTFILE}" build
+    cmd="docker-compose -f \"${PROJECTFILE}\" build"
+    runcommand cmd
   else
     printf "[-] Compose file failed to validate, stopping operation"
   fi
@@ -225,8 +234,8 @@ installkctf()
 cloneallchallengerepos()
 {
   # download ctfdcli to install the challenges via the yaml file
-  git clone https://github.com/CTFd/ctfcli "${PROJECT_ROOT}"/data/challenges/
-  git clone https://github.com/BSidesSF/ctf-2021-release "${PROJECT_ROOT}"/data/challenges/
+  #git clone https://github.com/CTFd/ctfcli "${PROJECT_ROOT}"/data/challenges/
+  #git clone https://github.com/BSidesSF/ctf-2021-release "${PROJECT_ROOT}"/data/challenges/
   git clone https://github.com/BSidesSF/ctf-2020-release "${PROJECT_ROOT}"/data/challenges/
   git clone https://github.com/BSidesSF/ctf-2019-release "${PROJECT_ROOT}"/data/challenges/
   git clone https://github.com/BSidesSF/ctf-2018-release "${PROJECT_ROOT}"/data/challenges/

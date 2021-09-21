@@ -1,5 +1,9 @@
 services:
 #################################################################
+##
+##  This file contains the entries for the network hacking
+##
+#################################################################
 ##  Parrotsec/ParOS
 #################################################################
 #    parrot:
@@ -15,15 +19,15 @@ services:
 #################################################################
 ##  target1 available for pwnage
 ################################################################
-    cnc:
-      image: debian:buster
-      build:
-        context: ./containers/cnc
-        dockerfile: Dockerfile
-      networks:
-        hax:
-          external: true
-          ipv4_address: 172.18.0.2
+  cnc:
+    image: debian:buster
+    build:
+      context: ./containers/cnc
+      dockerfile: Dockerfile
+    networks:
+      hax:
+        external: true
+        ipv4_address: 172.18.0.2
 ###############################################################################
 ## miniaturehorsedb
 ###############################################################################
