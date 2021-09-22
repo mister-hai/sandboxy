@@ -60,11 +60,10 @@ export PROJECT_ROOT
 # now that we have set that variable, we can reassign self to point to
 # the absolute path of the file for usage elsewhere
 SELF=$(realpath "$0")
-printf "SELF: %s \n " "$SELF"
-userlibrary=$(realpath ./lib.sh)
-echo "[+] Loading $userlibrary" #"$green"
+#userlibrary=$(realpath ./lib.sh)
+#echo "[+] Loading $userlibrary" #"$green"
 #import lib
-source "${userlibrary}"
+#source "${userlibrary}"
 #set exit command
 die() { echo "$@" >&2; exit 2; }
 #greps all "##" at the start of a line and displays it in the help text
