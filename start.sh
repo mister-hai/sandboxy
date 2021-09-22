@@ -182,119 +182,287 @@ done
 
 # CDPATH is not a bash-specific feature; it’s actually specified by POSIX.
 unset CDPATH
+#https://linuxize.com/post/how-to-setup-a-firewall-with-ufw-on-debian-10/
+#https://www.calcomsoftware.com/your-first-5-steps-in-linux-server-hardening/
+#https://www.the-art-of-web.com/system/fail2ban/
+#https://github.com/trimstray/linux-hardening-checklist
 
 
-#
-# SELF ARCHIVING FEATURES
-#
+# This line adds the .env variables to the environment... very danger
+# posix compliant is using the dot "." operator like
+# . .env
+source .env
 
-# returns an int representing seconds since first epoch
-# The 'date' command provides the option to display the time in seconds since 
-# Epoch(1970-01-01 00:00:00 UTC).  
-# Use the FORMAT specifier '%s' to display the value.
-getepochseconds()
+###############################################################################
+
+# runs commands displaying shell output
+# commands must be mostly simple unless you wanna debug forever
+runcommand()
 {
-   date '+%s'
-}
-# first arg is tarfile name, to allow for multiple files
-readselfarchive()
-{
-  cecho "[+] EXTRACTING: ${1}"
-  # line number where payload starts
-  PAYLOAD_START=$(awk "/^==${TOKEN}==${1}==START==/ { print NR + 1; exit 0; }" "${SELF}") #$0)
-  PAYLOAD_END=$(awk "/^==${TOKEN}==${1}==END==/ { print NR + 1; exit 0; }" "${SELF}" ) #$0)
-  #tail will read and discard the first X-1 lines, 
-  #then read and print the following lines. head will read and print the requested 
-  #number of lines, then exit. When head exits, tail receives a SIGPIPE
-  #if < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$(("${PAYLOAD_END}"-"${PAYLOAD_START}"+1))" | tar -zpvx -C "${INSTALLDIR}""${1}"; then
-  if < "${SELF}" tail -n "+${PAYLOAD_START}" | head -n "$(("${PAYLOAD_END}"-"${PAYLOAD_START}"+1))" | tar -zpvx -C ./sandboxy ; then
-    cecho "[+] SUCCESS! You should now be able to perform the next step!"
-    cecho "[+] Modify the .env file and make any changes you want then build the environment and run it"
+  cmd=${1}
+  runcmd=$(eval "$cmd")
+  if printf "%b\n" "$runcmd"; then
+    return
   else
-    cecho "[-] FAILED to Extract Archive Labeled ${1}"
+    printf "%s : %s \n" "[-] Failed to run command" "$cmd"
+  fi
+}
+
+# required for nsjail, kubernetes
+# run this before running 
+systemparams()
+{
+    umask a+rx
+    echo 'kernel.unprivileged_userns_clone=1' | sudo tee -a /etc/sysctl.d/00-local-userns.conf
+    cmd='sudo service procps restart'
+    runcommand cmd
+    cmd='sudo modprobe br_netfilter'
+    runcommand cmd
+}
+#=========================================================
+#            Colorization stuff
+#=========================================================
+red='\E[31;47m'
+green='\E[32;47m'
+yellow='\E[33;47m'
+
+alias Reset="tput sgr0"      #  Reset text attributes to normal
+                             #+ without clearing screen.
+cecho ()
+{
+  # Argument $1 = message
+  # Argument $2 = color
+  default_msg="No message passed."
+  # Doesn't really need to be a local variable.
+  # Message is first argument OR default
+  # color is second argument
+  message=${1:-$default_msg}   # Defaults to default message.
+  color=${2:-$black}           # Defaults to black, if not specified.
+  printf "%s%s" "${color}" "${message}"
+  Reset                      # Reset to normal.
+} 
+
+placeholder()
+{
+  cecho "[x] NOT IMPLEMENTED YET" "${red}"
+}
+
+###############################################################################
+# use this if adding/removing from configs for containers
+composebuild()
+{
+  #set -ev
+  if docker-compose config ;then
+    cmd="docker-compose -f \"${PROJECTFILE}\" build"
+    runcommand cmd
+  else
+    printf "[-] Compose file failed to validate, stopping operation"
+  fi
+}
+# provide filename of composefile.yaml 
+composerun()
+{
+  docker-compose -f "${PROJECTFILE}" up
+}
+composestop()
+{
+  docker-compose -f "${PROJECTFILE}" down
+}
+startproject()
+{
+  composebuild
+  composerun
+}
+#FULL SYSTEM PURGE
+dockerpurge()
+{
+  cmd='docker system prune --force --all'
+  runcommand cmd
+}
+#docker selective pruning
+dockerprune()
+{
+  cecho "[+] pruning everything" "${yellow}"
+  cmd="docker-compose -f '${PROJECTFILENAME}' down"
+  runcommand cmd
+  cmd='docker network prune -f'
+  runcommand cmd
+  cmd='docker container prune -f'
+  runcommand cmd
+  cmd='docker volume prune -f'
+  runcommand cmd
+}
+dockersoftrefresh()
+{
+  dockerprune && composebuild
+}
+dockerhardreset()
+{
+  dockerpurge && composebuild
+}
+###############################################################################
+## INSTALLER FUNCTIONS
+###############################################################################
+# installs for debian amd64
+installapt()
+{
+  packages=("python3 python3-pip git tmux apt-transport-https ca-certificates curl gnupg lsb-release ufw xxd wget curl netcat")
+  for item in "$packages";
+  do
+    cmd="sudo apt-get install -y ${item}"
+    runcommand "$cmd"
+    done;
+}
+#requires sudo
+# specifically for debian
+installdockerdebian()
+{
+  cecho "[+] Installing Docker" yellow
+  sudo apt-get remove docker docker-engine docker.io containerd runc
+  curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  sudo apt-get update
+  sudo apt-get install docker-ce docker-ce-cli containerd.io
+  sudo groupadd docker
+  #sudo gpasswd -a pi docker
+  sudo usermod -aG docker ${USER}
+  sudo systemctl enable docker
+  docker run hello-world
+  sudo apt-get install libffi-dev libssl-dev
+  sudo apt-get install -y python python-pip
+  sudo pip install docker-compose
+  docker-compose build
+}
+
+installdockercompose()
+{
+  cecho "[+] Installing docker-compose version: $DOCKER_COMPOSE_VERSION" green
+  if [ -z "$(sudo -l 2>/dev/null)" ]; then
+    curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+    chmod +x docker-compose
+    mv docker-compose /usr/local/bin
+  else
+    curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+    sudo chmod +x docker-compose
+    sudo mv docker-compose /usr/local/bin
+  fi
+}
+
+#TODO: add falback to non-root install
+# chmod +x kubectl
+# mkdir -p ~/.local/bin/kubectl
+# mv ./kubectl ~/.local/bin/kubectl
+# and then add ~/.local/bin/kubectl to $PATH
+installkubernetes()
+{
+  #kubectl
+  if curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"; then
+    cecho "[+] kubectl downloaded" green
+  else
+    cecho "[-] failed to download, exiting" yellow
+    exit 1
+  fi
+  #validate binary
+  curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+  if echo "$(<kubectl.sha256) kubectl" | sha256sum --check | grep "OK"; then
+    cecho "[+] Kubectl binary validated" green
+  else
+    cecho "[-] Vailed to validate binary, removing downloaded file and exiting" red
+    rm -rf ./kubectl 
+    rm -rf ./kubectl.sha256
+    exit 1
+  fi
+  if sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl; then
+    cecho "[+] Kubernetes Installed to /usr/local/bin/kubectl"
+  else
+    cecho "[-] Failed to install Kubernetes to /usr/local/bin/kubectl! Exiting!"
+    exit 1
+  fi
+  if kubectl version --client; then
+    locatiobino=$(which kubectl)
+    cecho "[+] Install Validated in ${locatiobino}!"
+    kubectl version --client
+  else
+    cecho "[-] Validation Failed, if you see a version output below, something strange is happening"
+    kubectl version --client
+  fi
+}
+installgooglecloudsdk()
+{
+  if curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-353.0.0-linux-x86_64.tar.gz | tar xvf; then
+    cecho "[+] Google Cloud SDK downloaded" green
+  else
+    cecho "[-] failed to download Google Cloud SDK, exiting" yellow
     exit 1
   fi
 }
+#installkctf()
+# {
+#  if curl -sSL https://kctf.dev/sdk | tar xz; then
+#    cecho "[+] kctf downloaded" green
+#  else
+#    cecho "[-] kctf failed to download, exiting" yellow
+#    exit 1
+#  fi
+#}
 
-appendtoselfasbase64()
+#pulls quite a bit of data over the network
+#places them in the /data/challenges/ folder
+cloneallchallengerepos()
 {
-  currentdatetime=getepochseconds
-  cecho "[+] APPENDING: ${currentdatetime}" "$yellow"
-  # add token with filename for identifier
-  printf "%s" "==${TOKEN}==${currentdatetime}==START==" >> "$SELF"
-  # add the contents of the current directory
-  # minus the start.sh and lib.sh scripts
-  # " - " is the "dummy" or "pipe to stdout" operator for tar 
-  if tar --exclude="${SELF}" --exclude="${EXTRANAME}" -czvf - ./* | base64 >> "$SELF"; then
-    cecho "[+] Project packed into archive!"
-    # seal with an ending token
-  else
-    cecho "[-] Failed to tar directory into archive"
-  fi
-  cecho "[+] Sealing archive"
-  if printf "%s" "==${TOKEN}==${currentdatetime}==END==" >> "$SELF"; then
-    cecho "[+] Sealed! Modifications saved as ${currentdatetime}"
-  else
-    cecho "[-] Failed to seal archive, this shouldn't happen, the file might have dissappeared"
-    exit 1
-  fi
+  # download ctfdcli to install the challenges via the yaml file
+  #git clone https://github.com/CTFd/ctfcli "${PROJECT_ROOT}"/data/challenges/
+  #git clone https://github.com/BSidesSF/ctf-2021-release "${PROJECT_ROOT}"/data/challenges/
+  git clone https://github.com/BSidesSF/ctf-2020-release "${PROJECT_ROOT}"/data/challenges/
+  git clone https://github.com/BSidesSF/ctf-2019-release "${PROJECT_ROOT}"/data/challenges/
+  git clone https://github.com/BSidesSF/ctf-2018-release "${PROJECT_ROOT}"/data/challenges/
+  git clone https://github.com/BSidesSF/ctf-2017-release "${PROJECT_ROOT}"/data/challenges/
+  #git clone 
+  #git clone 
+
 }
-appenddatafolder()
+#runs the list
+installeverything(){
+  installapt
+  installdockerdebian
+  installdockercompose
+}
+#https://stackoverflow.com/questions/739993/how-can-i-get-a-list-of-locally-installed-python-modules
+listofinstalledpythonpackages()
 {
-  currentdatetime=getepochseconds
-  cecho "[+] APPENDING: ${currentdatetime}" "$yellow"
-  # add token with filename for identifier
-  printf "%s" "==${TOKEN}==${currentdatetime}==START==" >> "$SELF"
-  # add the contents of the current directory
-  # minus the start.sh and lib.sh scripts
-  # " - " is the "dummy" or "pipe to stdout" operator for tar 
-  #from above projectroot
-  unset CDPATH
-  cd "$DIR" || { printf "%s" $! && exit ;}
-  cd ../
-  if sudo tar -czvf - ./sandboxy/data | base64 >> "$SELF"; then
-    cecho "[+] Project packed into archive!"  "$red"
-    # seal with an ending token
-  else
-    cecho "[-] Failed to tar directory into archive" "$red"
-  fi
-  cecho "[+] Sealing archive"
-  if printf "%s" "==${TOKEN}==${currentdatetime}==END==" >> "$SELF"; then
-    cecho "[+] Sealed! Modifications saved as ${currentdatetime}"
-  else
-    cecho "[-] Failed to seal archive, this shouldn't happen, the file might have dissappeared"
-    exit 1
-  fi
-  unset CDPATH
-  cd "$DIR" || { printf "%s" "could not change directory to " && exit ;}
+  python.exe -c "import pip; sorted(['%s==%s' % (i.key, i.version) for i in pip.get_installed_distributions()])"
 }
-# First arg: section
-#   ==${TOKEN}START==${1}==
-#       DATA AS BASE64
-#   ==${TOKEN}END==${1}==
-grabsectionfromself()
+
+k8sclusterinitlocal()
 {
-  STARTFLAG="false"
-  while read LINE; do
-      if [ "$STARTFLAG" == "true" ]; then
-              if [ "$LINE" == "==${TOKEN}==${1}==END==" ];then
-                      exit
-              else
-                printf "%s" $LINE
-              fi
-      elif [ "$LINE" == "==${TOKEN}==${1}==START==" ]; then
-              STARTFLAG="true"
-              continue
-      fi
-  # this sends the descriptor to the while loop
-  # it gets fed from the bottom
-  done < "$SELF"
+  cecho "[+] TYPE THE FOLLOWING COMMANDS INTO THE SHELL AND PRESS ENTER" yellow
+  cecho "source kctf/activate" yellow
+  cecho "kctf cluster create local-cluster --start --type kind" yellow
 }
-#yes this needs cleaning
-listappendedsections()
+
+snortconfig()
 {
-  grep "${TOKEN}" < "${SELF}"
+  sudo ldconfig
+  sudo ln -s /usr/local/bin/snort /usr/sbin/snort
 }
+
+#!/bin/bash
+color(){
+    for c; do
+        printf '\e[48;5;%dm%03d' $c $c
+    done
+    printf '\e[0m \n'
+}
+displaycolorpallette()
+{
+  IFS=$' \t\n'
+  color {0..15}
+  for ((i=0;i<6;i++)); do
+    color $(seq $((i*36+16)) $((i*36+51)))
+  done
+  color {232..255}
+}
+
 ###############################################################################
 # FUNCTIONS GETTING USER INPUT
 ###############################################################################
@@ -319,77 +487,15 @@ buildproject()
   while true; do
     cecho "[!] This action will create multiple containers and volumes" "$red"
     cecho "[!] cleanup may be required if modifications are made while down" "$red"
-    cecho "[!] Do you wish to continue?" "$red"
+    cecho "[!] Do you wish to continue? (backspace and press y then hit enter to accept)" "$red"
     cecho "[?]" "$red"; cecho "y/N ?" "$yellow"
     read -e -i "n" yesno
-    cecho "[?] Are You Sure? (y/N)" "$yellow"
+    cecho "[?] Are You Sure? (y/N) (backspace and press y then hit enter to accept)" "$yellow"
     read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     case $yesno in
         [Yy]* ) composebuild;;
         [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." "$red";;
-    esac
-  done
-}
-# first arg: filename or string data
-asktoappend()
-{
-  while true; do
-    cecho "[!] APPENDING ARCHIVE!" "$red"
-    cecho "[!] Do you wish to continue?" "$red"
-    cecho "[?]" "$red"; cecho "y/N ?" "$yellow"
-    read -e -i "n" yesno
-    cecho "[?] Are You Sure? (y/N)" "$yellow"
-    read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
-    case $yesno in
-        [Yy]* ) appendtoselfasbase64;;
-        [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." "$red";;
-    esac
-  done
-}
-askforappendfile()
-{
-  while true; do
-    cecho "[!] This Action will compress the current directory's contents into an archive" "$red"
-    read -e -i "n" yesno
-    cecho "[?] Are You Sure? (y/N)" "$yellow"
-    read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
-    case $yesno in
-        [Yy]* ) asktoappend;;
-        [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." "$red";;
-    esac
-  done
-}
-asktorecall()
-{
-  while true; do
-    cecho "[!] RECALLING : ${1}" "$red"
-    cecho "[!] Do you wish to continue?" "$red"
-    cecho "[?]" "$red"; cecho "y/N ?" "$yellow"
-    read -e -i "n" yesno
-    cecho "[?] Are You Sure? (y/N)" "$yellow"
-    read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
-    case $yesno in
-        [Yy]* ) grabsectionfromself "${1}";;
-        [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." "$red";;
-    esac
-  done
-}
-askforrecallfile()
-{
-  listappendedsections
-  while true; do
-    cecho "[!] Please Input the label you wish to retrieve" "$red"
-    read -e -i "n" archivelabel
-    cecho "[?] Are You Sure? (y/N)" "$yellow"
-    read -e -i "n" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
-    case $archivelabel in
-        [Yy]* ) asktorecall "${archivelabel}";;
-        [Nn]* ) exit;;
-        * ) cecho "Please answer yes or no." "$red";;
+        * ) cecho "Please answer yes/y or no/n." "$red";;
     esac
   done
 }
@@ -415,16 +521,13 @@ show_menus()
   cecho "# | 4> Clean Container Cluster (WARNING: Resets Volumes, Networks and Containers) " "$yellow"
   cecho "# | 5> REFRESH Container Cluster (WARNING: RESETS EVERYTHING) " "$red"
   cecho "# | 6> CTFd CLI (use after install only!) " "$green"
-  cecho "# | 7> List Data Sections/Files Appended to script " "$green"
-  cecho "# | 8> Append Data To Script (compresses project directory into start.sh) " "$red"
-  cecho "# | 9> Retrieve Data From Script (list sections to see the filenames) " "$red"
-  cecho "# | 10> Install kctf " "$green"
-  cecho "# | 11> Install GoogleCloud SDK " "$green"
-  cecho "# | 12> Activate Cluster " "$green"
-  cecho "# | 13> NOT IMPLEMENTED Build Cluster " "$red"
-  cecho "# | 14> NOT IMPLEMENTED Run Cluster " "$red"
-  cecho "# | 15> NOT IMPLEMENTED KCTF-google CLI (use after install only!) " "$red"
-  cecho "# | 16> Quit Program " "$red"
+  cecho "# | 7> Install kctf " "$green"
+  cecho "# | 8> Install GoogleCloud SDK " "$green"
+  cecho "# | 9> Activate Cluster " "$green"
+  cecho "# | 10> NOT IMPLEMENTED Build Cluster " "$red"
+  cecho "# | 11> NOT IMPLEMENTED Run Cluster " "$red"
+  cecho "# | 12> NOT IMPLEMENTED KCTF-google CLI (use after install only!) " "$red"
+  cecho "# | 13> Quit Program " "$red"
   cecho "# |-- END MESSAGE -- ////##################################################### " "$green"
 }
 getselection()
@@ -437,9 +540,6 @@ run \
 clean \
 refresh \
 cli \
-listsections \
-append \
-recall \
 instkctf \
 installgcloud \
 clusteractivate \
@@ -461,12 +561,6 @@ quit
         dockerhardreset;;
       cli)
         ctfclifunction;;
-      listsections)
-        listappendedsections;;
-      append)
-        askforappendfile;;
-      recall)
-        askforrecallfile;;
       instkctf)
         installkctf;;
       installgcloud)
