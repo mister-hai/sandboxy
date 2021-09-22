@@ -12,28 +12,27 @@
 ## |    ~ CTFd (https://ctfd.io/) © Copyright CTFd LLC 2017 - 2020
 ## |       ~ UIUCTF-2021-PUBLIC challenge set
 ## |       ~ https://github.com/sigpwny/UIUCTF-2021-Public
-## |    
-## |    
+## |    ~ BSides San Francisco 2020 CTF competition releases
+## |       ~ https://github.com/BSidesSF/ctf-2020-release 
 ## |    
 ## |    
 ## |    LIB.SH is the user-editable script you should modify
-## |      DO NOT open this script in a terminal window it may contain binary data
-## |      that means there are characters that can damage your session
-## |    
+## |      DO NOT open this script in a terminal window it may 
+## |      contain binary data that means there are characters 
+## |      that can damage your session
 ## |    
 ## |
-## | Usage: $PROG --flag1 value --flag2 value
-## | Options:
-## |
-## | -m, --menu             Displays the program menu           (Default: ignore)
+## | 
 ## | Commands:
 ## |   -h, --help             Displays this help and exists
 ## |   -v, --version          Displays output version and exits
+## | 
 ## | Examples:
 ## |  $PROG --help myscrip-simple.sh > help_text.txt
 ## |  $PROG --menu myscrip-full.sh
-## |  
-## | https://stackoverflow.com/questions/14786984/best-way-to-parse-command-line-args-in-bash
+## | 
+## | stackoverflow.com: 
+## | questions/14786984/best-way-to-parse-command-line-args-in-bash
 ## |-- END MESSAGE -- ////#####################################################
 # 
 #
@@ -87,18 +86,7 @@ TOKEN="DATA"
   # the assignment prevents shit from collapsing
 #  PROJECT_FILE=$PROJECT_FILE
 #}
-menu()
-{
-  # This simply returns from the function
-  # allowing the program flow to continue, this will eventually
-  # end up at the menu, down at the bottom.
-  while true
-  do
-    main
-  done
-  exit
-  #return
-}
+
 #=========================================================
 # Menu parsing and output colorization
 #=========================================================
@@ -499,7 +487,18 @@ main()
 {
   getselection
 }
-
+menu()
+{
+  # This simply returns from the function
+  # allowing the program flow to continue, this will eventually
+  # end up at the menu, down at the bottom.
+  while true
+  do
+    main
+  done
+  exit
+  #return
+}
 #______________________________________________________________________________
 # BEGIN DATA STORAGE SECTION
 #______________________________________________________________________________
