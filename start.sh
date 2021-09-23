@@ -46,10 +46,6 @@ help() {
   head -n 50 | grep "^##" "$0" | sed -e "s/^...//" -e "s/\$PROG/$PROG/g";
   exit 0
 }
-#Runs the help function and only displays the first line
-version() {
-  help | head -1
-}
 menu()
 {
   #this is to get the program flow to skip the menu parser,
@@ -58,7 +54,10 @@ menu()
 }
 # Once it gets to here, if you havent used a flag, it displays the help and then exits
 # run the [ test command; if it succeeds, run the help command. $# is the number of arguments
-[ $# = 0 ] && help
+if [ $# = 0 ];then
+  help
+else
+  exit
 
 # While there are arguments to parse:
 # WHILE number of arguments passed to script is greater than 0 
@@ -183,64 +182,6 @@ then
   abort "Bash is required to interpret this script."
 fi
 
-# Check if script is run non-interactively (e.g. CI)
-# If it is run non-interactively we should not prompt for passwords.
-if [[ ! -t 0 || -n "${CI-}" ]]
-then
-  NONINTERACTIVE=1
-fi
-
-# First check OS.
-# this is windows compatible cause lots of people use it
-OS="$(uname)"
-if [[ "${OS}" == "Linux" ]] || [[ "${OS}" == "Windows_NT" ]];
-then
-  GOOD_OS=1
-elif [[ "${OS}" == "Darwin" ]]
-then
-  abort "$PROG is only supported on Windows 10 and Linux."
-fi
-#check for sudo and admin rights
-have_sudo_access() {
-  if [[ ! -x "/usr/bin/sudo" ]]
-  then
-    return 1
-  fi
-
-  local -a args
-  if [[ -n "${SUDO_ASKPASS-}" ]]
-  then
-    args=("-A")
-  elif [[ -n "${NONINTERACTIVE-}" ]]
-  then
-    args=("-n")
-  fi
-
-  if [[ -z "${HAVE_SUDO_ACCESS-}" ]]
-  then
-    if [[ -n "${args[*]-}" ]]
-    then
-      SUDO="/usr/bin/sudo ${args[*]}"
-    else
-      SUDO="/usr/bin/sudo"
-    fi
-    if [[ -n "${NONINTERACTIVE-}" ]]
-    then
-      # Don't add quotes around ${SUDO} here
-      ${SUDO} -l mkdir &>/dev/null
-    else
-      ${SUDO} -v && ${SUDO} -l mkdir &>/dev/null
-    fi
-    HAVE_SUDO_ACCESS="$?"
-  fi
-
-  if [[ -z "${GOOD_OS}" ]] && [[ "${HAVE_SUDO_ACCESS}" -ne 0 ]]
-  then
-    abort "Need sudo access (e.g. the user ${USER} needs to be an Administrator)!"
-  fi
-
-  return "${HAVE_SUDO_ACCESS}"
-}
 ###############################################################################
 
 # runs commands displaying shell output
