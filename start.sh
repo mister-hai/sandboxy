@@ -101,6 +101,7 @@ while [ $# -gt 0 ]; do
   fi
   shift; 
   eval "$CMD" "$@" || shift $? 2> /dev/null
+  exit
 done
 
 #=========================================================
@@ -604,17 +605,12 @@ quit
       esac
   done
 }
-# main loop
-main()
-{
-  getselection
-}
 #menu()
 # {
-if [ $MENU == 0 ] ;then
+if [ $MENU = 0 ] ;then
   while true
   do
-    main
+    getselection
   done
   exit
 else
