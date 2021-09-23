@@ -32,10 +32,9 @@ configfile = Path(reporoot, "config.cfg")
 
 
 # this gets set before the tool runs if sandboxy is being used
-# when this is ready, this line gets commented and then this 
-# gets set by start.sh
 #REPOROOT=/home/moop/sandboxy/data/CTFd
-os.environ["REPOROOT"] = str(reporoot)
+if __name__ == "__main__":
+    os.environ["REPOROOT"] = str(reporoot)
 
 if os.getenv("REPOROOT") != None:
     yellowboldprint(f'[+] Repository root ENV variable is {os.getenv("REPOROOT")}')
@@ -57,6 +56,15 @@ else:
 class Ctfcli():
     '''
         Proper Usage is as follows
+
+        THIS TOOL SHOULD BE ALONGSIDE the challenges repository folder
+        
+        folder
+            subfolder_challenges
+                masterlist.yaml
+                subfolder_category
+            subfolder_ctfcli
+                __main__.py
         
         FIRST RUN, If you have not modified the repository this is not necessary!
         This will generate a Masterlist.yaml file that contains the contents of the 

@@ -16,10 +16,6 @@
 ## |       ~ https://github.com/BSidesSF/ctf-2020-release 
 ## |    
 ## |    
-## |    LIB.SH is the user-editable script you should modify
-## |      DO NOT open this script in a terminal window it may 
-## |      contain binary data that means there are characters 
-## |      that can damage your session
 ## |    
 ## |
 ## | 
@@ -77,14 +73,6 @@ version() {
 # Once it gets to here, if you havent used a flag, it displays the help and then exits
 # run the [ test command; if it succeeds, run the help command. $# is the number of arguments
 [ $# = 0 ] && help
-
-# set token for data retrieval
-TOKEN="DATA"
-#composefile(){
-  # ignore the shellcheck error
-  # the assignment prevents shit from collapsing
-#  PROJECT_FILE=$PROJECT_FILE
-#}
 
 #=========================================================
 # Menu parsing and output colorization
@@ -192,6 +180,74 @@ unset CDPATH
 # . .env
 source .env
 
+abort() {
+  cecho "$@" "$red"
+  exit 1
+}
+
+if [ -z "${BASH_VERSION:-}" ]
+then
+  abort "Bash is required to interpret this script."
+fi
+
+# Check if script is run non-interactively (e.g. CI)
+# If it is run non-interactively we should not prompt for passwords.
+if [[ ! -t 0 || -n "${CI-}" ]]
+then
+  NONINTERACTIVE=1
+fi
+
+# First check OS.
+# this is windows compatible cause lots of people use it
+OS="$(uname)"
+if [[ "${OS}" == "Linux" ]] || [[ "${OS}" == "Windows_NT" ]];
+then
+  GOOD_OS=1
+elif [[ "${OS}" == "Darwin" ]]
+then
+  abort "$PROG is only supported on Windows 10 and Linux."
+fi
+#check for sudo and admin rights
+have_sudo_access() {
+  if [[ ! -x "/usr/bin/sudo" ]]
+  then
+    return 1
+  fi
+
+  local -a args
+  if [[ -n "${SUDO_ASKPASS-}" ]]
+  then
+    args=("-A")
+  elif [[ -n "${NONINTERACTIVE-}" ]]
+  then
+    args=("-n")
+  fi
+
+  if [[ -z "${HAVE_SUDO_ACCESS-}" ]]
+  then
+    if [[ -n "${args[*]-}" ]]
+    then
+      SUDO="/usr/bin/sudo ${args[*]}"
+    else
+      SUDO="/usr/bin/sudo"
+    fi
+    if [[ -n "${NONINTERACTIVE-}" ]]
+    then
+      # Don't add quotes around ${SUDO} here
+      ${SUDO} -l mkdir &>/dev/null
+    else
+      ${SUDO} -v && ${SUDO} -l mkdir &>/dev/null
+    fi
+    HAVE_SUDO_ACCESS="$?"
+  fi
+
+  if [[ -z "${GOOD_OS}" ]] && [[ "${HAVE_SUDO_ACCESS}" -ne 0 ]]
+  then
+    abort "Need sudo access (e.g. the user ${USER} needs to be an Administrator)!"
+  fi
+
+  return "${HAVE_SUDO_ACCESS}"
+}
 ###############################################################################
 
 # runs commands displaying shell output
@@ -205,7 +261,7 @@ runcommand()
   else
     printf "%s : %s \n" "[-] Failed to run command" "$cmd"
   fi
-}
+}   
 
 # required for nsjail, kubernetes
 # run this before running 
@@ -218,28 +274,6 @@ systemparams()
     cmd='sudo modprobe br_netfilter'
     runcommand cmd
 }
-#=========================================================
-#            Colorization stuff
-#=========================================================
-red='\E[31;47m'
-green='\E[32;47m'
-yellow='\E[33;47m'
-
-alias Reset="tput sgr0"      #  Reset text attributes to normal
-                             #+ without clearing screen.
-cecho ()
-{
-  # Argument $1 = message
-  # Argument $2 = color
-  default_msg="No message passed."
-  # Doesn't really need to be a local variable.
-  # Message is first argument OR default
-  # color is second argument
-  message=${1:-$default_msg}   # Defaults to default message.
-  color=${2:-$black}           # Defaults to black, if not specified.
-  printf "%s%s" "${color}" "${message}"
-  Reset                      # Reset to normal.
-} 
 
 placeholder()
 {
@@ -503,8 +537,11 @@ buildproject()
 # the .env file should be setting all these
 ctfclifunction()
 {
-cd "$CHALLENGEREPOROOT" || cecho "[-] Cannot step into CLI, exiting." "$red" ; exit 1
-python3 ctfd.py --help
+if [ $(cd "$CHALLENGEREPOROOT" && python3 ./ctfdcli/ --help) ] ; then
+  python ./ctfdcli/ -- --interactive
+else  
+  cecho "[-] Cannot step into CLI, exiting." "$red" ; exit 1
+fi
 }
 ################################################################################
 # MAIN LOOP, CONTAINS MENU THEN INFINITE LOOP, AFTER THAT IS DATA SECTION
