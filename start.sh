@@ -38,33 +38,11 @@ PROG=${0##*/}
 #set logfile name
 LOGFILE="$0.logfile"
 
-#
-# IMPORT USER DEFINED FUNCTIONS FROM SCRIPT DIR AND SET LOCATION
-#
-# import env variables
-#source .env
-
-# dirname returns the directory a file is in
-# realpath returns the absolute path of a file
-# $0 means THIS file that you are reading
-# So this function returns the directory this file is running in
-# this is project root
-SELF=$(dirname realpath "$0")
-echo "[+] Setting project root in ${SELF}" #"$green"
-PROJECT_ROOT=$SELF
-export PROJECT_ROOT
-# now that we have set that variable, we can reassign self to point to
-# the absolute path of the file for usage elsewhere
-SELF=$(realpath "$0")
-#userlibrary=$(realpath ./lib.sh)
-#echo "[+] Loading $userlibrary" #"$green"
-#import lib
-#source "${userlibrary}"
 #set exit command
 die() { echo "$@" >&2; exit 2; }
 #greps all "##" at the start of a line and displays it in the help text
 help() {
-  head -n 100 | grep "^##" "$0" | sed -e "s/^...//" -e "s/\$PROG/$PROG/g"; exit 0
+  head -n 50 | grep "^##" "$0" | sed -e "s/^...//" -e "s/\$PROG/$PROG/g"; exit 0
 }
 #Runs the help function and only displays the first line
 version() {
@@ -73,44 +51,6 @@ version() {
 # Once it gets to here, if you havent used a flag, it displays the help and then exits
 # run the [ test command; if it succeeds, run the help command. $# is the number of arguments
 [ $# = 0 ] && help
-
-#=========================================================
-# Menu parsing and output colorization
-#=========================================================
-#            Colorization stuff
-#=========================================================
-black='\E[30;47m'
-#red='\E[31;47m'
-#green='\E[32;47m'
-#yellow='\E[33;47m'
-#blue='\E[34;47m'
-#magenta='\E[35;47m'
-#cyan='\E[36;47m'
-#white='\E[37;47m'
-#magenta=$(tput setaf 5)
-#blue=$(tput setaf 4)
-#cyan=$(tput setaf 6)
-green="$(tput setaf 2)"
-#purple=$(tput setaf 5)
-red=$(tput setaf 1)
-#white=$(tput setaf 7)
-yellow=$(tput setaf 3)
-
-cecho ()
-{
-  # Argument $1 = message
-  # Argument $2 = color
-  local default_msg="No message passed."
-  # Doesn't really need to be a local variable.
-  # Message is first argument OR default
-  # color is second argument
-  message=${1:-$default_msg}   # Defaults to default message.
-  color=${2:-$black}           # Defaults to black, if not specified.
-  printf "%b \n" "${color}${message}"
-  #printf "%b \n" "${color}${message}"
-  tput sgr0 #Reset # Reset to normal.
-} 
-
 
 # While there are arguments to parse:
 # WHILE number of arguments passed to script is greater than 0 
@@ -154,6 +94,41 @@ while [ $# -gt 0 ]; do
   shift; 
   eval "$CMD" "$@" || shift $? 2> /dev/null
 done
+
+#=========================================================
+#            Colorization stuff
+#=========================================================
+black='\E[30;47m'
+#red='\E[31;47m'
+#green='\E[32;47m'
+#yellow='\E[33;47m'
+#blue='\E[34;47m'
+#magenta='\E[35;47m'
+#cyan='\E[36;47m'
+#white='\E[37;47m'
+#magenta=$(tput setaf 5)
+#blue=$(tput setaf 4)
+#cyan=$(tput setaf 6)
+green="$(tput setaf 2)"
+#purple=$(tput setaf 5)
+red=$(tput setaf 1)
+#white=$(tput setaf 7)
+yellow=$(tput setaf 3)
+
+cecho ()
+{
+  # Argument $1 = message
+  # Argument $2 = color
+  local default_msg="No message passed."
+  # Doesn't really need to be a local variable.
+  # Message is first argument OR default
+  # color is second argument
+  message=${1:-$default_msg}   # Defaults to default message.
+  color=${2:-$black}           # Defaults to black, if not specified.
+  printf "%b \n" "${color}${message}"
+  #printf "%b \n" "${color}${message}"
+  tput sgr0 #Reset # Reset to normal.
+} 
 #
 #Every bash script that uses the cd command with a relative path needs 
 # 
@@ -169,10 +144,19 @@ done
 
 # CDPATH is not a bash-specific feature; it’s actually specified by POSIX.
 unset CDPATH
-#https://linuxize.com/post/how-to-setup-a-firewall-with-ufw-on-debian-10/
-#https://www.calcomsoftware.com/your-first-5-steps-in-linux-server-hardening/
-#https://www.the-art-of-web.com/system/fail2ban/
-#https://github.com/trimstray/linux-hardening-checklist
+
+# dirname returns the directory a file is in
+# realpath returns the absolute path of a file
+# $0 means THIS file that you are reading
+# So this function returns the directory this file is running in
+# this is project root
+SELF=$(dirname realpath "$0")
+echo "[+] Setting project root in ${SELF}" #"$green"
+PROJECT_ROOT=$SELF
+export PROJECT_ROOT
+# now that we have set that variable, we can reassign self to point to
+# the absolute path of the file for usage elsewhere
+SELF=$(realpath "$0")
 
 
 # This line adds the .env variables to the environment... very danger

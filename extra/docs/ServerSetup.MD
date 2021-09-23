@@ -83,3 +83,9 @@
 # Docker configuration
 
     docker network create --gateway=192.168.0.1 --subnet=192.168.0.0/24 net
+
+
+#https://linuxize.com/post/how-to-setup-a-firewall-with-ufw-on-debian-10/
+#https://www.calcomsoftware.com/your-first-5-steps-in-linux-server-hardening/
+#https://www.the-art-of-web.com/system/fail2ban/
+#https://github.com/trimstray/linux-hardening-checklist
