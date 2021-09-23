@@ -1,6 +1,6 @@
 import requests
 from pathlib import Path
-from ctfcli.utils.utils import errorlog, greenprint, errorlogger
+from ctfcli.utils.utils import errorlog, greenprint, errorlogger,yellowboldprint
 from ctfcli.core.apitemplates import hintstemplate,topictemplate, flagstemplate
 class APIHandler(requests.Session):
     """
@@ -115,31 +115,6 @@ class APIHandler(requests.Session):
             print("[-] Route not found in accepted list")
             exit()
 
-    def _getchallengelist(self):
-        """
-        Gets a list of all synced challenges
-        used during a session
-        """
-        # get list of challenges
-        self.apiresponse = self.get(self._getroute('challenges',admin=True),json=True)
-        return self.apiresponse
-
-    def _getidbyname(self, challengename):#apiresponse:requests.Response, challengename="test"):
-        """
-        get challenge ID from server response to prevent collisions
-        used during a session
-        """
-
-        self._getchallengelist()
-        # list of all challenges
-        apidict = self.apiresponse.json()["data"]
-        #challenge_ids = [{k: v} for x in apidict for k, v in x.items()]
-        for challenge in apidict:
-            if str(challenge.get('name')) == challengename:
-                # print data to STDOUT
-                print(f"NAME: {challenge.get('name')}")
-                print(f"ID: {str(challenge.get('id'))}")
-                return challenge.get('id')
 
     def authtoserver(self,adminusername,adminpassword):
         """
@@ -282,6 +257,32 @@ class APIHandler(requests.Session):
     def getusers(self):
         """ gets a list of all users"""
 
+    def _getchallengebyname(self,name):
+        """
+        checks for existance of challenge by searching for name in 
+        the list of all challenges returned by server
+        and returns the ID
+        """
+        listofchallenges = self.getsyncedchallenges()
+        for challenge in listofchallenges:
+            if challenge.get('name') == name:
+                #challenge_id = challenge.get('id')
+                return challenge
+
+    def _getidbyname(self, challengename):#apiresponse:requests.Response, challengename="test"):
+        """
+        get challenge ID from server response to prevent collisions
+        used during a session
+        """
+
+        listofchallenges = self.getsyncedchallenges()
+        #challenge_ids = [{k: v} for x in apidict for k, v in x.items()]
+        for challenge in apidict:
+            if str(challenge.get('name')) == challengename:
+                # print data to STDOUT
+                print(f"NAME: {challenge.get('name')}")
+                print(f"ID: {str(challenge.get('id'))}")
+                return challenge.get('id')
 
     def getsyncedchallenges(self):
         """
@@ -290,7 +291,7 @@ class APIHandler(requests.Session):
         We cant discern if a challenges attributes have been modified on the
         server by an administrator or a hacker
         """
-        endpoint = self._getroute('challenges') + "?view=admin"
+        endpoint = self._getroute('challenges') #+ "?view=admin"
         return self.get(url = endpoint, json=True).json()["data"]
 
     def _createbasechallenge(self,jsonpayload:dict):
@@ -303,6 +304,9 @@ class APIHandler(requests.Session):
         POST /api/v1/challenges HTTP/1.1
         """
         # happens first
+
+        #check for existing challenge
+        self._getchallengebyname(jsonpayload.get['name'])
         # create new challenge
         self.apiresponse = self.post(url=self._getroute('challenges'), 
                                                 json=jsonpayload,
