@@ -263,26 +263,13 @@ class APIHandler(requests.Session):
         the list of all challenges returned by server
         and returns the ID
         """
-        listofchallenges = self.getsyncedchallenges()
-        for challenge in listofchallenges:
-            if challenge.get('name') == name:
-                #challenge_id = challenge.get('id')
-                return challenge
-
-    def _getidbyname(self, challengename):#apiresponse:requests.Response, challengename="test"):
-        """
-        get challenge ID from server response to prevent collisions
-        used during a session
-        """
-
-        listofchallenges = self.getsyncedchallenges()
-        #challenge_ids = [{k: v} for x in apidict for k, v in x.items()]
-        for challenge in apidict:
-            if str(challenge.get('name')) == challengename:
-                # print data to STDOUT
-                print(f"NAME: {challenge.get('name')}")
-                print(f"ID: {str(challenge.get('id'))}")
-                return challenge.get('id')
+        self.listofchallenges = self.getsyncedchallenges()
+        self.listofnames = [name for name in self.listofchallenges.get('name')]
+        if name in self.listofnames:
+            #challenge_id = challenge.get('id')
+            return self.listofchallenges.get('name')
+        else:
+            return None
 
     def getsyncedchallenges(self):
         """
@@ -306,21 +293,29 @@ class APIHandler(requests.Session):
         # happens first
 
         #check for existing challenge
-        self._getchallengebyname(jsonpayload.get['name'])
-        # create new challenge
-        self.apiresponse = self.post(url=self._getroute('challenges'), 
-                                                json=jsonpayload,
-                                                allow_redirects=True)
-        # original code
-        #r = s.post("/api/v1/challenges", json=data)
-        self.apiresponse.raise_for_status()
-        self.challenge_data = self.apiresponse.json()
-        self.challenge_id = self.challenge_data["data"]["id"]
-        greenprint(f"[+] Challenge ID: {self.challenge_id}")
+        challengebyname = self._getchallengebyname(jsonpayload.get['name'])
+        # challenge with that name exists already
+        if challengebyname != None:
+            yellowboldprint(f"[!] Challenge NAME : {challengebyname.get('name')}")
+            yellowboldprint(f"[!] Exists under ID: {str(challengebyname.get('id'))}")
+            yellowboldprint("[!] Skipping!")
+            raise Exception("Challenge Exists")
+        # challenge does not exist by that name on the server
+        elif challengebyname == None:
+            # create new challenge
+            self.apiresponse = self.post(url=self._getroute('challenges'), 
+                                                    json=jsonpayload,
+                                                    allow_redirects=True)
+            # original code
+            #r = s.post("/api/v1/challenges", json=data)
+            self.apiresponse.raise_for_status()
+            self.challenge_data = self.apiresponse.json()
+            self.challenge_id = self.challenge_data["data"]["id"]
+            greenprint(f"[+] Challenge ID: {self.challenge_id}")
 
-        ##############################################################
-        # Everything below happens AFTER the challenge is created
-        ##############################################################
+            ##############################################################
+            # Everything below happens AFTER the challenge is created
+            ##############################################################
 
     def _process(self,tag:str,challenge_id , jsonpayload:dict):
         """

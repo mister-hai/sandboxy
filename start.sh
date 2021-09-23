@@ -20,6 +20,7 @@
 ## |
 ## | 
 ## | Commands:
+## |   -m, --menu             Displays the menu
 ## |   -h, --help             Displays this help and exists
 ## |   -v, --version          Displays output version and exits
 ## | 
@@ -42,11 +43,18 @@ LOGFILE="$0.logfile"
 die() { echo "$@" >&2; exit 2; }
 #greps all "##" at the start of a line and displays it in the help text
 help() {
-  head -n 50 | grep "^##" "$0" | sed -e "s/^...//" -e "s/\$PROG/$PROG/g"; exit 0
+  head -n 50 | grep "^##" "$0" | sed -e "s/^...//" -e "s/\$PROG/$PROG/g";
+  exit 0
 }
 #Runs the help function and only displays the first line
 version() {
   help | head -1
+}
+menu()
+{
+  #this is to get the program flow to skip the menu parser,
+  # you cant call the menu code directly as the parser hasnt hit it yet
+  MENU=1
 }
 # Once it gets to here, if you havent used a flag, it displays the help and then exits
 # run the [ test command; if it succeeds, run the help command. $# is the number of arguments
@@ -601,18 +609,19 @@ main()
 {
   getselection
 }
-menu()
-{
-  # This simply returns from the function
-  # allowing the program flow to continue, this will eventually
-  # end up at the menu, down at the bottom.
+#menu()
+# {
+if [ $MENU == 0 ] ;then
   while true
   do
     main
   done
   exit
+else
+  exit
+fi
   #return
-}
+#}
 #______________________________________________________________________________
 # BEGIN DATA STORAGE SECTION
 #______________________________________________________________________________

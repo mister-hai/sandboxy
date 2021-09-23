@@ -151,10 +151,16 @@ class Repository(Repo):
             ctfdtoken (str): Token given from Admin Panel > Config > Settings > Auth Token Form
         '''
         challengesack = []
-        for challenge in self.getallchallenges(printscr=False):
-            challengesack.append(challenge)
-        # throw it at the wall and watch the mayhem
+        try:
+            for challenge in self.getallchallenges(printscr=False):
+                challengesack.append(challenge)
+                # throw it at the wall and watch the mayhem
+        except Exception:
+            errorlogger(f"[-] Failed to generate list of challenges")        
         for challenge in challengesack:
-            #challenge.sync()
-            #self._syncchallenge(challenge,apihandler)
-            challenge.sync(apihandler)
+            try:
+                #challenge.sync()
+                #self._syncchallenge(challenge,apihandler)
+                challenge.sync(apihandler)
+            except Exception:
+                errorlogger(f"[-] Failed To Sync Challenge {challenge.name}")
