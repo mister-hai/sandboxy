@@ -4,7 +4,7 @@ version: "3"
 ## THIS FILE CONTAINS A TEST 
 ##docker network create --gateway=192.168.0.1 --subnet=192.168.0.0/24 net
 #################################################################
-services:      
+services:
 #################################################################
 ## CTFD; 
 # STATUS : FUNCTIONAL

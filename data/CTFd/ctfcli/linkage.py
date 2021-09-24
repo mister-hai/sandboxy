@@ -1,13 +1,15 @@
 import os,sys
-import configparser
 from pathlib import Path
 from ctfcli.core.masterlist import Masterlist
 from ctfcli.core.repository import Repository
 from ctfcli.core.ctfdrepo import SandboxyCTFdRepository
 from ctfcli.core.apisession import APIHandler
-#from ctfcli.utils.gitrepo import SandboxyGitRepository
+from ctfcli.utils.config import Config,setauth
+from ctfcli.core.gitrepo import SandboxyGitRepository
 from ctfcli.utils.utils import redprint,greenprint, errorlogger
 
+# bring in config functions
+configparser = Config()
 
 class SandBoxyCTFdLinkage():
     """
@@ -29,131 +31,7 @@ class SandBoxyCTFdLinkage():
         self.repofolder = repositoryfolder
         self.masterlistlocation = masterlistlocation #Path(self.repofolder.parent, "masterlist.yaml")
         self.ctfdops = SandboxyCTFdRepository(self.repofolder, self.masterlistlocation)
-
-    def _initconfig(self,configfile = "config.cfg", auth=False):
-        """
-        Initializes the configuration file into class attributes
-        """
-        try:
-            greenprint("[+] Reading Config")
-            self.cfgfilepath = Path(self.repofolder.parent,configfile)
-            self.config = configparser.ConfigParser()
-            # set categories
-            self._readconfig()
-            self._setallowedcategories()
-            # set auth information
-            if auth==True:
-                self.setauth(config=True)
-                self._writeconfig()
-
-        except Exception:
-            errorlogger("[-] FAILED: Reading Config")
-
-    def _readconfig(self):
-        """
-        Reads from config and sets data to class attribute
-        """
-        #with open(self.cfgfilepath, 'r') as self.configfile:
-            #config = open(self.cfgfilepath)
-        self.config.read(self.cfgfilepath)
-        #self.configfile.close()
-
-    def _writeconfig(self):
-        """
-        Writes data from self.config to self.configfilepath
-        """
-        #with open(self.cfgfilepath, 'w') as self.configfile:
-            #config = open(self.cfgfilepath)
-        self.config.write(self.configfile)
-        #self.configfile.close()
-    
-    def setauth(self,
-                config:bool=False,
-                ctfdurl:str=None,
-                ctfdtoken:str=None,
-                adminusername:str=None,
-                adminpassword:str=None
-                ):
-        """
-        Sets variables on the class instance to allow for authentication
-        to the CTFd server instance.
-
-        Set to use command line arguments by default, but uses config=True
-        for loading, config does not require URL of CTFd server
-
-        Will optionally take a token, or username/password combination
-        BOTH METHODS REQUIRE URL
-
-        Args:
-            config          (bool): If true, uses config file for values
-                                    if False, uses supplied parameters
-            ctfdurl         (str):  URI for CTFd server
-            ctfdtoken       (str):  Token provided by admin panel in ctfd
-            adminpassword   (str):  admin pass
-            adminusername   (str):  admin name
-        """
-        # open file and parse config within
-        if config == True:
-            self._readauthconfig()
-        else:
-            if (ctfdurl != None) and (ctfdtoken != None):
-                self.CTFD_TOKEN    = ctfdtoken
-                self.CTFD_URL      = ctfdurl
-
-            if (adminpassword != None) and (adminusername != None):
-                self.adminpassword = adminpassword
-                self.adminusername = adminusername
-                self.CTFD_URL      = ctfdurl
-        
-        self._setauthconfig()
-        # set auth headers, i forgot what this is for
-        #self.ctfdauth      = {"url": self.CTFD_URL, "ctf_token": self.CTFD_TOKEN}
-    
-    def _storetoken(self, token):
-        """
-        Stores Access tokens from CTFd
-        Only one at a time though. You should rotate them per access, also
-
-        Args:
-            token  (str): The token you have been provided
-        """
-        try:
-            greenprint("[+] Storing Authentication information")
-            #self.cfgfile = open(cfgfile, 'w')
-            #self.config.add_section('auth')
-            self.token = token
-            self.config.set('auth','token',self.token)
-        except Exception:
-            errorlogger("[-] Failed to store authentication information")
-        
-    def _setauthconfig(self):#, cfgfile:Path):
-        """
-        Sets auth information in config file
-        If the containers are breached, this doesnt matter
-        DO NOT RECYCLE PASSWORDS, PERIOD!
-        """
-        try:
-            greenprint("[+] Storing Authentication information")
-            #self.cfgfile = open(cfgfile, 'w')
-            #self.config.add_section('auth')
-            self.config.set('auth','username',self.adminusername)
-            self.config.set('auth','password', self.adminpassword)
-            self.config.set('auth','token', self.token)
-            self.config.set('auth','url', self.CTFD_URL)
-        except Exception:
-            errorlogger("[-] Failed to store authentication information")
-
-    def _readauthconfig(self):#, cfgfile:Path):
-        #self.config.read(cfgfile)
-        try:
-            greenprint("[+] Setting suthentication information from config file")
-            self.adminusername = self.config.get('auth', 'username')
-            self.adminpassword = self.config.get('auth', 'password')
-            self.token = self.config.get('auth','token')
-            self.CTFD_URL = self.config.get('auth', 'url')
-            #self.config.close()
-        except Exception:
-            errorlogger("[-] Failed to set authentication information from config file:")
+        self.gitops = SandboxyGitRepository(self.repofolder, self.masterlistlocation)
 
     def _checkmasterlist(self):
         """
@@ -194,29 +72,7 @@ class SandBoxyCTFdLinkage():
             masterlist._writenewmasterlist(self.masterlistlocation, newrepo,filemode="w")
         except Exception:
             errorlogger("[-] Failed to Update Masterlist :")
-
-    def _setallowedcategories(self):
-        """
-        Reads allowed categories from config file
-        use during reload when scanning for changes
-        """
-        self.allowedcategories = self.config.get('repo','categories').split(",")
-
-    def _syncchallenge(self, challenge,ctfdurl,ctfdtoken):
-        """
-        DO NOT USE
-        saved for later
-        Syncs a challenge with the CTFd server
-
-        Args:
-            challenge (str): Path to Challenge Folder to syncronize with the CTFd server
-                                   Please put this in the correct category
-            ctfurl    (str): Url to CTFd Server
-            ctfdtoken (str): CTFd Server token
-        """      
-        self.repo._syncchallenge(challenge, ctfdurl,ctfdtoken)
-
-
+            
     def init(self):
         """
         >>> host@server$> python ./ctfcli/ ctfcli init
@@ -229,7 +85,8 @@ class SandBoxyCTFdLinkage():
         try:
             greenprint("[+] Beginning Initial Setup")
             # returns a repository object
-            repository = self.ctfdops._createrepo(self.allowedcategories)
+            listofcategories = configparser._getallowedcategories()
+            repository = self.ctfdops._createrepo(listofcategories)
             greenprint("[+] Repository Scanned!")
             repository._setlocation(self.repofolder)
             # create a new masterlist
@@ -247,59 +104,12 @@ class SandBoxyCTFdLinkage():
             # has reached the end of the logic flow
         except Exception:
             errorlogger("[-] Failed to create CTFd Repository, check the logfile")
-        #try:
+        try:
             # we do this last so we can add all the created files to the git repo        
             # this is the git backend, operate this seperately
-            #self.gitops.createprojectrepo()
-        #except Exception:
-        #    errorlogger("[-] Git Repository Creation Failed, check the logfile")
-
-    #@_checkmasterlist
-    def listcategories(self,prints=True, remote=False) -> list:
-        """
-        Lists all currently installed categories
-
-        Args:
-            printscr (bool): if false, returns python objects
-        """
-        if self._checkmasterlist():
-            return self.repo.listcategories(prints=prints)
-
-    def getchallengesbycategory(self,categoryname,printscr=True) -> list:
-        """
-        Returns either a list of challenges or prints them to screen
-
-        Args:
-            printscr (bool): if false, returns python objects
-        """
-        if self._checkmasterlist():
-            self.repo.getchallengesbycategory(categoryname, printscr)
-            
-    def getallchallenges(self, category, printscr=True) -> list:
-        """
-        Lists ALL challenges in repo
-
-        Args:
-            printscr (bool): if false, returns python objects 
-        """
-        if self._checkmasterlist():
-            self.repo.getallchallenges(category, printscr)
-
-    def deleteremotehints(self,challenge_id,data):
-        """
-        deletes all hints from ctfd
-        HARD MODE: ON lmao
-        """
-
-#    def syncchallenge(self, challenge:Challenge,ctfdurl,ctfdtoken,adminusername,adminpassword):
-#        """
-#        Syncs a challenge with the CTFd server
-#        Internal method
-#
-#        Args:
-#            challenge (Challenge): Challenge to syncronize with the CTFd server        
-#        """
-#        self._setauth(ctfdurl,ctfdtoken,adminusername,adminpassword)
+            self.gitops.createprojectrepo()
+        except Exception:
+            errorlogger("[-] Git Repository Creation Failed, check the logfile")
 
     def synccategory(self, category:str,ctfdurl,ctfdtoken):#,adminusername,adminpassword):
         """
@@ -322,40 +132,124 @@ class SandBoxyCTFdLinkage():
             ctftoken (str): Token provided by CTFd
         """
         if self._checkmasterlist():
-            self.setauth(ctfdurl,ctfdtoken)
             self.repo.synccategory(category, ctfdurl,ctfdtoken)
-
-    def syncrepository(self, ctfdtoken=None):
+    
+    #@setauth()
+    def syncrepository(self,
+                url:str,
+                config:bool=False,
+                token:str=None,
+                username:str=None,
+                password:str=None,
+                ):
         '''
-        Syncs the masterlist.yaml with the server
-        This "uploads" the challenges
+        Syncs the masterlist.yaml with server, This "uploads" the challenges.
+        Use this after init, unless you are using the default set, 
+        then simply use this
 
-        use this after init, unless you are using the default set
+        To sync repository contents to CTFd Server
+        >>> host@server$> python ./ctfcli/ ctfcli syncrepository ---ctfdurl=<URL>
 
-        If no token is given, the password and username in the 
-        config.cfg file will be used
+        Not supplying a password/username, or token, will attempt to read auth
+        information already in the config./cfg file
+        BOTH METHODS REQUIRE URL, the only method not requiring a url
+        is  using --config=True and supplying a token or username/password
+        in the config file
         
         Args:
+            config          (bool): If true, uses config file for values
+                                    if False, uses supplied parameters
+            ctfdurl         (str):  URI for CTFd server
+            ctfdtoken       (str):  Token provided by admin panel in ctfd
+            adminpassword   (str):  admin pass
+            adminusername   (str):  admin name
+        Args:
+
             ctfdtoken (str): Token given from Admin Panel > Config > Settings > Auth Token Form
         '''
         try:
+            apihandler = APIHandler()
             if self._checkmasterlist():
-                #make API handler to manage session
-                # change apihandler to grab token
-                if (ctfdtoken == None):
-                    self.setauth(config=True)
-                    apihandler = APIHandler(self.CTFD_URL)
-                    # if they want to use the password/username combination
-                    # get token anyways, only use password to login once
-                    apihandler._obtainauthtoken()
-                    self.repo.syncrepository(apihandler)
-                # if they have a token already
-                elif (ctfdtoken != None):
-                    self.setauth(ctfdtoken)
-                    apihandler = APIHandler(self.CTFD_URL)
-                    self.repo.syncrepository(apihandler)
-            #update masterlist with server generated information
+                # if they want to read information from the config file
+                if config == True:
+                    authdict = configparser._readauthconfig()
+                    apihandler._setauth(**authdict)
+                elif config == False:
+                    # they have given a url/token "e2c1cb51859e5d7afad6c2cd82757277077a564166d360b48cafd5fcc1e4e015"
+                    if token != None:
+                        # different method that sets same param as _setauth
+                        apihandler._settoken(token)
+                        self.repo.syncrepository(apihandler)
+                    # they have given a url/password/username
+                    elif (password != None) and (username != None):
+                        #run function with auth
+                        apihandler.authtoserver(username=username,password=password)
+                        self.repo.syncrepository(apihandler)
+            #configparser._setauthconfig()
             self._updatemasterlist()
         except Exception:
             errorlogger('[-] Error syncing challenge:')
             sys.exit()
+
+
+    def _syncchallenge(self, challenge,ctfdurl,ctfdtoken):
+        """
+        DO NOT USE
+        saved for later
+        Syncs a challenge with the CTFd server
+
+        Args:
+            challenge (str): Path to Challenge Folder to syncronize with the CTFd server
+                                   Please put this in the correct category
+            ctfurl    (str): Url to CTFd Server
+            ctfdtoken (str): CTFd Server token
+        """
+        self.repo._syncchallenge(challenge, ctfdurl,ctfdtoken)
+
+    def listcategories(self,prints=True, remote=False) -> list:
+        """
+        Lists all currently installed categories
+
+        Args:
+            printscr (bool): if false, returns python objects
+        """
+        if self._checkmasterlist():
+            return self.repo.listcategories(prints=prints)
+
+    def getchallengesbycategory(self,categoryname,printscr=True) -> list:
+        """
+        Returns either a list of challenges or prints them to screen
+
+        Args:
+            printscr (bool): if false, returns python objects
+        """
+        if self._checkmasterlist():
+            self.repo.getchallengesbycategory(categoryname, printscr)
+
+    def getallchallenges(self, category, printscr=True) -> list:
+        """
+        Lists ALL challenges in repo
+
+        Args:
+            printscr (bool): if false, returns python objects 
+        """
+        if self._checkmasterlist():
+            self.repo.getallchallenges(category, printscr)
+
+    def deleteremotehints(self,challenge_id,data):
+        """
+        deletes all hints from ctfd
+        HARD MODE: ON lmao
+        """
+
+    def syncchallenge(self, challenge):
+        """
+        Syncs a challenge with the CTFd server
+        not implemented yet
+
+        Folder? yaml? waaaaa?
+
+        Args:
+            challenge (Challenge): Challenge to syncronize with the CTFd server        
+        """
+

@@ -25,20 +25,23 @@ Available Commands:
         """
         #self.MASTERLIST = Yaml(masterlist)
         self.username = str
+        self.email = str
+        self.password = str # or token, still a string
+        self.repo = str
 
     def setauth(self):
         with git.repo.config_writer() as git_config:
-            git_config.set_value('user', 'email', 'someone@example.com')
-            git_config.set_value('user', 'name', 'John Doe')
+            git_config.set_value('user', 'email', self.email)
+            git_config.set_value('user', 'name', self.username)
 
     def checkauth(self):
         # To check configuration values, use `config_reader()`
         with git.repo.config_reader() as git_config:
-            print(git_config.get_value('user', 'email'))
-            print(git_config.get_value('user', 'name'))
+            print(git_config.get_value('user', self.email))
+            print(git_config.get_value('user', self.name))
     
     def checkifremotechanged(self):
-        my_repo = git.Repo('some_repo')
+        my_repo = git.Repo(self.repo)
         if my_repo.is_dirty(untracked_files=True):
             print('Changes detected.')
     

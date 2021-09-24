@@ -1,6 +1,6 @@
-kctf/*
-!kctf/readme.md
-!kctf/VERSION
+/data/CTFd/**/*.tar.gz
+/data/CTFd/**/*.gz
+
 data/mysql/*
 data/CTFd/logs/*
 data/redis/*

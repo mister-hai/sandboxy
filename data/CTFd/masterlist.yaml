@@ -2362,6 +2362,16 @@ forensics: !!python/object:ctfcli.core.category.Category
   - forensics
   name: forensics
   tag: '!Category:'
+location: !!python/object/apply:pathlib.WindowsPath
+- C:\
+- Users
+- moop
+- Desktop
+- repositories
+- sandboxy
+- data
+- CTFd
+- challenges
 miscellaneous: !!python/object:ctfcli.core.category.Category
   Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794
@@ -2613,6 +2623,644 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
   - challenges
   - miscellaneous
   name: miscellaneous
+  tag: '!Category:'
+osint: !!python/object:ctfcli.core.category.Category
+  Challenge_5b884981efa8c7cd5df0d236536430b35a041cb10cead8ac045c4fd87248e214: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_5b884981efa8c7cd5df0d236536430b35a041cb10cead8ac045c4fd87248e214
+    __qualname__: Challenge_5b884981efa8c7cd5df0d236536430b35a041cb10cead8ac045c4fd87248e214
+    attempts: null
+    author: SrishtiGohain
+    category: osint
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Lo Scampo
+    - challenge.yml
+    connection_info: null
+    description: '''Malcolm X took Broiestevane to a Day of the Dead themed party
+      but she never returned. Her only friends, Mr Bean and the Pink Panther realised
+      that she was missing when she didn''t show up for an exam. Broiestevane liked
+      posting pictures, where was the party held?
+
+      (Don''t forget to wrap your answer in csictf{})''
+
+      '
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files: null
+    flags:
+    - csictf{liberty_hotel}
+    - csictf{liberty_hotel_boston}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Lo Scampo
+    handout: null
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Lo Scampo
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_5b884981efa8c7cd5df0d236536430b35a041cb10cead8ac045c4fd87248e214
+    jsonpayload: {}
+    name: Lo Scampo
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: null
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Lo Scampo
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: hidden
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - osint
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  Challenge_75079e97b3ccd23e867f7612a239883a82b873020c6448cf564b7a65a04b0987: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_75079e97b3ccd23e867f7612a239883a82b873020c6448cf564b7a65a04b0987
+    __qualname__: Challenge_75079e97b3ccd23e867f7612a239883a82b873020c6448cf564b7a65a04b0987
+    attempts: null
+    author: Parth
+    category: osint
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Shaken
+    - challenge.yml
+    connection_info: null
+    description: 'I love this watch. It''s been with me all over the world, from Istanbul
+      to Shanghai to Macau.I wear it with suits quite a lot. My boss liked it too.
+      I remember wearing it when she died. What is her successor''s name?
+
+      '
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files: null
+    flags:
+    - csictf{gareth_mallory}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Shaken
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Shaken
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Shaken
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_75079e97b3ccd23e867f7612a239883a82b873020c6448cf564b7a65a04b0987
+    jsonpayload: {}
+    name: Shaken
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: null
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Shaken
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: hidden
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - osint
+    - research
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  Challenge_75a32bee57bf9535cc059d59bf1d70868a923f10bb9fc3d48f2e0fe43bd59a35: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_75a32bee57bf9535cc059d59bf1d70868a923f10bb9fc3d48f2e0fe43bd59a35
+    __qualname__: Challenge_75a32bee57bf9535cc059d59bf1d70868a923f10bb9fc3d48f2e0fe43bd59a35
+    attempts: null
+    author: :"Parth"
+    category: osint
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Stalin for time
+    - challenge.yml
+    connection_info: null
+    description: There are 3 parts to this challenge. Who took it? What was "taken"?
+      Note The format of the flag is csictf{answer1_answer2}
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files:
+    - osint/Stalin for time/Stalinfortimewebpage.html
+    - osint/Stalin for time/dwayneanddavid.jpg
+    flags:
+    - csictf{yevgeny_khaldei_adrianov_compass}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Stalin for time
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Stalin for time
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Stalin for time
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_75a32bee57bf9535cc059d59bf1d70868a923f10bb9fc3d48f2e0fe43bd59a35
+    jsonpayload: {}
+    name: Stalin for time
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: null
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Stalin for time
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: hidden
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - osint
+    - research
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  Challenge_b4a66f45b35d7db1e980dbce17fff6c6e5bfd6640a5bd1e1e51fe75ee6ca9d6d: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_b4a66f45b35d7db1e980dbce17fff6c6e5bfd6640a5bd1e1e51fe75ee6ca9d6d
+    __qualname__: Challenge_b4a66f45b35d7db1e980dbce17fff6c6e5bfd6640a5bd1e1e51fe75ee6ca9d6d
+    attempts: null
+    author: roerohan
+    category: osint
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Pirates of the Memorial
+    - challenge.yml
+    connection_info: null
+    description: 'The original photographer of this picture commented the flag on
+      his post. Find the flag.
+
+      '
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files:
+    - osint/Pirates of the Memorial/storm.jpeg
+    flags:
+    - csictf{pl4g14r1sm_1s_b4d}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Pirates of the Memorial
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Pirates of the Memorial
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Pirates of the Memorial
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_b4a66f45b35d7db1e980dbce17fff6c6e5bfd6640a5bd1e1e51fe75ee6ca9d6d
+    jsonpayload: {}
+    name: Pirates of the Memorial
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: null
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Pirates of the Memorial
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: hidden
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - osint
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  Challenge_b6f2bf45e5d4d89a1e90b7727b496cacbb5451d0ee1ce39eb79be2eca3279091: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_b6f2bf45e5d4d89a1e90b7727b496cacbb5451d0ee1ce39eb79be2eca3279091
+    __qualname__: Challenge_b6f2bf45e5d4d89a1e90b7727b496cacbb5451d0ee1ce39eb79be2eca3279091
+    attempts: null
+    author: ashikka
+    category: osint
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Commitment
+    - challenge.yml
+    connection_info: null
+    description: hoshimaseok is up to no good. Track him down.
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files: null
+    flags:
+    - csictf{sc4r3d_0f_c0mm1tm3nt}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Commitment
+    handout: null
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Commitment
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_b6f2bf45e5d4d89a1e90b7727b496cacbb5451d0ee1ce39eb79be2eca3279091
+    jsonpayload: {}
+    name: Commitment
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: null
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Commitment
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: hidden
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - osint
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  Challenge_ff3ba4af548bab52baf8390646a3b1262d0d6be13fd41134acff5cdc9a6d63e6: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_ff3ba4af548bab52baf8390646a3b1262d0d6be13fd41134acff5cdc9a6d63e6
+    __qualname__: Challenge_ff3ba4af548bab52baf8390646a3b1262d0d6be13fd41134acff5cdc9a6d63e6
+    attempts: null
+    author: :"Parth"
+    category: osint
+    challengefile: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Flying Places
+    - challenge.yml
+    connection_info: null
+    description: 'A reporter wanted to know where this flight is headed. Where does
+      he (the reporter) live?
+
+      '
+    extra:
+      decay: 50
+      initial: 500
+      minimum: 50
+    files:
+    - osint/Flying Places/Flight.jpg
+    flags:
+    - csictf{san_francisco}
+    folderlocation: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Flying Places
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Flying Places
+    - handout
+    - handout.tar.gz
+    handoutfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Flying Places
+    - handout
+    hints: null
+    host: null
+    id: *id001
+    image: null
+    installed: *id002
+    internalname: Challenge_ff3ba4af548bab52baf8390646a3b1262d0d6be13fd41134acff5cdc9a6d63e6
+    jsonpayload: {}
+    name: Flying Places
+    readme: null
+    requirements: null
+    scorepayload: {}
+    script: *id003
+    solution: null
+    solutionfolder: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Flying Places
+    - solution
+    solved_by_me: 'false'
+    solves: *id001
+    state: hidden
+    synched: *id002
+    tag: '!Challenge:'
+    tags:
+    - osint
+    - research
+    topics: null
+    typeof: dynamic
+    value: 500
+    version: '0.1'
+  location: !!python/object/apply:pathlib.WindowsPath
+  - C:\
+  - Users
+  - moop
+  - Desktop
+  - repositories
+  - sandboxy
+  - data
+  - CTFd
+  - challenges
+  - osint
+  name: osint
   tag: '!Category:'
 reversing: !!python/object:ctfcli.core.category.Category
   Challenge_1ebe04d280ba028ce026ac0bd5cd350bd540413f9feb53237a08994f163301c7: !!python/object:ctfcli.core.challenge.Challenge

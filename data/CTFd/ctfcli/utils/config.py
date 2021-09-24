@@ -5,23 +5,154 @@ from pygments.formatters import TerminalFormatter
 from pygments.lexers import IniLexer, JsonLexer
 import os
 import json
-
+from ctfcli.utils.utils import greenprint,errorlogger
 import subprocess
 from pathlib import Path
 
-class Config(configparser.ConfigParser()):
+def setauth(function_to_authorize):
+    """
+    Decorator to allow for authentication to the CTFd server instance.
+
+    Set to use command line arguments by default, but uses config=True
+    for loading, config does not require URL of CTFd server
+
+    Will optionally take a token, or username/password combination
+    BOTH METHODS REQUIRE URL, the only method not requiring a url
+    is  using --config=True and supplying a token or username/password
+    in the config file
+    Args:
+        config          (bool): If true, uses config file for values
+                                if False, uses supplied parameters
+        ctfdurl         (str):  URI for CTFd server
+        ctfdtoken       (str):  Token provided by admin panel in ctfd
+        adminpassword   (str):  admin pass
+        adminusername   (str):  admin name
+    """
+    def genauth(self,
+            config:bool=False,
+            url:str=None,
+            token:str=None,
+            username:str=None,
+            password:str=None
+            ):
+        try:
+            # if they want to read information from the config file
+            if config == True:
+                Config._readauthconfig()
+            elif config == False:
+                # they have given a url/token
+                if (url != None) and (token != None):
+                    function_to_authorize(url=url ,token=token)
+                # they have given a url/password/username
+                if (password != None) and (username != None):
+                    #run function with auth
+                    function_to_authorize(url=url,
+                                          password=password,
+                                          username=username
+                                        )
+            Config._setauthconfig()
+        except Exception:
+            errorlogger("[-] Error: Failed to set authentication information" )
+    return genauth
+
+class Config(configparser.ConfigParser):
     '''
 Config class
 Maps to the command
 host@server$> python ./ctfcli/ config <command>
     '''
     def __init__(self, configpath:Path):
-        self.configpath = configpath
         #parser = configparser.ConfigParser()
         # Preserve case in configparser
         self.optionxform = str
-        self.read(self.configpath)
-        super(self).__init__(configpath)
+        self.cfgfilepath = configpath
+        #super(self).__init__()
+
+    def _getallowedcategories(self):
+        """
+        Reads allowed categories from config file
+        use during reload when scanning for changes
+        """
+        self.allowedcategories = self.config.get('repo','categories').split(",")
+        return self.allowedcategories
+
+    def _readconfig(self):
+        """
+        Reads from config and sets data to class attribute
+        """
+        #with open(self.cfgfilepath, 'r') as self.configfile:
+            #config = open(self.cfgfilepath)
+        try:
+            greenprint("[+] Reading Config")
+            self.read(self.cfgfilepath)
+        except Exception:
+            errorlogger("[-] FAILED: Reading Config")
+
+        self.read(self.cfgfilepath)
+        #self.configfile.close()
+
+    def _writeconfig(self):
+        """
+        Writes data from self.config to self.configfilepath
+        """
+        #with open(self.cfgfilepath, 'w') as self.configfile:
+            #config = open(self.cfgfilepath)
+        self.write(self.cfgfilepath)
+        #self.configfile.close()
+
+    def _readauthconfig(self) -> dict:#, cfgfile:Path):
+        #self.config.read(cfgfile)
+        try:
+            greenprint("[+] Setting authentication information from config file")
+            authdict = {
+                'username' : self.get('auth', 'username'),
+                'password' : self.get('auth', 'password'),
+                'token' : self.get('auth','token'),
+                'url' : self.get('auth', 'url')
+            }
+            return authdict
+            #self.config.close()
+        except Exception:
+            errorlogger("[-] Failed to set authentication information from config file:")
+
+    def _setauthconfig(self, authdict):#, cfgfile:Path):
+        """
+        Sets auth information in config file
+        If the containers are breached, this doesnt matter
+        DO NOT RECYCLE PASSWORDS, PERIOD!
+        """
+        try:
+            greenprint("[+] Storing Authentication information")
+            #self.cfgfile = open(cfgfile, 'w')
+            #self.config.add_section('auth')
+            self.set('auth','username',authdict['username'])
+            # yeah its plain text, the admin password should remain on the
+            # server , in the project folder, if you choose to use one
+            # these passwords are RELAYED and should be 
+            # considered as temporary as tokens
+            self.set('auth','password', authdict['password'])
+            self.set('auth','token', authdict["token"])
+            self.set('auth','url', authdict['url'])
+            self.close()
+        except Exception:
+            errorlogger("[-] Failed to store authentication information")
+
+    def _storetoken(self, token):
+        """
+        Stores Access tokens from CTFd
+        Only one at a time though. You should rotate them per access, also
+
+        Args:
+            token  (str): The token you have been provided
+        """
+        try:
+            greenprint("[+] Storing Authentication information")
+            #self.cfgfile = open(cfgfile, 'w')
+            #self.config.add_section('auth')
+            self.token = token
+            self.set('auth','token',self.token)
+        except Exception:
+            errorlogger("[-] Failed to store authentication information")
 
     def edit(self, editor="micro"):
         '''
@@ -46,18 +177,20 @@ host@server$> python ./ctfcli/ config <command>
         ctfcli config loadalternativeconfig <configpath>
         '''
         #path = self.configpath
-        parser = configparser.ConfigParser()
+        #parser = configparser.ConfigParser()
         # Preserve case in configparser
-        parser.optionxform = str
-        parser.read(Path(configpath))
-        return parser
+        #parser.optionxform = str
+        self.optionxform = str
+        #parser.read(Path(configpath))
+        self.read(Path(configpath))
+        return self
 
     def previewconfig(self, as_string=False):
         '''
         Shows current configuration
         ctfcli config previewconfig
         '''
-        config = self.load_config(self.configpath)
+        config = super().__init__(self.configpath)
         d = {}
         for section in config.sections():
             d[section] = {}
@@ -75,9 +208,9 @@ host@server$> python ./ctfcli/ config <command>
         view the config
         ctfcli config view
         '''
-        with open(self.configlocation) as f:
+        with open(self.configpath) as f:
             if json is True:
-                config = self.preview_config(as_string=True)
+                config = self.previewconfig(as_string=True)
                 if color:
                     config = highlight(config, JsonLexer(), TerminalFormatter())
             else:

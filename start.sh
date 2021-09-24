@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 ## $PROG SANDBOXY.SH v1.0
 ## |-- BEGIN MESSAGE -- ////##################################################
 ## | This program is an installer and manager for a sandboxing system based on
@@ -31,38 +31,38 @@
 ## | stackoverflow.com: 
 ## | questions/14786984/best-way-to-parse-command-line-args-in-bash
 ## |-- END MESSAGE -- ////#####################################################
-# 
-#
-#  THESE GET CREATED TO REFLECT THE OPTIONS ABOVE, EVERYTHING IS PARSED WITH SED
-#set program name
-PROG=${0##*/}
-#set logfile name
-LOGFILE="$0.logfile"
 
-#set exit command
+PROG=${0##*/}
+LOG=info
 die() { echo "$@" >&2; exit 2; }
-#greps all "##" at the start of a line and displays it in the help text
-help() {
-  head -n 50 | grep "^##" "$0" | sed -e "s/^...//" -e "s/\$PROG/$PROG/g";
-  exit 0
-}
-menu()
-{
-  #this is to get the program flow to skip the menu parser,
-  # you cant call the menu code directly as the parser hasnt hit it yet
+menu(){
   MENU=1
+}
+log_info() {
+  LOG=info
+}
+log_quiet() {
+  LOG=quiet
+}
+log() {
+  [ $LOG = info ] && echo "$1"; return 1 ## number of args used
+}
+help() {
+  grep "^##" "$0" | sed -e "s/^...//" -e "s/\$PROG/$PROG/g"; exit 0
+}
+version() {
+  help | head -1
 }
 # Once it gets to here, if you havent used a flag, it displays the help and then exits
 # run the [ test command; if it succeeds, run the help command. $# is the number of arguments
-if [ $# = 0 ];then
+if [ $# = 0 ]; then
   help
 else
-  exit
 
 # While there are arguments to parse:
 # WHILE number of arguments passed to script is greater than 0 
 # for every argument passed to the script DO
-while [ $# -gt 0 ]; do
+#while [ $# -gt 0 ]; do
 
 #  CMD=$(grep -m 1 -Po "^## *$1, --\K[^= ]*|^##.* --\K${1#--}(?:[= ])" ${0} | tr - _)
 #         assign results of `grep | tr` to CMD
@@ -93,16 +93,22 @@ while [ $# -gt 0 ]; do
 
 #           tr - _ 
 #             substitutes all - for _
-  CMD=$(grep -m 1 -Po "^## *$1, --\K[^= ]*|^##.* --\K${1#--}(?:[= ])" "${0}" | tr - _)
-  if [ -z "$CMD" ]; then 
-    echo "ERROR: Command '$1' not supported"; 
-    exit 1; 
+  while [ $# -gt 0 ]; do
+    CMD=$(grep -m 1 -Po "^## *$1, --\K[^= ]*|^##.* --\K${1#--}(?:[= ])" "${0}" | tr - _)
+    if [ -z "$CMD" ]; then 
+      exit 1; 
+    fi
+    shift; 
+    eval "$CMD" "$@" || shift $? 2> /dev/null
+    done
   fi
-  shift; 
-  eval "$CMD" "$@" || shift $? 2> /dev/null
-  exit
-done
-
+# original:
+#[ $# = 0 ] && help
+#while [ $# -gt 0 ]; do
+#  CMD=$(grep -m 1 -Po "^## *$1, --\K[^= ]*|^##.* --\K${1#--}(?:[= ])" log.sh | sed -e "s/-/_/g")
+#  if [ -z "$CMD" ]; then echo "ERROR: Command '$1' not supported"; exit 1; fi
+#  shift; eval "$CMD" $@ || shift $? 2> /dev/null
+#done
 #=========================================================
 #            Colorization stuff
 #=========================================================
@@ -158,7 +164,7 @@ unset CDPATH
 # $0 means THIS file that you are reading
 # So this function returns the directory this file is running in
 # this is project root
-SELF=$(dirname realpath "$0")
+SELF=$(dirname $(realpath "$0"))
 echo "[+] Setting project root in ${SELF}" #"$green"
 PROJECT_ROOT=$SELF
 export PROJECT_ROOT
@@ -171,18 +177,6 @@ SELF=$(realpath "$0")
 # posix compliant is using the dot "." operator like
 # . .env
 source .env
-
-abort() {
-  cecho "$@" "$red"
-  exit 1
-}
-
-if [ -z "${BASH_VERSION:-}" ]
-then
-  abort "Bash is required to interpret this script."
-fi
-
-###############################################################################
 
 # runs commands displaying shell output
 # commands must be mostly simple unless you wanna debug forever
@@ -208,19 +202,12 @@ systemparams()
     cmd='sudo modprobe br_netfilter'
     runcommand cmd
 }
-
-placeholder()
-{
-  cecho "[x] NOT IMPLEMENTED YET" "${red}"
-}
-
-###############################################################################
 # use this if adding/removing from configs for containers
 composebuild()
 {
   #set -ev
   if docker-compose config ;then
-    cmd="docker-compose -f \"${PROJECTFILE}\" build"
+    cmd="docker-compose -f ${PROJECTFILE} build"
     runcommand cmd
   else
     printf "[-] Compose file failed to validate, stopping operation"
@@ -267,24 +254,23 @@ dockerhardreset()
 {
   dockerpurge && composebuild
 }
-###############################################################################
 ## INSTALLER FUNCTIONS
-###############################################################################
 # installs for debian amd64
 installapt()
 {
-  packages=("python3 python3-pip git tmux apt-transport-https ca-certificates curl gnupg lsb-release ufw xxd wget curl netcat")
-  for item in "$packages";
-  do
-    cmd="sudo apt-get install -y ${item}"
-    runcommand "$cmd"
-    done;
+  #packages=("python3 python3-pip git tmux apt-transport-https ca-certificates curl gnupg lsb-release ufw xxd wget curl netcat")
+  packages="python3 python3-pip git tmux apt-transport-https ca-certificates curl gnupg lsb-release ufw xxd wget curl netcat"
+  #for item in "$packages";
+  #do
+  cmd="sudo apt-get install -y ${packages}"
+  runcommand "$cmd"
+  # done;
 }
 #requires sudo
 # specifically for debian
 installdockerdebian()
 {
-  cecho "[+] Installing Docker" yellow
+  cecho "[+] Installing Docker" "$yellow"
   sudo apt-get remove docker docker-engine docker.io containerd runc
   curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
   echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
@@ -303,7 +289,7 @@ installdockerdebian()
 
 installdockercompose()
 {
-  cecho "[+] Installing docker-compose version: $DOCKER_COMPOSE_VERSION" green
+  cecho "[+] Installing docker-compose version: $DOCKER_COMPOSE_VERSION" "$green" 
   if [ -z "$(sudo -l 2>/dev/null)" ]; then
     curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
     chmod +x docker-compose
@@ -324,17 +310,17 @@ installkubernetes()
 {
   #kubectl
   if curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"; then
-    cecho "[+] kubectl downloaded" green
+    cecho "[+] kubectl downloaded" "$green" 
   else
-    cecho "[-] failed to download, exiting" yellow
+    cecho "[-] failed to download, exiting" "$yellow"
     exit 1
   fi
   #validate binary
   curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
   if echo "$(<kubectl.sha256) kubectl" | sha256sum --check | grep "OK"; then
-    cecho "[+] Kubectl binary validated" green
+    cecho "[+] Kubectl binary validated" "$green" 
   else
-    cecho "[-] Vailed to validate binary, removing downloaded file and exiting" red
+    cecho "[-] Vailed to validate binary, removing downloaded file and exiting" "$red"
     rm -rf ./kubectl 
     rm -rf ./kubectl.sha256
     exit 1
@@ -357,21 +343,21 @@ installkubernetes()
 installgooglecloudsdk()
 {
   if curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-353.0.0-linux-x86_64.tar.gz | tar xvf; then
-    cecho "[+] Google Cloud SDK downloaded" green
+    cecho "[+] Google Cloud SDK downloaded" "$green" 
   else
-    cecho "[-] failed to download Google Cloud SDK, exiting" yellow
+    cecho "[-] failed to download Google Cloud SDK, exiting" "$yellow"
     exit 1
   fi
 }
-#installkctf()
-# {
-#  if curl -sSL https://kctf.dev/sdk | tar xz; then
-#    cecho "[+] kctf downloaded" green
-#  else
-#    cecho "[-] kctf failed to download, exiting" yellow
-#    exit 1
-#  fi
-#}
+installkctf()
+ {
+  if curl -sSL https://kctf.dev/sdk | tar xz; then
+    cecho "[+] kctf downloaded" "$green" 
+  else
+    cecho "[-] kctf failed to download, exiting" "$yellow"
+    exit 1
+  fi
+}
 
 #pulls quite a bit of data over the network
 #places them in the /data/challenges/ folder
@@ -402,9 +388,9 @@ listofinstalledpythonpackages()
 
 k8sclusterinitlocal()
 {
-  cecho "[+] TYPE THE FOLLOWING COMMANDS INTO THE SHELL AND PRESS ENTER" yellow
-  cecho "source kctf/activate" yellow
-  cecho "kctf cluster create local-cluster --start --type kind" yellow
+  cecho "[+] TYPE THE FOLLOWING COMMANDS INTO THE SHELL AND PRESS ENTER" "$yellow"
+  cecho "source kctf/activate" "$yellow"
+  cecho "kctf cluster create local-cluster --start --type kind" "$yellow"
 }
 
 snortconfig()
@@ -412,27 +398,7 @@ snortconfig()
   sudo ldconfig
   sudo ln -s /usr/local/bin/snort /usr/sbin/snort
 }
-
-#!/bin/bash
-color(){
-    for c; do
-        printf '\e[48;5;%dm%03d' $c $c
-    done
-    printf '\e[0m \n'
-}
-displaycolorpallette()
-{
-  IFS=$' \t\n'
-  color {0..15}
-  for ((i=0;i<6;i++)); do
-    color $(seq $((i*36+16)) $((i*36+51)))
-  done
-  color {232..255}
-}
-
-###############################################################################
 # FUNCTIONS GETTING USER INPUT
-###############################################################################
 installprerequisites()
 {
   while true; do
@@ -471,15 +437,13 @@ buildproject()
 # the .env file should be setting all these
 ctfclifunction()
 {
-if [ $(cd "$CHALLENGEREPOROOT" && python3 ./ctfdcli/ --help) ] ; then
-  python ./ctfdcli/ -- --interactive
-else  
-  cecho "[-] Cannot step into CLI, exiting." "$red" ; exit 1
-fi
+  if [ $(cd "$CHALLENGEREPOROOT" && python3 ./ctfdcli/ --help) ] ; then
+    python ./ctfdcli/ -- --interactive
+  else  
+    cecho "[-] Cannot step into CLI, exiting." "$red" ; exit 1
+  fi
 }
-################################################################################
 # MAIN LOOP, CONTAINS MENU THEN INFINITE LOOP, AFTER THAT IS DATA SECTION
-###############################################################################
 show_menus()
 {
 	#clear
@@ -538,27 +502,19 @@ quit
       clusteractivate)
         k8sclusterinit;;
       clusterbuild)
-        placeholder;;
+        break;;
       clusterrun)
-        placeholder;;
+        break;;
       quit)
         break;;
       esac
   done
 }
-#menu()
+#menu1()
 # {
-if [ $MENU = 0 ] ;then
+if "$MENU" '==' 1 ;then
   while true
   do
     getselection
   done
-  exit
-else
-  exit
 fi
-  #return
-#}
-#______________________________________________________________________________
-# BEGIN DATA STORAGE SECTION
-#______________________________________________________________________________

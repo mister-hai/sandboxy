@@ -1,7 +1,9 @@
 import requests
 from pathlib import Path
+from ctfcli.utils.config import Config
 from ctfcli.utils.utils import errorlog, greenprint, errorlogger,yellowboldprint
 from ctfcli.core.apitemplates import hintstemplate,topictemplate, flagstemplate
+
 class APIHandler(requests.Session):
     """
     Handler for the APISession() class
@@ -30,19 +32,19 @@ class APIHandler(requests.Session):
         useragent = 'Mozilla/5.0 (X11; Linux x86_64; rv:28.0) Gecko/20100101  Firefox/28.0'
     Args: 
         ctfdurl (str): The URL of the CTFd Server instance you are operating
-        authtoken (str): The authentication Token given in the settings page of the admin panel on the CTFd server
+        token (str): The authentication Token given in the settings page of the admin panel on the CTFd server
     """
     def __init__(self,
             ctfdurl:str=None,
-            authtoken:str=None,
-            loginurl = "http://127.0.0.1:8000/login",
-            settingsurl = "http://127.0.0.1:8000/settings#tokens",
-            serverurl = "127.0.0.1:8000",
-            APIPREFIX = "/api/v1/"            
+            token:str=None,
+            loginurl:str=None,# = "http://127.0.0.1:8000/login",
+            settingsurl:str=None,# = "http://127.0.0.1:8000/settings#tokens",
+            serverurl:str=None,# = "127.0.0.1:8000",
+            APIPREFIX:str=None# = "/api/v1/"            
             ):
         #https://server.host.net/ctfd/
         self.ctfdurl = ctfdurl
-        self.authtoken = authtoken
+        self.token = token
         self.loginurl = loginurl
         self.settingsurl = settingsurl
         self.serverurl = serverurl
@@ -75,13 +77,33 @@ class APIHandler(requests.Session):
                 }
         self.headers.update(headers)
 
-    def _setauth(self):
+    def _settoken(self,token):
         """
-        Sets authorization headers with token
+        Sets the Authorization field in the headers with a token
+        also sets self.token
+        """
+        self.headers.update({"Authorization": f"Token {token}"})
+        self.token = token
+
+    def _setauth(self,authdict:dict):
+        """
+        Sets authorization with token or username/password
         used during a session
-        >>> self.apisession.headers.update({"Authorization": "Token {}".format(authtoken)})
+        
+        Args:
+            authdict = {
+                        'username' : str,
+                        'password' : str,
+                        'token' : str,
+                        'url' : str
+                        }
         """
-        self.headers.update({"Authorization": "Token {}".format(self.authtoken)})
+        # if there is a token provided
+        if authdict.get('token') != None:
+            self.headers.update({"Authorization": f"Token {authdict.get('token')}"})
+        # everything else
+        for key in authdict:
+            setattr(self,key,authdict.get(key))
 
     def _obtainauthtoken(self):
         """
@@ -89,7 +111,7 @@ class APIHandler(requests.Session):
         Can only be used post setup
         """
         self.login()
-        self.gettoken()
+        return self.gettoken()
 
     def _getroute(self,tag, admin=False, schema='http'):
         """
@@ -116,18 +138,20 @@ class APIHandler(requests.Session):
             exit()
 
 
-    def authtoserver(self,adminusername,adminpassword):
+    def authtoserver(self,username,password):
         """
+        GETS TOKEN FROM PASSWORD
+
         Performs a POST request to the server login page to begin
         an administrative session, will login with admin credentials
         and retrieve a token, then assign that token to
-        >>> APISession.authtoken
+        >>> APISession.token
         """
         #apisession = APISession()
         # template for authentication packet
         self.authtemplate = {
-	        "name": str,
-	        "password": str,
+	        "name": username,
+	        "password": password,
 	        "_submit": "Submit",
 	        "nonce": str #"84e85c763320742797291198b9d52cf6c82d89f120e2551eb7bf951d44663977"
         }
@@ -145,8 +169,6 @@ class APIHandler(requests.Session):
                 # the server was ok and responded with login
             else:
                 # Grab the nonce
-                self.authtemplate['name'] = adminusername
-                self.authtemplate['password'] = adminpassword
                 self.authtemplate['nonce'] = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
         # make the api request to the login page
         # this logs us in as admin
@@ -157,11 +179,11 @@ class APIHandler(requests.Session):
         if self.was_there_was_an_error(apiresponse.status_code) or (not apiresponse.headers["Location"].endswith("/challenges")):
             errorlog('invalid login credentials')
             raise Exception
-        # grab a token and assign to self
-        self._gettoken()
+        # grab a token
+        return self._gettoken()
 
 
-    def login(self):
+    def login(self, username:str=None, password:str=None):
         """
         ##############################################################
         ## Login
@@ -172,8 +194,8 @@ class APIHandler(requests.Session):
         # get login page
         self.apiresponse = self.get(url=self.loginurl, allow_redirects=True)
         # set auth fields
-        self.authpayload['name'] = "root"
-        self.authpayload['password'] ="password"
+        self.authpayload['name'] = username
+        self.authpayload['password'] = password
         # set initial interaction nonce
         self.nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
         print("============\nInitial Nonce: "+self.nonce + "\n===============")
@@ -199,7 +221,8 @@ class APIHandler(requests.Session):
         # POST to tokensurl to obtain Token
         self.apiresponse = self.post(url=self._getroute('tokens'),json={})
         # Place token into headers for sessions to interact with WRITE permissions
-        self.authtoken = self.apiresponse.json()["data"]["value"]
+        self.token = self.apiresponse.json()["data"]["value"]
+        return self.token
 
 
     def _gettoken(self):
@@ -215,9 +238,9 @@ class APIHandler(requests.Session):
             raise Exception
 
         #greenprint("[+] Writing ctfd auth configuration")
-        self.authtoken = apiresponse.json()["data"]["value"]
+        self.token = apiresponse.json()["data"]["value"]
         #with open(".ctfd-auth", "w") as filp:
-        #    yaml.dump({"url": self.ctfdurl, "token": self.authtoken}, filp)
+        #    yaml.dump({"url": self.ctfdurl, "token": self.token}, filp)
 
     def was_there_was_an_error(self, responsecode)-> bool:
         """ Returns False if no error"""
@@ -263,6 +286,7 @@ class APIHandler(requests.Session):
         the list of all challenges returned by server
         and returns the ID
         """
+        greenprint("[+] Looking for existing challenge with same parameters")
         self.listofchallenges = self.getsyncedchallenges()
         self.listofnames = [name for name in self.listofchallenges.get('name')]
         if name in self.listofnames:
@@ -278,7 +302,7 @@ class APIHandler(requests.Session):
         We cant discern if a challenges attributes have been modified on the
         server by an administrator or a hacker
         """
-        endpoint = self._getroute('challenges') #+ "?view=admin"
+        endpoint = self._getroute('challenges',admin=True)
         return self.get(url = endpoint, json=True).json()["data"]
 
     def _createbasechallenge(self,jsonpayload:dict):

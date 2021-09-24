@@ -77,17 +77,20 @@ class Ctfcli():
         and password
 
         for SINGLE operations, with NO authentication persistance:
+        Replace <URL> with your CTFd website url
+        Replace <TOKEN> with your CTFd website token
         >>> host@server$> python ./ctfcli/ ctfcli --ctfdurl <URL> --ctfdtoken <TOKEN>
 
         for multiple operations, WITH authentication persistance:
-        This configuraiton will be able to obtain tokens via CLI
-        >>> host@server$> python ./ctfcli/ ctfcli --adminusername moop --adminpassword password
+        This configuration will be able to obtain tokens via CLI
+        >>> host@server$> python ./ctfcli/ ctfcli --ctfdurl <URL> --adminusername moop --adminpassword password
 
-        To sync repository contents to CTFd Server:
-        >>> host@server$> python ./ctfcli/ ctfcli syncrepository --ctfdurl <URL> --ctfdtoken <TOKEN>
+        To sync repository contents to CTFd Server, 
+        >>> host@server$> python ./ctfcli/ ctfcli syncrepository 
 
-        Replacing <URL> with your CTFd website url
-        and replacing <TOKEN> with your CTFd website token
+        Not supplying a password/username, or token, will attempt to read auth
+        information already in the config./cfg file
+
         You can obtain a auth token from the "settings" page in the "admin panel"
         This will initialize the repository, from there, you can either:
         
@@ -123,6 +126,7 @@ class Ctfcli():
         #self.config = Config()
         self.ctfcli = ctfcli
         #self.gitops = SandboxyGitRepository()
+        
 
 def main():
    fire.Fire(Ctfcli)

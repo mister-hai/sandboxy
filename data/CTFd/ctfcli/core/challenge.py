@@ -61,21 +61,25 @@ class Challenge(Yaml):
         self.category = category
         self.challengefile = challengeyaml
         self.folderlocation  = Path(os.path.abspath(challengeyaml)).parent
-        #get a representation of the challenge.yaml file
-        yamlcontents = self.loadyaml(self.challengefile)
+        
         #load the challenge yaml dict into the class
+        yamlcontents = self.loadyaml(self.challengefile)
         self._initchallenge(**yamlcontents)
         # the new classname is defined by the name tag in the Yaml now
         self.internalname = "Challenge_" + str(sha256(self.name.encode("ascii")).hexdigest())
         self.__name = self.internalname
         self.__qualname__ = self.internalname
         yellowboldprint(f'[+] Internal name: {self.internalname}')
-        #self.challengesrc       = challengesrc
+
+        # process deployment folder with docker file
         #self.deployment         = deployment
+        
+        # process handout and solutions
         self.solutionfolder =   Path(self.folderlocation, 'solution')
         self.handoutfolder =    Path(self.folderlocation, 'handout')
         self.solution = _processfoldertotarfile(folder = self.solutionfolder, filename = 'solution.tar.gz')
         self.handout  = _processfoldertotarfile(folder = self.handoutfolder, filename = 'handout.tar.gz')
+
         # this is set after syncing by the ctfd server, it increments by one per
         # challenge upload so it's predictable
         self.id = int
