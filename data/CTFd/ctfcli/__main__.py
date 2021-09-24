@@ -1,9 +1,10 @@
 import os,sys,fire
 sys.path.insert(0, os.path.abspath('.'))
-from ctfcli.linkage import SandBoxyCTFdLinkage
 #from ctfcli.utils.config import Config
 from pathlib import Path
 from ctfcli.utils.utils import yellowboldprint
+from ctfcli.utils.config import Config,setauth
+from ctfcli.linkage import SandBoxyCTFdLinkage
 
 CATEGORIES = [
     "exploitation",
@@ -122,7 +123,9 @@ class Ctfcli():
         # modify the structure of the program here by reassigning classes
         ctfcli = SandBoxyCTFdLinkage(challengesfolder, masterlist)
         # process config file
-        ctfcli._initconfig()
+        # bring in config functions
+        configparser = Config(configfile)
+        ctfcli._initconfig(configparser)
         #self.config = Config()
         self.ctfcli = ctfcli
         #self.gitops = SandboxyGitRepository()

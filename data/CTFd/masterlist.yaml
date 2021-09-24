@@ -2362,16 +2362,6 @@ forensics: !!python/object:ctfcli.core.category.Category
   - forensics
   name: forensics
   tag: '!Category:'
-location: !!python/object/apply:pathlib.WindowsPath
-- C:\
-- Users
-- moop
-- Desktop
-- repositories
-- sandboxy
-- data
-- CTFd
-- challenges
 miscellaneous: !!python/object:ctfcli.core.category.Category
   Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_3d8e29b3a696da046faf830cbe75e64a8435ff19505fb93dc649ac20d1cb9794

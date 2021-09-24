@@ -4,12 +4,9 @@ from ctfcli.core.masterlist import Masterlist
 from ctfcli.core.repository import Repository
 from ctfcli.core.ctfdrepo import SandboxyCTFdRepository
 from ctfcli.core.apisession import APIHandler
-from ctfcli.utils.config import Config,setauth
 from ctfcli.core.gitrepo import SandboxyGitRepository
 from ctfcli.utils.utils import redprint,greenprint, errorlogger
-
-# bring in config functions
-configparser = Config()
+import configparser
 
 class SandBoxyCTFdLinkage():
     """
@@ -29,9 +26,10 @@ class SandBoxyCTFdLinkage():
                 ):
         self.repo = Repository
         self.repofolder = repositoryfolder
-        self.masterlistlocation = masterlistlocation #Path(self.repofolder.parent, "masterlist.yaml")
+        self.masterlistlocation = masterlistlocation
         self.ctfdops = SandboxyCTFdRepository(self.repofolder, self.masterlistlocation)
-        self.gitops = SandboxyGitRepository(self.repofolder, self.masterlistlocation)
+        self.gitops = SandboxyGitRepository()
+        self.config = configparser.ConfigParser
 
     def _checkmasterlist(self):
         """
@@ -51,6 +49,12 @@ class SandBoxyCTFdLinkage():
         except Exception:
             errorlogger("[-] Masterlist not located! Run 'ctfcli init' first!")
             return False
+    
+    def _initconfig(self, configparser:configparser.ConfigParser):
+        """
+        Sets Config to self
+        """
+        setattr(self,'config',configparser)
 
     def _updatemasterlist(self):
         """
@@ -168,11 +172,11 @@ class SandBoxyCTFdLinkage():
             ctfdtoken (str): Token given from Admin Panel > Config > Settings > Auth Token Form
         '''
         try:
-            apihandler = APIHandler()
+            apihandler = APIHandler(url=url)
             if self._checkmasterlist():
                 # if they want to read information from the config file
                 if config == True:
-                    authdict = configparser._readauthconfig()
+                    authdict = self.config._readauthconfig()
                     apihandler._setauth(**authdict)
                 elif config == False:
                     # they have given a url/token "e2c1cb51859e5d7afad6c2cd82757277077a564166d360b48cafd5fcc1e4e015"

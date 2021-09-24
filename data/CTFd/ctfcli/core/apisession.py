@@ -35,19 +35,14 @@ class APIHandler(requests.Session):
         token (str): The authentication Token given in the settings page of the admin panel on the CTFd server
     """
     def __init__(self,
-            ctfdurl:str=None,
+            url:str=None,
             token:str=None,
-            loginurl:str=None,# = "http://127.0.0.1:8000/login",
-            settingsurl:str=None,# = "http://127.0.0.1:8000/settings#tokens",
-            serverurl:str=None,# = "127.0.0.1:8000",
-            APIPREFIX:str=None# = "/api/v1/"            
+            APIPREFIX:str="/api/v1/"
             ):
         #https://server.host.net/ctfd/
-        self.ctfdurl = ctfdurl
+        self.url = url.replace('http://','').replace('https://','')
         self.token = token
-        self.loginurl = loginurl
-        self.settingsurl = settingsurl
-        self.serverurl = serverurl
+        self.settingsurl = self.url + "/settings"
         self.APIPREFIX = APIPREFIX
         self.routeslist = ["challenges","tags","topics","awards",
         "hints", "flags","submissions","scoreboard",
@@ -125,7 +120,7 @@ class APIHandler(requests.Session):
             if tag in self.routeslist:
                 #dictofroutes[tag] = f"{self.ctfdurl}{self.APIPREFIX}{tag}"
                 self.schema = schema
-                self.route = f"{schema}://{self.serverurl}{self.APIPREFIX}{tag}"
+                self.route = f"{schema}://{self.url}{self.APIPREFIX}{tag}"
                 if admin == True:
                     print(f"[+] Route {self.route}?view=admin")
                     self.route = f"{self.route}?view=admin"
@@ -160,7 +155,7 @@ class APIHandler(requests.Session):
         ################################################################
         # get the login form
 
-        apiresponse = self.get(f"{self.ctfdurl}/login", allow_redirects=False)
+        apiresponse = self.get(f"{self.url}/login", allow_redirects=False)
         # if the server responds ok and its a setup, pre install
         if self.was_there_was_an_error(apiresponse.status_code):
             if apiresponse.status_code == 302 and apiresponse.headers["Location"].endswith("/setup"):
@@ -192,7 +187,7 @@ class APIHandler(requests.Session):
         ##############################################################
         """
         # get login page
-        self.apiresponse = self.get(url=self.loginurl, allow_redirects=True)
+        self.apiresponse = self.get(url=self._getroute('login'), allow_redirects=True)
         # set auth fields
         self.authpayload['name'] = username
         self.authpayload['password'] = password
@@ -201,7 +196,7 @@ class APIHandler(requests.Session):
         print("============\nInitial Nonce: "+self.nonce + "\n===============")
         self.authpayload['nonce'] =self.nonce
         # send POST to Login URL
-        self.apiresponse = self.post(url=self.loginurl,data = self.authpayload)#,allow_redirects=False)
+        self.apiresponse = self.post(url=self._getroute('login'),data = self.authpayload)#,allow_redirects=False)
         # grab admin login nonce
 
     def gettoken(self):
