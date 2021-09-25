@@ -15,6 +15,13 @@ class Linter():
     """
     Class to lint challenge.yaml files to decrease size of Challenge class
     codebase
+
+    Challenge.yaml files are NOT processed by ClassConstructor.py
+    They are NOT automatically converted into code, they follow a 
+    different pipeline where the files are suspect and require linting
+
+    if the directory contains a metadata.yaml or kubernetes spec
+    its for a deployment and should be handled differently
     """
     def __init__(self,
                 kwargs:dict,
@@ -32,85 +39,115 @@ class Linter():
         #   will be attached to the challenge
         # - A solution/ folder with a working solution to the challenge (or a README.md
         #   file documenting the solution)
-        challengeyamltags = [
-                            'version' ,'name', 'scoreboard_name', 
-                            'author', 'flag', 'description',
-                            'value', 'tags', 'port', 'protocol', 
-                            'use_http_loadbalancer','notes','replicas',
-                            'environ'
-                            ]
-        deploymentfields = [
+        self.challengedictoutput = {}
+        self.extratags = [
+                    'replicas',
+                    'environ',
+                    ]
+        self.deploymentfields = [
                             'port', 'protocol', 'use_http_loadbalancer',
                             "image","host","connection_info" 
                             ]
-        requiredfields = ["name", "category", "description", "value"]#,"author"]
+        self.requiredfields = ["name", "category", "description", 'value', "version",'flag','flags',"state"]
+        self.optionalfields = ["topics","hints","requirements",'notes', 'tags','scoreboard_name','author']
         #Required sections get the "pop()" function 
         # a KeyError will be raised if the key does not exist
 
         def _processrequired(self,dictfromyaml):
             """
             process required challenge fields from challenge.yaml
+            as loaded by pyyaml
+
+            Output is a Dict suitable for loading into a Challenge() Class
+            by the way of challenge = Challenge(**filtereddict)
             """
             try:
-                for tag in requiredfields:
-                    setattr(self,tag,kwargs.pop("tag"))
+                # check for bad value in challenge points
+                if type(dictfromyaml.get('value')) != int:
+                    raise TypeError
+                else:
+                    self.value = dictfromyaml.pop('value')
+                # go over items to make sure requirements are met
+                for tag in self.requiredfields:
+                    # process type
+                    if tag =='type':
+                        challengetype = dictfromyaml.pop('type')
+                        # dynamic challenges
+                        if challengetype == 'dynamic':
+                            # have the extra field
+                            self.extra = dictfromyaml.pop("extra")
+                            self.scorepayload = {
+                                    'value'  : self.value,
+                                    'initial': self.extra['initial'],
+                                    'decay'  : self.extra['decay'],
+                                    'minimum': self.extra['minimum']
+                                    }
+                        self.challengedictoutput['type'] = challengetype
+                    # static challenges only have the "value" field
+                    elif (challengetype == 'static') or (challengetype == 'standard'):
+                        self.scorepayload = {'value' : self.value}
+
+                    #self.challengedictoutput[tag] = dictfromyaml.pop("tag")
             except Exception:
-                errorlogger("[-] Challenge.yaml does not conform to specification, \
-                    rejecting. Please check the error log.")
+                errorlogger(f"[-] Challenge.yaml does not conform to specification, \
+                    rejecting. Missing tag: {tag}")                
+                    
 
-        ['value', "topics","tags","hints","requirements","version"]
-        
-        
-        # lets process flags seperately, just cause people sometimes add an "s"
-        try:
-            self.flags = kwargs.pop('flags')
-        except Exception:
-            try:
-                self.flags = kwargs.pop('flag')
-            except Exception:
-                errorlogger('[-] ERROR: No flag in challenge')
-                pass
-        
-        # we should set state to visible unless self.toggle is set to false
-        if kwargs.get("state") != None:
-            self.state = kwargs.get("state")
-        else:
-            self.state = "visible"
+                #pass
+            # set base challenge payload
+            self.basepayload = {
+                "name":            self.name,
+                "category":        self.category,
+                "description":     self.description,
+                "type":            self.typeof,
+                **self.scorepayload,
+                #"value":           self.value,
+                "state":           self.state,
+                }
+            # the rest of the challenge information
+            self.jsonpayload = {
+                'flags':self.flags,
+                'topics':self.topics,
+                'tags':self.tags,
+                'files':self.files,
+                'hints':self.hints,
+                'requirements':self.requirements
+            }
+            # Some challenge types (e.g. dynamic) override value.
+            # We can't send it to CTFd because we don't know the current value
+            #if self.value is None:
+            #    del self.jsonpayload['value']
+            if self.attempts:
+                self.jsonpayload["max_attempts"] = self.attempts
+            if self.connection_info and self.connection_info:
+                self.jsonpayload['connection_info'] = self.connection_info
+            ################################
+            # FILES
+            ################################
+            self.files = kwargs.get('files')
 
-        if type(kwargs.get('value')) != int:
-            raise TypeError
-        else:
-            self.value = kwargs.pop('value')
+            # we should set state to visible unless self.toggle is set to false
+            if dictfromyaml.get("state") != None:
+                self.state = kwargs.get("state")
+            else:
+                self.state = "visible"
 
-        # older versions have "static" as value for "standard"?
-        self.typeof = kwargs.pop('type')
-        if self.typeof == 'static':
-            self.typeof = 'standard'
-        # get extra field if exists
-        if self.typeof == 'dynamic':
-            self.extra = kwargs.pop("extra")
-
-
-        ################################
-        # FILES
-        ################################
-        self.files = kwargs.get('files')
-    CHALLENGE_SPEC_DOCS = {
-        "name": "Challenge name or identifier",
-        "author": "Your name or handle",
-        "category":"Challenge category",
-        "description": "Challenge description shown to the user",
-        "value": "How many points your challenge should be worth",
-        "version":"What version of the challenge specification was used",
-        "image": "Docker image used to deploy challenge",
-        "type": "Type of challenge",
-        "attempts": "How many attempts should the player have",
-        "flags": "Flags that mark the challenge as solved",
-        "tags":"Tag that denotes a challenge topic",
-        "files": "Files to be shared with the user",
-        "hints": "Hints to be shared with the user",
-        "requirements": "Challenge dependencies that must be solved before this one can be attempted",
-    }
+        CHALLENGE_SPEC_DOCS = {
+            "name": "Challenge name or identifier",
+            "author": "Your name or handle",
+            "category":"Challenge category",
+            "description": "Challenge description shown to the user",
+            "value": "How many points your challenge should be worth",
+            "version":"What version of the challenge specification was used",
+            "image": "Docker image used to deploy challenge",
+            "type": "Type of challenge",
+            "attempts": "How many attempts should the player have",
+            "flags": "Flags that mark the challenge as solved",
+            "tags":"Tag that denotes a challenge topic",
+            "files": "Files to be shared with the user",
+            "hints": "Hints to be shared with the user",
+            "requirements": "Challenge dependencies that must be solved before this one can be attempted",
+        }
 
 
     def blank_challenge_spec():
@@ -126,19 +163,8 @@ class Linter():
         return blank
 
 
-    def lint_challenge(self, loadedyaml):
-        requiredfields = ["name", "author", "category", "description", "value"]
-        optionalfields= []
-        errors = []
-        for field in required_fields:
-            if field == "value" and challenge.type == "dynamic":
-                pass
-            else:
-                if challenge.get(field) is None:
-                    errors.append(field)
-        if len(errors) > 0:
-            print("Missing fields: ", ", ".join(errors))
-            exit(1)
+    def lint_challenge(self, challengeyaml):
+
         # Check that the image field and Dockerfile match
         if (Path(challenge).parent / "Dockerfile").is_file() and challenge.image != ".":
             print("Dockerfile exists but image field does not point to it")

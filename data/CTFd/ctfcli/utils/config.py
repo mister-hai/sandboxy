@@ -154,15 +154,16 @@ host@server$> python ./ctfcli/ config <command>
         except Exception:
             errorlogger("[-] Failed to store authentication information")
 
-    def edit(self, editor="micro"):
+    def edit(self, filepath:str=None,editor="micro"):
         '''
-        ctfcli config edit
+        >>> config edit
             Edit config with $EDITOR
         '''
         # set environment variables for editor
-        editor = os.getenv("EDITOR", editor)
-        command = editor, 
-        subprocess.call(command)
+        #editor = os.getenv("EDITOR", editor)
+        if filepath == None:
+            command = f"{editor} {self.cfgfilepath}"
+            subprocess.call(command)
 
     def path(self):
         '''
