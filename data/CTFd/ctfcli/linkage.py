@@ -6,6 +6,7 @@ from ctfcli.core.ctfdrepo import SandboxyCTFdRepository
 from ctfcli.core.apisession import APIHandler
 from ctfcli.core.gitrepo import SandboxyGitRepository
 from ctfcli.utils.utils import redprint,greenprint, errorlogger
+#from ctfcli.utils.config import Config
 import configparser
 
 class SandBoxyCTFdLinkage():
@@ -23,6 +24,7 @@ class SandBoxyCTFdLinkage():
     def __init__(self,
                 repositoryfolder:Path,
                 masterlistlocation:Path
+                #configfilelocation:Path
                 ):
         self.repo = Repository
         self.repofolder = repositoryfolder
@@ -30,6 +32,7 @@ class SandBoxyCTFdLinkage():
         self.ctfdops = SandboxyCTFdRepository(self.repofolder, self.masterlistlocation)
         self.gitops = SandboxyGitRepository()
         self.config = configparser.ConfigParser
+        #self.config = Config(configfilelocation)
 
     def _checkmasterlist(self):
         """
@@ -89,7 +92,7 @@ class SandBoxyCTFdLinkage():
         try:
             greenprint("[+] Beginning Initial Setup")
             # returns a repository object
-            listofcategories = configparser._getallowedcategories()
+            listofcategories = self.config._getallowedcategories()
             repository = self.ctfdops._createrepo(listofcategories)
             greenprint("[+] Repository Scanned!")
             repository._setlocation(self.repofolder)
@@ -176,8 +179,12 @@ class SandBoxyCTFdLinkage():
             if self._checkmasterlist():
                 # if they want to read information from the config file
                 if config == True:
+                    # get auth information from config
                     authdict = self.config._readauthconfig()
+                    # feed it to the api handler
                     apihandler._setauth(**authdict)
+                    # perform the requested operation
+                    self.repo.syncrepository(apihandler)
                 elif config == False:
                     # they have given a url/token "e2c1cb51859e5d7afad6c2cd82757277077a564166d360b48cafd5fcc1e4e015"
                     if token != None:
@@ -186,13 +193,15 @@ class SandBoxyCTFdLinkage():
                         self.repo.syncrepository(apihandler)
                     # they have given a url/password/username
                     elif (password != None) and (username != None):
-                        #run function with auth
+                        #authenticate to server
                         apihandler.authtoserver(username=username,password=password)
+                        # this obtains a token so the password is only sent once
+                        self.config._storetoken(apihandler.token)
                         self.repo.syncrepository(apihandler)
             #configparser._setauthconfig()
             self._updatemasterlist()
         except Exception:
-            errorlogger('[-] Error syncing challenge:')
+            errorlogger('[-] Error syncing Repository:')
             sys.exit()
 
 
@@ -245,6 +254,8 @@ class SandBoxyCTFdLinkage():
         deletes all hints from ctfd
         HARD MODE: ON lmao
         """
+
+        apihandler = APIHandler()
 
     def syncchallenge(self, challenge):
         """

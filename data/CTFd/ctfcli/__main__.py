@@ -124,8 +124,8 @@ class Ctfcli():
         ctfcli = SandBoxyCTFdLinkage(challengesfolder, masterlist)
         # process config file
         # bring in config functions
-        configparser = Config(configfile)
-        ctfcli._initconfig(configparser)
+        self.config = Config(configfile)
+        ctfcli._initconfig(self.config)
         #self.config = Config()
         self.ctfcli = ctfcli
         #self.gitops = SandboxyGitRepository()

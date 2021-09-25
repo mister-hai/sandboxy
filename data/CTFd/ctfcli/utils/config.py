@@ -44,7 +44,7 @@ def setauth(function_to_authorize):
                 if (url != None) and (token != None):
                     function_to_authorize(url=url ,token=token)
                 # they have given a url/password/username
-                if (password != None) and (username != None):
+                if (password != None) and (username != None) and (url != None) :
                     #run function with auth
                     function_to_authorize(url=url,
                                           password=password,

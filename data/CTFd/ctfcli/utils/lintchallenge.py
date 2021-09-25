@@ -6,6 +6,15 @@ import subprocess
 from pathlib import Path
 from collections import namedtuple
 
+allowedfields = []
+
+class ChallengeTemplate():
+    """
+    Template to validate challenge.yaml
+
+    Future replacment for the top HALF of the ctfcli.core.challenge.Challenge code
+    """
+
 Prompt = namedtuple("Prompt", ["text", "type", "default", "required", "multiple"])
 
 CHALLENGE_SPEC_DOCS = {
