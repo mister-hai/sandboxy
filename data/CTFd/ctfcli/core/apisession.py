@@ -45,9 +45,9 @@ class APIHandler(requests.Session):
         self.settingsurl = self.url + "/settings"
         self.APIPREFIX = APIPREFIX
         self.routeslist = ["challenges","tags","topics","awards",
-        "hints", "flags","submissions","scoreboard",
+        "hints", "flags","submissions","scoreboard","settings",
         "teams","users","statistics","files", "notifications",
-        "configs", "pages", "unlocks", "tokens", "comments"]
+        "configs", "pages", "unlocks", "tokens", "comments","login"]
         self.authpayload = {
             "name": str,
             "password": str,
@@ -108,6 +108,27 @@ class APIHandler(requests.Session):
         self.login()
         return self.gettoken()
 
+    def _geturi(self, tag, admin=False, schema='http'):
+        """
+        returns a non api uri for browser emulation
+        """
+        try:
+            #dictofroutes = {}
+            if tag in self.routeslist:
+                #dictofroutes[tag] = f"{self.ctfdurl}{self.APIPREFIX}{tag}"
+                self.schema = schema
+                self.route = f"{schema}://{self.url}/{tag}"
+                if admin == True:
+                    print(f"[+] Route {self.route}?view=admin")
+                    self.route = f"{self.route}?view=admin"
+                    return f"{self.route}"
+                else:
+                    print(f"[+] Route {self.route}")
+                    return f"{self.route}" #dictofroutes
+        except Exception:
+            print("[-] Route not found in accepted list")
+            exit()
+
     def _getroute(self,tag, admin=False, schema='http'):
         """
         Gets API route string for Requests Session
@@ -155,23 +176,24 @@ class APIHandler(requests.Session):
         ################################################################
         # get the login form
 
-        apiresponse = self.get(f"{self.url}/login", allow_redirects=False)
-        # if the server responds ok and its a setup, pre install
-        if self.was_there_was_an_error(apiresponse.status_code):
-            if apiresponse.status_code == 302 and apiresponse.headers["Location"].endswith("/setup"):
+        self.apiresponse = self.get(self._geturi('login'), allow_redirects=False)
+        # if it is not a 200 OK and its a setup, pre install path
+        # the server was ok and responded with login
+        if self.apiresponse.status_code == 200:
+            # Grab the nonce
+            self.nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+            self.authtemplate['nonce'] = self.nonce
+        elif self.there_was_an_error(self.apiresponse.status_code):
+            if self.apiresponse.status_code == 302 and self.apiresponse.headers["Location"].endswith("/setup"):
                 errorlog(f"[-] CTFd installation has not been setup yet")
                 raise Exception
-                # the server was ok and responded with login
-            else:
-                # Grab the nonce
-                self.authtemplate['nonce'] = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
         # make the api request to the login page
         # this logs us in as admin
-        apiresponse = self.post(
-            url=self._getroute("login"),
+        self.apiresponse = self.post(
+            url=self._geturi("login"),
             data = self.authtemplate
             )#,allow_redirects=False,)
-        if self.was_there_was_an_error(apiresponse.status_code) or (not apiresponse.headers["Location"].endswith("/challenges")):
+        if self.there_was_an_error( self.apiresponse.status_code):# or (not self.apiresponse.headers["Location"].endswith("/challenges")):
             errorlog('invalid login credentials')
             raise Exception
         # grab a token
@@ -187,14 +209,14 @@ class APIHandler(requests.Session):
         ##############################################################
         """
         # get login page
-        self.apiresponse = self.get(url=self._getroute('login'), allow_redirects=True)
+        self.apiresponse = self.get(url=self._geturi('login'), allow_redirects=True)
         # set auth fields
         self.authpayload['name'] = username
         self.authpayload['password'] = password
         # set initial interaction nonce
         self.nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
-        print("============\nInitial Nonce: "+self.nonce + "\n===============")
-        self.authpayload['nonce'] =self.nonce
+        print("============\nInitial Nonce: "+ self.nonce + "\n===============")
+        self.authpayload['nonce'] = self.nonce
         # send POST to Login URL
         self.apiresponse = self.post(url=self._getroute('login'),data = self.authpayload)#,allow_redirects=False)
         # grab admin login nonce
@@ -225,19 +247,19 @@ class APIHandler(requests.Session):
         Interfaces with the admin panel to retrieve a token
         """
         # get settings page in admin panel
-        apiresponse = self.get(self._getroute("settings"))
-        nonce = apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
-        apiresponse = self.post(url=self._getroute("token"),json={},headers ={"CSRF-Token": nonce})
-        if self.was_there_was_an_error(apiresponse.status_code) or (not apiresponse.json()["success"]):
+        self.apiresponse = self.get(self._geturi("settings",admin=True))
+        self.nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+        self.apiresponse = self.post(url=self._getroute("tokens",admin=True),json={},headers ={"CSRF-Token": self.nonce})
+        if self.there_was_an_error (self.apiresponse.status_code) or (not self.apiresponse.json()["success"]):
             errorlog("[-] Token generation failed")
             raise Exception
 
         #greenprint("[+] Writing ctfd auth configuration")
-        self.token = apiresponse.json()["data"]["value"]
+        self.token = self.apiresponse.json()["data"]["value"]
         #with open(".ctfd-auth", "w") as filp:
         #    yaml.dump({"url": self.ctfdurl, "token": self.token}, filp)
 
-    def was_there_was_an_error(self, responsecode)-> bool:
+    def there_was_an_error(self, responsecode)-> bool:
         """ Returns False if no error"""
         # server side error]
         set1 = [404,504,503,500]
@@ -275,7 +297,7 @@ class APIHandler(requests.Session):
     def getusers(self):
         """ gets a list of all users"""
 
-    def _getchallengebyname(self,name):
+    def _getchallengebyname(self,name) -> dict:
         """
         checks for existance of challenge by searching for name in 
         the list of all challenges returned by server
@@ -283,12 +305,17 @@ class APIHandler(requests.Session):
         """
         greenprint("[+] Looking for existing challenge with same parameters")
         self.listofchallenges = self.getsyncedchallenges()
-        self.listofnames = [name for name in self.listofchallenges.get('name')]
-        if name in self.listofnames:
-            #challenge_id = challenge.get('id')
-            return self.listofchallenges.get('name')
-        else:
+        if len(self.listofchallenges) > 0:
+            #self.listofnames = [name.get('name) for name in self.listofchallenges]
+            for challenge in self.listofchallenges:
+                challengename = challenge.get('name')
+                if name == challengename:
+                    return challenge
+        elif len(self.listofchallenges) == 0:
+            yellowboldprint("[!] No challenges are installed currently!")
             return None
+        else:
+            raise Exception
 
     def getsyncedchallenges(self):
         """
@@ -312,7 +339,7 @@ class APIHandler(requests.Session):
         # happens first
 
         #check for existing challenge
-        challengebyname = self._getchallengebyname(jsonpayload.get['name'])
+        challengebyname = self._getchallengebyname(jsonpayload.get('name'))
         # challenge with that name exists already
         if challengebyname != None:
             yellowboldprint(f"[!] Challenge NAME : {challengebyname.get('name')}")
@@ -322,11 +349,11 @@ class APIHandler(requests.Session):
         # challenge does not exist by that name on the server
         elif challengebyname == None:
             # create new challenge
-            self.apiresponse = self.post(url=self._getroute('challenges'), 
+            self._settoken(self.token)
+            self.apiresponse = self.post(url=self._getroute('challenges', admin=True), 
                                                     json=jsonpayload,
                                                     allow_redirects=True)
-            # original code
-            #r = s.post("/api/v1/challenges", json=data)
+
             self.apiresponse.raise_for_status()
             self.challenge_data = self.apiresponse.json()
             self.challenge_id = self.challenge_data["data"]["id"]
@@ -378,8 +405,8 @@ class APIHandler(requests.Session):
                 required_challenges.append(requirements)
         required_challenges = list(set(required_challenges))
         data = {"requirements": {"prerequisites": required_challenges}}
-        apiresponse = self.patch(self._getroute('challenges') + str(challenge_id), json=data)
-        apiresponse.raise_for_status()
+        self.apiresponse = self.patch(self._getroute('challenges') + str(challenge_id), json=data)
+        self.apiresponse.raise_for_status()
 
     def _processtags(self, challenge_id:int, jsonpayload:dict) -> requests.Response:
         '''
@@ -387,14 +414,14 @@ class APIHandler(requests.Session):
         '''
         #if jsonpayload.get("tags"):
         for tag in jsonpayload.get("tags"):
-            apiresponse = self.post(
+            self.apiresponse = self.post(
                     self._getroute('tags'), 
                     json={
                         "challenge_id": challenge_id,
                         "value": tag
                         }
                     )
-            apiresponse.raise_for_status()
+            self.apiresponse.raise_for_status()
 
     def _processhints(self,challenge_id:int,hints):
         '''
@@ -505,11 +532,11 @@ class APIHandler(requests.Session):
                 "type": "challenge"
                 }
             # buffer data and pack into json container
-            data = file.open(mode="rb")#, closefd=True,encoding="cp1252",)
+            data = file.open(mode="rb")
             files = {"file": data}
 
             # set headers for file upload
-            self._setauth()
+            self._settoken(self.token)
             self._setheaders()
             # Specifically use data= here instead of json= to send multipart/form-data
             # the data field sends json encoded strings describing what to do with the files
