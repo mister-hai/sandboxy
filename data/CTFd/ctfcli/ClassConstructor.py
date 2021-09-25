@@ -10,7 +10,7 @@ from ctfcli.core.repository import Repository
 
 
 ###############################################################################
-#  wat
+#  wat, someone tech me how to make this construct arbitrary classes?
 ###############################################################################
 class Constructor():
     """
