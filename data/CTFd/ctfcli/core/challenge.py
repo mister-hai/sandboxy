@@ -7,7 +7,7 @@ from ctfcli.core.yamlstuff import Yaml
 from ctfcli.utils.utils import errorlogger,yellowboldprint,greenprint
 from ctfcli.utils.utils import redprint
 from ctfcli.core.apisession import APIHandler
-from ctfcli.utils.utils import _processfoldertotarfile
+
 
 ###############################################################################
 #  CHALLENGEYAML
@@ -51,8 +51,8 @@ class Challenge():#Yaml):
     
     def __init__(self,
             category,
-            handout:Path,
-            solution:Path,
+            handout,
+            solution,
             readme
             ):
         self.tag = "!Challenge:"
@@ -67,8 +67,8 @@ class Challenge():#Yaml):
         # process handout and solutions
         self.solutionfolder =   Path(self.folderlocation, 'solution')
         self.handoutfolder =    Path(self.folderlocation, 'handout')
-        self.solution = _processfoldertotarfile(folder = self.solutionfolder, filename = 'solution.tar.gz')
-        self.handout  = _processfoldertotarfile(folder = self.handoutfolder, filename = 'handout.tar.gz')
+        self.solution = solution
+        self.handout  = handout
 
         # this is set after syncing by the ctfd server, it increments by one per
         # challenge upload so it's predictable
@@ -111,167 +111,7 @@ class Challenge():#Yaml):
         yellowboldprint(f'[+] Internal name: {self.internalname}')
 
 
-    def old(self)        :
-        ##################################
-        # All of this is being done by the linter now
-        ######################################
-        """
-        try:
-            self.name = kwargs.pop("name")
-            #self.author = kwargs.pop('author')
-            self.description = kwargs.pop('description')
-        except Exception:
-            errorlogger("[-] Challenge.yaml does not conform to specification, \
-                rejecting. Please check the error log.")
-        self.author = kwargs.get('author')
-        #self.challengesrc = kwargs.get('challengesrc')
-        #self.deployment   = kwargs.get('deployment')
-        #self.description = kwargs.get('description')
-        self.value = kwargs.get('value')
-        # can be from masterfile or server, not challenge.yaml
-        self.solves = int#kwargs.get('solves')
-        self.solved_by_me = "false"
-        # Topics are used to help tell what techniques/information a challenge involves
-        # They are generally only visible to admins
-        # Accepts strings
-        #topics:
-        #    - information disclosure
-        #    - buffer overflow
-        #    - memory forensics
-        self.topics = kwargs.get("topics")
-        # Tags are used to provide additional public tagging to a challenge
-        # Can be removed if unused
-        # Accepts strings
-        #tags:
-        #    - web
-        #    - sandbox
-        #    - js
-        self.tags = kwargs.get("tags")
-        #self.template = str
-        self.script =  str
-        # Hints are used to give players a way to buy or have suggestions. They are not
-        # required but can be nice.
-        # Can be removed if unused
-        # Accepts dictionaries or strings
-        self.hints = kwargs.get("hints")
-        #    - {
-        #        content: "This hint costs points",
-        #        cost: 10
-        #    }
-        #    - This hint is free
-        # Requirements are used to make a challenge require another challenge to be
-        # solved before being available.
-        # Can be removed if unused
-        # Accepts challenge names as strings or challenge IDs as integers
-        ##############################################
-        # FLAGS
-        ##############################################
-        # Flags specify answers that your challenge use. You should generally provide at least one.
-        # Can be removed if unused
-        # Accepts strings or dictionaries of CTFd API data
-        #flags:
-        #    # A static case sensitive flag
-        #    - flag{3xampl3}
-        #    # A static case sensitive flag created with a dictionary
-        #    - {
-        #        type: "static",
-        #        content: "flag{wat}",
-        #    }
-        #    # A static case insensitive flag
-        #    - {
-        #        type: "static",
-        #        content: "flag{wat}",
-        #        data: "case_insensitive",
-        #    }
-        #    # A regex case insensitive flag
-        #    - {
-        #        type: "regex",
-        #        content: "(.*)STUFF(.*)",
-        #        data: "case_insensitive",
-        #    }
-        try:
-            self.flags = kwargs.pop('flags')
-        except Exception:
-            try:
-                self.flags = kwargs.pop('flag')
-            except Exception:
-                errorlogger('[-] ERROR: No flag in challenge')
-                pass
-        
-        #if type(self.flags) == list:
-
-        self.requirements = kwargs.get("requirements")
-        #    - "Warmup"
-        #    - "Are you alive"
-        # The state of the challenge.
-        # If the field is omitted, the challenge is visible by default.
-        # If provided, the field can take one of two values: hidden, visible.
-        if kwargs.get("state") != None:
-            self.state = kwargs.get("state")
-        else:
-            self.state = "visible"
-        #state: hidden
-        
-        # Specifies what version of the challenge specification was used.
-        # Subject to change until ctfcli v1.0.0
-        #version: "0.1"
-        self.version = kwargs.get("version")
-        # The extra field provides additional fields for data during the install/sync commands/
-        # Fields in extra can be used to supply additional information for other challenge types
-        # For example the follow extra field is for dynamic challenges. To use these following
-        # extra fields, set the type to "dynamic" and uncomment the "extra" section below
-        # extra:
-        #     initial: 500
-        #     decay: 100
-        #     minimum: 50
-        # OLD COMMENT
-        # Some challenge types (e.g. dynamic) override value.
-        # We can't send it to CTFd because we don't know the current value
-        if type(kwargs.get('value')) != int:
-            raise TypeError
-        else:
-            self.value = kwargs.pop('value')
-
-        # older versions have "static" as value for "standard"?
-        self.typeof = kwargs.pop('type')
-        if self.typeof == 'static':
-            self.typeof = 'standard'
-        # get extra field if exists
-        if self.typeof == 'dynamic':
-            self.extra = kwargs.pop("extra")
-        #raise ValueError(f"Unknown type {typeof} in Classconstructor.Challenge._initchallenge()")
-        #all OPTIONAL values get the GET statement
-        # kwargs.get() does not raise an exception when the key does not exist
-        # Can be removed if unused
-        self.attempts = int
-        # Settings used for Dockerfile deployment
-        # If not used, remove or set to null
-        # If you have a Dockerfile set to .
-        # If you have an imaged hosted on Docker set to the image url (e.g. python/3.8:latest, registry.gitlab.com/python/3.8:latest)
-        # Follow Docker best practices and assign a tag
-        self.image = kwargs.get('image')
-        # Specify a host to deploy the challenge onto.
-        # The currently supported URI schemes are ssh:// and registry://
-        # ssh is an ssh URI where the above image will be copied to and deployed (e.g. ssh://root@123.123.123.123)
-        # registry is a Docker registry tag (e.g registry://registry.example.com/test/image)
-        # host can also be specified during the deploy process: `ctf challenge deploy challenge --host=ssh://root@123.123.123.123`
-        self.host = kwargs.get("host")
-        # connection_info is used to provide a link, hostname, or instructions on how to connect to a challenge
-        self.connection_info = kwargs.get("connection_info")
-        # list of strings, each a challenge name to be completed before this one is allowed
-        self.requirements = kwargs.get('requirements')
-        self.attempts = kwargs.get('attempts')
-
-        ################################
-        # FILES
-        ################################
-        self.files = kwargs.get('files')
-        return self
-        # package handout if not already packaged
-        #self._processhandout()
-        #self.jsonpayload['handout'] = self.handout
-        """
-
+    
     def _setpayload(self):
         """
         Set the json_payload variable for interacting with the CTFd API

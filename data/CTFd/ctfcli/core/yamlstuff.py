@@ -11,7 +11,24 @@ class Yaml(): #filetype
     Args:
         filepath (str): Full Filepath to Yaml File to load
     """
-    def __init__(self, filepath:Path):
+    def __init__(self, filepath:Path=None):
+        if filepath == None:
+            pass
+        else:
+            self.filename = os.path.basename(filepath)
+            self.filepath = filepath
+            self.directory = self.filepath.parent
+            if self.filename.endswith(".yaml"):
+                greenprint("[!] File is .yaml! Presuming to be kubernetes config!")
+                self.type = "kubernetes"
+            elif self.filename.endswith(".yml"):
+                greenprint("[!] Challenge File presumed (.yml)")
+                self.type = "challenge"
+
+    def loadyaml(self, filepath) -> dict:
+        """
+        Loads the yaml specified by the class variable Yaml.filepath
+        """
         self.filename = os.path.basename(filepath)
         self.filepath = filepath
         self.directory = self.filepath.parent
@@ -21,11 +38,6 @@ class Yaml(): #filetype
         elif self.filename.endswith(".yml"):
             greenprint("[!] Challenge File presumed (.yml)")
             self.type = "challenge"
-
-    def loadyaml(self, filepath):
-        """
-        Loads the yaml specified by the class variable Yaml.filepath
-        """
         try:
             with open(filepath, 'r') as stream:
                 return yaml.safe_load(stream)

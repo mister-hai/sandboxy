@@ -84,7 +84,9 @@ class Linter():
         """
         Checks if field data is of a type allowed by the spec
         """
+        # get the types allowed for that tag
         allowedtagtypes = template.get(tag)
+        # get the tag contents and compare the two
         if dictfromyaml.get(tag) in allowedtagtypes:
             return True
         else:

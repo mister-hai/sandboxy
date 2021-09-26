@@ -19,7 +19,7 @@ def setauth(function_to_authorize):
     Will optionally take a token, or username/password combination
     BOTH METHODS REQUIRE URL, the only method not requiring a url
     is  using --config=True and supplying a token or username/password
-    in the config file
+    in the config file along with a URL
     Args:
         config          (bool): If true, uses config file for values
                                 if False, uses supplied parameters

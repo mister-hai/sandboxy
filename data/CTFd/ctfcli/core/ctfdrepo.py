@@ -7,6 +7,7 @@ from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
 from ctfcli.core.apisession import APIHandler
 from ctfcli.utils.lintchallenge import Linter
+from ctfcli.utils.utils import _processfoldertotarfile
 from ctfcli.utils.utils import getsubdirs,redprint
 from ctfcli.utils.utils import errorlogger,yellowboldprint,greenprint,logger
 
@@ -131,16 +132,19 @@ class SandboxyCTFdRepository():
             errorlogger("[-] ERROR: Challenge Folder contents do not conform to specification!")
         # generate challenge based on folder contents
         try:
+            solution = _processfoldertotarfile(folder = kwargs.pop('handout'), filename = 'solution.tar.gz')
+            handout  = _processfoldertotarfile(folder = kwargs.pop('solution'), filename = 'handout.tar.gz')
             # start the linter
             linter = Linter()
-            # process the challenge yaml file
-            yamlcontents = Yaml.loadyaml(kwargs.pop("challenge"))
+            # instance a Yaml class
+            challengeyaml = Yaml().loadyaml(kwargs.pop("challenge"))
             # lint the challenge
-            linter.lintchallengeyaml(yamlcontents)
+            yamlcontents = linter.lintchallengeyaml(challengeyaml)
+            # create the challenge in the repository
             newchallenge = Challenge(
                 category = category,
-                handout= kwargs.pop('handout'),
-                solution= kwargs.pop('solution'),
+                handout= handout,
+                solution= solution,
                 readme = kwargs.get('README')
                 )
             #load the challenge yaml dict into the class
