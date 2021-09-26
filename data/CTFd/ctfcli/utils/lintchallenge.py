@@ -48,8 +48,16 @@ class Linter():
                             'port', 'protocol', 'use_http_loadbalancer',
                             "image","host","connection_info" 
                             ]
+        self.depfieldstype = {
+                            'port':[int], 
+                            'protocol':[str], 
+                            'use_http_loadbalancer':[str],
+                            "image": [str],
+                            "host":[str],
+                            "connection_info":[str]
+                        }
         self.requiredfields = ["name", "category", "description", 'value', "version",'flag','flags',"state"]
-        self.newreqfields = {
+        self.reqfieldstypes = {
                 "name": [str], 
                 "category": [str], 
                 "description":[str],
@@ -72,17 +80,15 @@ class Linter():
         >>> newchallenge = Challenge(**outputdict)
         """
 
-    def checkallowedtypes(self, tag, dictfromyaml:dict):
+    def checkallowedtypes(self, tag, dictfromyaml:dict, template:dict):
         """
         Checks if field data is of a type allowed by the spec
         """
-        for tag in self.requiredfields:
-            # check for allowed types
-            allowedtagtypes = self.newreqfields.get(tag)
-            if tag in allowedtagtypes:
-                return True
-            else:
-                raise Exception
+        allowedtagtypes = template.get(tag)
+        if dictfromyaml.get(tag) in allowedtagtypes:
+            return True
+        else:
+            raise Exception
 
     def processrequired(self,dictfromyaml):
         """
@@ -100,7 +106,7 @@ class Linter():
             # go over items to make sure requirements are met
             for tag in self.requiredfields:
                 # check for allowed types of data in that tag field
-                if self.checkallowedtypes(tag,dictfromyaml):
+                if self.checkallowedtypes(tag,dictfromyaml,self.reqfieldstypes):
                     # process type
                     if tag =='type':
                         challengetype = dictfromyaml.pop('type')

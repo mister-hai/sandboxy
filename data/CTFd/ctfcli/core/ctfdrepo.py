@@ -1,12 +1,13 @@
 import os
 from pathlib import Path
-from ctfcli.utils.utils import getsubdirs
+from ctfcli.core.yamlstuff import Yaml
 from ctfcli.core.category import Category
 from ctfcli.core.challenge import Challenge
 from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
 from ctfcli.core.apisession import APIHandler
 from ctfcli.utils.lintchallenge import Linter
+from ctfcli.utils.utils import getsubdirs,redprint
 from ctfcli.utils.utils import errorlogger,yellowboldprint,greenprint,logger
 
 ###############################################################################
@@ -133,7 +134,7 @@ class SandboxyCTFdRepository():
             # start the linter
             linter = Linter()
             # process the challenge yaml file
-            yamlcontents = self.loadyaml(kwargs.pop("challenge"))
+            yamlcontents = Yaml.loadyaml(kwargs.pop("challenge"))
             # lint the challenge
             linter.lintchallengeyaml(yamlcontents)
             newchallenge = Challenge(
