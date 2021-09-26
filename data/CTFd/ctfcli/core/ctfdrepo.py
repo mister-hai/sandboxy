@@ -6,7 +6,7 @@ from ctfcli.core.challenge import Challenge
 from ctfcli.core.repository import Repository
 from ctfcli.core.masterlist import Masterlist
 from ctfcli.core.apisession import APIHandler
-
+from ctfcli.utils.lintchallenge import Linter
 from ctfcli.utils.utils import errorlogger,yellowboldprint,greenprint,logger
 
 ###############################################################################
@@ -130,13 +130,20 @@ class SandboxyCTFdRepository():
             errorlogger("[-] ERROR: Challenge Folder contents do not conform to specification!")
         # generate challenge based on folder contents
         try:
+            # start the linter
+            linter = Linter()
+            # process the challenge yaml file
+            yamlcontents = self.loadyaml(kwargs.pop("challenge"))
+            # lint the challenge
+            linter.lintchallengeyaml(yamlcontents)
             newchallenge = Challenge(
                 category = category,
-                challengeyaml = kwargs.pop("challenge"),
                 handout= kwargs.pop('handout'),
                 solution= kwargs.pop('solution'),
                 readme = kwargs.get('README')
                 )
+            #load the challenge yaml dict into the class
+            newchallenge._initchallenge(**yamlcontents)
             return newchallenge
         except Exception:
             errorlogger("[-] ERROR: Could not Create new Challenge from supplied data, Please check the log file")

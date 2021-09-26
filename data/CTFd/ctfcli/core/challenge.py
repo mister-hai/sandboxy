@@ -12,7 +12,7 @@ from ctfcli.utils.utils import _processfoldertotarfile
 ###############################################################################
 #  CHALLENGEYAML
 ###############################################################################
-class Challenge(Yaml):
+class Challenge():#Yaml):
     """
     Base Class for all the attributes required on both the CTFd side and Repository side
     Represents the challenge.yml as exists in the folder for that specific challenge
@@ -51,7 +51,6 @@ class Challenge(Yaml):
     
     def __init__(self,
             category,
-            challengeyaml,
             handout:Path,
             solution:Path,
             readme
@@ -59,17 +58,8 @@ class Challenge(Yaml):
         self.tag = "!Challenge:"
         self.readme = readme
         self.category = category
-        self.challengefile = challengeyaml
-        self.folderlocation  = Path(os.path.abspath(challengeyaml)).parent
-        
-        #load the challenge yaml dict into the class
-        yamlcontents = self.loadyaml(self.challengefile)
-        self._initchallenge(**yamlcontents)
-        # the new classname is defined by the name tag in the Yaml now
-        self.internalname = "Challenge_" + str(sha256(self.name.encode("ascii")).hexdigest())
-        self.__name = self.internalname
-        self.__qualname__ = self.internalname
-        yellowboldprint(f'[+] Internal name: {self.internalname}')
+        #self.challengefile = challengeyaml
+        #self.folderlocation  = Path(os.path.abspath(challengeyaml)).parent
 
         # process deployment folder with docker file
         #self.deployment         = deployment
@@ -111,8 +101,21 @@ class Challenge(Yaml):
 
         self.jsonpayload = {}
         self.scorepayload = {}
-        #Required sections get the "pop()" function 
-        # a KeyError will be raised if the key does not exist
+        # we have everything preprocessed
+        for each in kwargs:
+            setattr(self,each,kwargs.get(each))
+        # the new classname is defined by the name tag in the Yaml now
+        self.internalname = "Challenge_" + str(sha256(self.name.encode("ascii")).hexdigest())
+        self.__name = self.internalname
+        self.__qualname__ = self.internalname
+        yellowboldprint(f'[+] Internal name: {self.internalname}')
+
+
+    def old(self)        :
+        ##################################
+        # All of this is being done by the linter now
+        ######################################
+        """
         try:
             self.name = kwargs.pop("name")
             #self.author = kwargs.pop('author')
@@ -267,13 +270,7 @@ class Challenge(Yaml):
         # package handout if not already packaged
         #self._processhandout()
         #self.jsonpayload['handout'] = self.handout
-
-    #def __repr__(self):
-    #    '''
-    #    printself
-    #    '''
-    #    for key in self.__dict__:
-    #        print(str(key) + " : " + str(self.__dict__[key]))
+        """
 
     def _setpayload(self):
         """

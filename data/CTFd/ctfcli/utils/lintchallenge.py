@@ -2,7 +2,7 @@ import subprocess
 import yaml
 import subprocess
 from pathlib import Path
-from ctfcli.utils.utils import errorlogger
+from ctfcli.utils.utils import errorlogger,redprint
 
 class ChallengeTemplate():
     """
@@ -24,7 +24,7 @@ class Linter():
     its for a deployment and should be handled differently
     """
     def __init__(self,
-                kwargs:dict,
+                #kwargs:dict,
                 togglevisibility=True):
     
         # the base repo has too few challenges to justify making any invisible
@@ -49,26 +49,58 @@ class Linter():
                             "image","host","connection_info" 
                             ]
         self.requiredfields = ["name", "category", "description", 'value', "version",'flag','flags',"state"]
-        self.optionalfields = ["topics","hints","requirements",'notes', 'tags','scoreboard_name','author']
+        self.newreqfields = {
+                "name": [str], 
+                "category": [str], 
+                "description":[str],
+                'value':[int], 
+                "version":[str,int],
+                'flag':[str,list,dict],
+                'flags':[str,list,dict],
+                "state":[str]
+                }
+        self.optionalfields = ["topics","hints","attempts","requirements",'notes', 'tags','scoreboard_name','author','files']
         #Required sections get the "pop()" function 
         # a KeyError will be raised if the key does not exist
 
-        def _processrequired(self,dictfromyaml):
-            """
-            process required challenge fields from challenge.yaml
-            as loaded by pyyaml
+    def lintchallengeyaml(self,dictfromyaml:dict):
+        """
+        Lints a challenge.yaml and spits out a dict
+        
+        >>> linter = Linter()
+        >>> outputdict = linter.lintchallengeyaml(yamlfilelocation)
+        >>> newchallenge = Challenge(**outputdict)
+        """
 
-            Output is a Dict suitable for loading into a Challenge() Class
-            by the way of challenge = Challenge(**filtereddict)
-            """
-            try:
-                # check for bad value in challenge points
-                if type(dictfromyaml.get('value')) != int:
-                    raise TypeError
-                else:
-                    self.value = dictfromyaml.pop('value')
-                # go over items to make sure requirements are met
-                for tag in self.requiredfields:
+    def checkallowedtypes(self, tag, dictfromyaml:dict):
+        """
+        Checks if field data is of a type allowed by the spec
+        """
+        for tag in self.requiredfields:
+            # check for allowed types
+            allowedtagtypes = self.newreqfields.get(tag)
+            if tag in allowedtagtypes:
+                return True
+            else:
+                raise Exception
+
+    def processrequired(self,dictfromyaml):
+        """
+        process required challenge fields from challenge.yaml
+        as loaded by pyyaml
+            # check for bad value in challenge points
+            if type(dictfromyaml.get('value')) != int:
+                raise TypeError
+            else:
+                self.value = dictfromyaml.pop('value')
+        Output is a Dict suitable for loading into a Challenge() Class
+        by the way of challenge = Challenge(**filtereddict)
+        """
+        try:
+            # go over items to make sure requirements are met
+            for tag in self.requiredfields:
+                # check for allowed types of data in that tag field
+                if self.checkallowedtypes(tag,dictfromyaml):
                     # process type
                     if tag =='type':
                         challengetype = dictfromyaml.pop('type')
@@ -77,25 +109,44 @@ class Linter():
                             # have the extra field
                             self.extra = dictfromyaml.pop("extra")
                             self.scorepayload = {
-                                    'value'  : self.value,
-                                    'initial': self.extra['initial'],
-                                    'decay'  : self.extra['decay'],
-                                    'minimum': self.extra['minimum']
-                                    }
+                                'value'  : self.value,
+                                'initial': self.extra['initial'],
+                                'decay'  : self.extra['decay'],
+                                'minimum': self.extra['minimum']
+                                }
                         self.challengedictoutput['type'] = challengetype
                     # static challenges only have the "value" field
                     elif (challengetype == 'static') or (challengetype == 'standard'):
                         self.scorepayload = {'value' : self.value}
-
-                    #self.challengedictoutput[tag] = dictfromyaml.pop("tag")
-            except Exception:
-                errorlogger(f"[-] Challenge.yaml does not conform to specification, \
+                    # check state field
+                    # we should set state to visible unless self.toggle is set to false
+                    # then we use the value in the yaml file
+                    if tag == 'state':
+                        state = dictfromyaml.get("state")
+                        if state != None:
+                            self.state = 'visible' if state == 'hidden' and self.toggle == True else self.state = state
+        except Exception:
+            errorlogger(f"[-] Challenge.yaml does not conform to specification, \
                     rejecting. Missing tag: {tag}")                
-                    
-
-                #pass
-            # set base challenge payload
-            self.basepayload = {
+    
+    def lintoptional(self,dictfromyaml:dict):
+        try:
+            for tag in self.optionalfields:
+                if tag == "attempts":
+                    if type(tag) != int:
+                        redprint("[-] Attemps field should be an integer, skipping challenge")
+                        raise ValueError
+                ## Check that all files exists
+                #challengefiles = dictfromyaml.get("files", [])
+                #for file in challengefiles:
+                #    filepath = Path(asdf:)
+                #    if file.is_file() is False:
+                #        print(f"File {file} specified but not found at {file.absolute()}")
+                #    break
+        except Exception:
+            errorlogger(f"[-] ERROR: tag data not valid: {tag}")
+        # set base challenge payload
+        self.basepayload = {
                 "name":            self.name,
                 "category":        self.category,
                 "description":     self.description,
@@ -105,7 +156,7 @@ class Linter():
                 "state":           self.state,
                 }
             # the rest of the challenge information
-            self.jsonpayload = {
+        self.jsonpayload = {
                 'flags':self.flags,
                 'topics':self.topics,
                 'tags':self.tags,
@@ -114,88 +165,11 @@ class Linter():
                 'requirements':self.requirements
             }
             # Some challenge types (e.g. dynamic) override value.
-            # We can't send it to CTFd because we don't know the current value
+            # Wecan't send it to CTFd because we don't know the current value
             #if self.value is None:
             #    del self.jsonpayload['value']
-            if self.attempts:
-                self.jsonpayload["max_attempts"] = self.attempts
-            if self.connection_info and self.connection_info:
-                self.jsonpayload['connection_info'] = self.connection_info
-            ################################
-            # FILES
-            ################################
-            self.files = kwargs.get('files')
+        if self.attempts:
+            self.jsonpayload["max_attempts"] = self.attempts
+        if self.connection_info and self.connection_info:
+            self.jsonpayload['connection_info'] = self.connection_info
 
-            # we should set state to visible unless self.toggle is set to false
-            if dictfromyaml.get("state") != None:
-                self.state = kwargs.get("state")
-            else:
-                self.state = "visible"
-
-        CHALLENGE_SPEC_DOCS = {
-            "name": "Challenge name or identifier",
-            "author": "Your name or handle",
-            "category":"Challenge category",
-            "description": "Challenge description shown to the user",
-            "value": "How many points your challenge should be worth",
-            "version":"What version of the challenge specification was used",
-            "image": "Docker image used to deploy challenge",
-            "type": "Type of challenge",
-            "attempts": "How many attempts should the player have",
-            "flags": "Flags that mark the challenge as solved",
-            "tags":"Tag that denotes a challenge topic",
-            "files": "Files to be shared with the user",
-            "hints": "Hints to be shared with the user",
-            "requirements": "Challenge dependencies that must be solved before this one can be attempted",
-        }
-
-
-    def blank_challenge_spec():
-        pwd = Path(__file__)
-        spec = pwd.parent.parent / "spec" / "challenge-example.yml"
-        with open(spec) as f:
-            blank = yaml.safe_load(f)
-
-        for k in blank:
-            if k != "version":
-                blank[k] = None
-
-        return blank
-
-
-    def lint_challenge(self, challengeyaml):
-
-        # Check that the image field and Dockerfile match
-        if (Path(challenge).parent / "Dockerfile").is_file() and challenge.image != ".":
-            print("Dockerfile exists but image field does not point to it")
-            exit(1)
-        # Check that Dockerfile exists and is EXPOSE'ing a port
-        if challenge.image == ".":
-            try:
-                dockerfile = (Path(challenge.path).parent / "Dockerfile").open().read()
-            except FileNotFoundError:
-                print("Dockerfile specified in 'image' field but no Dockerfile found")
-                exit(1)
-            if "EXPOSE" not in dockerfile:
-                print("Dockerfile missing EXPOSE")
-                exit(1)
-            # Check Dockerfile with hadolint
-            proc = subprocess.run(
-                ["docker", "run", "--rm", "-i", "hadolint/hadolint"],
-                input=dockerfile.encode(),
-            )
-            if proc.returncode != 0:
-                print("Hadolint found Dockerfile lint issues, please resolve")
-                exit(1)
-        # Check that all files exists
-        files = challenge.get("files", [])
-        errored = False
-        for f in files:
-            fpath = Path(challenge.path).parent / f
-            if fpath.is_file() is False:
-                print(f"File {f} specified but not found at {fpath.absolute()}")
-                errored = True
-        if errored:
-            exit(1)
-        else:
-            exit(0)

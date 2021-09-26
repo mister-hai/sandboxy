@@ -1,5 +1,6 @@
 version: '0.1'
 name: exec(print("you got haxed"))
+scoreboard_name: test
 author: exec(print("you got haxed"))
 flags: 
   - CTF{multi}
@@ -12,7 +13,15 @@ extra:
   initial: 500
   decay: 50
   minimum: 50
-
 tags:
   - exec(print("you got haxed"))
   - easy
+port: 8000
+protocol: http
+flag_path: /csp-two-flag
+webbot:
+  port: 3000
+  cookies:
+    - "admin=54E0DA086734D3985318F11970AE03BD;URL=https://%(hostname)s/;httpOnly"
+notes: XSS challenge needs webbot
+managed: false
