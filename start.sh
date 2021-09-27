@@ -437,7 +437,7 @@ buildproject()
 # the .env file should be setting all these
 ctfclifunction()
 {
-  if [ $(cd "$CHALLENGEREPOROOT" && python3 ./ctfdcli/ --help) ] ; then
+  if [ $(python3 ./ctfdcli/ --help) ] ; then
     python ./ctfdcli/ -- --interactive
   else  
     cecho "[-] Cannot step into CLI, exiting." "$red" ; exit 1

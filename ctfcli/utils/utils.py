@@ -95,6 +95,7 @@ def errorlogger(message):
             )
         )
 
+
 def _processfoldertotarfile(folder:Path,filename='default')-> tarfile.TarFile:
     '''
     creates a tarfile of the provided folder 

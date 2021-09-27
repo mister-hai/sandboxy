@@ -1,11 +1,29 @@
     LINKS/CREDITS ARE IN LICENSE, README IS FOR INFORMATION
 
+# PENTEST SANDBOX
+
+    this is an all in one setup script for a docker/kubernetes cluster
+    specifically, it creates a pentesting sandbox/ctfd instance
+
+
+# Table Of Contents
+
+    until the start.sh script is finished, this is the official documentation
+
+    goals and outline, plans
+    important data
+    system prep
+    KCTF INSTRUCTIONS
+    NETWORK LAYOUT 
+    There are two directories of concern
+                    
 # DAILY PLAN
 
     Working on getting the packer/unpacker/installer/main-menu working
     
-    I have gotten a test of the uploading functionality working
-    it `should` be complete shortly
+    ctfcli moved to top level scope, it will become the deployment manager 
+    in addition to installing challenges to ctfd
+
 ![terminal output](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/startscript.png)
 ![terminal output](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/terminal.png)
 
@@ -22,15 +40,11 @@
 
         ctfd server operational
 
-        nginx proxy still not scrubbing port number from uri
+        nginx proxy still not scrubbing port number from uri, I think this is a docker
+        specific issue and I would appreciate assistance in the matter
 
+## Important Information
 
-# PENTEST SANDBOX
-    this is an all in one setup script for a docker/kubernetes cluster
-    specifically, it creates a pentesting sandbox/ctfd instance
-
-    There are two directories of concern
-        
         -sandboxy
             the docker-compose file directory containing the data created by
             CTFd and the users of the platform (mysql,cache,etc) to be packed 
@@ -53,24 +67,11 @@
 
                 /CTFd/Challenges
                     The challenge repository, managed by a rewrite of ctfcli
-            
-
-
-# Table Of Contents
-
-    until the start.sh script is finished, this is the official documentation
-
-    important data
-    system prep
-    KCTF INSTRUCTIONS
-    NETWORK LAYOUT 
-
-
-## Important Information
 
     the important files to start with for development are 
         - main-compose.yaml
-       
+        - haxnet.yaml
+               
        The "containers" directory has each folder as a seperate docker box
        with its own dockerfile and everything necessary in that folder as 
        the build dir

@@ -1,2 +1,2 @@
-import data.CTFd.ctfcli
+import ctfcli
 import newmainfile
