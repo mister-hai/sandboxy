@@ -1,2 +1,2 @@
 import ctfcli
-import newmainfile
+import __main__

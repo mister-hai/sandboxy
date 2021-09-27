@@ -103,7 +103,7 @@ class SandboxyCTFdRepository():
             challengefolderpath (str): path to the challenge folder
             category (str): currently requires you specify the category
         '''
-        challengedirlist = [challengedata for challengedata in os.listdir(os.path.normpath(challengefolderpath))]
+        challengedirlist = os.listdir(os.path.normpath(challengefolderpath))
         # get path to challenge subitem
         challengeitempath = lambda challengedata: Path(os.path.abspath(os.path.join(challengefolderpath,challengedata)))
         kwargs = {}

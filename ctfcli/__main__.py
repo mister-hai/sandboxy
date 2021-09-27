@@ -1,57 +1,12 @@
 import os,sys,fire
-sys.path.insert(0, os.path.abspath('.'))
 #from ctfcli.utils.config import Config
 from pathlib import Path
-from ctfcli.utils.utils import yellowboldprint
-from ctfcli.utils.config import Config,setauth
+from ctfcli.utils.utils import errorlogger, yellowboldprint
+from ctfcli.utils.config import Config
 from ctfcli.linkage import SandBoxyCTFdLinkage
 
-CATEGORIES = [
-    "exploitation",
-    "reversing",
-    "web",
-    "forensics",
-    "scripting",
-    "crypto",
-    "networking",
-    "linux",
-    "miscellaneous"
-    ]
-
 ###############################################################################
-PWD = os.path.realpath(".")
-PWD_LIST = os.listdir(PWD)
-
-# Master values
-# alter these accordingly
-toolfolder = Path(os.path.dirname(__file__))
-reporoot   = toolfolder.parent
-challengesfolder = Path(reporoot, "challenges")
-docsfolder = Path(reporoot, "build", "singlehtml")
-masterlist = Path(reporoot, "masterlist.yaml")
-configfile = Path(reporoot, "config.cfg")
-
-
-# this gets set before the tool runs if sandboxy is being used
-#REPOROOT=/home/moop/sandboxy/data/CTFd
-if __name__ == "__main__":
-    os.environ["REPOROOT"] = str(reporoot)
-
-if os.getenv("REPOROOT") != None:
-    yellowboldprint(f'[+] Repository root ENV variable is {os.getenv("REPOROOT")}')
-    yellowboldprint(f'[+] Challenge root is {challengesfolder}')
-# this code is inactive currently
-
-else:
-    yellowboldprint("[+] REPOROOT variable not set, checking one directory higher")
-    # ugly but it works
-    onelevelup = Path(PWD).parent
-    oneleveluplistdir = os.listdir(onelevelup)
-    if ('challenges' in oneleveluplistdir):
-        if os.path.isdir(oneleveluplistdir.get('challenges')):
-            yellowboldprint("[+] Challenge Folder Found, presuming to be repository location")
-            CTFDDATAROOT = onelevelup
-            challengesfolder = os.path.join(CTFDDATAROOT, "challenges")
+sys.path.insert(0, os.path.abspath('.'))
 
 ###############################################################################
 class Ctfcli():
@@ -119,16 +74,68 @@ class Ctfcli():
     '''
     def __init__(self):
         # challenge templates
-        self.TEMPLATESDIR = Path(toolfolder, "ctfcli", "templates")    
+        self.TEMPLATESDIR = Path(self.toolfolder, "ctfcli", "templates")    
         # modify the structure of the program here by reassigning classes
-        ctfcli = SandBoxyCTFdLinkage(challengesfolder, masterlist)
+        ctfcli = SandBoxyCTFdLinkage(self.challengesfolder, self.masterlist)
         # process config file
         # bring in config functions
-        self.config = Config(configfile)
+        self.config = Config(self.configfile)
         ctfcli._initconfig(self.config)
         #self.config = Config()
         self.ctfcli = ctfcli
         #self.gitops = SandboxyGitRepository()
+
+    def _setenv(self):
+        """
+        Handles environment switching from being a 
+        standlone module to being a submodule
+        """
+        PWD = os.path.realpath(".")
+        #PWD_LIST = os.listdir(PWD)
+        # if whatever not in PWD_LIST:
+        #   dosomethingdrastic(fuckitup)
+        #
+        # this must be alongside the challenges folder if being used by itself
+            # Master values
+            # alter these accordingly
+        toolfolder = Path(os.path.dirname(__file__))
+        if __name__ == "__main__":
+            # TODO: make function to check if they put it next to
+            #  an actual repository fitting the spec
+            try:
+                onelevelup = toolfolder.parent
+                oneleveluplistdir = os.listdir(onelevelup)
+                if ('challenges' in oneleveluplistdir):
+                    if os.path.isdir(oneleveluplistdir.get('challenges')):
+                        yellowboldprint("[+] Challenge Folder Found, presuming to be repository location")
+                        self.challengesfolder = os.path.join(onelevelup, "challenges")
+                self.reporoot = onelevelup
+            except Exception:
+                errorlogger("[-] Error, cannot find repository! ")
+        else:
+            from __main__ import PROJECT_ROOT
+            self.reporoot = Path(PROJECT_ROOT,"data","CTFd")
+
+        os.environ["REPOROOT"] = str(self.reporoot)
+        self.challengesfolder = Path(self.reporoot, "challenges")
+        self.masterlist = Path(self.reporoot, "masterlist.yaml")
+        self.configfile = Path(self.reporoot, "config.cfg")
+
+        yellowboldprint(f'[+] Repository root ENV variable is {os.getenv("REPOROOT")}')
+        yellowboldprint(f'[+] Challenge root is {self.challengesfolder}')
+        # this code is inactive currently
+
+        else:
+            yellowboldprint("[+] REPOROOT variable not set, checking one directory higher")
+            # ugly but it works
+            onelevelup = Path(PWD).parent
+            oneleveluplistdir = os.listdir(onelevelup)
+            if ('challenges' in oneleveluplistdir):
+                if os.path.isdir(oneleveluplistdir.get('challenges')):
+                    yellowboldprint("[+] Challenge Folder Found, presuming to be repository location")
+                    CTFDDATAROOT = onelevelup
+                    challengesfolder = os.path.join(CTFDDATAROOT, "challenges")
+
         
 
 def main():

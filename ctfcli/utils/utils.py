@@ -75,6 +75,7 @@ writechallengeyaml =  lambda category,challenge: yaml.load(challengeyamlbufferw(
 #location = lambda currentdirectory,childorsibling: Path(currentdirectory,childorsibling)
 # gets path of a file
 getpath = lambda directoryitem: Path(os.path.abspath(directoryitem))
+
 ################################################################################
 ##############             ERROR HANDLING FUNCTIONS            #################
 ################################################################################
