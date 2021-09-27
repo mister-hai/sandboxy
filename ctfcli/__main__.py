@@ -4,10 +4,10 @@ from pathlib import Path
 from ctfcli.utils.utils import errorlogger, yellowboldprint
 from ctfcli.utils.config import Config
 from ctfcli.linkage import SandBoxyCTFdLinkage
-
+from ctfcli.core.gitrepo import SandboxyGitRepository
 ###############################################################################
+# why though
 sys.path.insert(0, os.path.abspath('.'))
-
 ###############################################################################
 class Ctfcli():
     '''
@@ -73,6 +73,7 @@ class Ctfcli():
         / NOT IMPLEMENTED YET /
     '''
     def __init__(self):
+        self._setenv()
         # challenge templates
         self.TEMPLATESDIR = Path(self.toolfolder, "ctfcli", "templates")    
         # modify the structure of the program here by reassigning classes
@@ -80,10 +81,11 @@ class Ctfcli():
         # process config file
         # bring in config functions
         self.config = Config(self.configfile)
+        # load config file
         ctfcli._initconfig(self.config)
-        #self.config = Config()
         self.ctfcli = ctfcli
-        #self.gitops = SandboxyGitRepository()
+        # greate git repository
+        self.gitops = SandboxyGitRepository()
 
     def _setenv(self):
         """
@@ -124,19 +126,6 @@ class Ctfcli():
         yellowboldprint(f'[+] Repository root ENV variable is {os.getenv("REPOROOT")}')
         yellowboldprint(f'[+] Challenge root is {self.challengesfolder}')
         # this code is inactive currently
-
-        else:
-            yellowboldprint("[+] REPOROOT variable not set, checking one directory higher")
-            # ugly but it works
-            onelevelup = Path(PWD).parent
-            oneleveluplistdir = os.listdir(onelevelup)
-            if ('challenges' in oneleveluplistdir):
-                if os.path.isdir(oneleveluplistdir.get('challenges')):
-                    yellowboldprint("[+] Challenge Folder Found, presuming to be repository location")
-                    CTFDDATAROOT = onelevelup
-                    challengesfolder = os.path.join(CTFDDATAROOT, "challenges")
-
-        
 
 def main():
    fire.Fire(Ctfcli)
