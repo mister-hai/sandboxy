@@ -1,5 +1,5 @@
 import os
-from hashlib import sha256
+from hashlib import sha1
 from pathlib import Path
 from tarfile import TarFile
 import tarfile
@@ -58,15 +58,7 @@ class Challenge():#Yaml):
         self.tag = "!Challenge:"
         self.readme = readme
         self.category = category
-        #self.challengefile = challengeyaml
-        #self.folderlocation  = Path(os.path.abspath(challengeyaml)).parent
-
-        # process deployment folder with docker file
         #self.deployment         = deployment
-        
-        # process handout and solutions
-        self.solutionfolder =   Path(self.folderlocation, 'solution')
-        self.handoutfolder =    Path(self.folderlocation, 'handout')
         self.solution = solution
         self.handout  = handout
 
@@ -105,7 +97,7 @@ class Challenge():#Yaml):
         for each in kwargs:
             setattr(self,each,kwargs.get(each))
         # the new classname is defined by the name tag in the Yaml now
-        self.internalname = "Challenge_" + str(sha256(self.name.encode("ascii")).hexdigest())
+        self.internalname = "Challenge_" + str(sha1(self.name.encode("ascii")).hexdigest())
         self.__name = self.internalname
         self.__qualname__ = self.internalname
         yellowboldprint(f'[+] Internal name: {self.internalname}')

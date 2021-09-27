@@ -73,7 +73,7 @@ host@server$> python ./ctfcli/ config <command>
         Reads allowed categories from config file
         use during reload when scanning for changes
         """
-        self.allowedcategories = self.config.get('repo','categories').split(",")
+        self.allowedcategories = self.get('repo','categories').split(",")
         return self.allowedcategories
 
     def _readconfig(self):

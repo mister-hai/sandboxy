@@ -29,6 +29,8 @@ class Yaml(): #filetype
         """
         Loads the yaml specified by the class variable Yaml.filepath
         """
+        # I copied the code to prevent having to go back and rewrite I 
+        # think like ONE thing, so this can be cleaned up some
         self.filename = os.path.basename(filepath)
         self.filepath = filepath
         self.directory = self.filepath.parent

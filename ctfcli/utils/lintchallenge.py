@@ -132,7 +132,10 @@ class Linter():
                     if tag == 'state':
                         state = dictfromyaml.get("state")
                         if state != None:
-                            self.state = 'visible' if state == 'hidden' and self.toggle == True else self.state = state
+                            if state == 'hidden' and self.toggle == True:
+                                self.state = 'visible'
+                            else:
+                                self.state = state
         except Exception:
             errorlogger(f"[-] Challenge.yaml does not conform to specification, \
                     rejecting. Missing tag: {tag}")                
