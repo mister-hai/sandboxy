@@ -278,7 +278,7 @@ installdockerdebian()
   sudo apt-get install docker-ce docker-ce-cli containerd.io
   sudo groupadd docker
   #sudo gpasswd -a pi docker
-  sudo usermod -aG docker ${USER}
+  sudo usermod -aG docker "${USER}"
   sudo systemctl enable docker
   docker run hello-world
   sudo apt-get install libffi-dev libssl-dev
@@ -339,6 +339,16 @@ installkubernetes()
     cecho "[-] Validation Failed, if you see a version output below, something strange is happening"
     kubectl version --client
   fi
+}
+
+installpythonlibraries()
+{
+  #git clone --recursive https://github.com/kubernetes-client/python.git
+  #cd python
+  #python setup.py install
+  cmd='pip install kubernetes'
+  runcommand cmd
+
 }
 installgooglecloudsdk()
 {

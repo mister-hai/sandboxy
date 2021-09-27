@@ -1,8 +1,10 @@
 # This file is going to be the main file after start.sh I guess?
 
+from ctfcli.__main__ import Ctfcli
+from kubernetes import client, config, watch
+
 import os,sys,fire
 from pathlib import Path
-import ctfcli
 
 ################################################################################
 ##############                   Master Values                 #################
@@ -38,6 +40,11 @@ class Project():
         self.redis = Path(self.root, "data", "redis")
         self.persistantdata = [self.mysql,self.redis]
 
+    def setkubeconfig(self):
+        # Configs can be set in Configuration class directly or using helper utility
+        self.config = config.load_kube_config()
+        self.client = client.CoreV1Api()
+
     def cleantempfiles(self):
         """
         Cleans temoporary files
@@ -51,26 +58,35 @@ class Project():
             #for file in os.listdir(self.mysql):
             #    os.remove(Path(os.path.abspath(file)))
 
+    def listallpods(self):
+        self.setkubeconfig()
+        # Configs can be set in Configuration class directly or using helper utility
+        print("Listing pods with their IPs:")
+        ret = self.client.list_pod_for_all_namespaces(watch=False)
+        for i in ret.items:
+            print("%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
+
+    def watchpodevents(self):
+        self.setkubeconfig()
+        count = 10
+        watcher = watch.Watch()
+        for event in watcher.stream(self.client.list_namespace, _request_timeout=60):
+            print("Event: %s %s" % (event['type'], event['object'].metadata.name))
+            count -= 1
+            if not count:
+                watcher.stop()
+                
 class Sandboxy():
     '''
         DO NOT MOVE THIS FILE
 
-        Proper Usage is as follows
-        
-        FIRST RUN, if you have not modified the repository this is not necessary!
-        >>> host@server$> python ./sandboxy/ cleantempfiles
 
-        / NOT IMPLEMENTED YET /
-        IF YOU ARE MOVING YOUR INSTALLATION AFTER USING THE PACKER/UNPACKER
-        IN START.SH, PERFORM THE FOLLOWING ACTIONS/COMMANDS
-        >>> host@server$> ctfd.py ctfcli check_install
-        / NOT IMPLEMENTED YET /
     '''
     def __init__(self):
         # challenge templates
         self.name = "lol"
-        self.project = Project(PROJECT_ROOT)
-
+        self.project_actions = Project(PROJECT_ROOT)
+        self.cli = Ctfcli()
 def main():
    fire.Fire(Sandboxy)
 

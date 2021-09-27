@@ -77,13 +77,13 @@ class Ctfcli():
         # challenge templates
         self.TEMPLATESDIR = Path(self.toolfolder, "ctfcli", "templates")    
         # modify the structure of the program here by reassigning classes
-        ctfcli = SandBoxyCTFdLinkage(self.challengesfolder, self.masterlist)
+        ctfdrepo = SandBoxyCTFdLinkage(self.challengesfolder, self.masterlist)
         # process config file
         # bring in config functions
         self.config = Config(self.configfile)
         # load config file
-        ctfcli._initconfig(self.config)
-        self.ctfcli = ctfcli
+        ctfdrepo._initconfig(self.config)
+        self.ctfdrepo = ctfdrepo
         # greate git repository
         self.gitops = SandboxyGitRepository()
 
