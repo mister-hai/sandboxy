@@ -3,11 +3,8 @@
 # repository managment
 from ctfcli.__main__ import Ctfcli
 
-# deployment managment
-from kubernetes import client, config, watch
-import docker
-
 # basic imports
+import subprocess
 import os,sys,fire,yaml
 from pathlib import Path
 
@@ -37,9 +34,6 @@ CHALLENGEREPOROOT=Path(PROJECT_ROOT,'/data/CTFd')
 ###############################################################################
 ##                     Docker Information                                    ##
 ###############################################################################
-#connects script to docker on host machine
-client = docker.from_env()
-runcontainerdetached = lambda container: client.containers.run(container, detach=True)
 gitdownloads = {
     "opsxcq":("exploit-CVE-2017-7494","exploit-CVE-2016-10033"),
     "t0kx":("exploit-CVE-2016-9920")
@@ -67,33 +61,102 @@ rpiruns = {
     "nginx"     : "-d nginx",
 }
 
-def startcontainerset(containerset:dict):
-    ''' 
-    Starts the set given by params
-    '''
-    for name,container in containerset.items:
-        runcontainerdetached(container=containerset[name])
 
-def runcontainerwithargs(container:str,arglist:list):
-    client.containers.run(container, arglist)
+def putenv(key,value):
+    """
+    Puts an environment variable in place
 
-def listcontainers():
+    For working in the interactive mode when run with 
+    >>> hacklab.py -- --interactive
+    """
+
+def setenv(**kwargs):
     '''
-    lists installed containers
+    sets the environment variables given by **kwargs
+
+    The double asterisk form of **kwargs is used to pass a keyworded, 
+    variable-length argument dictionary to a function. 
     '''
-    for container in client.containers.list():
-        print(container.name)
+    try:
+        if __name__ !="" and len(kwargs) > 0:
+            projectname = __name__
+            for key,value in kwargs:
+                putenv(key,value)
+
+            putenv("COMPOSE_PROJECT_NAME", projectname)
+        else:
+            raise Exception
+    except Exception:
+        error("""[-] Failed to set environment variables!\n
+    this is an extremely important step and the program must exit now. \n
+    A log has been created with the information from the error shown,  \n
+    please provide this information to the github issue tracker""")
+        sys.exit(1)
 
 
-def opencomposefile(docker_config):
+def certbot(siteurl):
     '''
+    creates cert with certbot
     '''
-    with open(docker_config, 'r') as ymlfile:
-        docker_config = yaml.load(ymlfile)
+    generatecert = 'certbot --standalone -d {}'.format(siteurl)
+    subprocess.call(generatecert)
 
-def writecomposefile(docker_config,newyamldata):
-    with open(docker_config, 'w') as newconf:
-        yaml.dump(docker_config, newyamldata, default_flow_style=False)
+def certbotrenew():
+    renewcert = '''certbot renew --pre-hook "docker-compose -f path/to/docker-compose.yml down" --post-hook "docker-compose -f path/to/docker-compose.yml up -d"'''
+    subprocess.call(certbotrenew)    
+    
+#lol so I know to implement it later
+certbot(siteurl)
+
+
+
+def installfromapt(csvconfiglist):
+    '''
+    installs from apt repo
+    '''
+    #aptinstalls = """docker,python3,python3-pip,git,tmux,openvpn"""
+    command = "sudo apt-get install -y {}".format(' '.join(csvconfiglist.split(",")))
+    subprocess.Popen(command,shell=True)
+
+def installfromgit(user,repo):
+    '''
+
+    '''
+
+    #repo = git.Repo.clone(url)
+    #repo = git.Repo.clone_from(url, name)
+
+    url = "https://github.com/{user)/{repo}.git".format(user=user,repo=repo)
+    proc = subprocess.Popen(["git", "clone", "--progress", url],
+                            stdout=os.PIPE,
+                            stderr=os.STDOUT,
+                            shell=True,
+                            text=True)
+    for line in proc.stdout:
+        if line:
+            print(line.strip()) 
+
+    
+def createvulnhubenvironment():
+    '''
+    clones from vulhub on github
+    '''
+    installfromgit("vulhub","vulhub")
+
+def createsandbox():
+    '''
+    Creates the sandbox
+    '''
+    # install packages necessary for the environment
+    installfromapt(aptinstalls)
+    #initiate the docker project build
+    subprocess.Popen(["docker-compose", "build"])
+
+def runsandbox():
+    '''
+    run the sandbox
+    '''
+    subprocess.Popen(["docker-compose", "up"])
 
 ################################################################################
 ##############      The project formerly known as sandboxy     #################
@@ -126,23 +189,7 @@ class Project():
             #for file in os.listdir(self.mysql):
             #    os.remove(Path(os.path.abspath(file)))
 
-    def listallpods(self):
-        self.setkubeconfig()
-        # Configs can be set in Configuration class directly or using helper utility
-        print("Listing pods with their IPs:")
-        ret = self.client.list_pod_for_all_namespaces(watch=False)
-        for i in ret.items:
-            print("%s\t%s\t%s" % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
 
-    def watchpodevents(self):
-        self.setkubeconfig()
-        count = 10
-        watcher = watch.Watch()
-        for event in watcher.stream(self.client.list_namespace, _request_timeout=60):
-            print("Event: %s %s" % (event['type'], event['object'].metadata.name))
-            count -= 1
-            if not count:
-                watcher.stop()
                 
 class Sandboxy():
     '''
@@ -155,6 +202,7 @@ class Sandboxy():
         self.name = "lol"
         self.project_actions = Project(PROJECT_ROOT)
         self.cli = Ctfcli()
+
 def main():
    fire.Fire(Sandboxy)
 

@@ -1,16 +1,13 @@
 import yaml
-
 import sys
 from pathlib import Path
-from ctfcli.core.repository import Repository
 from yaml import SafeDumper,MappingNode,Dumper,Loader
 from ctfcli.utils.utils import errorlogger
 from yaml import SafeDumper,MappingNode
-from ctfcli.core.repository import Repository
 
 
 ###############################################################################
-#  wat, someone tech me how to make this construct arbitrary classes?
+#  wat, someone teach me how to make this construct arbitrary classes?
 ###############################################################################
 class Constructor():
     """
@@ -97,7 +94,7 @@ class Constructor():
         Creates a New file
         remember to assign data to the file with
         
-        >>> thing = yamlconstructor(filepath)
+        >>> thing = Constructor(filepath)
         >>> thing._writenewstorage(pythoncodeobject)
 
         Args: 
@@ -114,3 +111,40 @@ class Constructor():
 
 
 
+# with the above example, you can see that you must add a representer and constructor
+#  for each class that you wish to implement via 
+#   yaml -> python3.9, 
+# and 
+#   python3.9 -> yaml
+
+#however, as this nieve implementation show below elucidates, it can get out of hand quickly
+# and is not arbitrary enough to be considered "meta" 
+# there is too much explicit, static, information
+from yaml import dump as dump_yaml, add_representer
+from enum import Enum
+
+
+class Foo(Enum):
+
+    A = 1
+    B = 2
+
+
+class Bar(Enum):
+
+    A = 1
+    B = 2
+
+
+def enum_representer(dumper, data):
+    return dumper.represent_scalar('!enum', str(data.value))
+
+
+data = {
+    'value1': Foo.A,
+    'value2': Bar.B
+}
+
+add_representer(Foo, enum_representer)
+add_representer(Bar, enum_representer)
+print(dump_yaml(data))
