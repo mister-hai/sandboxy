@@ -20,7 +20,14 @@
 # DAILY PLAN
 
     Working on getting the packer/unpacker/installer/main-menu working
-    
+
+    Writing tutorials based on the code in the repository
+
+    Debugging the latest addition to repo code
+
+    Starting the deployment code, this will essentially become the backend 
+    to a ctfd/electron interface
+
     ctfcli moved to top level scope, it will become the deployment manager 
     in addition to installing challenges to ctfd
 

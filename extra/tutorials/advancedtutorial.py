@@ -176,25 +176,24 @@ class ClassB():
     Args:
         codeobject (object): An arbitrary function or bit of code as a single object
     """
-    # and when it starts operation, its telling the other class to do something
+    # and when it starts operation, its telling the other class to do something!
     # "codeobject" can be literally anything, but its most effective if you use
     # a class or a function, this is the basis of decorators which will be shown 
     # further below
     def __init__(self, codeobject, message:str):
         self.codeobject = codeobject
+        # this thing here
         self.codeobject(message)
+        # is exactly the same as
+        # self.ClassA(message)
+
+# using the classes
+message = "this message is piped through the scope to an arbitrary class"
+testinstance = ClassB(ClassA,message=message)
+testinstance
 
 # but then you have this other class here, it unpacks arguments into itself
 class Prototype1():
-    def __init__(self,**entries):
-        # class.__dict__.update() adds the key,value pairs
-        # from the supplied dict to the class
-        # it performs the same function as setattr()
-        self.__dict__.update(entries)
-        # this doesnt exist yet but that doesnt matter
-        self.ClassA(self.message)
-
-class Prototype2():
     """
     The Class Accepts a dict, it turns those key,value pairs into 
     class attributes in the form of 
@@ -210,7 +209,7 @@ class Prototype2():
     # cls attributes are like saying
     # Dog.Family = "canidae"
     # dog.species = "Canis lupus familiaris"
-    # Dog.name   = "poopmaster9000"
+    # Dog.name   = "poopmaster9001"
 
     # in this example, a dogs name.... is something that is not inherent to that animal itself
     # however, its species and taxonomic nomenclature ARE inherent values, assigned to ALL dogs
@@ -221,6 +220,36 @@ class Prototype2():
     def __cls__(cls,**entries):
         cls.__dict__.update(entries)
 
+# this inherits from Prototype1
+class Prototype2(Prototype1):
+    def __init__(self,**entries):
+        # class.__dict__.update() adds the key,value pairs
+        # from the supplied dict to the class
+        # it performs the same function as setattr()
+        self.__dict__.update(entries)
+        # this doesnt exist yet but that doesnt matter
+        self.dog(self.message)
+
+# a further abstraction, using dicts as "payloads"
+message = "BORK BORK I POOP ON U"
+testdog = ClassB(ClassA,message=message)
+# this ends up assigning a funtion pointer to ClassB(ClassA,message=message)
+# on to the Prototype1 Class as the attribute "dog"
+protopayload = {"dog": testdog}
+qwer = Prototype2(**protopayload)
+# dog go bork bork
+qwer.dog()
+# so lets just rename that to something more reasonable and pretend they arent from space
+qwer.__name__ = "normaldogspaceship"
+qwer__qualname__ = "normaldogspaceship"
+# notice the linter is throwing an error now!
+# but the code runs! We just changed its name!
+normaldogspaceship.dog()
+
+# nothing to see here, folks! just a dog flying a space ship
+
+
+# what if you want a better dog factory?
 class ProtoClass():
     '''
     Prototype base class , set name with "name = str".
@@ -230,7 +259,42 @@ class ProtoClass():
         cls.__qualname__= kwargs.pop('name')
         return super(cls.__name__, cls).__new__(cls, *args, **kwargs)
 
+#Wanna see something neat?
+dog = {"name": "Dog", "type": "corgie", "cutefactor": 5, "nickname":"fuzzbutt"}
+newdogsohappy = ProtoClass(dog)
+print(type(newdogsohappy))
+
+#but if you just want a data structure a bit more object oriented than a simple dict
+# and dont want to actually define a new type dynamically, you can just do
+qwer = Prototype2(**dog)
+# and now you have a prototype dog, ready for release on earth like a NORMAL DOG >.>
+qwer
+#Why not make a "dog" template? There can be several ways to template something
+# the easiest way is a dict, mimicking a struct from C
+dog = {
+    "name": str,
+    "type": str, 
+    "cutefactor": int, 
+    "nickname":str,
+}
+
+# now we can take a list of dogs and make SURE they arent from space! like :
+
+
+
+# you can assign just about anything to a class as a named attribute
+# I have not yet tried assigning a "module" but I am assuming it would work
+# why not try? :)
+# the module to dynamically import things is called "importlib"
+# and you use it as thus
+import importlib
+newmodule = importlib.import_module(__file__)
+# I actually dont know what this would end up doing so far as side effects go
+# this is explicitly assigning THIS FILE HERE to a new variable
+# essentially a function pointer to the currently running file
+
 dictofmany = {
+    "name": "UtterNonsense",
     'integer':42069,
     'string':'ayyyyy lmao',
     # this is called "assigning a function pointer" in other languages
@@ -240,32 +304,6 @@ dictofmany = {
     # this line ends up assigning nothing to nothing, a moot point
     None : None,
 }
-
-# using the classes
-message = "this message is piped through the scope to an arbitrary class"
-testinstance = ClassB(ClassA,message=message)
-testinstance
-
-# a further abstraction, using dicts as "payloads"
-message = "this message is piped through the scope to an arbitrary class"
-testinstance = ClassB(ClassA,message=message)
-protopayload = {"ClassA": testinstance}
-qwer = Prototype2(**protopayload)
-qwer
-
-#Wanna see something neat?
-muhdict = {"name": "Dog", "type": "corgie", "cutefactor": 5, "nickname":"fuzzbutt"}
-mahnugs = ProtoClass()
-
-#Why not make a "dog" template? There can be several ways to template something
-# the easiest way is a dict, mimicking a struct from C
-dog = {
-    "name": "Dog",
-    "type": "corgie", 
-    "cutefactor": 5, 
-    "nickname":"fuzzbutt"
-}
-
 ################################################################################
 ##############            SHELLCODE GENERATION                 #################
 ################################################################################
@@ -322,7 +360,7 @@ class Radare2Disassembler():
         # this class ends up returning a different type
         # so you dont get a Radare2Disassembler class when you
         # asdf = Radare2Disassembler(Filename)
-        return DisassembledFile()
+        return DisassembledFile(**self.finalizedoutput)
 
 class ObjDumpDisassembler():
     ''''Uses the linux command objdump'''
@@ -366,10 +404,13 @@ class ObjDumpDisassembler():
             if line_of_text != None:
                 hex_match = re.search(bestregexyet,line_of_text, re.I)
                 if hex_match != None:
-                    shellcode.append(hex_match[0].replace("\t","").replace("\n", "").strip())
-        for line in shellcode:
-            for hexval in line.split(" "):
-                hexstring = hexstring + "/x" + hexval
+                    hexline = hex_match[0].replace("\t","").replace("\n", "").strip()
+                    for hexval in hexline.split(" "):
+                        hexstring = hexstring + "/x" + hexval
+                    #shellcode.append(hexstring)
+        #for line in shellcode:
+        #    for hexval in line.split(" "):
+        #        hexstring = hexstring + "/x" + hexval
         #prints the shellcode so you can pipe the data
         print(hexstring)
         return DisassembledFile(hexstring,self.file_input)

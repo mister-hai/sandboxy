@@ -117,9 +117,12 @@ class Constructor():
 # and 
 #   python3.9 -> yaml
 
-#however, as this nieve implementation show below elucidates, it can get out of hand quickly
+#however, as this nieve implementation shown below elucidates, it can get out of hand quickly
 # and is not arbitrary enough to be considered "meta" 
 # there is too much explicit, static, information
+# from 
+# https://github.com/yaml/pyyaml/issues/51
+# the suggested method is using "multi_representer"
 from yaml import dump as dump_yaml, add_representer
 from enum import Enum
 
@@ -148,3 +151,23 @@ data = {
 add_representer(Foo, enum_representer)
 add_representer(Bar, enum_representer)
 print(dump_yaml(data))
+
+
+class YAMLMultiObjectMetaclass(yaml.YAMLObjectMetaclass):
+    """
+    The metaclass for YAMLMultiObject.
+    """
+    def __init__(cls, name, bases, kwds):
+        super(YAMLMultiObjectMetaclass, cls).__init__(name, bases, kwds)
+        if 'yaml_tag' in kwds and kwds['yaml_tag'] is not None:
+            cls.yaml_loader.add_multi_constructor(cls.yaml_tag, cls.from_yaml)
+            cls.yaml_dumper.add_multi_representer(cls, cls.to_yaml)
+
+class YAMLMultiObject(yaml.YAMLObject, metaclass=YAMLMultiObjectMetaclass):
+    """
+    An object that dumps itself to a stream.
+    
+    Use this class instead of YAMLObject in case 'to_yaml' and 'from_yaml' should
+    be inherited by subclasses.
+    """
+    pass

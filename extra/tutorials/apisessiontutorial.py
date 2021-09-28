@@ -191,7 +191,7 @@ class APIHandler(requests.Session):
         # use nonce to obtain token from API
         self.apiresponse = self.post(url=self._getroute("tokens",admin=True),json={},headers ={"CSRF-Token": self.nonce})
         # check if the server accepted the request
-        if self.there_was_an_error (self.apiresponse.status_code) or (not self.apiresponse.json()["success"]):
+        if self.was_there_was_an_error (self.apiresponse.status_code) or (not self.apiresponse.json()["success"]):
             print("[-] Token generation failed")
             raise Exception
 
@@ -212,14 +212,14 @@ class APIHandler(requests.Session):
 
     def _uploadfiles(self, challenge_id:str=None,file:Path=None):
         """
-        uploads files to the ctfd server
-        Only the handout.tar.gz should be uploaded as of now
-
+        uploads files to the server
         Args:
-            file (TarFile): The file to upload to accompany the challenge
+            file (Path): The file to upload
         """
         try:
             print(f"[+] Uploading {file}")
+            # this is specific the API I used for the tutorial
+            # other API systems will certainaly have different fields for file uploads
             jsonpayload = {                 
                 "challenge_id": challenge_id,
                 "type": "challenge"
@@ -228,9 +228,9 @@ class APIHandler(requests.Session):
             data = file.open(mode="rb")
             files = {"file": data}
 
-            # set headers for file upload
+            # set auth headers for file upload
             self._settoken(self.token)
-            # set headers for file uploading
+            # set content and sneaky user agent headers for file uploading
             self._setheaders()
             # Specifically use data= here instead of json= to send multipart/form-data
             # the data field sends json encoded strings describing what to do with the files
@@ -250,14 +250,14 @@ class APIHandler(requests.Session):
         set2 = [400,405,501]
         set3 = [500]
         if responsecode in set1 :
-            errorlogger("[-] Server side error - No Resource Available in REST response - Error Code {}".format(responsecode))
+            print("[-] Server side error - No Resource Available in REST response - Error Code {}".format(responsecode))
             return True # "[-] Server side error - No resource Available in REST response"
         if responsecode in set2:
-            errorlogger("[-] User error in Request - Error Code {}".format(responsecode))
+            print("[-] User error in Request - Error Code {}".format(responsecode))
             return True # "[-] User error in Image Request"
         if responsecode in set3:
             #unknown error
-            errorlogger("[-] Unknown Server Error - No Resource Available in REST response - Error Code {}".format(responsecode)) 
+            print("[-] Unknown Server Error - No Resource Available in REST response - Error Code {}".format(responsecode)) 
             return True # "[-] Unknown Server Error - No Image Available in REST response"
         # no error!
         if responsecode == 200:
