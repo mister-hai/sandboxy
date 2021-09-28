@@ -1,9 +1,14 @@
 # This file is going to be the main file after start.sh I guess?
 
+# repository managment
 from ctfcli.__main__ import Ctfcli
-from kubernetes import client, config, watch
 
-import os,sys,fire
+# deployment managment
+from kubernetes import client, config, watch
+import docker
+
+# basic imports
+import os,sys,fire,yaml
 from pathlib import Path
 
 ################################################################################
@@ -29,7 +34,70 @@ CHALLENGEREPOROOT=Path(PROJECT_ROOT,'/data/CTFd')
 
 ###############################################################################
 
+###############################################################################
+##                     Docker Information                                    ##
+###############################################################################
+#connects script to docker on host machine
+client = docker.from_env()
+runcontainerdetached = lambda container: client.containers.run(container, detach=True)
+gitdownloads = {
+    "opsxcq":("exploit-CVE-2017-7494","exploit-CVE-2016-10033"),
+    "t0kx":("exploit-CVE-2016-9920")
+}
+#for pi
+envvars = {
+    "WEBGOAT_PORT"      : "18080",
+    "WEBGOAT_HSQLPORT"  : "19001",
+    "WEBWOLF_PORT"      : "19090",
+    "BRIDGE_ADDRESS"    : "172.21.1.1/24"
+}
+#for pi
+raspipulls= {
+    "opevpn"    : "cambarts/openvpn",
+    "webgoat"   : "cambarts/webgoat-8.0-rpi",
+    "bwapp"     : "cambarts/arm-bwapp",
+    "dvwa"      : "cambarts/arm-dvwa",
+    "LAMPstack" : "cambarts/arm-lamp"
+}
+#for pi
+rpiruns = {
+    "bwapp"     : '-d -p 80:80 cambarts/arm-bwapp',
+    "dvwa"      : '-d -p 80:80 -p 3306:3306 -e MYSQL_PASS="password" cambarts/dvwa',
+    "webgoat"   : "-d -p 80:80 -p cambarts/webgoat-8.0-rpi",
+    "nginx"     : "-d nginx",
+}
 
+def startcontainerset(containerset:dict):
+    ''' 
+    Starts the set given by params
+    '''
+    for name,container in containerset.items:
+        runcontainerdetached(container=containerset[name])
+
+def runcontainerwithargs(container:str,arglist:list):
+    client.containers.run(container, arglist)
+
+def listcontainers():
+    '''
+    lists installed containers
+    '''
+    for container in client.containers.list():
+        print(container.name)
+
+
+def opencomposefile(docker_config):
+    '''
+    '''
+    with open(docker_config, 'r') as ymlfile:
+        docker_config = yaml.load(ymlfile)
+
+def writecomposefile(docker_config,newyamldata):
+    with open(docker_config, 'w') as newconf:
+        yaml.dump(docker_config, newyamldata, default_flow_style=False)
+
+################################################################################
+##############      The project formerly known as sandboxy     #################
+################################################################################
 class Project():
     def __init__(self,projectroot:Path):
         self.root = projectroot

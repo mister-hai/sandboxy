@@ -1,9 +1,4 @@
-import os
 from hashlib import sha1
-from pathlib import Path
-from tarfile import TarFile
-import tarfile
-from ctfcli.core.yamlstuff import Yaml
 from ctfcli.utils.utils import errorlogger,yellowboldprint,greenprint
 from ctfcli.utils.utils import redprint
 from ctfcli.core.apisession import APIHandler
