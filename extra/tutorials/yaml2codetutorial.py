@@ -1,11 +1,24 @@
+# this is a meta programming tutorial where you will see the concepts 
+# ACTUALLY APPLIED TO A PRACTICAL TASK
+
 import yaml
 import sys
 from pathlib import Path
 from yaml import SafeDumper,MappingNode,Dumper,Loader
+
+# we should also import some of the 
 from ctfcli.utils.utils import errorlogger
 from yaml import SafeDumper,MappingNode
 
 
+class ProtoClass():
+    '''
+    Prototype base class , set name with "name = str".
+    '''
+    def __init__(cls,*args, **kwargs):
+        #cls.__name__ = kwargs.pop('name')
+        #cls.__qualname__= cls.__name__
+        return super().__init__()
 ###############################################################################
 #  wat, someone teach me how to make this construct arbitrary classes?
 ###############################################################################
@@ -47,7 +60,7 @@ class Constructor():
         if sys.platform == "win32":
             import pathlib
             pathlib.PosixPath = pathlib.WindowsPath
-        return Repository(**loader.construct_mapping(node, deep=True))
+        return ProtoClass(**loader.construct_mapping(node, deep=True))
         
 
     def _get_dumper(self,constructor, classtobuild):
@@ -153,6 +166,7 @@ add_representer(Bar, enum_representer)
 print(dump_yaml(data))
 
 
+# instead you should use a multirepresenter
 class YAMLMultiObjectMetaclass(yaml.YAMLObjectMetaclass):
     """
     The metaclass for YAMLMultiObject.

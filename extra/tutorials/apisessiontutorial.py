@@ -1,3 +1,8 @@
+# this is how you interact with API's, using python Requests.
+# the API for development/testing was the CTFd web front end for 
+# the sandboxy(soon to be  renamed "hacklab") project
+
+from ctfcli.utils.utils import errorlogger
 import requests
 from pathlib import Path
 
@@ -59,8 +64,16 @@ class APIHandler(requests.Session):
         Sets the Authorization field in the headers with a token
         also sets self.token
         """
-        self.headers.update({"Authorization": f"Token {token}"})
-        self.token = token
+        try:
+            if token != None:
+                self.token = token
+                self.headers.update({"Authorization": f"Token {token}"})
+            elif self.token != None:
+                self.headers.update({"Authorization": f"Token {self.token}"})
+            else:
+                raise Exception
+        except Exception:
+            errorlogger("[+] APIHandler._settoken() called but no client side tokens are available: ")
 
     def _setauth(self,authdict:dict):
         """

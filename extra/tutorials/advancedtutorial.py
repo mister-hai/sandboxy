@@ -3,10 +3,10 @@
 # you will see that in this tutorial
 
 PROGRAM_DESCRIPTION = """
-mini-tutorial in python programming, shellcode extraction, meta-programming, and error printing
+mini-tutorial in python programming, meta-programming, and error printing
+
 """
 # this is not a beginner tutorial, this is for intermediate level programmers, 
-# looking to transistion into a more complex perception of code
 TESTING = True
 ################################################################################
 ##############                    IMPORTS                      #################
@@ -15,6 +15,7 @@ import re
 import sys,os
 import logging
 import inspect
+import threading
 import argparse
 import traceback
 import subprocess
@@ -61,7 +62,7 @@ parser.add_argument('--file_input',
 log_file            = 'logfile'
 logging.basicConfig(filename=log_file, 
                     #format='%(asctime)s %(message)s', 
-                    filemode='w'
+                    filemode='a'
                     )
 logger              = logging.getLogger()
 
@@ -122,6 +123,7 @@ class GenPerpThreader():
         self.thread_function = function_to_thread
         self.function_name   = threadname
         self.threader(self.thread_function,self.function_name)
+
     def threader(self, thread_function, name):
         try:
             print("Thread {}: starting".format(self.function_name))
@@ -132,6 +134,17 @@ class GenPerpThreader():
         except Exception:
             errorlogger("[-] asdf")
             return False
+
+    def run(self, command, name):
+        """
+        Uses Threader to run a shell command, this is the public method
+        to run them. 
+
+        Do not use the internal one
+        
+        Args: 
+        """
+        self.threader(self.exec_command(command), name)
 
     def exec_command(command, blocking = True, shell_env = True):
         '''Runs a command with subprocess.Popen'''
@@ -159,151 +172,6 @@ class GenPerpThreader():
             error_printer("[-] Interpreter Message: exec_command() failed!")
             return False
 
-################################################################################
-##############            METACLASSING TUTORIAL                #################
-################################################################################
-
-# so you can have your base class just sitting there being itself, right?
-class ClassA():
-    def __init__(self, message):
-        print(message)
-
-# when another class comes along...
-class ClassB():
-    """
-    An example of how to dynamically create classes based on params
-
-    Args:
-        codeobject (object): An arbitrary function or bit of code as a single object
-    """
-    # and when it starts operation, its telling the other class to do something!
-    # "codeobject" can be literally anything, but its most effective if you use
-    # a class or a function, this is the basis of decorators which will be shown 
-    # further below
-    def __init__(self, codeobject, message:str):
-        self.codeobject = codeobject
-        # this thing here
-        self.codeobject(message)
-        # is exactly the same as
-        # self.ClassA(message)
-
-# using the classes
-message = "this message is piped through the scope to an arbitrary class"
-testinstance = ClassB(ClassA,message=message)
-testinstance
-
-# but then you have this other class here, it unpacks arguments into itself
-class Prototype1():
-    """
-    The Class Accepts a dict, it turns those key,value pairs into 
-    class attributes in the form of 
-    >>> dictofmany = {'integer':42069,'string':'ayyyyy lmao'}
-    >>> test = Prototype1(**dictofmany)
-    >>> test.integer
-    42069
-    >>> test.string
-    ayyyyy lmao
-
-    """
-    # __cls__ is the "dunder" method for "inherent trait to the class"
-    # cls attributes are like saying
-    # Dog.Family = "canidae"
-    # dog.species = "Canis lupus familiaris"
-    # Dog.name   = "poopmaster9001"
-
-    # in this example, a dogs name.... is something that is not inherent to that animal itself
-    # however, its species and taxonomic nomenclature ARE inherent values, assigned to ALL dogs
-    
-    # you would assign those values here, in the __cls__ "dunder" method
-
-    # ** "unpacks" the dict
-    def __cls__(cls,**entries):
-        cls.__dict__.update(entries)
-
-# this inherits from Prototype1
-class Prototype2(Prototype1):
-    def __init__(self,**entries):
-        # class.__dict__.update() adds the key,value pairs
-        # from the supplied dict to the class
-        # it performs the same function as setattr()
-        self.__dict__.update(entries)
-        # this doesnt exist yet but that doesnt matter
-        self.dog(self.message)
-
-# a further abstraction, using dicts as "payloads"
-message = "BORK BORK I POOP ON U"
-testdog = ClassB(ClassA,message=message)
-# this ends up assigning a funtion pointer to ClassB(ClassA,message=message)
-# on to the Prototype1 Class as the attribute "dog"
-protopayload = {"dog": testdog}
-qwer = Prototype2(**protopayload)
-# dog go bork bork
-qwer.dog()
-# so lets just rename that to something more reasonable and pretend they arent from space
-qwer.__name__ = "normaldogspaceship"
-qwer__qualname__ = "normaldogspaceship"
-# notice the linter is throwing an error now!
-# but the code runs! We just changed its name!
-normaldogspaceship.dog()
-
-# nothing to see here, folks! just a dog flying a space ship
-
-
-# what if you want a better dog factory?
-class ProtoClass():
-    '''
-    Prototype base class , set name with "name = str".
-    '''
-    def __new__(cls,*args, **kwargs):
-        cls.__name__ = kwargs.pop('name',)
-        cls.__qualname__= kwargs.pop('name')
-        return super(cls.__name__, cls).__new__(cls, *args, **kwargs)
-
-#Wanna see something neat?
-dog = {"name": "Dog", "type": "corgie", "cutefactor": 5, "nickname":"fuzzbutt"}
-newdogsohappy = ProtoClass(dog)
-print(type(newdogsohappy))
-
-#but if you just want a data structure a bit more object oriented than a simple dict
-# and dont want to actually define a new type dynamically, you can just do
-qwer = Prototype2(**dog)
-# and now you have a prototype dog, ready for release on earth like a NORMAL DOG >.>
-qwer
-#Why not make a "dog" template? There can be several ways to template something
-# the easiest way is a dict, mimicking a struct from C
-dog = {
-    "name": str,
-    "type": str, 
-    "cutefactor": int, 
-    "nickname":str,
-}
-
-# now we can take a list of dogs and make SURE they arent from space! like :
-
-
-
-# you can assign just about anything to a class as a named attribute
-# I have not yet tried assigning a "module" but I am assuming it would work
-# why not try? :)
-# the module to dynamically import things is called "importlib"
-# and you use it as thus
-import importlib
-newmodule = importlib.import_module(__file__)
-# I actually dont know what this would end up doing so far as side effects go
-# this is explicitly assigning THIS FILE HERE to a new variable
-# essentially a function pointer to the currently running file
-
-dictofmany = {
-    "name": "UtterNonsense",
-    'integer':42069,
-    'string':'ayyyyy lmao',
-    # this is called "assigning a function pointer" in other languages
-    # this function runs when you call this attribute/key
-    'function': print("aren't I so funny?"),
-    # you can end with a trailing comma
-    # this line ends up assigning nothing to nothing, a moot point
-    None : None,
-}
 ################################################################################
 ##############            SHELLCODE GENERATION                 #################
 ################################################################################
@@ -335,7 +203,7 @@ class Radare2Disassembler():
             error_printer("R2pipe not installed, exiting program")
             exit()
         # Stick a new cartridge into the slot
-        #self.herp = DisassembledFile()
+        # self.herp = DisassembledFile()
         # open the file you wish to disassemble
         self.radarpipe = r2pipe.open(FileInput)
         self.symbols = self.radarpipe.cmdj("isj")
@@ -352,7 +220,6 @@ class Radare2Disassembler():
             "bits":self.info["bin"]["bits"],
             "binos":self.info["bin"]["os"],
         }
-        # dict unpacking
         self.finalizedoutput = {
             **self.filetemplate,
             **self.fileinfo,
@@ -389,31 +256,49 @@ class ObjDumpDisassembler():
         Command to execute , place command line args here
         '''
         command = "objdump -d {} >> objdump-{}.txt".format(input,input)
+        
         exec_command(command = command)
 
-    def ParseObjDumpOutput(self, objdump_input):
+    def ParseObjDumpOutput(self, objdump_output):
         '''
         Sets self.hexstring : string with HEXCODES
         '''
+        threader = GenPerpThreader()
         # I have a love/hate relationship with regex
         bestregexyet = "\t(?:[0-9a-f]{2} *){1,7}\t"
         #start_of_main = "[0-9]*<main>:"
         hexstring = ''
         shellcode = []
-        for line_of_text in objdump_input:
-            if line_of_text != None:
-                hex_match = re.search(bestregexyet,line_of_text, re.I)
-                if hex_match != None:
-                    hexline = hex_match[0].replace("\t","").replace("\n", "").strip()
-                    for hexval in hexline.split(" "):
-                        hexstring = hexstring + "/x" + hexval
+        half = len(objdump_output)//2
+        splitlist =  objdump_output[:half], objdump_output[half:]
+        for line_of_text_front,line_of_text_back in splitlist:
+            scanfunc1()
+            threaderfront = GenPerpThreader(line_of_text_front)
+            scanfunc2 = self.scanarray(line_of_text_back)
+            threaderback = GenPerpThreader(
+        return DisassembledFile(hexstring,self.file_input)
+
+    def scanarray(self, listtoscan:list, printlines=True, direction=True):
+        """
+        scans an array, used for threading split scans through lists
+
+        Args:
+            listtoscan (list): array to scan through
+            printlines (bool): output to STDOUT if true
+            direction  (bool): Forwards if true, backwards if False
+        """
+        if line_of_text != None:
+            hex_match = re.search(bestregexyet,line_of_text, re.I)
+            if hex_match != None:
+                hexline = hex_match[0].replace("\t","").replace("\n", "").strip()
+                for hexval in hexline.split(" "):
+                    hexstring = hexstring + "/x" + hexval
                     #shellcode.append(hexstring)
         #for line in shellcode:
         #    for hexval in line.split(" "):
         #        hexstring = hexstring + "/x" + hexval
         #prints the shellcode so you can pipe the data
         print(hexstring)
-        return DisassembledFile(hexstring,self.file_input)
 
 class Disassembler():
     ''' main class that holds the logic for argparsing'''

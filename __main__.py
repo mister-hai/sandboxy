@@ -108,55 +108,19 @@ def certbotrenew():
 #lol so I know to implement it later
 certbot(siteurl)
 
-
-
-def installfromapt(csvconfiglist):
-    '''
-    installs from apt repo
-    '''
-    #aptinstalls = """docker,python3,python3-pip,git,tmux,openvpn"""
-    command = "sudo apt-get install -y {}".format(' '.join(csvconfiglist.split(",")))
-    subprocess.Popen(command,shell=True)
-
-def installfromgit(user,repo):
-    '''
-
-    '''
-
-    #repo = git.Repo.clone(url)
-    #repo = git.Repo.clone_from(url, name)
-
-    url = "https://github.com/{user)/{repo}.git".format(user=user,repo=repo)
-    proc = subprocess.Popen(["git", "clone", "--progress", url],
-                            stdout=os.PIPE,
-                            stderr=os.STDOUT,
-                            shell=True,
-                            text=True)
-    for line in proc.stdout:
-        if line:
-            print(line.strip()) 
-
-    
-def createvulnhubenvironment():
-    '''
-    clones from vulhub on github
-    '''
-    installfromgit("vulhub","vulhub")
-
 def createsandbox():
     '''
-    Creates the sandbox
+    Creates a sandbox
     '''
-    # install packages necessary for the environment
-    installfromapt(aptinstalls)
-    #initiate the docker project build
-    subprocess.Popen(["docker-compose", "build"])
 
-def runsandbox():
+def runsandbox(composefile):
     '''
-    run the sandbox
+    run a sandbox
+
+    Args:
+        composefile (str): composefile to use
     '''
-    subprocess.Popen(["docker-compose", "up"])
+    subprocess.Popen(["docker-compose", "up", composefile])
 
 ################################################################################
 ##############      The project formerly known as sandboxy     #################
