@@ -30,7 +30,7 @@ class SandBoxyCTFdLinkage():
         self.repofolder = repositoryfolder
         self.masterlistlocation = masterlistlocation
         self.ctfdops = SandboxyCTFdRepository(self.repofolder, self.masterlistlocation)
-        self.gitops = SandboxyGitRepository()
+        #self.gitops = SandboxyGitRepository()
         #self.config = configobject
         #self.config = configparser.ConfigParser
         #self.config = Config(configfilelocation)

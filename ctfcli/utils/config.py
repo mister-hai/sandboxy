@@ -55,7 +55,7 @@ def setauth(function_to_authorize):
             errorlogger("[-] Error: Failed to set authentication information" )
     return genauth
 
-class Config(configparser.ConfigParser):
+class Config():#configparser.ConfigParser):
     '''
 Config class
 Maps to the command
@@ -64,8 +64,9 @@ host@server$> python ./ctfcli/ config <command>
     def __init__(self, configpath:Path):
         #parser = configparser.ConfigParser()
         # Preserve case in configparser
-        self.optionxform = str
-        self.cfgfilepath = configpath
+        #self.optionxform = str
+        self.config = configparser.ConfigParser()
+        self._readconfig(configpath)
         #super(self).__init__()
 
     def _getallowedcategories(self):
@@ -73,22 +74,29 @@ host@server$> python ./ctfcli/ config <command>
         Reads allowed categories from config file
         use during reload when scanning for changes
         """
-        self.allowedcategories = self.get('repo','categories').split(",")
-        return self.allowedcategories
+        try:
+            self.allowedcategories = self.get('repo','categories').split(",")
+            #self.allowedcategories = self.get('repo','categories').split(",")
+            return self.allowedcategories
+        except Exception:
+            errorlogger("[-] Failed to read Allowed Categories from Config file --- ")
+            exit()
 
-    def _readconfig(self):
+    def _readconfig(self, configpath):
         """
         Reads from config and sets data to class attribute
         """
         #with open(self.cfgfilepath, 'r') as self.configfile:
             #config = open(self.cfgfilepath)
         try:
-            greenprint("[+] Reading Config")
-            self.read(self.cfgfilepath)
+            self.cfgfilepath = os.path.abspath(configpath)
+            greenprint(f"[+] Reading Config {configpath}")
+            #with open(self.cfgfilepath) as cfgfile:
+            self.config.read(filenames=self.cfgfilepath)
         except Exception:
-            errorlogger("[-] FAILED: Reading Config")
+            errorlogger("[-] FAILED: Reading Config --- ")
 
-        self.read(self.cfgfilepath)
+        #self.read(self.cfgfilepath)
         #self.configfile.close()
 
     def _writeconfig(self):

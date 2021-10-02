@@ -78,7 +78,7 @@ class Ctfcli():
         # process config file
         # bring in config functions
         self.config = Config(self.configfile)
-        ctfdrepo = SandBoxyCTFdLinkage(self._challengesfolder, self.masterlist, self.config)        # load config file
+        ctfdrepo = SandBoxyCTFdLinkage(self._challengesfolder, self.masterlist)        # load config file
         ctfdrepo._initconfig(self.config)
         # challenge templates, change this to use your own with a randomizer
         self.TEMPLATESDIR = Path(self._toolfolder , "ctfcli", "templates")
@@ -136,7 +136,7 @@ class Ctfcli():
         os.environ["REPOROOT"] = str(self._reporoot)
         self._challengesfolder = Path(self._reporoot, "challenges")
         self.masterlist = Path(self._reporoot, "masterlist.yaml")
-        self.configfile = Path(self._reporoot, "config.cfg")
+        self.configfile = Path(PROJECT_ROOT, "config.cfg")
 
         yellowboldprint(f'[+] Repository root ENV variable is {os.getenv("REPOROOT")}')
         yellowboldprint(f'[+] Challenge root is {self._challengesfolder}')
