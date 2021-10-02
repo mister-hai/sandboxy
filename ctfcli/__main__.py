@@ -1,12 +1,12 @@
 import os,sys,fire
 #from ctfcli.utils.config import Config
 from pathlib import Path
-from ctfcli.utils.utils import errorlogger, yellowboldprint
+from ctfcli.utils.utils import errorlogger, yellowboldprint,greenprint,redprint
 from ctfcli.utils.config import Config
 from ctfcli.linkage import SandBoxyCTFdLinkage
 from ctfcli.core.gitrepo import SandboxyGitRepository
 ###############################################################################
-# why though
+DEBUG=True
 sys.path.insert(0, os.path.abspath('.'))
 ###############################################################################
 class Ctfcli():
@@ -25,7 +25,7 @@ class Ctfcli():
         FIRST RUN, If you have not modified the repository this is not necessary!
         This will generate a Masterlist.yaml file that contains the contents of the 
         repository for loading into the program
-        >>> host@server$> python ./ctfcli/ ctfcli init
+        >>> host@server$> python ./ctfcli/ ctfcli ctfdrepo init
 
         you should provide token and url when running the tool, it will store 
         token only for a limited time. This is intentional and will not be changed
@@ -73,16 +73,16 @@ class Ctfcli():
         / NOT IMPLEMENTED YET /
     '''
     def __init__(self):
-        self._setenv()
-        # challenge templates
-        self.TEMPLATESDIR = Path(self.toolfolder, "ctfcli", "templates")    
         # modify the structure of the program here by reassigning classes
-        ctfdrepo = SandBoxyCTFdLinkage(self.challengesfolder, self.masterlist)
+        self._setenv()
         # process config file
         # bring in config functions
         self.config = Config(self.configfile)
-        # load config file
+        ctfdrepo = SandBoxyCTFdLinkage(self._challengesfolder, self.masterlist, self.config)        # load config file
         ctfdrepo._initconfig(self.config)
+        # challenge templates, change this to use your own with a randomizer
+        self.TEMPLATESDIR = Path(self._toolfolder , "ctfcli", "templates")
+
         self.ctfdrepo = ctfdrepo
         # greate git repository
         self.gitops = SandboxyGitRepository()
@@ -92,7 +92,8 @@ class Ctfcli():
         Handles environment switching from being a 
         standlone module to being a submodule
         """
-        PWD = os.path.realpath(".")
+        PWD = Path(os.path.realpath("."))
+
         #PWD_LIST = os.listdir(PWD)
         # if whatever not in PWD_LIST:
         #   dosomethingdrastic(fuckitup)
@@ -100,31 +101,45 @@ class Ctfcli():
         # this must be alongside the challenges folder if being used by itself
             # Master values
             # alter these accordingly
-        toolfolder = Path(os.path.dirname(__file__))
+        self._toolfolder   = Path(os.path.dirname(__file__))
+        greenprint(f"[+] Tool folder Located at {self._toolfolder}")
+        if DEBUG == True:
+            # set project root to simulate ctfcli being one conteXt higher
+            os.environ["PROJECT_ROOT"] = str(self._toolfolder.parent)
+            PROJECT_ROOT = os.getenv('PROJECT_ROOT')
+            self.root = PROJECT_ROOT
+        
         if __name__ == "__main__":
             # TODO: make function to check if they put it next to
             #  an actual repository fitting the spec
             try:
-                onelevelup = toolfolder.parent
+                # check if alongside challenges folder,
+                # i.e. individual tool usage
+                onelevelup = self._toolfolder.parent
                 oneleveluplistdir = os.listdir(onelevelup)
                 if ('challenges' in oneleveluplistdir):
                     if os.path.isdir(oneleveluplistdir.get('challenges')):
                         yellowboldprint("[+] Challenge Folder Found, presuming to be repository location")
-                        self.challengesfolder = os.path.join(onelevelup, "challenges")
-                self.reporoot = onelevelup
+                        self._challengesfolder = os.path.join(onelevelup, "challenges")
+                    self._reporoot = onelevelup
+                else:
+                    yellowboldprint("[!] Challenge folder not found!")
+                    if PROJECT_ROOT != None:
+                        yellowboldprint(f"[+] Project root env var set as {PROJECT_ROOT}")
+                        self._reporoot = Path(PROJECT_ROOT,"data","CTFd")
             except Exception:
                 errorlogger("[-] Error, cannot find repository! ")
         else:
             from __main__ import PROJECT_ROOT
-            self.reporoot = Path(PROJECT_ROOT,"data","CTFd")
+            self._reporoot = Path(PROJECT_ROOT,"data","CTFd")
 
-        os.environ["REPOROOT"] = str(self.reporoot)
-        self.challengesfolder = Path(self.reporoot, "challenges")
-        self.masterlist = Path(self.reporoot, "masterlist.yaml")
-        self.configfile = Path(self.reporoot, "config.cfg")
+        os.environ["REPOROOT"] = str(self._reporoot)
+        self._challengesfolder = Path(self._reporoot, "challenges")
+        self.masterlist = Path(self._reporoot, "masterlist.yaml")
+        self.configfile = Path(self._reporoot, "config.cfg")
 
         yellowboldprint(f'[+] Repository root ENV variable is {os.getenv("REPOROOT")}')
-        yellowboldprint(f'[+] Challenge root is {self.challengesfolder}')
+        yellowboldprint(f'[+] Challenge root is {self._challengesfolder}')
         # this code is inactive currently
 
 def main():

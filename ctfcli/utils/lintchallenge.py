@@ -7,9 +7,67 @@ from ctfcli.utils.utils import errorlogger,redprint
 class ChallengeTemplate():
     """
     Template to validate challenge.yaml
-
-    Future replacment for the top HALF of the ctfcli.core.challenge.Challenge code
     """
+
+class KubernetesTemplate():
+    """
+    Template to validate deployment.yaml
+    """
+    def __init__(self):
+        self.template = {
+            "apiVersion": str,#"extensions/v1beta1",
+            "kind": str,# "Deployment",
+            "metadata": 
+            {
+                "labels": 
+                {
+                    "app": str,# "gman",
+                    "tier": str,# "challenge"
+                },
+                "name": str,# "gman"
+            },
+            "spec": 
+            {
+                "replicas": int,# 3,
+                "template": 
+                {
+                    "metadata": 
+                    {
+                        "annotations": 
+                        {
+                            str,#"apparmor.security.beta.kubernetes.io/defaultProfileName": "runtime/default",
+                            str,#"seccomp.security.alpha.kubernetes.io/pod": "docker/default"
+                        },
+                        "labels": 
+                        {
+                            "app": str,# "gman",
+                            "networkpolicy": str,# "allow_egress",
+                            "tier": str,# "challenge"
+                        }
+                    },
+                    "spec": 
+                    {
+                        "automountServiceAccountToken": bool,# false,
+                        "containers": 
+                        [{
+                            "env": [],
+                            "image": str,#"gcr.io/bsides-sf-ctf-2020/gman",
+                            "name": str,# "gman",
+                            "ports": 
+                            [{
+                                "containerPort": int,# 1337,
+                                "protocol": str,# "TCP"
+                            }],
+                            "securityContext": 
+                            {
+                                "allowPrivilegeEscalation": bool,# false
+                            }
+                        }],
+                        "volumes": []
+                    }
+                }
+            }
+        }
 
 class Linter():
     """
@@ -79,6 +137,12 @@ class Linter():
         >>> outputdict = linter.lintchallengeyaml(yamlfilelocation)
         >>> newchallenge = Challenge(**outputdict)
         """
+        try:
+            self.processrequired(dictfromyaml)
+            self.lintoptional(dictfromyaml)
+        except Exception:
+            errorlogger("[-] ERROR linting challenge yaml ")
+
 
     def checkallowedtypes(self, tag, dictfromyaml:dict, template:dict):
         """

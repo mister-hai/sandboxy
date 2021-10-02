@@ -6,8 +6,8 @@ from ctfcli.core.ctfdrepo import SandboxyCTFdRepository
 from ctfcli.core.apisession import APIHandler
 from ctfcli.core.gitrepo import SandboxyGitRepository
 from ctfcli.utils.utils import redprint,greenprint, errorlogger
-#from ctfcli.utils.config import Config
-import configparser
+from ctfcli.utils.config import Config
+#import configparser
 
 class SandBoxyCTFdLinkage():
     """
@@ -23,15 +23,16 @@ class SandBoxyCTFdLinkage():
 
     def __init__(self,
                 repositoryfolder:Path,
-                masterlistlocation:Path
-                #configfilelocation:Path
+                masterlistlocation:Path,
+                #configobject:Config
                 ):
         self.repo = Repository
         self.repofolder = repositoryfolder
         self.masterlistlocation = masterlistlocation
         self.ctfdops = SandboxyCTFdRepository(self.repofolder, self.masterlistlocation)
         self.gitops = SandboxyGitRepository()
-        self.config = configparser.ConfigParser
+        #self.config = configobject
+        #self.config = configparser.ConfigParser
         #self.config = Config(configfilelocation)
 
     def _checkmasterlist(self):
@@ -53,7 +54,7 @@ class SandBoxyCTFdLinkage():
             errorlogger("[-] Masterlist not located! Run 'ctfcli init' first!")
             return False
     
-    def _initconfig(self, configparser:configparser.ConfigParser):
+    def _initconfig(self, configparser:Config):
         """
         Sets Config to self
         """
@@ -110,7 +111,7 @@ class SandBoxyCTFdLinkage():
             # if the user has not, the program will simply exit as it 
             # has reached the end of the logic flow
         except Exception:
-            errorlogger("[-] Failed to create CTFd Repository, check the logfile")
+            errorlogger("[-] Failed to create CTFd Repository, check the logfile -- ")
         try:
             # we do this last so we can add all the created files to the git repo        
             # this is the git backend, operate this seperately

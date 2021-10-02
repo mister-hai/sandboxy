@@ -79,14 +79,14 @@ message = "BORK BORK I POOP ON U"
 qwer.dog(ClassA,message=message)
 
 # what if you want a better dog factory?
-class ProtoClass():
+class ProtoClass(Dog):
     '''
     Prototype base class , set name with "name = str".
     '''
-    def __init__(cls,*args, **kwargs):
-        cls.__name__ = kwargs.pop('name')
-        cls.__qualname__= cls.__name__
-        return super().__init__()
+    def __init__(self,*args, **kwargs):
+        self.__name__ = kwargs.pop('name')
+        self.__qualname__= self.__name__
+        return super().__init__(**kwargs)
 
 #Wanna see something neat?
 dog = {"name": "Dog", "type": "corgie", "cutefactor": 5, "nickname":"fuzzbutt"}

@@ -68,7 +68,7 @@ class MasterFile(Yaml):
     """
     def __new__(cls,*args, **kwargs):
         cls.__name__ = 'MasterFile'
-        cls.__qualname__= 'MasterFile'
+        cls.__qualname__= cls.__name__
         cls.tag = '!Masterlist'
         return super(cls).__new__(cls, *args, **kwargs)
 
@@ -77,5 +77,8 @@ class KubernetesYaml(Yaml): #file
     Represents a Kubernetes specification
     future
     """
-    def __init__(self):
-        super().__init__()
+    def __new__(cls,*args, **kwargs):
+        cls.__name__ = 'deployment'
+        cls.__qualname__= cls.__name__
+        cls.tag = '!deployment'
+        return super(cls).__new__(cls, *args, **kwargs)

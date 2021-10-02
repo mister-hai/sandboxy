@@ -1,11 +1,12 @@
 # This file is going to be the main file after start.sh I guess?
 
+# HUGE TODO: SET PATHS CORRECTLY EVERYTHING IS BROKENNNN!!!!!
 # repository managment
 from ctfcli.__main__ import Ctfcli
-
+from ctfcli.utils.utils import greenprint,errorlogger
 # basic imports
 import subprocess
-import os,sys,fire,yaml
+import os,sys,fire
 from pathlib import Path
 
 ################################################################################
@@ -36,14 +37,18 @@ CHALLENGEREPOROOT=Path(PROJECT_ROOT,'/data/CTFd')
 ###############################################################################
 gitdownloads = {
     "opsxcq":("exploit-CVE-2017-7494","exploit-CVE-2016-10033"),
-    "t0kx":("exploit-CVE-2016-9920")
+    "t0kx":("exploit-CVE-2016-9920"),
+    "helmL64":"https://get.helm.sh/helm-v3.7.0-linux-amd64.tar.gz",
+    "helmW64":"https://get.helm.sh/helm-v3.7.0-windows-amd64.zip"
 }
-#for pi
-envvars = {
-    "WEBGOAT_PORT"      : "18080",
-    "WEBGOAT_HSQLPORT"  : "19001",
-    "WEBWOLF_PORT"      : "19090",
-    "BRIDGE_ADDRESS"    : "172.21.1.1/24"
+helmchartrepos = {
+    "":"helm repo add gitlab https://charts.gitlab.io/",
+    "":"helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx",
+    "":"helm repo add prometheus-community https://prometheus-community.github.io/helm-charts",
+    "":"https://artifacthub.io/packages/helm/slamdev/gitlab-omnibus"
+}
+helchartinstalls = {
+    "":"helm install [RELEASE_NAME] prometheus-community/kube-prometheus-stack"
 }
 #for pi
 raspipulls= {
@@ -69,6 +74,11 @@ def putenv(key,value):
     For working in the interactive mode when run with 
     >>> hacklab.py -- --interactive
     """
+    try:
+        os.environ[key] = value
+        greenprint(f"[+] {key} Env variable set to {value}")
+    except Exception:
+        errorlogger(f"[-] Failed to set {key} with {value}")
 
 def setenv(**kwargs):
     '''
@@ -87,7 +97,7 @@ def setenv(**kwargs):
         else:
             raise Exception
     except Exception:
-        error("""[-] Failed to set environment variables!\n
+        errorlogger("""[-] Failed to set environment variables!\n
     this is an extremely important step and the program must exit now. \n
     A log has been created with the information from the error shown,  \n
     please provide this information to the github issue tracker""")
@@ -106,7 +116,7 @@ def certbotrenew():
     subprocess.call(certbotrenew)    
     
 #lol so I know to implement it later
-certbot(siteurl)
+#certbot(siteurl)
 
 def createsandbox():
     '''
@@ -135,10 +145,10 @@ class Project():
         self.redis = Path(self.root, "data", "redis")
         self.persistantdata = [self.mysql,self.redis]
 
-    def setkubeconfig(self):
-        # Configs can be set in Configuration class directly or using helper utility
-        self.config = config.load_kube_config()
-        self.client = client.CoreV1Api()
+    #def setkubeconfig(self):
+    #    # Configs can be set in Configuration class directly or using helper utility
+    #    self.config = config.load_kube_config()
+    #    self.client = client.CoreV1Api()
 
     def cleantempfiles(self):
         """
@@ -155,7 +165,7 @@ class Project():
 
 
                 
-class Sandboxy():
+class MenuGrouping():
     '''
         DO NOT MOVE THIS FILE
 
@@ -168,7 +178,7 @@ class Sandboxy():
         self.cli = Ctfcli()
 
 def main():
-   fire.Fire(Sandboxy)
+   fire.Fire(MenuGrouping)
 
 
 if __name__ == "__main__":

@@ -325,7 +325,9 @@ installkubernetes()
     rm -rf ./kubectl.sha256
     exit 1
   fi
-  if sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl; then
+  
+  cmd='sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl'
+  if runcommand cmd; then
     cecho "[+] Kubernetes Installed to /usr/local/bin/kubectl"
   else
     cecho "[-] Failed to install Kubernetes to /usr/local/bin/kubectl! Exiting!"
@@ -340,7 +342,14 @@ installkubernetes()
     kubectl version --client
   fi
 }
-
+installhelm(){
+  cmd='curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3'
+  runcommand cmd
+  cmd='chmod 700 get_helm.sh'
+  runcommand cmd
+  cmd='./get_helm.sh'
+  runcommand cmd
+}
 installpythonlibraries()
 {
   #git clone --recursive https://github.com/kubernetes-client/python.git
