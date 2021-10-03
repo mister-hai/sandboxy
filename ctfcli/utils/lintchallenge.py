@@ -139,7 +139,10 @@ class Linter():
         >>> newchallenge = Challenge(**outputdict)
         """
         try:
-            self.processrequired(dictfromyaml)
+            if dictfromyaml.get("category") != None:
+                self.category = dictfromyaml.get("category")
+            requirementsdict = self.extractrequired(dictfromyaml)
+            self.processrequired(requirementsdict)
             self.lintoptional(dictfromyaml)
             return self.jsonpayload
         except Exception:
@@ -161,13 +164,95 @@ class Linter():
         # check to see if the tag is in the list of things REQUIRED!
         if type(dictfromyaml.get(tag)) in allowedtagtypes:
             return True
-        #check if the challenge is MISSING any required tags!
-        if type(dictfromyaml.get(tag)) not in allowedtagtypes:
-            raise Exception
         else:
-            raise Exception
+            return False
 
-    def processrequired(self,dictfromyaml):
+    def validaterequired(self,tag, dictfromyaml:dict, template:dict):
+        """
+        Validates tag field types for required components of challenge.yaml
+        """
+        #check if the challenge is MISSING any required tags!
+        if type(dictfromyaml.get(tag)) not in self.requiredtagtypes:
+            return False
+        else:
+            return True
+
+    def extractrequired(self,dictfromyaml:dict):
+        """
+        POPs all the required, thorws an exception if they arent present
+        """
+        try:
+            reqdict = {}
+            for each in self.requiredfields:
+                reqdict.update({each: dictfromyaml.pop(each)})
+            return reqdict
+        except Exception:
+            errorlogger("[-] Error, Failed to validate Required Fields \n")
+
+    def processscore(self,dictfromyaml:dict):
+            challengetype = dictfromyaml.pop('type')
+            # dynamic challenges
+            if challengetype == 'dynamic':
+                # have the extra field
+                self.extra = dictfromyaml.pop("extra")
+                self.scorepayload = {
+                    'value'  : self.value,
+                    'initial': self.extra['initial'],
+                    'decay'  : self.extra['decay'],
+                    'minimum': self.extra['minimum']
+                    }
+            # static challenges only have the "value" field
+            elif (challengetype == 'static') or (challengetype == 'standard'):
+                self.scorepayload = {'value' : self.value} 
+
+    def processstate(self, dictfromyaml:dict):
+        """
+        Process state tag from challenge yaml file
+        """
+        # check state field
+        # we should set state to visible unless self.toggle is set to false
+        # then we use the value in the yaml file
+        state = dictfromyaml.get("state")
+        if state != None:
+            if state == 'hidden' and self.toggle == True:
+                self.state = 'visible'
+            else:
+                self.state = state
+    def processflags(self, optionaldict:dict):
+        """
+        Process optional fields
+        """
+        tagdata = optionaldict.get("flags")
+        
+    def processtopics(self, optionaldict:dict):
+        """"""
+        tagdata = optionaldict.get("topics")
+    def processtags(self, optionaldict:dict):
+        """"""
+        tagdata = optionaldict.get("tags")
+    def processfiles(self, optionaldict:dict):
+        """"""
+        tagdata = optionaldict.get("files")
+    def processhints(self, optionaldict:dict):
+        """"""
+        tagdata = optionaldict.get("hints")
+    def processrequirements(self,optionaldict:dict):
+        """"""
+        tagdata = optionaldict.get("requirements")
+
+    def processattempts(self,optionaldict:dict):
+        """"""
+        try:
+            tagdata = optionaldict.get("attempts")     
+            if (type(tagdata) != int):
+                redprint("[-] Attempts field should be an integer, skipping challenge \n")
+                raise ValueError
+            else:
+                self.attempts == {"attempts": self.optionalfields.get('attempts')}
+        except Exception:
+            errorlogger("[-] ERROR! Skipping challenge")
+
+    def processrequired(self,requirementsdict:dict):
         """
         process required challenge fields from challenge.yaml
         as loaded by pyyaml
@@ -180,44 +265,19 @@ class Linter():
         by the way of challenge = Challenge(**filtereddict)
         """
         try:
-            if dictfromyaml.get("category") != None:
-                self.category = dictfromyaml.get("category")
-            # go over items to make sure requirements are met
-            for tag in self.requiredfields:
-                # check for allowed types of data in that tag field
-                if self.checkallowedtypes(tag,dictfromyaml,self.reqfieldstypes):
-                    # process type
-                    if tag =='type' and tag in ["static","standard","dynamic"]:
-                        self.jsonpayload['type'] = challengetype
-                        challengetype = dictfromyaml.pop('type')
-                        # dynamic challenges
-                        if challengetype == 'dynamic':
-                            # have the extra field
-                            self.extra = dictfromyaml.pop("extra")
-                            self.scorepayload = {
-                                'value'  : self.value,
-                                'initial': self.extra['initial'],
-                                'decay'  : self.extra['decay'],
-                                'minimum': self.extra['minimum']
-                                }
-                        # static challenges only have the "value" field
-                        elif (challengetype == 'static') or (challengetype == 'standard'):
-                            self.scorepayload = {'value' : self.value}
-                        
-                    # check state field
-                    # we should set state to visible unless self.toggle is set to false
-                    # then we use the value in the yaml file
-                    elif tag == 'state':
-                        state = dictfromyaml.get("state")
-                        if state != None:
-                            if state == 'hidden' and self.toggle == True:
-                                self.state = 'visible'
-                            else:
-                                self.state = state
-                    else:
-                        self.jsonpayload[tag] = dictfromyaml.get(tag)
+            #for tag in self.requiredfields:
+            for tag in requirementsdict:
+                tagdata = requirementsdict.get(tag)
+                if tag =='type' and tagdata in ["static","standard","dynamic"]:
+                    self.jsonpayload['type'] = tagdata
+                    self.processscore(requirementsdict)
+                elif tag == 'state':
+                    self.processstate(requirementsdict)
                 else:
-                    errorlogger("[-] Tag not in specification, rejecting challenge entry \n")
+                    # assign to final payload
+                    self.jsonpayload[tag] = requirementsdict.pop(tag)
+            else:
+                errorlogger("[-] Tag not in specification, rejecting challenge entry \n")
         except Exception:
             errorlogger(f"[-] Challenge.yaml does not conform to specification, \
                     rejecting. Missing tag: {tag} \n")                
@@ -226,16 +286,7 @@ class Linter():
         try:
             for tag in self.optionalfields:
                 if tag == "attempts":
-                    if type(tag) != int:
-                        redprint("[-] Attempts field should be an integer, skipping challenge \n")
-                        raise ValueError
-                ## Check that all files exists
-                #challengefiles = dictfromyaml.get("files", [])
-                #for file in challengefiles:
-                #    filepath = Path(asdf:)
-                #    if file.is_file() is False:
-                #        print(f"File {file} specified but not found at {file.absolute()}")
-                #    break
+                    self.processattempts(optionaldict)    
         except Exception:
             errorlogger(f"[-] ERROR: tag data not valid: {tag}")
         # set base challenge payload
@@ -248,12 +299,12 @@ class Linter():
                 #"value":           self.value,
                 #"state":           self.state,
                 # the rest of the challenge information
-                'flags':self.flags,
-                'topics':self.topics,
-                'tags':self.tags,
-                'files':self.files,
-                'hints':self.hints,
-                'requirements':self.requirements
+                **self.flags,
+                **self.topics,
+                **self.tags,
+                **self.files,
+                **self.hints,
+                **self.requirements
             })
         if self.attempts:
             self.jsonpayload["max_attempts"] = self.attempts
