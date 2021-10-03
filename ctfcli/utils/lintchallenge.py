@@ -4,71 +4,6 @@ import subprocess
 from pathlib import Path
 from ctfcli.utils.utils import errorlogger,redprint
 
-class ChallengeTemplate():
-    """
-    Template to validate challenge.yaml
-    """
-
-class KubernetesTemplate():
-    """
-    Template to validate deployment.yaml
-    """
-    def __init__(self):
-        self.template = {
-            "apiVersion": str,#"extensions/v1beta1",
-            "kind": str,# "Deployment",
-            "metadata": 
-            {
-                "labels": 
-                {
-                    "app": str,# "gman",
-                    "tier": str,# "challenge"
-                },
-                "name": str,# "gman"
-            },
-            "spec": 
-            {
-                "replicas": int,# 3,
-                "template": 
-                {
-                    "metadata": 
-                    {
-                        "annotations": 
-                        {
-                            str,#"apparmor.security.beta.kubernetes.io/defaultProfileName": "runtime/default",
-                            str,#"seccomp.security.alpha.kubernetes.io/pod": "docker/default"
-                        },
-                        "labels": 
-                        {
-                            "app": str,# "gman",
-                            "networkpolicy": str,# "allow_egress",
-                            "tier": str,# "challenge"
-                        }
-                    },
-                    "spec": 
-                    {
-                        "automountServiceAccountToken": bool,# false,
-                        "containers": 
-                        [{
-                            "env": [],
-                            "image": str,#"gcr.io/bsides-sf-ctf-2020/gman",
-                            "name": str,# "gman",
-                            "ports": 
-                            [{
-                                "containerPort": int,# 1337,
-                                "protocol": str,# "TCP"
-                            }],
-                            "securityContext": 
-                            {
-                                "allowPrivilegeEscalation": bool,# false
-                            }
-                        }],
-                        "volumes": []
-                    }
-                }
-            }
-        }
-
 class Linter():
     """
     Class to lint challenge.yaml files to decrease size of Challenge class
@@ -139,14 +74,24 @@ class Linter():
         >>> newchallenge = Challenge(**outputdict)
         """
         try:
+            # dangly bit for future additions
             if dictfromyaml.get("category") != None:
                 self.category = dictfromyaml.get("category")
+            
+            #process required fields
             requirementsdict = self.extractrequired(dictfromyaml)
             self.processrequired(requirementsdict)
-            self.lintoptional(dictfromyaml)
+
+            #process optional fields
+            optionaldict = self.extractoptional(dictfromyaml)
+            self.lintoptional(optionaldict)
+
+            # ssets everything into self.jsonpayload
+            self.setpayload()
             return self.jsonpayload
         except Exception:
-            errorlogger("[-] ERROR linting challenge yaml ")
+            errorlogger("[-] ERROR linting challenge yaml \n ")
+
 
 
     def validatetags(self, tag, dictfromyaml:dict, template:dict):
@@ -189,6 +134,20 @@ class Linter():
         except Exception:
             errorlogger("[-] Error, Failed to validate Required Fields \n")
 
+    def extractoptional(self, optionaldict:dict):
+        """
+        """
+        self.optionalfields = ["topics","hints","attempts",
+                               "requirements",'notes', 'tags',
+                               'scoreboard_name','author','files']
+        try:
+            optdict = {}
+            for each in self.optionalfields:
+                optdict.update({each: optionaldict.get(each)})
+            return optdict
+        except Exception:
+            errorlogger("[-] Error, Failed to validate Required Fields \n")
+
     def processscore(self,dictfromyaml:dict):
             challengetype = dictfromyaml.pop('type')
             # dynamic challenges
@@ -218,6 +177,7 @@ class Linter():
                 self.state = 'visible'
             else:
                 self.state = state
+
     def processflags(self, optionaldict:dict):
         """
         Process optional fields
@@ -282,13 +242,27 @@ class Linter():
             errorlogger(f"[-] Challenge.yaml does not conform to specification, \
                     rejecting. Missing tag: {tag} \n")                
     
-    def lintoptional(self,dictfromyaml:dict):
+    def lintoptional(self,optionaldict:dict):
         try:
-            for tag in self.optionalfields:
+            for tag in optionaldict:
                 if tag == "attempts":
-                    self.processattempts(optionaldict)    
+                    self.processattempts(optionaldict)
+                if tag =="topics":
+                    self.processtopics(optionaldict)
+                if tag =="tags":
+                    self.processtags(optionaldict)
+                if tag =="files":
+                    self.processfiles(optionaldict)
+                if tag =="hints":
+                    self.processhints(optionaldict)
+                if tag =="requirements":
+                    self.processrequirements(optionaldict)
+                if tag =="flags":
+                    self.processflags(optionaldict)
         except Exception:
             errorlogger(f"[-] ERROR: tag data not valid: {tag}")
+    
+    def setpayload(self):
         # set base challenge payload
         self.jsonpayload.update({
                 "name":            self.name,
