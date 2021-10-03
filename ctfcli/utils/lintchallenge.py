@@ -317,6 +317,22 @@ class Linter():
         tagdata = optionaldict.pop("requirements")
         self.requirements = {"requirements":tagdata}
 
+    def processauthor(self,optionaldict):
+        """
+        
+        """
+        debuggreen("[DEBUG] processing author in linter")
+        tagdata = optionaldict.pop("author")
+        self.author = {"author":tagdata}
+
+    def processnotes(self,optionaldict:dict):
+        """
+        
+        """
+        debuggreen("[DEBUG] processing notes in linter")
+        tagdata = optionaldict.pop("notes")
+        self.notes = {"notes":tagdata}
+
     def processattempts(self,optionaldict:dict):
         """
         
@@ -380,18 +396,25 @@ class Linter():
             for tag in optionaldict:
                 if tag == 'state':
                     self.processstate(optionaldict)
-                if tag == "attempts":
+                if tag == 'author':
+                    self.processauthor(optionaldict)
+                elif tag == "attempts":
                     self.processattempts(optionaldict)
-                if tag =="topics":
+                elif tag =="topics":
                     self.processtopics(optionaldict)
-                if tag =="tags":
+                elif tag =="tags":
                     self.processtags(optionaldict)
-                if tag =="files":
+                elif tag =="files":
                     self.processfiles(optionaldict)
-                if tag =="hints":
+                elif tag =="hints":
                     self.processhints(optionaldict)
-                if tag =="requirements":
+                elif tag =="requirements":
                     self.processrequirements(optionaldict)
+                elif tag =="notes":
+                    self.processnotes(optionaldict)
+                
+                else:
+                    pass
         except Exception:
             errorlogger(f"[-] ERROR: tag data not valid: {tag}")
     
