@@ -84,7 +84,8 @@ class Linter():
     def __init__(self,
                 #kwargs:dict,
                 togglevisibility=True):
-    
+        self.jsonpayload = {}
+        self.scorepayload = {}
         # the base repo has too few challenges to justify making any invisible
         # right from the get go, so its set to true by default
         self.toggle = togglevisibility
@@ -140,19 +141,29 @@ class Linter():
         try:
             self.processrequired(dictfromyaml)
             self.lintoptional(dictfromyaml)
+            return self.jsonpayload
         except Exception:
             errorlogger("[-] ERROR linting challenge yaml ")
 
 
-    def checkallowedtypes(self, tag, dictfromyaml:dict, template:dict):
+    def validatetags(self, tag, dictfromyaml:dict, template:dict):
         """
         Checks if field data is of a type allowed by the spec
+
+        Args:
+            tag             (str):  tag to validate
+            dictfromyaml    (dict): dict to validate
+            template        (dict): template to validate against
         """
         # get the types allowed for that tag
         allowedtagtypes = template.get(tag)
         # get the tag contents and compare the two
-        if dictfromyaml.get(tag) in allowedtagtypes:
+        # check to see if the tag is in the list of things REQUIRED!
+        if type(dictfromyaml.get(tag)) in allowedtagtypes:
             return True
+        #check if the challenge is MISSING any required tags!
+        if type(dictfromyaml.get(tag)) not in allowedtagtypes:
+            raise Exception
         else:
             raise Exception
 
@@ -169,12 +180,15 @@ class Linter():
         by the way of challenge = Challenge(**filtereddict)
         """
         try:
+            if dictfromyaml.get("category") != None:
+                self.category = dictfromyaml.get("category")
             # go over items to make sure requirements are met
             for tag in self.requiredfields:
                 # check for allowed types of data in that tag field
                 if self.checkallowedtypes(tag,dictfromyaml,self.reqfieldstypes):
                     # process type
-                    if tag =='type':
+                    if tag =='type' and tag in ["static","standard","dynamic"]:
+                        self.jsonpayload['type'] = challengetype
                         challengetype = dictfromyaml.pop('type')
                         # dynamic challenges
                         if challengetype == 'dynamic':
@@ -186,30 +200,34 @@ class Linter():
                                 'decay'  : self.extra['decay'],
                                 'minimum': self.extra['minimum']
                                 }
-                        self.challengedictoutput['type'] = challengetype
-                    # static challenges only have the "value" field
-                    elif (challengetype == 'static') or (challengetype == 'standard'):
-                        self.scorepayload = {'value' : self.value}
+                        # static challenges only have the "value" field
+                        elif (challengetype == 'static') or (challengetype == 'standard'):
+                            self.scorepayload = {'value' : self.value}
+                        
                     # check state field
                     # we should set state to visible unless self.toggle is set to false
                     # then we use the value in the yaml file
-                    if tag == 'state':
+                    elif tag == 'state':
                         state = dictfromyaml.get("state")
                         if state != None:
                             if state == 'hidden' and self.toggle == True:
                                 self.state = 'visible'
                             else:
                                 self.state = state
+                    else:
+                        self.jsonpayload[tag] = dictfromyaml.get(tag)
+                else:
+                    errorlogger("[-] Tag not in specification, rejecting challenge entry \n")
         except Exception:
             errorlogger(f"[-] Challenge.yaml does not conform to specification, \
-                    rejecting. Missing tag: {tag}")                
+                    rejecting. Missing tag: {tag} \n")                
     
     def lintoptional(self,dictfromyaml:dict):
         try:
             for tag in self.optionalfields:
                 if tag == "attempts":
                     if type(tag) != int:
-                        redprint("[-] Attemps field should be an integer, skipping challenge")
+                        redprint("[-] Attempts field should be an integer, skipping challenge \n")
                         raise ValueError
                 ## Check that all files exists
                 #challengefiles = dictfromyaml.get("files", [])
@@ -221,28 +239,22 @@ class Linter():
         except Exception:
             errorlogger(f"[-] ERROR: tag data not valid: {tag}")
         # set base challenge payload
-        self.basepayload = {
+        self.jsonpayload.update({
                 "name":            self.name,
                 "category":        self.category,
                 "description":     self.description,
-                "type":            self.typeof,
+                #"type":            self.typeof,
                 **self.scorepayload,
                 #"value":           self.value,
-                "state":           self.state,
-                }
-            # the rest of the challenge information
-        self.jsonpayload = {
+                #"state":           self.state,
+                # the rest of the challenge information
                 'flags':self.flags,
                 'topics':self.topics,
                 'tags':self.tags,
                 'files':self.files,
                 'hints':self.hints,
                 'requirements':self.requirements
-            }
-            # Some challenge types (e.g. dynamic) override value.
-            # Wecan't send it to CTFd because we don't know the current value
-            #if self.value is None:
-            #    del self.jsonpayload['value']
+            })
         if self.attempts:
             self.jsonpayload["max_attempts"] = self.attempts
         if self.connection_info and self.connection_info:

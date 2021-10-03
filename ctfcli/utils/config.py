@@ -75,8 +75,8 @@ host@server$> python ./ctfcli/ config <command>
         use during reload when scanning for changes
         """
         try:
-            self.allowedcategories = self.get('repo','categories').split(",")
-            #self.allowedcategories = self.get('repo','categories').split(",")
+            self.allowedcategories = self.config.get('default','categories').split(",")
+            #self.allowedcategories = self['default']['categories'].split(",")
             return self.allowedcategories
         except Exception:
             errorlogger("[-] Failed to read Allowed Categories from Config file --- ")
