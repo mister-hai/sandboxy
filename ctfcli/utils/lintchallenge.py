@@ -186,19 +186,20 @@ class Linter():
                 self.state = 'visible'
             else:
                 self.state = state
+
     def processname(self,requirementsdict:dict):
         """
         
         """
         tagdata = requirementsdict.pop("name")
-        self.name = {"name": tagdata }
+        self.name = tagdata 
 
     def processdescription(self,requirementsdict):
         """
         
         """
         tagdata = requirementsdict.pop("description")
-        self.description = {"description":tagdata}
+        self.description = tagdata
 
     def processversion(self,requirementsdict):
         """
@@ -207,30 +208,55 @@ class Linter():
         tagdata = requirementsdict.pop("version")
         self.version = {"version":tagdata}
 
-    def processflags(self, optionaldict:dict):
+    def processflags(self,requirementsdict):
         """
-        Process optional fields
-        """
-        tagdata = optionaldict.get("flags")
         
+        """
+        if requirementsdict.get("flags") != None:
+            tagdata = requirementsdict.get("flags")
+        elif requirementsdict.get("flag") != None:
+            tagdata = requirementsdict.get("flag")
+        self.flags = {"flags": tagdata }
+
     def processtopics(self, optionaldict:dict):
-        """"""
+        """
+        
+        """
         tagdata = optionaldict.get("topics")
+        self.topics = {"topics": tagdata }
+
     def processtags(self, optionaldict:dict):
-        """"""
+        """
+        
+        """
         tagdata = optionaldict.get("tags")
+        self.tags = {"tags":tagdata}
+
     def processfiles(self, optionaldict:dict):
-        """"""
+        """
+        
+        """
         tagdata = optionaldict.get("files")
+        self.files = {"files":tagdata}
+
     def processhints(self, optionaldict:dict):
-        """"""
+        """
+        
+        """
         tagdata = optionaldict.get("hints")
+        self.hints = {"hints":tagdata}
+
     def processrequirements(self,optionaldict:dict):
-        """"""
+        """
+        
+        """
         tagdata = optionaldict.get("requirements")
+        self.requirements = {"requirements":tagdata}
 
     def processattempts(self,optionaldict:dict):
-        """"""
+        """
+        
+        """
         try:
             tagdata = optionaldict.get("attempts")     
             if (type(tagdata) != int):
@@ -239,7 +265,7 @@ class Linter():
             else:
                 self.attempts == {"attempts": self.optionalfields.get('attempts')}
         except Exception:
-            errorlogger("[-] ERROR! Skipping challenge")
+            errorlogger("[-] ERROR! Skipping challenge \n ")
 
     def processrequired(self,requirementsdict:dict):
         """
@@ -260,9 +286,7 @@ class Linter():
                 if tag =='type' and tagdata in ["static","standard","dynamic"]:
                     self.jsonpayload['type'] = tagdata
                     self.processscore(requirementsdict)
-                elif tag == 'state':
-                    self.processstate(requirementsdict)
-                elif tag =='flags':
+                elif tag =='flags' or tag == "flags":
                     self.processflags(requirementsdict)
                 elif tag =='name':
                     self.processname(requirementsdict)
@@ -272,19 +296,19 @@ class Linter():
                     self.processversion(requirementsdict)
                 elif tag =='value':
                     self.processscore(requirementsdict)
-
                 else:
                     # assign to final payload
                     self.jsonpayload[tag] = requirementsdict.pop(tag)
             else:
                 errorlogger("[-] Tag not in specification, rejecting challenge entry \n")
         except Exception:
-            errorlogger(f"[-] Challenge.yaml does not conform to specification, \
-                    rejecting. Missing tag: {tag} \n")                
+            errorlogger(f"[-] Challenge.yaml does not conform to specification, rejecting.\n [-] Missing tag: {tag} \n")                
     
     def lintoptional(self,optionaldict:dict):
         try:
             for tag in optionaldict:
+                if tag == 'state':
+                    self.processstate(optionaldict)
                 if tag == "attempts":
                     self.processattempts(optionaldict)
                 if tag =="topics":
