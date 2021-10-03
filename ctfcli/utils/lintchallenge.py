@@ -50,7 +50,12 @@ class Linter():
                             "host":[str],
                             "connection_info":[str]
                         }
-        self.requiredfields = ["name", "category", "description", 'value', "version",'flag','flags',"state"]
+        self.requiredfields = [
+            "name", "category", "description", 
+            'value', "version",
+            #"state"
+            ]
+        self.flagstags = ['flag','flags']
         self.reqfieldstypes = {
                 "name": [str], 
                 "category": [str], 
@@ -92,8 +97,6 @@ class Linter():
         except Exception:
             errorlogger("[-] ERROR linting challenge yaml \n ")
 
-
-
     def validatetags(self, tag, dictfromyaml:dict, template:dict):
         """
         Checks if field data is of a type allowed by the spec
@@ -128,6 +131,12 @@ class Linter():
         """
         try:
             reqdict = {}
+            # they might put more than one? people dont read rules
+            # peoples add shit
+            if dictfromyaml.get('flag'):
+                reqdict.update({'flag': dictfromyaml.pop('flag')})
+            if dictfromyaml.get('flags'):
+                reqdict.update({'flags': dictfromyaml.pop('flags')})
             for each in self.requiredfields:
                 reqdict.update({each: dictfromyaml.pop(each)})
             return reqdict
@@ -177,6 +186,26 @@ class Linter():
                 self.state = 'visible'
             else:
                 self.state = state
+    def processname(self,requirementsdict:dict):
+        """
+        
+        """
+        tagdata = requirementsdict.pop("name")
+        self.name = {"name": tagdata }
+
+    def processdescription(self,requirementsdict):
+        """
+        
+        """
+        tagdata = requirementsdict.pop("description")
+        self.description = {"description":tagdata}
+
+    def processversion(self,requirementsdict):
+        """
+        
+        """
+        tagdata = requirementsdict.pop("version")
+        self.version = {"version":tagdata}
 
     def processflags(self, optionaldict:dict):
         """
@@ -233,6 +262,17 @@ class Linter():
                     self.processscore(requirementsdict)
                 elif tag == 'state':
                     self.processstate(requirementsdict)
+                elif tag =='flags':
+                    self.processflags(requirementsdict)
+                elif tag =='name':
+                    self.processname(requirementsdict)
+                elif tag =='description':
+                    self.processdescription(requirementsdict)
+                elif tag =='version':
+                    self.processversion(requirementsdict)
+                elif tag =='value':
+                    self.processscore(requirementsdict)
+
                 else:
                     # assign to final payload
                     self.jsonpayload[tag] = requirementsdict.pop(tag)
@@ -257,8 +297,6 @@ class Linter():
                     self.processhints(optionaldict)
                 if tag =="requirements":
                     self.processrequirements(optionaldict)
-                if tag =="flags":
-                    self.processflags(optionaldict)
         except Exception:
             errorlogger(f"[-] ERROR: tag data not valid: {tag}")
     

@@ -139,6 +139,9 @@ class SandboxyCTFdRepository():
             # instance a Yaml class
             challengeyaml = Yaml().loadyaml(kwargs.pop("challenge"))
             # lint the challenge
+            #shitty hack to get thins flowing properly
+            # qhwn everything is modified finally this can get removed
+            challengeyaml.update({"category": category})
             yamlcontents = linter.lintchallengeyaml(challengeyaml)
             # create the challenge in the repository
             newchallenge = Challenge(
