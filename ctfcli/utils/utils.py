@@ -7,7 +7,7 @@ import traceback
 import tarfile
 from pathlib import Path
 
-from ctfcli.__main__ import DEBUG
+DEBUG = True
 
 try:
     #import colorama

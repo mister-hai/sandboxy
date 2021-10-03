@@ -6,7 +6,7 @@ from ctfcli.utils.config import Config
 from ctfcli.linkage import SandBoxyCTFdLinkage
 from ctfcli.core.gitrepo import SandboxyGitRepository
 ###############################################################################
-DEBUG=True
+from ctfcli.utils.utils import DEBUG
 sys.path.insert(0, os.path.abspath('.'))
 ###############################################################################
 class Ctfcli():
