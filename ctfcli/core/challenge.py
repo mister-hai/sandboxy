@@ -147,26 +147,6 @@ class Challenge():#Yaml):
                 self.secondarypayload.update({each:secondaryvalue})
             except:
                 pass
-        #    "name":            self.name,
-        #    "category":        self.category,
-        #    "description":     self.description,
-        #    "type":            self.typeof,
-        #    **self.scorepayload,
-        #    #"value":           self.value,
-        #    "state":           self.state,
-        #    }
-        #self.jsonpayload = {
-        #    'flags':self.flags,
-        #    'topics':self.topics,
-        #    'tags':self.tags,
-        #3    'files':self.files,
-        #    'hints':self.hints,
-        #    'requirements':self.requirements
-        #}
-        # Some challenge types (e.g. dynamic) override value.
-        # We can't send it to CTFd because we don't know the current value
-        #if self.value is None:
-        #    del self.jsonpayload['value']
 
     def sync(self, apihandler:APIHandler):
         '''
