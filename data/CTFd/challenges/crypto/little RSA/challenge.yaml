@@ -9,7 +9,7 @@ tags:
   - easy
 
 state: visible
-
+version: "0.1"
 hints:
     - {
         content: "Try looking up Wiener's attack",

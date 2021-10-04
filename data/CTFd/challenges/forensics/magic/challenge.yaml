@@ -1,3 +1,4 @@
+version: "0.1"
 name: magic
 author: symmetric
 flags: 'CTF{magical_unicorn_gait}'

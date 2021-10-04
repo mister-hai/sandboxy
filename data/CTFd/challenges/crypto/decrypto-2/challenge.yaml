@@ -10,6 +10,6 @@ description:
 tags:
   - Crypto
   - python
-
+version: "0.1"
 type: standard
 value: 500

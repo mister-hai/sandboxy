@@ -1,4 +1,5 @@
 name: config-me
+version: "0.1"
 author: iagox86
 flags: 'CTF{my_rust_is_rusty}'
 description: Find the password encrypted in the configuration file

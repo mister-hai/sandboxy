@@ -15,3 +15,4 @@ extra:
   initial: 500
   decay: 450
   minimum: 100
+version: "0.1"

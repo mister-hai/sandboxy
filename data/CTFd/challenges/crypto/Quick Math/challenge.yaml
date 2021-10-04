@@ -1,7 +1,7 @@
 name: "Quick Math"
 author: "ashikka"
 category: Crypto
-
+version: "0.1"
 description: |
   Ben has encrypted a message with the same value of 'e' for 3 public moduli -
   n1 = 86812553978993

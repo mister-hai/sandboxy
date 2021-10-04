@@ -1,7 +1,7 @@
 name: "Mein Kampf"
 author: "AJ147"
 category: Crypto
-
+version: "0.1"
 description: |
   "We have intercepted the enemy's communications, but unfortunately, some data was corrupted during transmission. Can you recover the message?"
   M4 

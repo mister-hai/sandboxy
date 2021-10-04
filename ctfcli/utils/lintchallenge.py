@@ -2,9 +2,8 @@ import subprocess
 import yaml
 import subprocess
 from pathlib import Path
-from ctfcli.utils.utils import errorlogger,redprint
+from ctfcli.utils.utils import errorlogger,redprint,DEBUG
 from ctfcli.utils.utils import debugblue,debuggreen,debugred,debugyellow
-
 class Linter():
     """
 
@@ -272,8 +271,42 @@ class Linter():
         
         """
         debuggreen("[DEBUG] processing version in linter")
-        tagdata = requirementsdict.pop("version")
-        self.version = {"version":tagdata}
+        if requirementsdict.get('version') != None:
+            tagdata = requirementsdict.pop("version")
+            self.version = {"version":tagdata}
+        else:
+            debugred("[DEBUG] no Version tag in yaml")
+            self.version = {"version": "1.0"}
+            #raise Exception
+
+    def _processintitem(self, tag:str,yamldict:dict):
+        """
+        UNUSED, FUTURE
+        checks existance of str item, adds to output if valid
+        """
+        debuggreen("[DEBUG] processing tag in linter")
+        if yamldict.get(tag) != None:
+            tagdata = yamldict.pop(tag)
+            setattr(self,tag, {tag: tagdata})
+        else:
+            debugred(f"[DEBUG] no {tag} tag in yaml")
+            if DEBUG:
+                setattr(self,tag,{tag: "field was empty during loading"})
+            else:
+                raise Exception
+
+    def _processstritem(self, tag:str, yamldict:dict):
+        """
+        UNUSED, FUTURE
+        checks existance of str item, adds to output if valid
+        """
+        debuggreen("[DEBUG] processing tag in linter")
+        if yamldict.get(tag) != None:
+            tagdata = yamldict.pop(tag)
+            self.category = {tag: tagdata}
+        else:
+            debugred(f"[DEBUG] no {tag} tag in yaml")
+            raise Exception
 
     def _processcategory(self, requirementsdict:dict):
         """
@@ -281,8 +314,12 @@ class Linter():
         """
         debuggreen("[DEBUG] processing category in linter")
         # dangly bit for future additions
-        tagdata = requirementsdict.pop("category")
-        self.category = {"category": tagdata}
+        if requirementsdict.get("category") != None:
+            tagdata = requirementsdict.pop("category")
+            self.category = {"category": tagdata}
+        else:
+            debugred("[DEBUG] no category tag in yaml")
+            raise Exception
 
     def _processflags(self,requirementsdict:dict):
         """
