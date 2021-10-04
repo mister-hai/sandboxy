@@ -1,0 +1,1822 @@
+!Repo:
+crypto: !!python/object:ctfcli.core.category.Category
+  Challenge_05ceb7a0eecb50da84a41b83a64d1f67de35326f: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_05ceb7a0eecb50da84a41b83a64d1f67de35326f
+    __qualname__: Challenge_05ceb7a0eecb50da84a41b83a64d1f67de35326f
+    author: Pragati
+    category: crypto
+    description: The flag.zip contains the flag I am looking for but it is password
+      protected. The password is the encrypted message which has to be correctly decrypted
+      so I can useit to open the zip file. I tried using RSA but the zip doesn't open
+      by it. Can you help me get the flag please?
+    flags:
+    - csictf{gr34t_m1nds_th1nk_4l1ke}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - little RSA
+    - solution
+    - handout.tar.gz
+    hints:
+    - content: Try looking up Wiener's attack
+      cost: 50
+    - This hint is free
+    id: &id002 !!python/name:builtins.str ''
+    installed: &id001 !!python/name:builtins.bool ''
+    internalname: Challenge_05ceb7a0eecb50da84a41b83a64d1f67de35326f
+    jsonpayload: {}
+    name: little RSA
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - little RSA
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - crypto
+    - RSA
+    - easy
+    version: '0.1'
+  Challenge_0ba78d383272dcfd5e058aaeef70c9b44e94b568: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_0ba78d383272dcfd5e058aaeef70c9b44e94b568
+    __qualname__: Challenge_0ba78d383272dcfd5e058aaeef70c9b44e94b568
+    author: matir
+    category: crypto
+    description: '[Kerckhoffs''s principle](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
+      states that "A cryptosystem should be secure even if everything about the system,
+      except the key, is public knowledge."  So here''s our **really** unbreakable
+      cipher.'
+    flags:
+    - CTF{but_even_I_couldnt_break_IT}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - decrypto-2
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_0ba78d383272dcfd5e058aaeef70c9b44e94b568
+    jsonpayload: {}
+    name: decrypto-2
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - decrypto-2
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Crypto
+    - python
+    version: '0.1'
+  Challenge_46da01030dc3ca8ae28751409bb8a747414deb83: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_46da01030dc3ca8ae28751409bb8a747414deb83
+    __qualname__: Challenge_46da01030dc3ca8ae28751409bb8a747414deb83
+    author: matir
+    category: crypto
+    description: '[Kerckhoffs''s principle](https://en.wikipedia.org/wiki/Kerckhoffs%27s_principle)
+      states that "A cryptosystem should be secure even if everything about the system,
+      except the key, is public knowledge."  So here''s our unbreakable cipher.'
+    flags:
+    - CTF{plz_dont_r0ll_ur_own_crypto}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - decrypto-1
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_46da01030dc3ca8ae28751409bb8a747414deb83
+    jsonpayload: {}
+    name: decrypto-1
+    notes: Private notes on deployment, setup, etc.
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - decrypto-1
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Crypto
+    - python
+    - easy
+    version: beta1
+  Challenge_4d6f3e295ffe446f1316f33752a71d259a1e3596: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_4d6f3e295ffe446f1316f33752a71d259a1e3596
+    __qualname__: Challenge_4d6f3e295ffe446f1316f33752a71d259a1e3596
+    author: ashikka
+    category: crypto
+    description: "Ben has encrypted a message with the same value of 'e' for 3 public\
+      \ moduli -\nn1 = 86812553978993\nn2 = 81744303091421 \nn3 = 83695120256591 \n\
+      and got the cipher texts - \nc1 = 8875674977048\nc2 = 70744354709710\nc3 = 29146719498409.\n\
+      Find the original message. (Wrap it with csictf{})\n"
+    flags:
+    - csictf{h45t4d}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - Quick Math
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_4d6f3e295ffe446f1316f33752a71d259a1e3596
+    jsonpayload: {}
+    name: Quick Math
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - Quick Math
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - crypto
+    - python
+    - easy
+    version: '0.1'
+  Challenge_51a17e64a29c1a2d4cd588e2b5656fd72a225860: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_51a17e64a29c1a2d4cd588e2b5656fd72a225860
+    __qualname__: Challenge_51a17e64a29c1a2d4cd588e2b5656fd72a225860
+    author: AJ147
+    category: crypto
+    description: "\"We have intercepted the enemy's communications, but unfortunately,\
+      \ some data was corrupted during transmission. Can you recover the message?\"\
+      \nM4 \nUKW $\nGamma 2 4 \n$ 5 9 \n$ 14 3 \n$ 5 20 \nfv cd hu ik es op yl wq\
+      \ jm\n\n\"Ciphertext: zkrtwvvvnrkulxhoywoj\"\n"
+    flags:
+    - csictf{no_shit_sherlock}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - Mein Kampf
+    - solution
+    - handout.tar.gz
+    hints:
+    - content: Words in the flag are separated by underscores
+      cost: 100
+    - This hint is free
+    id: *id002
+    installed: *id001
+    internalname: Challenge_51a17e64a29c1a2d4cd588e2b5656fd72a225860
+    jsonpayload: {}
+    name: Mein Kampf
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - Mein Kampf
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - crypto
+    - beginner
+    version: '0.1'
+  Challenge_6d8cbf62334579224346a82c7b158bf6de48ddd0: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_6d8cbf62334579224346a82c7b158bf6de48ddd0
+    __qualname__: Challenge_6d8cbf62334579224346a82c7b158bf6de48ddd0
+    author: ashikka and AJ1479
+    category: crypto
+    description: We are not lost, we're right here somewhere on this little blue line.
+      Wait, why do I feel like I'm being watched?
+    flags:
+    - csictf{hillshaveeyes}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - The Climb
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_6d8cbf62334579224346a82c7b158bf6de48ddd0
+    jsonpayload: {}
+    name: The Climb
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - The Climb
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - crypto
+    - java
+    - hill cipher
+    version: '0.1'
+  Challenge_79dd344ccce61f61f586cd177bf477e3ef2af396: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_79dd344ccce61f61f586cd177bf477e3ef2af396
+    __qualname__: Challenge_79dd344ccce61f61f586cd177bf477e3ef2af396
+    author: iagox86
+    category: crypto
+    description: Reveal my identity! What's the flag encoded in the badge?
+    flags:
+    - CTF{way_too_common}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - barcoder
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_79dd344ccce61f61f586cd177bf477e3ef2af396
+    jsonpayload: {}
+    name: barcoder
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - barcoder
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Forensics
+    - easy
+    version: beta1
+  Challenge_bb62be0a02ff7381c1838de0ebe400317edd90f0: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_bb62be0a02ff7381c1838de0ebe400317edd90f0
+    __qualname__: Challenge_bb62be0a02ff7381c1838de0ebe400317edd90f0
+    author: SrishtiGohain
+    category: crypto
+    description: '''I was surfing the crimson wave and oh my gosh I was totally bugging.
+      I also tried out the lilac hair trend but it didn''t work out.
+
+      That''s not to say you are any better, you are a snob and a half. But let''s
+      get back to the main question here-
+
+      Who am I? (You don''t know my name)''
+
+
+      Ciphertext = "52f41f58f51f47f57f49f48f5df46f6ef53f43f57f6cf50f6df53f53f40f58f51f6ef42f56f43f41f5ef5cf4e"
+      (hex)
+
+      Key = "12123"
+
+      '
+    flags:
+    - csictf{you_are_a_basic_person}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - Modern Clueless Child
+    - solution
+    - handout.tar.gz
+    hints:
+    - content: This hint costs points, points you can never get back! muahahaha!
+      cost: 10
+    - This hint is free
+    id: *id002
+    installed: *id001
+    internalname: Challenge_bb62be0a02ff7381c1838de0ebe400317edd90f0
+    jsonpayload: {}
+    name: Modern Clueless Child
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - Modern Clueless Child
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - crypto
+    version: '0.1'
+  Challenge_e274b92ce505414a892e55bc83d8b67d1838e39d: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_e274b92ce505414a892e55bc83d8b67d1838e39d
+    __qualname__: Challenge_e274b92ce505414a892e55bc83d8b67d1838e39d
+    author: matir
+    category: crypto
+    description: Check out the BSidesSF CTF program.  We got a chance to put a puzzle
+      in there. If you're good with permutations, you'll get this once.
+    flags: CTF{ONEFORANAGRAMS}
+    handout: null
+    id: *id002
+    installed: *id001
+    internalname: Challenge_e274b92ce505414a892e55bc83d8b67d1838e39d
+    jsonpayload: {}
+    name: anagrams
+    notes: Word Jumble/Anagram challenge for program.
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - anagrams
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - language
+    - english
+    version: '0.1'
+  Challenge_e5eccf5b64550d3542d082a9e6f8f698cc416c4e: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_e5eccf5b64550d3542d082a9e6f8f698cc416c4e
+    __qualname__: Challenge_e5eccf5b64550d3542d082a9e6f8f698cc416c4e
+    author: roerohan
+    category: crypto
+    description: These 3 guys encrypted my flag, but they didn't tell me how to decrypt
+      it.
+    flags:
+    - csictf{sh0uld'v3_t4k3n_b1gg3r_pr1m3s}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - Rivest Shamir Adleman
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_e5eccf5b64550d3542d082a9e6f8f698cc416c4e
+    jsonpayload: {}
+    name: Rivest Shamir Adleman
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - Rivest Shamir Adleman
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - crypto
+    - python
+    version: '0.1'
+  Challenge_ed283b676f070e11b3b6bf14c3a35a8c0b8643dd: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_ed283b676f070e11b3b6bf14c3a35a8c0b8643dd
+    __qualname__: Challenge_ed283b676f070e11b3b6bf14c3a35a8c0b8643dd
+    author: iagox86
+    category: crypto
+    description: Find the password encrypted in the configuration file
+    flags: CTF{my_rust_is_rusty}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - config-me
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_ed283b676f070e11b3b6bf14c3a35a8c0b8643dd
+    jsonpayload: {}
+    name: config-me
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - crypto
+    - config-me
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Reversing
+    - rust
+    - easy
+    version: '0.1'
+  location: !!python/object/apply:pathlib.WindowsPath
+  - C:\
+  - Users
+  - moop
+  - Desktop
+  - repositories
+  - sandboxy
+  - data
+  - CTFd
+  - challenges
+  - crypto
+  name: crypto
+  tag: '!Category:'
+forensics: !!python/object:ctfcli.core.category.Category
+  Challenge_39e5dfde4a4193a4f5189c2db4718aa07706ac94: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_39e5dfde4a4193a4f5189c2db4718aa07706ac94
+    __qualname__: Challenge_39e5dfde4a4193a4f5189c2db4718aa07706ac94
+    author: SrishtiGohain
+    category: forensics
+    description: I talk of wondrous things I see, You picture purely out of imagination,
+      You wonder how your light is spent, Days seem bright but you don't know for
+      sure. I stand in your place and close my eyes, What do I see? (Open your windows
+      to see the secret message)
+    flags:
+    - csictf{ucbr4ill3}
+    handout: null
+    hints:
+    - content: braille encoded text
+      cost: 100
+    - open with a stego tool!
+    id: *id002
+    installed: *id001
+    internalname: Challenge_39e5dfde4a4193a4f5189c2db4718aa07706ac94
+    jsonpayload: {}
+    name: In Your Eyes
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - In Your Eyes
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - forensics
+    - steganography
+    version: '0.1'
+  Challenge_65c91fe4e3e72018680a835ed6fb2d1e57373db3: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_65c91fe4e3e72018680a835ed6fb2d1e57373db3
+    __qualname__: Challenge_65c91fe4e3e72018680a835ed6fb2d1e57373db3
+    author: ashikka
+    category: forensics
+    description: I wanted to send this file to AJ1479 but I did not want anyone else
+      to see what's inside it, so I protected it with a pin.
+    files:
+    - forensics/Panda/panda.zip
+    flags:
+    - csictf{kung_fu_p4nd4}
+    handout: null
+    id: *id002
+    installed: *id001
+    internalname: Challenge_65c91fe4e3e72018680a835ed6fb2d1e57373db3
+    jsonpayload: {}
+    name: Panda
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Panda
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - forensics
+    version: '0.1'
+  Challenge_7eac55a5fcd1bbbd8788ad0f870a664b4cde37c4: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_7eac55a5fcd1bbbd8788ad0f870a664b4cde37c4
+    __qualname__: Challenge_7eac55a5fcd1bbbd8788ad0f870a664b4cde37c4
+    author: symmetric
+    category: forensics
+    description: Was MPEG ever good?
+    flags: CTF{bridge_ext2_gaps}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - mpfrag
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_7eac55a5fcd1bbbd8788ad0f870a664b4cde37c4
+    jsonpayload: {}
+    name: mpfrag
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - mpfrag
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Forensics
+    version: beta1
+  Challenge_8f09dd41969d23d87b16ee8d68980debfcc49d79: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_8f09dd41969d23d87b16ee8d68980debfcc49d79
+    __qualname__: Challenge_8f09dd41969d23d87b16ee8d68980debfcc49d79
+    author: roerohan
+    category: forensics
+    description: John likes Arch Linux. What is he hiding?
+    flags:
+    - csictf{1_h0pe_y0u_don't_s33_m3_here}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Archenemy
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_8f09dd41969d23d87b16ee8d68980debfcc49d79
+    jsonpayload: {}
+    name: Archenemy
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Archenemy
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - forensics
+    - steghide
+    - john the ripper
+    version: '0.1'
+  Challenge_917b7b3e99830ebd59a69cfa9cb9c411a6df59b5: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_917b7b3e99830ebd59a69cfa9cb9c411a6df59b5
+    __qualname__: Challenge_917b7b3e99830ebd59a69cfa9cb9c411a6df59b5
+    author: symmetric
+    category: forensics
+    description: "01\xCE\xB9"
+    flags: CTF{one_iota_away_from_riches}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - earota
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_917b7b3e99830ebd59a69cfa9cb9c411a6df59b5
+    jsonpayload: {}
+    name: earota
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - earota
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Forensics
+    - golang
+    - go
+    - multimedia
+    - encoding
+    version: beta1
+  Challenge_974e92a1560885156df0a62bab36a58c8b12338d: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_974e92a1560885156df0a62bab36a58c8b12338d
+    __qualname__: Challenge_974e92a1560885156df0a62bab36a58c8b12338d
+    author: tangobeer
+    category: forensics
+    description: Gradient Skies is a beginner level forensics CTF challenge aimed
+      towards rookies which can be solved which can be solved with basic steganography.
+    files:
+    - forensics/Gradient sky/sky.jpg
+    flags:
+    - csictf{j0ker_w4snt_happy}
+    handout: null
+    id: *id002
+    installed: *id001
+    internalname: Challenge_974e92a1560885156df0a62bab36a58c8b12338d
+    jsonpayload: {}
+    name: Gradient sky
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - Gradient sky
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - forensics
+    - steganography
+    - easy
+    - binwalk
+    version: '0.1'
+  Challenge_a621ae711753c066fbfa2dd2d6cbcd8a4eb4f9fc: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_a621ae711753c066fbfa2dd2d6cbcd8a4eb4f9fc
+    __qualname__: Challenge_a621ae711753c066fbfa2dd2d6cbcd8a4eb4f9fc
+    author: corgi
+    category: forensics
+    description: 'Can you crack the device password? I bet you can, cos'' you rock!
+      P.s, flag is not in CTF{} format. If you run into an error when running the
+      avd, make sure the pixel_2 skin is available. Device image: https://storage.googleapis.com/bsides-sf-ctf-2020-attachments/avd.zip'
+    flags: lifeinchinatown
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - open-sesame
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_a621ae711753c066fbfa2dd2d6cbcd8a4eb4f9fc
+    jsonpayload: {}
+    name: open-sesame
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - open-sesame
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Mobile
+    - Forensics
+    version: beta1
+  Challenge_b40981aab75932c5b2f555f50769d878e44913d7: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_b40981aab75932c5b2f555f50769d878e44913d7
+    __qualname__: Challenge_b40981aab75932c5b2f555f50769d878e44913d7
+    author: symmetric
+    category: forensics
+    description: Much magic, so rainbow, wow!
+    flags: CTF{magical_unicorn_gait}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - magic
+    - solution
+    - handout.tar.gz
+    hints:
+    - content: take a histogram to find the color
+      cost: 50
+    - open with a stego tool!
+    id: *id002
+    installed: *id001
+    internalname: Challenge_b40981aab75932c5b2f555f50769d878e44913d7
+    jsonpayload: {}
+    name: magic
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - magic
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Forensics
+    version: '0.1'
+  Challenge_f56b6ddb250e669168de7770b2a0c379c0eed565: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_f56b6ddb250e669168de7770b2a0c379c0eed565
+    __qualname__: Challenge_f56b6ddb250e669168de7770b2a0c379c0eed565
+    author: 21StWarlock
+    category: forensics
+    description: With his dying breath, Prof. Ter Stegen hands us an image and a recording.
+      He tells us that the image is least significant, but is a numerical key to the
+      recording and the recording hides the answer. It may seem as though it's all
+      for nothing, but trust me it's not. https://mega.nz/file/cmhnAQDB#9dbHojKcxzliZ5NAYtGBN7N8WHCqtoU7kKa5yuJzG0w
+      https://mega.nz/file/h75UCIRJ#YGF3yCViKSQpwogmMgkdPQ1DXMez9Sv2DZBUWvCueSY
+    flags:
+    - csictf{7h47_15_h0w_y0u_c4n_83c0m3_1nv151813}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - unseen
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_f56b6ddb250e669168de7770b2a0c379c0eed565
+    jsonpayload: {}
+    name: unseen
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - forensics
+    - unseen
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - forensics
+    version: '0.1'
+  location: !!python/object/apply:pathlib.WindowsPath
+  - C:\
+  - Users
+  - moop
+  - Desktop
+  - repositories
+  - sandboxy
+  - data
+  - CTFd
+  - challenges
+  - forensics
+  name: forensics
+  tag: '!Category:'
+location: !!python/object/apply:pathlib.WindowsPath
+- C:\
+- Users
+- moop
+- Desktop
+- repositories
+- sandboxy
+- data
+- CTFd
+- challenges
+miscellaneous: !!python/object:ctfcli.core.category.Category
+  Challenge_a807c6a34a5d3630252177e87049151ffbabe746: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_a807c6a34a5d3630252177e87049151ffbabe746
+    __qualname__: Challenge_a807c6a34a5d3630252177e87049151ffbabe746
+    author: Matir
+    category: miscellaneous
+    description: A lot of the computer world is just layers of abstraction.  Layers
+      and layers and layers and layers and layers and layers and layers and layers
+      and ... layers and layers and ...
+    flags: CTF{so_easy_an_ogre_could_do_it}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - mini-matroyshka
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_a807c6a34a5d3630252177e87049151ffbabe746
+    jsonpayload: {}
+    name: mini-matroyshka
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - mini-matroyshka
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Misc
+    version: beta1
+  Challenge_c8bafe35321f9496c8059578287f1d11a178442a: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_c8bafe35321f9496c8059578287f1d11a178442a
+    __qualname__: Challenge_c8bafe35321f9496c8059578287f1d11a178442a
+    author: harsoh
+    category: miscellaneous
+    description: 'We ran a code on a machine a few years ago. It is still running
+      however we forgot what it was meant for. It completed n=523693181734689806809285195318
+      iterations of the loop and broke down. We want the answer but cannot wait a
+      few more years. Find the answer after n iterations to get the flag.
+
+      The flag would be of the format csictf{answer_you_get_from_above}.'
+    files:
+    - miscellaneous/Machine Fix/code.py
+    flags:
+    - csictf{785539772602034710213927792950}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - Machine Fix
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_c8bafe35321f9496c8059578287f1d11a178442a
+    jsonpayload: {}
+    name: Machine Fix
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - miscellaneous
+    - Machine Fix
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - miscellaneous
+    - algo
+    version: '0.1'
+  location: !!python/object/apply:pathlib.WindowsPath
+  - C:\
+  - Users
+  - moop
+  - Desktop
+  - repositories
+  - sandboxy
+  - data
+  - CTFd
+  - challenges
+  - miscellaneous
+  name: miscellaneous
+  tag: '!Category:'
+osint: !!python/object:ctfcli.core.category.Category
+  Challenge_5f1ff41d3ac45893b8f2c3e02781a04ac7ecbc3e: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_5f1ff41d3ac45893b8f2c3e02781a04ac7ecbc3e
+    __qualname__: Challenge_5f1ff41d3ac45893b8f2c3e02781a04ac7ecbc3e
+    author: :"Parth"
+    category: osint
+    description: There are 3 parts to this challenge. Who took it? What was "taken"?
+      Note The format of the flag is csictf{answer1_answer2}
+    files:
+    - osint/Stalin for time/Stalinfortimewebpage.html
+    - osint/Stalin for time/dwayneanddavid.jpg
+    flags:
+    - csictf{yevgeny_khaldei_adrianov_compass}
+    handout: null
+    id: *id002
+    installed: *id001
+    internalname: Challenge_5f1ff41d3ac45893b8f2c3e02781a04ac7ecbc3e
+    jsonpayload: {}
+    name: Stalin for time
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Stalin for time
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - osint
+    - research
+    version: '0.1'
+  Challenge_830f4a661a8d810714822bd421d394fae3fd22ad: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_830f4a661a8d810714822bd421d394fae3fd22ad
+    __qualname__: Challenge_830f4a661a8d810714822bd421d394fae3fd22ad
+    author: roerohan
+    category: osint
+    description: 'The original photographer of this picture commented the flag on
+      his post. Find the flag.
+
+      '
+    files:
+    - osint/Pirates of the Memorial/storm.jpeg
+    flags:
+    - csictf{pl4g14r1sm_1s_b4d}
+    handout: null
+    id: *id002
+    installed: *id001
+    internalname: Challenge_830f4a661a8d810714822bd421d394fae3fd22ad
+    jsonpayload: {}
+    name: Pirates of the Memorial
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Pirates of the Memorial
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - osint
+    version: '0.1'
+  Challenge_9920e0af24a0ad7e74e5c8dc0904570a1efa8a2d: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_9920e0af24a0ad7e74e5c8dc0904570a1efa8a2d
+    __qualname__: Challenge_9920e0af24a0ad7e74e5c8dc0904570a1efa8a2d
+    author: Parth
+    category: osint
+    description: 'I love this watch. It''s been with me all over the world, from Istanbul
+      to Shanghai to Macau.I wear it with suits quite a lot. My boss liked it too.
+      I remember wearing it when she died. What is her successor''s name?
+
+      '
+    flags:
+    - csictf{gareth_mallory}
+    handout: null
+    id: *id002
+    installed: *id001
+    internalname: Challenge_9920e0af24a0ad7e74e5c8dc0904570a1efa8a2d
+    jsonpayload: {}
+    name: Shaken
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Shaken
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - osint
+    - research
+    version: '0.1'
+  Challenge_a0226107cf34892abc1923f61669744b70e42b9b: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_a0226107cf34892abc1923f61669744b70e42b9b
+    __qualname__: Challenge_a0226107cf34892abc1923f61669744b70e42b9b
+    author: :"Parth"
+    category: osint
+    description: 'A reporter wanted to know where this flight is headed. Where does
+      he (the reporter) live?
+
+      '
+    files:
+    - osint/Flying Places/Flight.jpg
+    flags:
+    - csictf{san_francisco}
+    handout: null
+    id: *id002
+    installed: *id001
+    internalname: Challenge_a0226107cf34892abc1923f61669744b70e42b9b
+    jsonpayload: {}
+    name: Flying Places
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - osint
+    - Flying Places
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - osint
+    - research
+    version: '0.1'
+  Challenge_b23d762f584943f69a2c9d16c607bff60de5cfa5: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_b23d762f584943f69a2c9d16c607bff60de5cfa5
+    __qualname__: Challenge_b23d762f584943f69a2c9d16c607bff60de5cfa5
+    author: SrishtiGohain
+    category: osint
+    description: '''Malcolm X took Broiestevane to a Day of the Dead themed party
+      but she never returned. Her only friends, Mr Bean and the Pink Panther realised
+      that she was missing when she didn''t show up for an exam. Broiestevane liked
+      posting pictures, where was the party held?
+
+      (Don''t forget to wrap your answer in csictf{})''
+
+      '
+    flags:
+    - csictf{liberty_hotel}
+    - csictf{liberty_hotel_boston}
+    handout: null
+    id: *id002
+    installed: *id001
+    internalname: Challenge_b23d762f584943f69a2c9d16c607bff60de5cfa5
+    jsonpayload: {}
+    name: Lo Scampo
+    readme: null
+    scorepayload: {}
+    solution: null
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - osint
+    version: '0.1'
+  Challenge_e3577c1de70ca1810e29e402be362e8b127fc018: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_e3577c1de70ca1810e29e402be362e8b127fc018
+    __qualname__: Challenge_e3577c1de70ca1810e29e402be362e8b127fc018
+    author: ashikka
+    category: osint
+    description: hoshimaseok is up to no good. Track him down.
+    flags:
+    - csictf{sc4r3d_0f_c0mm1tm3nt}
+    handout: null
+    id: *id002
+    installed: *id001
+    internalname: Challenge_e3577c1de70ca1810e29e402be362e8b127fc018
+    jsonpayload: {}
+    name: Commitment
+    readme: null
+    scorepayload: {}
+    solution: null
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - osint
+    version: '0.1'
+  location: !!python/object/apply:pathlib.WindowsPath
+  - C:\
+  - Users
+  - moop
+  - Desktop
+  - repositories
+  - sandboxy
+  - data
+  - CTFd
+  - challenges
+  - osint
+  name: osint
+  tag: '!Category:'
+reversing: !!python/object:ctfcli.core.category.Category
+  Challenge_02fa1fc55cb52cc26dd70f9627b214c5d6755b65: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_02fa1fc55cb52cc26dd70f9627b214c5d6755b65
+    __qualname__: Challenge_02fa1fc55cb52cc26dd70f9627b214c5d6755b65
+    author: Matir
+    category: reversing
+    description: In December of 2019, many of the hosts in the BSidesSF organization
+      were compromised.  We think we traced it to this modified version of PuTTY,
+      but we can't figure out what data was being sent.  When we analyze it on another
+      host, we see nothing strange, but on the management hosts, we think it was beaconing
+      home.  Can you find out what it was sending?
+    flags: CTF{notJustCCleaner}
+    handout: null
+    id: *id002
+    installed: *id001
+    internalname: Challenge_02fa1fc55cb52cc26dd70f9627b214c5d6755b65
+    jsonpayload: {}
+    name: maltty
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - maltty
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Reversing
+    - Windows
+    version: beta1
+  Challenge_12d5fd8e64f6f3cb6ceb3443822773153a164058: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_12d5fd8e64f6f3cb6ceb3443822773153a164058
+    __qualname__: Challenge_12d5fd8e64f6f3cb6ceb3443822773153a164058
+    author: itsC0rg1
+    category: reversing
+    description: A fun toast clicker game for your enjoyment. While you are at it,
+      can you find the first flag?  Android challenge, one APK three flags
+    flags: CTF{Bready_To_Crumble}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker1
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_12d5fd8e64f6f3cb6ceb3443822773153a164058
+    jsonpayload: {}
+    name: toast-clicker1
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker1
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Mobile
+    - Reversing
+    - Android
+    - apk
+    version: beta1
+  Challenge_23cda283bb1a5b9924f1f00dc97cf04d69591279: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_23cda283bb1a5b9924f1f00dc97cf04d69591279
+    __qualname__: Challenge_23cda283bb1a5b9924f1f00dc97cf04d69591279
+    author: itsC0rg1
+    category: reversing
+    description: You found the first flag, can you find the second one?
+    flags: CTF{T00_Many_S3cr3t5}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker2
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_23cda283bb1a5b9924f1f00dc97cf04d69591279
+    jsonpayload: {}
+    name: toast-clicker2
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker2
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Mobile
+    - Reversing
+    version: beta1
+  Challenge_79109b1a7ca6898317905e1e467675e2ab600317: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_79109b1a7ca6898317905e1e467675e2ab600317
+    __qualname__: Challenge_79109b1a7ca6898317905e1e467675e2ab600317
+    author: AJ1479
+    category: reversing
+    description: I like my eggs sunny side up, but I ended up scrambling them.
+    files:
+    - reversing/Scrambled Eggs/scrambledeggs.py
+    - reversing/Scrambled Eggs/scrambledeggs.txt
+    flags:
+    - csictf{all_the_kings_horses}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Scrambled Eggs
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_79109b1a7ca6898317905e1e467675e2ab600317
+    jsonpayload: {}
+    name: Scrambled Eggs
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Scrambled Eggs
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - crypto
+    - reversing
+    version: '0.1'
+  Challenge_8007f382a1fb591cbfebcdbd1dd1e0b5a275bdf0: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_8007f382a1fb591cbfebcdbd1dd1e0b5a275bdf0
+    __qualname__: Challenge_8007f382a1fb591cbfebcdbd1dd1e0b5a275bdf0
+    author: 21StWarlock#1598
+    category: reversing
+    description: I learnt Python in school but I have no clue what this is!
+    files:
+    - reversing/pydis2ctf/encodedflag.txt
+    - reversing/pydis2ctf/C1cipher.txt
+    - reversing/pydis2ctf/C2cipher.txt
+    flags:
+    - csictf{T#a+_wA5_g0oD_d155aSe^^bLy}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - pydis2ctf
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_8007f382a1fb591cbfebcdbd1dd1e0b5a275bdf0
+    jsonpayload: {}
+    name: pydis2ctf
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - pydis2ctf
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - reversing
+    - ciphers
+    version: '0.1'
+  Challenge_a5361b6880fa0f85b8c90c492fa17e9a70a2da26: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_a5361b6880fa0f85b8c90c492fa17e9a70a2da26
+    __qualname__: Challenge_a5361b6880fa0f85b8c90c492fa17e9a70a2da26
+    author: roerohan
+    category: reversing
+    description: I encrypted my flag so that nobody can see it, but now I realize
+      I don't know how to decrypt it. Can you help me?
+    flags:
+    - csictf{esreverisjustreverseinreverseright}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Esrever
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_a5361b6880fa0f85b8c90c492fa17e9a70a2da26
+    jsonpayload: {}
+    name: Esrever
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - Esrever
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - crypto
+    - reversing
+    version: '0.1'
+  Challenge_d1307442a65e870b8acab6eabbb4b081426f3ad9: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_d1307442a65e870b8acab6eabbb4b081426f3ad9
+    __qualname__: Challenge_d1307442a65e870b8acab6eabbb4b081426f3ad9
+    author: iagox86
+    category: reversing
+    description: This program seems to be sending us a hidden message. Can you find
+      it?
+    flags: CTF{the_longer_the_flag_is_the_more_interesting_output_you_are_seeing_so_the_long_flag_is_long!}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - strace-me
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_d1307442a65e870b8acab6eabbb4b081426f3ad9
+    jsonpayload: {}
+    name: strace-me
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - strace-me
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Reversing
+    - '101'
+    - easy
+    version: beta1
+  Challenge_ddc371e9712424687af7e5d925950a8593850515: !!python/object:ctfcli.core.challenge.Challenge
+    _Challenge__name: Challenge_ddc371e9712424687af7e5d925950a8593850515
+    __qualname__: Challenge_ddc371e9712424687af7e5d925950a8593850515
+    author: itsC0rg1
+    category: reversing
+    description: You are on a roll! Why not find the final flag hidden in the APK?
+    flags: CTF{makingbaconpancakes}
+    handout: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker3
+    - solution
+    - handout.tar.gz
+    id: *id002
+    installed: *id001
+    internalname: Challenge_ddc371e9712424687af7e5d925950a8593850515
+    jsonpayload: {}
+    name: toast-clicker3
+    readme: null
+    scorepayload: {}
+    solution: !!python/object/apply:pathlib.WindowsPath
+    - C:\
+    - Users
+    - moop
+    - Desktop
+    - repositories
+    - sandboxy
+    - data
+    - CTFd
+    - challenges
+    - reversing
+    - toast-clicker3
+    - handout
+    - solution.tar.gz
+    state: hidden
+    synched: *id001
+    tag: '!Challenge:'
+    tags:
+    - Mobile
+    - Reversing
+    version: beta1
+  location: !!python/object/apply:pathlib.WindowsPath
+  - C:\
+  - Users
+  - moop
+  - Desktop
+  - repositories
+  - sandboxy
+  - data
+  - CTFd
+  - challenges
+  - reversing
+  name: reversing
+  tag: '!Category:'

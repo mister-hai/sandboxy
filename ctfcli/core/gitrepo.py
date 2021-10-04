@@ -1,7 +1,10 @@
 from ctfcli.utils.utils import errorlogger
 import git, re
+from pathlib import Path
 
-    
+from ctfcli.utils.utils import getsubdirs,redprint,DEBUG
+from ctfcli.utils.utils import yellowboldprint,debuggreen,logger
+from ctfcli.utils.utils import debugblue,debuggreen,debugred,debugyellow    
 
 #https://www.devdungeon.com/content/working-git-repositories-python
 class SandboxyGitRepository():
@@ -18,7 +21,7 @@ Available Commands:
     - 
     - 
     """
-    def __init__(self):
+    def __init__(self, repositoryroot:Path):
         """
         --repo https://github.com/misterhai/sandboxy
             downloads the repository given
@@ -27,7 +30,27 @@ Available Commands:
         self.username = str
         self.email = str
         self.password = str # or token, still a string
+        # url
         self.repo = str
+        # path
+        self.repositoryrootfolder = repositoryroot
+        if self.checkforexistingrepo() == False:
+            self.createprojectrepo()
+        else:
+            pass
+
+    def checkforexistingrepo(self):
+        """
+        Returns False if no git repository is found
+        """
+        try:
+            debuggreen("[DEBUG] checking for existing repository")
+            _ = git.Repo(self.repositoryrootfolder).git_dir
+            debugyellow("[INFOR] Folder has existing repository")
+            return True
+        except git.exc.InvalidGitRepositoryError:
+            debugred("[ERROR] NO existing repository")
+            return False
 
     def setauth(self):
         with git.repo.config_writer() as git_config:
@@ -90,16 +113,21 @@ Available Commands:
     admins should be managing that using thier preferred git workflow
         """        
         #create repo
-        self.repository = git.git.repo.init(path=self.repo)
-        #add all files in challenge folder to local repository
-        self.repository.index.add(".")
-        self.repository.index.commit('Initial commit')
-        self.repository.create_head('master')
-    
-    def clonerepo(self):
+        try:
+            debuggreen("[DEBUG] Creating Git Repository in challenge data folder")
+            self.repository = git.Repo.init(path=self.repositoryrootfolder)
+            #add all files in challenge folder to local repository
+            self.repository.index.add(".")
+            self.repository.index.commit('Initial commit')
+            self.repository.create_head('master')
+        except Exception:
+            debugred("[ERROR] Failed to Create repository")
+            errorlogger("[-] Failed to Create repository")
+
+    def clonerepo(self, url:str):
         try:
             # the user indicates a remote repo, by supplying a url
-            if re.match(r'^(?:http|https)?://', self.repo) or self.repo.endswith(".git"):
+            if re.match(r'^(?:http|https)?://', url) or url.endswith(".git"):
                 self.repository = git.Repo.clone(self.repo)
                 # get remote references to sync repos
                 self.heads = self.repository.heads
@@ -114,19 +142,3 @@ Available Commands:
         except Exception:
             errorlogger("[-] ERROR: Could not create Git repository in the challenges folder")
  
-    
-    def addchallenge(self):
-        """
-        Adds a challenge to the repository master list
-        """
-
-    
-    def removechallenge():
-        """
-        removes a challenge from the master list
-        """
-
-    def listinstalledchallenges(self):
-        """
-        returns the contents of the masterlist in a dict
-        """

@@ -6,7 +6,7 @@ import logging
 import traceback
 import tarfile
 from pathlib import Path
-
+global DEBUG
 DEBUG = True
 
 try:
@@ -98,7 +98,7 @@ def errorlogger(message):
     lineno = 'LINE NUMBER : ' + str(exc_tb.tb_lineno)
     logger.error(
         redprint(
-            errormesg +"\n" + lineno + ''.join(trace.format_exception_only()) +"\n"
+            errormesg+"\n[-] "+lineno+"\n[-] "+''.join(trace.format_exception_only()) +"\n"
             )
         )
 

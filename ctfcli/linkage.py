@@ -29,7 +29,7 @@ class SandBoxyCTFdLinkage():
         self.repo = Repository
         self.repofolder = repositoryfolder
         self.masterlistlocation = masterlistlocation
-        self.ctfdops = SandboxyCTFdRepository(self.repofolder, self.masterlistlocation)
+        self._ctfdops = SandboxyCTFdRepository(self.repofolder, self.masterlistlocation)
         #self.gitops = SandboxyGitRepository()
         #self.config = configobject
         #self.config = configparser.ConfigParser
@@ -94,7 +94,7 @@ class SandBoxyCTFdLinkage():
             greenprint("[+] Beginning Initial Setup")
             # returns a repository object
             listofcategories = self.config._getallowedcategories()
-            repository = self.ctfdops._createrepo(listofcategories)
+            repository = self._ctfdops._createrepo(listofcategories)
             greenprint("[+] Repository Scanned!")
             repository._setlocation(self.repofolder)
             # create a new masterlist
@@ -112,12 +112,6 @@ class SandBoxyCTFdLinkage():
             # has reached the end of the logic flow
         except Exception:
             errorlogger("[-] Failed to create CTFd Repository, check the logfile -- ")
-        try:
-            # we do this last so we can add all the created files to the git repo        
-            # this is the git backend, operate this seperately
-            self.gitops.createprojectrepo()
-        except Exception:
-            errorlogger("[-] Git Repository Creation Failed, check the logfile")
 
     def synccategory(self, category:str,ctfdurl,ctfdtoken):#,adminusername,adminpassword):
         """
@@ -183,7 +177,7 @@ class SandBoxyCTFdLinkage():
                     # get auth information from config
                     authdict = self.config._readauthconfig()
                     # feed it to the api handler
-                    apihandler._setauth(**authdict)
+                    apihandler._setauth(authdict)
                     # perform the requested operation
                     self.repo.syncrepository(apihandler)
                 elif config == False:

@@ -8,8 +8,9 @@ from ctfcli.core.masterlist import Masterlist
 from ctfcli.core.apisession import APIHandler
 from ctfcli.utils.lintchallenge import Linter
 from ctfcli.utils.utils import _processfoldertotarfile
-from ctfcli.utils.utils import getsubdirs,redprint
-from ctfcli.utils.utils import errorlogger,yellowboldprint,greenprint,logger
+from ctfcli.utils.utils import getsubdirs,redprint,DEBUG
+from ctfcli.utils.utils import errorlogger,yellowboldprint,debuggreen,logger
+from ctfcli.utils.utils import debugblue,debuggreen,debugred,debugyellow
 
 ###############################################################################
 #
@@ -26,7 +27,7 @@ class SandboxyCTFdRepository():
         self.repofolder = repositoryfolder
         self.allowedcategories = list
         try:
-            greenprint("[+] Instancing a SandboxyCTFdRepository()")
+            debuggreen("[+] Instancing a SandboxyCTFdRepository()")
             super(SandboxyCTFdRepository, self).__init__()
         except Exception as e:
             errorlogger(f"[-] FAILED: Instancing a SandboxyCTFdLinkage(){e}")
@@ -42,11 +43,11 @@ class SandboxyCTFdRepository():
         Masterlist, Repo (Tuple): Two new data objects
 
         '''
-        greenprint("[+] Starting Repository Scan")
+        debuggreen("[+] Starting Repository Scan")
         dictofcategories = {}
         #repocategoryfolders = os.listdir(os.path.abspath(self.repofolder))
         repocategoryfolders = getsubdirs(self.repofolder)
-        #greenprint(f"[+] Categories: {[f'{folder}\n' for folder in repocategoryfolders]}")
+        #debuggreen(f"[+] Categories: {[f'{folder}\n' for folder in repocategoryfolders]}")
         # itterate over folders in challenge directory
         for category in repocategoryfolders:
             categorypath = Path(os.path.join(self.repofolder, category))
@@ -72,7 +73,7 @@ class SandboxyCTFdRepository():
         '''
         Itterates over a Category folder to add challenges to the database
         '''
-        greenprint(f"[+] Found Category {categorypath.name}")
+        debuggreen(f"[+] Found Category {categorypath.name}")
         #create a new Category and assign name based on folder
         newcategory = Category(categorypath.name,categorypath)        
         #get subfolder names in category directory
@@ -80,7 +81,7 @@ class SandboxyCTFdRepository():
         # itterate over the individual challenges
         for challengefolder in categoryfolder:
             challengefolderpath = Path(self.repofolder,categorypath.name, challengefolder)
-            greenprint(f"[+] Found Challenge folder {challengefolderpath.name}")
+            debuggreen(f"[+] Found Challenge folder {challengefolderpath.name}")
             yellowboldprint(f'[+] {challengefolderpath}')
             try:
                 # create new Challenge() class from folder contents
@@ -115,7 +116,7 @@ class SandboxyCTFdRepository():
                 itempath = challengeitempath(item)
                 # if the item is in the list of approved items
                 if itempath.stem in contentslist:
-                    greenprint(f"[+] Found : {item}")
+                    debuggreen(f"[+] Found : {item}")
                     kwargs[str(itempath.stem).lower()] =  itempath
                 # if its a readme
                 elif itempath.stem == "README":

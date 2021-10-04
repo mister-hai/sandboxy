@@ -1,4 +1,5 @@
 import os,sys,fire
+sys.path.insert(0, os.path.abspath('.'))
 #from ctfcli.utils.config import Config
 from pathlib import Path
 from ctfcli.utils.utils import errorlogger, yellowboldprint,greenprint,redprint
@@ -7,7 +8,6 @@ from ctfcli.linkage import SandBoxyCTFdLinkage
 from ctfcli.core.gitrepo import SandboxyGitRepository
 ###############################################################################
 from ctfcli.utils.utils import DEBUG
-sys.path.insert(0, os.path.abspath('.'))
 ###############################################################################
 class Ctfcli():
     '''
@@ -84,8 +84,15 @@ class Ctfcli():
         self.TEMPLATESDIR = Path(self._toolfolder , "ctfcli", "templates")
 
         self.ctfdrepo = ctfdrepo
-        # greate git repository
-        self.gitops = SandboxyGitRepository()
+        # create git repository
+        try:
+            # we do this last so we can add all the created files to the git repo        
+            # this is the git backend, operate this seperately
+            self.gitops = SandboxyGitRepository(self._reporoot)
+            #self.gitops.createprojectrepo()
+        except Exception:
+            errorlogger("[-] Git Repository Creation Failed, check the logfile")
+
 
     def _setenv(self):
         """

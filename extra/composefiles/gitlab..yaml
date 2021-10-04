@@ -1,0 +1,28 @@
+version: "3"
+#################################################################
+##
+## THIS FILE CONTAINS A TEST 
+##docker network create --gateway=192.168.0.1 --subnet=192.168.0.0/24 net
+#################################################################
+services:
+#################################################################
+## GITLAB
+# STATUS : UNTESTED , for other stuff, not really part of sandboxy
+# just wanted to test installation
+################################################################# 
+    gitlab:
+      image: 'gitlab/gitlab-ee:latest'
+      restart: always
+      hostname: 'gitlab.example.com'
+      environment:
+        GITLAB_OMNIBUS_CONFIG: |
+          external_url 'https://gitlab.example.com'
+          # Add any other gitlab.rb configuration here, each on its own line
+      ports:
+        - '80:80'
+        - '443:443'
+        - '22:22'
+      volumes:
+        - '$GITLAB_HOME/config:/etc/gitlab'
+        - '$GITLAB_HOME/logs:/var/log/gitlab'
+        - '$GITLAB_HOME/data:/var/opt/gitlab'

@@ -51,6 +51,7 @@ class Linter():
         self.extratags:dict = None
         self.notes:dict = None
         self.author:dict = None
+        self.typeof:dict = None
         wat = ['replicas',
                'environ',
                ]
@@ -199,16 +200,23 @@ class Linter():
         except Exception:
             errorlogger("[-] ERROR: Failed to validate Required Fields \n")
 
+    def _processtype(self,requirementsdict:dict):
+        """
+        
+        """
+        debuggreen("[DEBUG] processing score fields in linter")
+        tagdata = requirementsdict.pop('type')
+        self.typeof = {"type" : tagdata}
+
     def _processscore(self,requirementsdict:dict):
         """
         
         """
         try:
             debuggreen("[DEBUG] processing score fields in linter")
-            self._processvalue(requirementsdict)
-            challengetype = requirementsdict.pop('type')
+            #self.typeof = requirementsdict.pop('type')
             # dynamic challenges
-            if challengetype == 'dynamic':
+            if self.typeof.get('type') == 'dynamic':
                 # have the extra field
                 self.extra:dict = requirementsdict.pop("extra")
                 for each in self.extra:
@@ -223,7 +231,7 @@ class Linter():
                             'minimum': self.extra['minimum']
                             }
             # static challenges only have the "value" field
-            elif (challengetype == 'static') or (challengetype == 'standard'):
+            elif (self.typeof.get('type') == 'static') or (self.typeof.get('type') == 'standard'):
                 self.scorepayload = self.value #{'value' : self.value} 
         except Exception:
             errorlogger("[-] ERROR: Score data does not match specification, skipping challenge! \n")
@@ -443,10 +451,11 @@ class Linter():
                 elif (length > 0):
                     tagdata = requirementsdict.get(tag)
                     debuggreen(f"[DEBUG] processing tag  {tag} : {tagdata} ")
+                    # type determines score and currently the only field 
+                    # requiring extra values for certain tags
                     if tag =='type' and tagdata in ["static","standard","dynamic"]:
-                        #self.jsonpayload['type'] = tagdata
-                    #elif tag =='value':
-                        #self._processvalue(requirementsdict)
+                        self._processtype(requirementsdict)
+                        self._processvalue(requirementsdict)
                         self._processscore(requirementsdict)
                     elif tag =='name':
                         self._processname(requirementsdict)
@@ -500,6 +509,7 @@ class Linter():
             errorlogger(f"[-] ERROR: tag data not valid: {tag}")
     
     def setpayload(self):
+        debuggreen("[DEBUG] Setting payload in linter ")
         # set base challenge payload
         templatelist = [self.name,
                         self.category,
@@ -516,6 +526,7 @@ class Linter():
                         self.author,
                         self.version,
                         self.state,
+                        self.typeof,
                         ]
         print(templatelist)
         for yamltag in templatelist:

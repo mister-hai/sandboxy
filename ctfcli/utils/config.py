@@ -112,12 +112,16 @@ host@server$> python ./ctfcli/ config <command>
         #self.config.read(cfgfile)
         try:
             greenprint("[+] Setting authentication information from config file")
-            authdict = {
-                'username' : self.get('auth', 'username'),
-                'password' : self.get('auth', 'password'),
-                'token' : self.get('auth','token'),
-                'url' : self.get('auth', 'url')
-            }
+            listofthings = ['username','password','token','url']
+            authdict = {}
+            for each in listofthings:
+                try:
+                    if self.config.get('default', each) != None:
+                        configdata = self.config.get('default', each)
+                        if configdata != None:
+                            authdict.update({each:configdata})
+                except Exception:
+                    pass
             return authdict
             #self.config.close()
         except Exception:
@@ -133,14 +137,14 @@ host@server$> python ./ctfcli/ config <command>
             greenprint("[+] Storing Authentication information")
             #self.cfgfile = open(cfgfile, 'w')
             #self.config.add_section('auth')
-            self.set('auth','username',authdict['username'])
+            self.config.set('default','username',authdict['username'])
             # yeah its plain text, the admin password should remain on the
             # server , in the project folder, if you choose to use one
             # these passwords are RELAYED and should be 
             # considered as temporary as tokens
-            self.set('auth','password', authdict['password'])
-            self.set('auth','token', authdict["token"])
-            self.set('auth','url', authdict['url'])
+            self.config.set('default','password', authdict['password'])
+            self.config.set('default','token', authdict["token"])
+            self.config.set('default','url', authdict['url'])
             self.close()
         except Exception:
             errorlogger("[-] Failed to store authentication information")
@@ -156,9 +160,9 @@ host@server$> python ./ctfcli/ config <command>
         try:
             greenprint("[+] Storing Authentication information")
             #self.cfgfile = open(cfgfile, 'w')
-            #self.config.add_section('auth')
+            #self.config.add_section('default')
             self.token = token
-            self.set('auth','token',self.token)
+            self.config.set('default','token',self.token)
         except Exception:
             errorlogger("[-] Failed to store authentication information")
 
