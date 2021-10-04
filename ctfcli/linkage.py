@@ -178,6 +178,8 @@ class SandBoxyCTFdLinkage():
                     authdict = self.config._readauthconfig()
                     # feed it to the api handler
                     apihandler._setauth(authdict)
+                    #auth to server can grab the info from itself if no args given
+                    apihandler.authtoserver()
                     # perform the requested operation
                     self.repo.syncrepository(apihandler)
                 elif config == False:

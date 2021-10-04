@@ -1,8 +1,12 @@
+from logging import debug
 import requests
 from pathlib import Path
 from ctfcli.utils.config import Config
 from ctfcli.utils.utils import errorlog, greenprint, errorlogger,yellowboldprint
 from ctfcli.core.apitemplates import hintstemplate,topictemplate, flagstemplate
+from ctfcli.utils.utils import redprint,DEBUG
+from ctfcli.utils.utils import debugblue,debuggreen,debugred,debugyellow
+
 
 class APIHandler(requests.Session):
     """
@@ -70,13 +74,17 @@ class APIHandler(requests.Session):
                     'Content-Transfer-Encoding': 'application/gzip',
                     #'Accept-Language': 'en-US,en;q=0.9' 
                 }
+        debuggreen("[DEBUG] Setting Headers to STEALTH MODE!")
         self.headers.update(headers)
+        debugblue(f"[DEBUG] {self.headers}")
 
     def _settoken(self,token):
         """
         Sets the Authorization field in the headers with a token
         also sets self.token
         """
+        debuggreen(f"[DEBUG] Setting Token for auth")
+        debuggreen(f"[DEBUG] {token}")
         self.headers.update({"Authorization": f"Token {token}"})
         self.token = token
 
@@ -93,10 +101,15 @@ class APIHandler(requests.Session):
                         'url' : str
                         }
         """
+        
         # if there is a token provided
         if authdict.get('token') != None:
-            self.headers.update({"Authorization": f"Token {authdict.get('token')}"})
+            self.token = authdict.get('token')
+            debuggreen(f"[DEBUG] New Header section")
+            debugblue(f"[DEBUG] Authorization : Token {self.token}")
+            self.headers.update({"Authorization": f"Token {self.token}"})
         # everything else
+        debugblue(f"[DEBUG] contents of Authdict : {authdict}")
         for key in authdict:
             setattr(self,key,authdict.get(key))
 
@@ -105,8 +118,9 @@ class APIHandler(requests.Session):
         Secondary code flow to obtain authentication
         Can only be used post setup
         """
-        self.login()
-        return self.gettoken()
+        debuggreen("[DEBUG] Attempting to obtain auth token via login")
+        self._obtainauthtoken(self.username,self.password)
+        #return self.gettoken()
 
     def _geturi(self, tag, admin=False, schema='http'):
         """
@@ -123,7 +137,7 @@ class APIHandler(requests.Session):
                     self.route = f"{self.route}?view=admin"
                     return f"{self.route}"
                 else:
-                    print(f"[+] Route {self.route}")
+                    debugyellow(f"[INFOR] Route {self.route}")
                     return f"{self.route}" #dictofroutes
         except Exception:
             print("[-] Route not found in accepted list")
@@ -154,20 +168,47 @@ class APIHandler(requests.Session):
             exit()
 
 
-    def authtoserver(self,username,password):
+    def authtoserver(self,username:str=None,password:str=None):
         """
         GETS TOKEN FROM PASSWORD
-
+        SECONDARY FLOW
+        
         Performs a POST request to the server login page to begin
         an administrative session, will login with admin credentials
         and retrieve a token, then assign that token to
+
         >>> APISession.token
+        
+        This function is SUPPOSED to ignore tokens in the config
+
+        I need to modify CTFd to work more better when APIscream
+
+        Args:
+            username    (str): username as string
+            password    (str): password as string
         """
+        debuggreen("[DEBUG] Start of APISession.authtoserver()")
         #apisession = APISession()
         # template for authentication packet
+        # these should be set already if _setauth was used
+        if username == None and password == None:
+            try:
+                name = getattr(self,"username")
+                passw = getattr(self,"password")
+            #if self.password == None or self.username == None:
+            except:
+            #    try:
+            #        token = getattr(self,"token")
+            #    except:
+                debugred("[DEBUG] APISession.authtoserver() missing critical auth information")
+                raise Exception
+        else:
+            name = username
+            passw = password
+
         self.authtemplate = {
-	        "name": username,
-	        "password": password,
+	        "name": name,
+	        "password": passw,
 	        "_submit": "Submit",
 	        "nonce": str #"84e85c763320742797291198b9d52cf6c82d89f120e2551eb7bf951d44663977"
         }
@@ -175,98 +216,122 @@ class APIHandler(requests.Session):
         # Logging in as Admin!
         ################################################################
         # get the login form
-
+        self.loginurl = self._geturi('login')
+        debuggreen(f"[DEBUG] Attempting to login to {self.loginurl} ")
         self.apiresponse = self.get(self._geturi('login'), allow_redirects=False)
+        debugblue(f"[DEBUG] API RESPONSE : {self.apiresponse.status_code}")
         # if it is not a 200 OK and its a setup, pre install path
         # the server was ok and responded with login
         if self.apiresponse.status_code == 200:
             # Grab the nonce
             self.nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+            debuggreen(f"[DEBUG] Initial Nonce: {self.nonce}")
             self.authtemplate['nonce'] = self.nonce
-        elif self.there_was_an_error(self.apiresponse.status_code):
+        elif self._there_was_an_error(self.apiresponse.status_code):
             if self.apiresponse.status_code == 302 and self.apiresponse.headers["Location"].endswith("/setup"):
                 errorlog(f"[-] CTFd installation has not been setup yet")
                 raise Exception
         # make the api request to the login page
         # this logs us in as admin
+        debuggreen(f"[DEBUG] sending POST to Login URL {self.authpayload}")
         self.apiresponse = self.post(
             url=self._geturi("login"),
             data = self.authtemplate
             )#,allow_redirects=False,)
-        if self.there_was_an_error( self.apiresponse.status_code):# or (not self.apiresponse.headers["Location"].endswith("/challenges")):
-            errorlog('invalid login credentials')
+        debugblue(f"[DEBUG] API RESPONSE : {self.apiresponse.status_code}")
+        if self._there_was_an_error( self.apiresponse.status_code):# or (not self.apiresponse.headers["Location"].endswith("/challenges")):
+            errorlogger('[-] invalid login credentials')
             raise Exception
         # grab a token
         return self._gettoken()
-
-
+        # now look down!
+    # this gets called next, so its declared after to keep track
+    def _gettoken(self):
+        """
+        SECOND FLOW
+        Interfaces with the admin panel to retrieve a token
+        """
+        # get settings page in admin panel
+        self.apiresponse = self.get(self._geturi("settings",admin=True))
+        debugblue(f"[DEBUG] API RESPONSE : {self.apiresponse.status_code}")
+        self.nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
+        debugblue(f"[DEBUG] Admin Nonce: {self.nonce}")
+        # set csrf token in headers
+        debuggreen(f"[DEBUG] Setting headers with admin nonce")
+        self.headers.update({"CSRF-Token":self.nonce})
+        debugblue(f"[DEBUG] request headers:")
+        debugblue(f"[DEBUG] {self.headers}")
+        debuggreen(f"[DEBUG] Requesting Token from Admin Panel")
+        self.apiresponse = self.post(url=self._getroute("tokens",admin=True),json={},headers ={"CSRF-Token": self.nonce})
+        debugblue(f"[DEBUG] API RESPONSE : {self.apiresponse.status_code}")
+        if self._there_was_an_error (self.apiresponse.status_code) or (not self.apiresponse.json()["success"]):
+            errorlogger("[-] Token generation failed")
+            raise Exception
+        self.token = self.apiresponse.json()["data"]["value"]
+        debugblue(f"[DEBUG] API STATUS  : {self.apiresponse.status_code}")
+        debugblue(f"[DEBUG] API RESPONSE: {self.apiresponse.json()}")
+        
     def login(self, username:str=None, password:str=None):
         """
-        ##############################################################
-        ## Login
-        # used during a session
-        # STEP 1
-        ##############################################################
+        Login
+        used during a session
+        STEP 1
         """
         # get login page
-        self.apiresponse = self.get(url=self._geturi('login'), allow_redirects=True)
+        self.loginurl = self._geturi('login')
+        debuggreen(f"[DEBUG] Attempting to login to {self.loginurl} ")
+        self.apiresponse = self.get(url=self.loginurl, allow_redirects=True)
+        debugblue(f"[DEBUG] API RESPONSE : {self.apiresponse.status_code}")
         # set auth fields
         self.authpayload['name'] = username
         self.authpayload['password'] = password
         # set initial interaction nonce
         self.nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
-        print("============\nInitial Nonce: "+ self.nonce + "\n===============")
+        debuggreen(f"[DEBUG] Initial Nonce: {self.nonce}")
         self.authpayload['nonce'] = self.nonce
         # send POST to Login URL
+        debuggreen(f"[DEBUG] sending POST to Login URL {self.authpayload}")
         self.apiresponse = self.post(url=self._getroute('login'),data = self.authpayload)#,allow_redirects=False)
-        # grab admin login nonce
-
+        debugblue(f"[DEBUG] API RESPONSE : {self.apiresponse.status_code}")
+        # now look down!
+    # this gets called next, so its declared after to keep track
     def gettoken(self):
         """
-        ##############################################################
-        ## Get token
-        # used during a session
-        # STEP 2
-        ##############################################################
+        Get token
+        used during a session
+        STEP 2
         """
+        # grab admin login nonce
         self.nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
-        print(f"============\nAdmin Nonce: {self.nonce}\n===============")
+        debugblue(f"[DEBUG] Admin Nonce: {self.nonce}")
         # set csrf token in headers
+        debuggreen(f"[DEBUG] Setting headers with admin nonce")
         self.headers.update({"CSRF-Token":self.nonce})
+        debugblue(f"[DEBUG] request headers:")
+        debugblue(f"[DEBUG] {self.headers}")
+
         # POST to settings URL to generate token
+        debuggreen(f"[DEBUG] POST to settings URL to generate token")
         self.apiresponse = self.get(url=self.settingsurl,json={})
+        debugblue(f"[DEBUG] API RESPONSE : {self.apiresponse.status_code}")        
         # POST to tokensurl to obtain Token
+        debuggreen(f"[DEBUG] POST to tokensurl to obtain Token")
         self.apiresponse = self.post(url=self._getroute('tokens'),json={})
+        debugblue(f"[DEBUG] API STATUS  : {self.apiresponse.status_code}")
+        debugblue(f"[DEBUG] API RESPONSE: {self.apiresponse.json()}")
         # Place token into headers for sessions to interact with WRITE permissions
         self.token = self.apiresponse.json()["data"]["value"]
         return self.token
 
-
-    def _gettoken(self):
-        """
-        Interfaces with the admin panel to retrieve a token
-        """
-        # get settings page in admin panel
-        self.apiresponse = self.get(self._geturi("settings",admin=True))
-        self.nonce = self.apiresponse.text.split("csrfNonce': \"")[1].split('"')[0]
-        self.apiresponse = self.post(url=self._getroute("tokens",admin=True),json={},headers ={"CSRF-Token": self.nonce})
-        if self.there_was_an_error (self.apiresponse.status_code) or (not self.apiresponse.json()["success"]):
-            errorlog("[-] Token generation failed")
-            raise Exception
-
-        #greenprint("[+] Writing ctfd auth configuration")
-        self.token = self.apiresponse.json()["data"]["value"]
-        #with open(".ctfd-auth", "w") as filp:
-        #    yaml.dump({"url": self.ctfdurl, "token": self.token}, filp)
-
-    def there_was_an_error(self, responsecode)-> bool:
+    def _there_was_an_error(self, responsecode)-> bool:
         """ Returns False if no error"""
         # server side error]
         set1 = [404,504,503,500]
         set2 = [400,405,501]
         set3 = [500]
         if responsecode in set1 :
-            errorlogger("[-] Server side error - No Resource Available in REST response - Error Code {}".format(responsecode))
+            errorlogger(f"[-] Server side error - No Resource Available in REST response - Error Code {responsecode}")
+            debugblue(f"[DEBUG] Server side error - No Resource Available in REST response - Error Code {responsecode}")
             return True # "[-] Server side error - No resource Available in REST response"
         if responsecode in set2:
             errorlogger("[-] User error in Request - Error Code {}".format(responsecode))
@@ -305,9 +370,10 @@ class APIHandler(requests.Session):
         """
         greenprint("[+] Looking for existing challenge with same parameters")
         self.listofchallenges = self.getsyncedchallenges()
-        if len(self.listofchallenges) > 0:
+        challengelist = self.listofchallenges.json()['data']
+        if len(challengelist) > 0:
             #self.listofnames = [name.get('name) for name in self.listofchallenges]
-            for challenge in self.listofchallenges:
+            for challenge in challengelist:
                 challengename = challenge.get('name')
                 if name == challengename:
                     return challenge
@@ -324,8 +390,12 @@ class APIHandler(requests.Session):
         We cant discern if a challenges attributes have been modified on the
         server by an administrator or a hacker
         """
+        debuggreen("[DEBUG] getting list of all challenges")
         endpoint = self._getroute('challenges',admin=True)
-        return self.get(url = endpoint, json=True).json()["data"]
+        self._setheaders()
+        self.challengedata = self.get(url = endpoint, json=True)
+        debuggreen(f"[DEBUG] {self.challengedata.json()}")
+        return self.challengedata
 
     def _createbasechallenge(self,jsonpayload:dict):
         """

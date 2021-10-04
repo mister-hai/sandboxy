@@ -118,8 +118,7 @@ host@server$> python ./ctfcli/ config <command>
                 try:
                     if self.config.get('default', each) != None:
                         configdata = self.config.get('default', each)
-                        if configdata != None:
-                            authdict.update({each:configdata})
+                        authdict.update({each:configdata})
                 except Exception:
                     pass
             return authdict

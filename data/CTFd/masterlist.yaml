@@ -5,6 +5,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     __qualname__: Challenge_05ceb7a0eecb50da84a41b83a64d1f67de35326f
     author: Pragati
     category: crypto
+    decay: 450
     description: The flag.zip contains the flag I am looking for but it is password
       protected. The password is the encrypted message which has to be correctly decrypted
       so I can useit to open the zip file. I tried using RSA but the zip doesn't open
@@ -30,9 +31,11 @@ crypto: !!python/object:ctfcli.core.category.Category
       cost: 50
     - This hint is free
     id: &id002 !!python/name:builtins.str ''
+    initial: 500
     installed: &id001 !!python/name:builtins.bool ''
     internalname: Challenge_05ceb7a0eecb50da84a41b83a64d1f67de35326f
     jsonpayload: {}
+    minimum: 100
     name: little RSA
     readme: null
     scorepayload: {}
@@ -50,14 +53,15 @@ crypto: !!python/object:ctfcli.core.category.Category
     - little RSA
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - crypto
     - RSA
     - easy
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_0ba78d383272dcfd5e058aaeef70c9b44e94b568: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_0ba78d383272dcfd5e058aaeef70c9b44e94b568
@@ -111,7 +115,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     tags:
     - Crypto
     - python
-    type: standard
+    typeof: standard
     value: 500
     version: '0.1'
   Challenge_46da01030dc3ca8ae28751409bb8a747414deb83: !!python/object:ctfcli.core.challenge.Challenge
@@ -167,7 +171,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - Crypto
     - python
     - easy
-    type: standard
+    typeof: standard
     value: 500
     version: beta1
   Challenge_4d6f3e295ffe446f1316f33752a71d259a1e3596: !!python/object:ctfcli.core.challenge.Challenge
@@ -175,6 +179,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     __qualname__: Challenge_4d6f3e295ffe446f1316f33752a71d259a1e3596
     author: ashikka
     category: crypto
+    decay: 450
     description: "Ben has encrypted a message with the same value of 'e' for 3 public\
       \ moduli -\nn1 = 86812553978993\nn2 = 81744303091421 \nn3 = 83695120256591 \n\
       and got the cipher texts - \nc1 = 8875674977048\nc2 = 70744354709710\nc3 = 29146719498409.\n\
@@ -196,9 +201,11 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     - handout.tar.gz
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_4d6f3e295ffe446f1316f33752a71d259a1e3596
     jsonpayload: {}
+    minimum: 100
     name: Quick Math
     readme: null
     scorepayload: {}
@@ -223,13 +230,15 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - python
     - easy
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_51a17e64a29c1a2d4cd588e2b5656fd72a225860: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_51a17e64a29c1a2d4cd588e2b5656fd72a225860
     __qualname__: Challenge_51a17e64a29c1a2d4cd588e2b5656fd72a225860
     author: AJ147
     category: crypto
+    decay: 450
     description: "\"We have intercepted the enemy's communications, but unfortunately,\
       \ some data was corrupted during transmission. Can you recover the message?\"\
       \nM4 \nUKW $\nGamma 2 4 \n$ 5 9 \n$ 14 3 \n$ 5 20 \nfv cd hu ik es op yl wq\
@@ -255,9 +264,11 @@ crypto: !!python/object:ctfcli.core.category.Category
       cost: 100
     - This hint is free
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_51a17e64a29c1a2d4cd588e2b5656fd72a225860
     jsonpayload: {}
+    minimum: 100
     name: Mein Kampf
     readme: null
     scorepayload: {}
@@ -281,13 +292,15 @@ crypto: !!python/object:ctfcli.core.category.Category
     tags:
     - crypto
     - beginner
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_6d8cbf62334579224346a82c7b158bf6de48ddd0: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_6d8cbf62334579224346a82c7b158bf6de48ddd0
     __qualname__: Challenge_6d8cbf62334579224346a82c7b158bf6de48ddd0
     author: ashikka and AJ1479
     category: crypto
+    decay: 450
     description: We are not lost, we're right here somewhere on this little blue line.
       Wait, why do I feel like I'm being watched?
     flags:
@@ -307,9 +320,11 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     - handout.tar.gz
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_6d8cbf62334579224346a82c7b158bf6de48ddd0
     jsonpayload: {}
+    minimum: 100
     name: The Climb
     readme: null
     scorepayload: {}
@@ -334,7 +349,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     - crypto
     - java
     - hill cipher
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_79dd344ccce61f61f586cd177bf477e3ef2af396: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_79dd344ccce61f61f586cd177bf477e3ef2af396
@@ -385,7 +401,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     tags:
     - Forensics
     - easy
-    type: standard
+    typeof: standard
     value: 500
     version: beta1
   Challenge_bb62be0a02ff7381c1838de0ebe400317edd90f0: !!python/object:ctfcli.core.challenge.Challenge
@@ -393,6 +409,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     __qualname__: Challenge_bb62be0a02ff7381c1838de0ebe400317edd90f0
     author: SrishtiGohain
     category: crypto
+    decay: 450
     description: '''I was surfing the crimson wave and oh my gosh I was totally bugging.
       I also tried out the lilac hair trend but it didn''t work out.
 
@@ -429,9 +446,11 @@ crypto: !!python/object:ctfcli.core.category.Category
       cost: 10
     - This hint is free
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_bb62be0a02ff7381c1838de0ebe400317edd90f0
     jsonpayload: {}
+    minimum: 100
     name: Modern Clueless Child
     readme: null
     scorepayload: {}
@@ -454,21 +473,25 @@ crypto: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - crypto
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_e274b92ce505414a892e55bc83d8b67d1838e39d: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_e274b92ce505414a892e55bc83d8b67d1838e39d
     __qualname__: Challenge_e274b92ce505414a892e55bc83d8b67d1838e39d
     author: matir
     category: crypto
+    decay: 100
     description: Check out the BSidesSF CTF program.  We got a chance to put a puzzle
       in there. If you're good with permutations, you'll get this once.
     flags: CTF{ONEFORANAGRAMS}
     handout: null
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_e274b92ce505414a892e55bc83d8b67d1838e39d
     jsonpayload: {}
+    minimum: 50
     name: anagrams
     notes: Word Jumble/Anagram challenge for program.
     readme: null
@@ -493,13 +516,15 @@ crypto: !!python/object:ctfcli.core.category.Category
     tags:
     - language
     - english
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_e5eccf5b64550d3542d082a9e6f8f698cc416c4e: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_e5eccf5b64550d3542d082a9e6f8f698cc416c4e
     __qualname__: Challenge_e5eccf5b64550d3542d082a9e6f8f698cc416c4e
     author: roerohan
     category: crypto
+    decay: 450
     description: These 3 guys encrypted my flag, but they didn't tell me how to decrypt
       it.
     flags:
@@ -519,9 +544,11 @@ crypto: !!python/object:ctfcli.core.category.Category
     - solution
     - handout.tar.gz
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_e5eccf5b64550d3542d082a9e6f8f698cc416c4e
     jsonpayload: {}
+    minimum: 100
     name: Rivest Shamir Adleman
     readme: null
     scorepayload: {}
@@ -545,7 +572,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     tags:
     - crypto
     - python
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_ed283b676f070e11b3b6bf14c3a35a8c0b8643dd: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_ed283b676f070e11b3b6bf14c3a35a8c0b8643dd
@@ -596,7 +624,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - Reversing
     - rust
     - easy
-    type: standard
+    typeof: standard
     value: 500
     version: '0.1'
   location: !!python/object/apply:pathlib.WindowsPath
@@ -618,6 +646,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     __qualname__: Challenge_39e5dfde4a4193a4f5189c2db4718aa07706ac94
     author: SrishtiGohain
     category: forensics
+    decay: 50
     description: I talk of wondrous things I see, You picture purely out of imagination,
       You wonder how your light is spent, Days seem bright but you don't know for
       sure. I stand in your place and close my eyes, What do I see? (Open your windows
@@ -630,9 +659,11 @@ forensics: !!python/object:ctfcli.core.category.Category
       cost: 100
     - open with a stego tool!
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_39e5dfde4a4193a4f5189c2db4718aa07706ac94
     jsonpayload: {}
+    minimum: 50
     name: In Your Eyes
     readme: null
     scorepayload: {}
@@ -650,30 +681,32 @@ forensics: !!python/object:ctfcli.core.category.Category
     - In Your Eyes
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - forensics
     - steganography
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_65c91fe4e3e72018680a835ed6fb2d1e57373db3: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_65c91fe4e3e72018680a835ed6fb2d1e57373db3
     __qualname__: Challenge_65c91fe4e3e72018680a835ed6fb2d1e57373db3
     author: ashikka
     category: forensics
+    decay: 50
     description: I wanted to send this file to AJ1479 but I did not want anyone else
       to see what's inside it, so I protected it with a pin.
-    files:
-    - forensics/Panda/panda.zip
     flags:
     - csictf{kung_fu_p4nd4}
     handout: null
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_65c91fe4e3e72018680a835ed6fb2d1e57373db3
     jsonpayload: {}
+    minimum: 50
     name: Panda
     readme: null
     scorepayload: {}
@@ -691,12 +724,13 @@ forensics: !!python/object:ctfcli.core.category.Category
     - Panda
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - forensics
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_7eac55a5fcd1bbbd8788ad0f870a664b4cde37c4: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_7eac55a5fcd1bbbd8788ad0f870a664b4cde37c4
@@ -745,7 +779,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - Forensics
-    type: static
+    typeof: static
     value: 500
     version: beta1
   Challenge_8f09dd41969d23d87b16ee8d68980debfcc49d79: !!python/object:ctfcli.core.challenge.Challenge
@@ -753,6 +787,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     __qualname__: Challenge_8f09dd41969d23d87b16ee8d68980debfcc49d79
     author: roerohan
     category: forensics
+    decay: 50
     description: John likes Arch Linux. What is he hiding?
     flags:
     - csictf{1_h0pe_y0u_don't_s33_m3_here}
@@ -771,9 +806,11 @@ forensics: !!python/object:ctfcli.core.category.Category
     - solution
     - handout.tar.gz
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_8f09dd41969d23d87b16ee8d68980debfcc49d79
     jsonpayload: {}
+    minimum: 50
     name: Archenemy
     readme: null
     scorepayload: {}
@@ -798,7 +835,8 @@ forensics: !!python/object:ctfcli.core.category.Category
     - forensics
     - steghide
     - john the ripper
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_917b7b3e99830ebd59a69cfa9cb9c411a6df59b5: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_917b7b3e99830ebd59a69cfa9cb9c411a6df59b5
@@ -851,7 +889,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     - go
     - multimedia
     - encoding
-    type: static
+    typeof: static
     value: 500
     version: beta1
   Challenge_974e92a1560885156df0a62bab36a58c8b12338d: !!python/object:ctfcli.core.challenge.Challenge
@@ -859,17 +897,18 @@ forensics: !!python/object:ctfcli.core.category.Category
     __qualname__: Challenge_974e92a1560885156df0a62bab36a58c8b12338d
     author: tangobeer
     category: forensics
+    decay: 50
     description: Gradient Skies is a beginner level forensics CTF challenge aimed
       towards rookies which can be solved which can be solved with basic steganography.
-    files:
-    - forensics/Gradient sky/sky.jpg
     flags:
     - csictf{j0ker_w4snt_happy}
     handout: null
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_974e92a1560885156df0a62bab36a58c8b12338d
     jsonpayload: {}
+    minimum: 50
     name: Gradient sky
     readme: null
     scorepayload: {}
@@ -887,7 +926,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     - Gradient sky
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
@@ -895,7 +934,8 @@ forensics: !!python/object:ctfcli.core.category.Category
     - steganography
     - easy
     - binwalk
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_a621ae711753c066fbfa2dd2d6cbcd8a4eb4f9fc: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_a621ae711753c066fbfa2dd2d6cbcd8a4eb4f9fc
@@ -947,7 +987,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     tags:
     - Mobile
     - Forensics
-    type: static
+    typeof: static
     value: 500
     version: beta1
   Challenge_b40981aab75932c5b2f555f50769d878e44913d7: !!python/object:ctfcli.core.challenge.Challenge
@@ -1001,7 +1041,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - Forensics
-    type: static
+    typeof: static
     value: 500
     version: '0.1'
   Challenge_f56b6ddb250e669168de7770b2a0c379c0eed565: !!python/object:ctfcli.core.challenge.Challenge
@@ -1009,6 +1049,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     __qualname__: Challenge_f56b6ddb250e669168de7770b2a0c379c0eed565
     author: 21StWarlock
     category: forensics
+    decay: 50
     description: With his dying breath, Prof. Ter Stegen hands us an image and a recording.
       He tells us that the image is least significant, but is a numerical key to the
       recording and the recording hides the answer. It may seem as though it's all
@@ -1031,9 +1072,11 @@ forensics: !!python/object:ctfcli.core.category.Category
     - solution
     - handout.tar.gz
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_f56b6ddb250e669168de7770b2a0c379c0eed565
     jsonpayload: {}
+    minimum: 50
     name: unseen
     readme: null
     scorepayload: {}
@@ -1051,12 +1094,13 @@ forensics: !!python/object:ctfcli.core.category.Category
     - unseen
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - forensics
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   location: !!python/object/apply:pathlib.WindowsPath
   - C:\
@@ -1131,7 +1175,7 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - Misc
-    type: static
+    typeof: static
     value: 500
     version: beta1
   Challenge_c8bafe35321f9496c8059578287f1d11a178442a: !!python/object:ctfcli.core.challenge.Challenge
@@ -1139,14 +1183,13 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     __qualname__: Challenge_c8bafe35321f9496c8059578287f1d11a178442a
     author: harsoh
     category: miscellaneous
+    decay: 50
     description: 'We ran a code on a machine a few years ago. It is still running
       however we forgot what it was meant for. It completed n=523693181734689806809285195318
       iterations of the loop and broke down. We want the answer but cannot wait a
       few more years. Find the answer after n iterations to get the flag.
 
       The flag would be of the format csictf{answer_you_get_from_above}.'
-    files:
-    - miscellaneous/Machine Fix/code.py
     flags:
     - csictf{785539772602034710213927792950}
     handout: !!python/object/apply:pathlib.WindowsPath
@@ -1164,9 +1207,11 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     - solution
     - handout.tar.gz
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_c8bafe35321f9496c8059578287f1d11a178442a
     jsonpayload: {}
+    minimum: 50
     name: Machine Fix
     readme: null
     scorepayload: {}
@@ -1184,13 +1229,14 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     - Machine Fix
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - miscellaneous
     - algo
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   location: !!python/object/apply:pathlib.WindowsPath
   - C:\
@@ -1211,18 +1257,18 @@ osint: !!python/object:ctfcli.core.category.Category
     __qualname__: Challenge_5f1ff41d3ac45893b8f2c3e02781a04ac7ecbc3e
     author: :"Parth"
     category: osint
+    decay: 50
     description: There are 3 parts to this challenge. Who took it? What was "taken"?
       Note The format of the flag is csictf{answer1_answer2}
-    files:
-    - osint/Stalin for time/Stalinfortimewebpage.html
-    - osint/Stalin for time/dwayneanddavid.jpg
     flags:
     - csictf{yevgeny_khaldei_adrianov_compass}
     handout: null
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_5f1ff41d3ac45893b8f2c3e02781a04ac7ecbc3e
     jsonpayload: {}
+    minimum: 50
     name: Stalin for time
     readme: null
     scorepayload: {}
@@ -1240,32 +1286,34 @@ osint: !!python/object:ctfcli.core.category.Category
     - Stalin for time
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - osint
     - research
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_830f4a661a8d810714822bd421d394fae3fd22ad: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_830f4a661a8d810714822bd421d394fae3fd22ad
     __qualname__: Challenge_830f4a661a8d810714822bd421d394fae3fd22ad
     author: roerohan
     category: osint
+    decay: 50
     description: 'The original photographer of this picture commented the flag on
       his post. Find the flag.
 
       '
-    files:
-    - osint/Pirates of the Memorial/storm.jpeg
     flags:
     - csictf{pl4g14r1sm_1s_b4d}
     handout: null
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_830f4a661a8d810714822bd421d394fae3fd22ad
     jsonpayload: {}
+    minimum: 50
     name: Pirates of the Memorial
     readme: null
     scorepayload: {}
@@ -1283,18 +1331,20 @@ osint: !!python/object:ctfcli.core.category.Category
     - Pirates of the Memorial
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - osint
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_9920e0af24a0ad7e74e5c8dc0904570a1efa8a2d: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_9920e0af24a0ad7e74e5c8dc0904570a1efa8a2d
     __qualname__: Challenge_9920e0af24a0ad7e74e5c8dc0904570a1efa8a2d
     author: Parth
     category: osint
+    decay: 50
     description: 'I love this watch. It''s been with me all over the world, from Istanbul
       to Shanghai to Macau.I wear it with suits quite a lot. My boss liked it too.
       I remember wearing it when she died. What is her successor''s name?
@@ -1304,9 +1354,11 @@ osint: !!python/object:ctfcli.core.category.Category
     - csictf{gareth_mallory}
     handout: null
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_9920e0af24a0ad7e74e5c8dc0904570a1efa8a2d
     jsonpayload: {}
+    minimum: 50
     name: Shaken
     readme: null
     scorepayload: {}
@@ -1324,32 +1376,34 @@ osint: !!python/object:ctfcli.core.category.Category
     - Shaken
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - osint
     - research
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_a0226107cf34892abc1923f61669744b70e42b9b: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_a0226107cf34892abc1923f61669744b70e42b9b
     __qualname__: Challenge_a0226107cf34892abc1923f61669744b70e42b9b
     author: :"Parth"
     category: osint
+    decay: 50
     description: 'A reporter wanted to know where this flight is headed. Where does
       he (the reporter) live?
 
       '
-    files:
-    - osint/Flying Places/Flight.jpg
     flags:
     - csictf{san_francisco}
     handout: null
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_a0226107cf34892abc1923f61669744b70e42b9b
     jsonpayload: {}
+    minimum: 50
     name: Flying Places
     readme: null
     scorepayload: {}
@@ -1367,19 +1421,21 @@ osint: !!python/object:ctfcli.core.category.Category
     - Flying Places
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - osint
     - research
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_b23d762f584943f69a2c9d16c607bff60de5cfa5: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_b23d762f584943f69a2c9d16c607bff60de5cfa5
     __qualname__: Challenge_b23d762f584943f69a2c9d16c607bff60de5cfa5
     author: SrishtiGohain
     category: osint
+    decay: 50
     description: '''Malcolm X took Broiestevane to a Day of the Dead themed party
       but she never returned. Her only friends, Mr Bean and the Pink Panther realised
       that she was missing when she didn''t show up for an exam. Broiestevane liked
@@ -1393,43 +1449,50 @@ osint: !!python/object:ctfcli.core.category.Category
     - csictf{liberty_hotel_boston}
     handout: null
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_b23d762f584943f69a2c9d16c607bff60de5cfa5
     jsonpayload: {}
+    minimum: 50
     name: Lo Scampo
     readme: null
     scorepayload: {}
     solution: null
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - osint
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_e3577c1de70ca1810e29e402be362e8b127fc018: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_e3577c1de70ca1810e29e402be362e8b127fc018
     __qualname__: Challenge_e3577c1de70ca1810e29e402be362e8b127fc018
     author: ashikka
     category: osint
+    decay: 50
     description: hoshimaseok is up to no good. Track him down.
     flags:
     - csictf{sc4r3d_0f_c0mm1tm3nt}
     handout: null
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_e3577c1de70ca1810e29e402be362e8b127fc018
     jsonpayload: {}
+    minimum: 50
     name: Commitment
     readme: null
     scorepayload: {}
     solution: null
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - osint
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   location: !!python/object/apply:pathlib.WindowsPath
   - C:\
@@ -1484,7 +1547,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     tags:
     - Reversing
     - Windows
-    type: static
+    typeof: static
     value: 500
     version: beta1
   Challenge_12d5fd8e64f6f3cb6ceb3443822773153a164058: !!python/object:ctfcli.core.challenge.Challenge
@@ -1538,7 +1601,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     - Reversing
     - Android
     - apk
-    type: static
+    typeof: static
     value: 500
     version: beta1
   Challenge_23cda283bb1a5b9924f1f00dc97cf04d69591279: !!python/object:ctfcli.core.challenge.Challenge
@@ -1589,7 +1652,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     tags:
     - Mobile
     - Reversing
-    type: static
+    typeof: static
     value: 500
     version: beta1
   Challenge_79109b1a7ca6898317905e1e467675e2ab600317: !!python/object:ctfcli.core.challenge.Challenge
@@ -1597,10 +1660,8 @@ reversing: !!python/object:ctfcli.core.category.Category
     __qualname__: Challenge_79109b1a7ca6898317905e1e467675e2ab600317
     author: AJ1479
     category: reversing
+    decay: 50
     description: I like my eggs sunny side up, but I ended up scrambling them.
-    files:
-    - reversing/Scrambled Eggs/scrambledeggs.py
-    - reversing/Scrambled Eggs/scrambledeggs.txt
     flags:
     - csictf{all_the_kings_horses}
     handout: !!python/object/apply:pathlib.WindowsPath
@@ -1618,9 +1679,11 @@ reversing: !!python/object:ctfcli.core.category.Category
     - solution
     - handout.tar.gz
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_79109b1a7ca6898317905e1e467675e2ab600317
     jsonpayload: {}
+    minimum: 50
     name: Scrambled Eggs
     readme: null
     scorepayload: {}
@@ -1638,24 +1701,22 @@ reversing: !!python/object:ctfcli.core.category.Category
     - Scrambled Eggs
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - crypto
     - reversing
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_8007f382a1fb591cbfebcdbd1dd1e0b5a275bdf0: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_8007f382a1fb591cbfebcdbd1dd1e0b5a275bdf0
     __qualname__: Challenge_8007f382a1fb591cbfebcdbd1dd1e0b5a275bdf0
     author: 21StWarlock#1598
     category: reversing
+    decay: 50
     description: I learnt Python in school but I have no clue what this is!
-    files:
-    - reversing/pydis2ctf/encodedflag.txt
-    - reversing/pydis2ctf/C1cipher.txt
-    - reversing/pydis2ctf/C2cipher.txt
     flags:
     - csictf{T#a+_wA5_g0oD_d155aSe^^bLy}
     handout: !!python/object/apply:pathlib.WindowsPath
@@ -1673,9 +1734,11 @@ reversing: !!python/object:ctfcli.core.category.Category
     - solution
     - handout.tar.gz
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_8007f382a1fb591cbfebcdbd1dd1e0b5a275bdf0
     jsonpayload: {}
+    minimum: 50
     name: pydis2ctf
     readme: null
     scorepayload: {}
@@ -1693,19 +1756,21 @@ reversing: !!python/object:ctfcli.core.category.Category
     - pydis2ctf
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - reversing
     - ciphers
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_a5361b6880fa0f85b8c90c492fa17e9a70a2da26: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_a5361b6880fa0f85b8c90c492fa17e9a70a2da26
     __qualname__: Challenge_a5361b6880fa0f85b8c90c492fa17e9a70a2da26
     author: roerohan
     category: reversing
+    decay: 50
     description: I encrypted my flag so that nobody can see it, but now I realize
       I don't know how to decrypt it. Can you help me?
     flags:
@@ -1725,9 +1790,11 @@ reversing: !!python/object:ctfcli.core.category.Category
     - solution
     - handout.tar.gz
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_a5361b6880fa0f85b8c90c492fa17e9a70a2da26
     jsonpayload: {}
+    minimum: 50
     name: Esrever
     readme: null
     scorepayload: {}
@@ -1745,13 +1812,14 @@ reversing: !!python/object:ctfcli.core.category.Category
     - Esrever
     - handout
     - solution.tar.gz
-    state: hidden
+    state: visible
     synched: *id001
     tag: '!Challenge:'
     tags:
     - crypto
     - reversing
-    type: dynamic
+    typeof: dynamic
+    value: 500
     version: '0.1'
   Challenge_d1307442a65e870b8acab6eabbb4b081426f3ad9: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_d1307442a65e870b8acab6eabbb4b081426f3ad9
@@ -1803,7 +1871,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     - Reversing
     - '101'
     - easy
-    type: static
+    typeof: static
     value: 500
     version: beta1
   Challenge_ddc371e9712424687af7e5d925950a8593850515: !!python/object:ctfcli.core.challenge.Challenge
@@ -1854,7 +1922,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     tags:
     - Mobile
     - Reversing
-    type: static
+    typeof: static
     value: 500
     version: beta1
   location: !!python/object/apply:pathlib.WindowsPath
