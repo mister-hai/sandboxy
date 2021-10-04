@@ -7,6 +7,9 @@ from ctfcli.utils.utils import debugblue,debuggreen,debugred,debugyellow
 
 class Linter():
     """
+
+    I wasnt thinking the best when I wrote this so its pretty procedural 
+    
     Class to lint challenge.yaml files to decrease size of Challenge class
     codebase
 
@@ -35,11 +38,23 @@ class Linter():
         #   will be attached to the challenge
         # - A solution/ folder with a working solution to the challenge (or a README.md
         #   file documenting the solution)
-        self.challengedictoutput = {}
-        self.extratags = [
-                    'replicas',
-                    'environ',
-                    ]
+        self.name:dict = None
+        self.category:dict = None
+        self.description:dict = None
+        self.scorepayload:dict = None
+        self.flags:dict = None
+        self.topics:dict = None
+        self.tags:dict = None
+        self.files:dict = None
+        self.hints:dict = None
+        self.requirements:dict = None
+        self.attempts:dict = None
+        self.extratags:dict = None
+        self.notes:dict = None
+        self.author:dict = None
+        wat = ['replicas',
+               'environ',
+               ]
         self.deploymentfields = [
                             'port', 'protocol', 'use_http_loadbalancer',
                             "image","host","connection_info" 
@@ -52,11 +67,6 @@ class Linter():
                             "host":[str],
                             "connection_info":[str]
                         }
-        self.requiredfields = [
-            "name", "category", "description", 
-            'value', "version",
-            #"state"
-            ]
         self.flagstags = ['flag','flags']
         self.reqfieldstypes = {
                 "name": [str], 
@@ -68,6 +78,12 @@ class Linter():
                 'flags':[str,list,dict],
                 "state":[str]
                 }
+
+        self.requiredfields = [
+            "name", "category", "description", 
+            'value', "version",
+            #"state"
+            ]
         self.optionalfields = ["topics","hints","attempts","requirements",'notes', 'tags','scoreboard_name','author','files']
         #Required sections get the "pop()" function 
         # a KeyError will be raised if the key does not exist
@@ -82,9 +98,15 @@ class Linter():
         """
         try:
             debuggreen("[DEBUG] linting challenge yaml file")
+
             #process required fields
             requirementsdict = self.extractrequired(dictfromyaml)
-            self.processrequired(requirementsdict)
+            #did a shitty hack in the scope above to push the category into the dict
+            # this value needs to be assigned by the yaml eventually
+            self._processcategory(requirementsdict)
+            # some challenges have no state assigned
+            self._processstate(requirementsdict)
+            self._processrequired(requirementsdict)
 
             #process optional fields
             optionaldict = self.extractoptional(dictfromyaml)
@@ -137,9 +159,9 @@ class Linter():
             # need to be preprocessed
             # they might put more than one?
             # this is for the function that returns data
-            #reqdict.update(self.processflags(dictfromyaml))
+            #reqdict.update(self._processflags(dictfromyaml))
             # this assigns to self as dict for unpacking into payload
-            self.processflags(dictfromyaml)
+            self._processflags(dictfromyaml)
             for each in self.requiredfields:
                 reqdict.update({each: dictfromyaml.pop(each)})
             return reqdict
@@ -163,7 +185,7 @@ class Linter():
         except Exception:
             errorlogger("[-] ERROR: Failed to validate Required Fields \n")
 
-    def processvalue(self,requirementsdict:dict):
+    def _processvalue(self,requirementsdict:dict):
         """
         
         """ 
@@ -178,30 +200,36 @@ class Linter():
         except Exception:
             errorlogger("[-] ERROR: Failed to validate Required Fields \n")
 
-    def processscore(self,requirementsdict:dict):
+    def _processscore(self,requirementsdict:dict):
         """
         
         """
         try:
             debuggreen("[DEBUG] processing score fields in linter")
+            self._processvalue(requirementsdict)
             challengetype = requirementsdict.pop('type')
             # dynamic challenges
             if challengetype == 'dynamic':
                 # have the extra field
-                self.extra = requirementsdict.pop("extra")
-                self.scorepayload = {
-                    **self.value,
-                    'initial': self.extra['initial'],
-                    'decay'  : self.extra['decay'],
-                    'minimum': self.extra['minimum']
-                    }
+                self.extra:dict = requirementsdict.pop("extra")
+                for each in self.extra:
+                    if (type(each) != int):
+                        redprint(f"[-] ERROR: {each} field should be an integer, skipping challenge \n")
+                        raise ValueError
+                    else:
+                        self.scorepayload = {
+                            **self.value,
+                            'initial': self.extra['initial'],
+                            'decay'  : self.extra['decay'],
+                            'minimum': self.extra['minimum']
+                            }
             # static challenges only have the "value" field
             elif (challengetype == 'static') or (challengetype == 'standard'):
-                self.scorepayload = {'value' : self.value} 
+                self.scorepayload = self.value #{'value' : self.value} 
         except Exception:
             errorlogger("[-] ERROR: Score data does not match specification, skipping challenge! \n")
 
-    def processstate(self, dictfromyaml:dict):
+    def _processstate(self, dictfromyaml:dict):
         """
         Process state tag from challenge yaml file
         """
@@ -209,14 +237,21 @@ class Linter():
         # check state field
         # we should set state to visible unless self.toggle is set to false
         # then we use the value in the yaml file
-        state = dictfromyaml.get("state")
-        if state != None:
+        if dictfromyaml.get("state") != None:
+            state = dictfromyaml.pop("state")
+        #if state != None:
+            # they want to toggle all challenges to visible
             if state == 'hidden' and self.toggle == True:
                 self.state = 'visible'
+            # no toggle, just assignment
             else:
                 self.state = {"state":state}
+        # there was no "state" field in the yaml
+        # presume its gor hidden prereqs?
+        else:
+            self.state = {"state": 'hidden'}
 
-    def processname(self,requirementsdict:dict):
+    def _processname(self,requirementsdict:dict):
         """
         
         """
@@ -224,7 +259,7 @@ class Linter():
         tagdata = requirementsdict.pop("name")
         self.name = {"name":tagdata}
 
-    def processdescription(self,requirementsdict):
+    def _processdescription(self,requirementsdict):
         """
         
         """
@@ -232,7 +267,7 @@ class Linter():
         tagdata = requirementsdict.pop("description")
         self.description = {"description":tagdata}
 
-    def processversion(self,requirementsdict):
+    def _processversion(self,requirementsdict):
         """
         
         """
@@ -240,7 +275,7 @@ class Linter():
         tagdata = requirementsdict.pop("version")
         self.version = {"version":tagdata}
 
-    def processcategory(self, requirementsdict:dict):
+    def _processcategory(self, requirementsdict:dict):
         """
         
         """
@@ -249,21 +284,21 @@ class Linter():
         tagdata = requirementsdict.pop("category")
         self.category = {"category": tagdata}
 
-    def processflags(self,requirementsdict:dict):
+    def _processflags(self,requirementsdict:dict):
         """
         
         """
         try:
             debuggreen("[DEBUG] processing flags in linter")
             if requirementsdict.get("flags") != None:
-                tagdata = requirementsdict.get("flags")
+                tagdata = requirementsdict.pop("flags")
             elif requirementsdict.get("flag") != None:
-                tagdata = requirementsdict.get("flag")
+                tagdata = requirementsdict.pop("flag")
             self.flags = {"flags": tagdata }
         except Exception:
             errorlogger("[-] ERROR: flags do not conform to spec")
 
-    #def processflags(self, dictfromyaml:dict):
+    #def _processflags(self, dictfromyaml:dict):
     #    """
     #    POPs all the required, thorws an exception if they arent present
     #    """
@@ -277,39 +312,39 @@ class Linter():
     #    except Exception:
     #        errorlogger("[-] ERROR: flags do not conform to spec")
     
-    def processtopics(self, optionaldict:dict):
+    def _processtopics(self, optionaldict:dict):
         """
         
         """
         debuggreen("[DEBUG] processing topics in linter")
-        tagdata = optionaldict.get("topics")
+        tagdata = optionaldict.pop("topics")
         self.topics = {"topics": tagdata }
 
-    def processtags(self, optionaldict:dict):
+    def _processtags(self, optionaldict:dict):
         """
         
         """
         debuggreen("[DEBUG] processing tags in linter")
-        tagdata = optionaldict.get("tags")
+        tagdata = optionaldict.pop("tags")
         self.tags = {"tags":tagdata}
 
-    def processfiles(self, optionaldict:dict):
+    def _processfiles(self, optionaldict:dict):
         """
         
         """
         debuggreen("[DEBUG] processing files in linter")
-        tagdata = optionaldict.get("files")
+        tagdata = optionaldict.pop("files")
         self.files = {"files":tagdata}
 
-    def processhints(self, optionaldict:dict):
+    def _processhints(self, optionaldict:dict):
         """
         
         """
         debuggreen("[DEBUG] processing hints in linter")
-        tagdata = optionaldict.get("hints")
+        tagdata = optionaldict.pop("hints")
         self.hints = {"hints":tagdata}
 
-    def processrequirements(self,optionaldict:dict):
+    def _processrequirements(self,optionaldict:dict):
         """
         
         """
@@ -317,7 +352,7 @@ class Linter():
         tagdata = optionaldict.pop("requirements")
         self.requirements = {"requirements":tagdata}
 
-    def processauthor(self,optionaldict):
+    def _processauthor(self,optionaldict):
         """
         
         """
@@ -325,7 +360,7 @@ class Linter():
         tagdata = optionaldict.pop("author")
         self.author = {"author":tagdata}
 
-    def processnotes(self,optionaldict:dict):
+    def _processnotes(self,optionaldict:dict):
         """
         
         """
@@ -333,7 +368,7 @@ class Linter():
         tagdata = optionaldict.pop("notes")
         self.notes = {"notes":tagdata}
 
-    def processattempts(self,optionaldict:dict):
+    def _processattempts(self,optionaldict:dict):
         """
         
         """
@@ -344,11 +379,11 @@ class Linter():
                 redprint("[-] Attempts field should be an integer, skipping challenge \n")
                 raise ValueError
             else:
-                self.attempts == {"attempts": optionaldict.pop('attempts')}
+                self.attempts == {"max_attempts": optionaldict.pop('attempts')}
         except Exception:
             errorlogger("[-] ERROR! Skipping challenge \n ")
 
-    def processrequired(self,requirementsdict:dict):
+    def _processrequired(self,requirementsdict:dict):
         """
         process required challenge fields from challenge.yaml
         as loaded by pyyaml
@@ -373,17 +408,18 @@ class Linter():
                     debuggreen(f"[DEBUG] processing tag  {tag} : {tagdata} ")
                     if tag =='type' and tagdata in ["static","standard","dynamic"]:
                         #self.jsonpayload['type'] = tagdata
-                        self.processscore(requirementsdict)
+                    #elif tag =='value':
+                        #self._processvalue(requirementsdict)
+                        self._processscore(requirementsdict)
                     elif tag =='name':
-                        self.processname(requirementsdict)
+                        self._processname(requirementsdict)
                     elif tag =='flags' or tag == "flags":
-                        self.processflags(requirementsdict)
+                        self._processflags(requirementsdict)
                     elif tag =='description':
-                        self.processdescription(requirementsdict)
-                    elif tag =='value':
-                        self.processvalue(requirementsdict)
+                        self._processdescription(requirementsdict)
+
                     elif tag =='version':
-                        self.processversion(requirementsdict)                    
+                        self._processversion(requirementsdict)                    
                     else:
                         pass                        
                     #    self.jsonpayload[tag] = requirementsdict.pop(tag)
@@ -393,51 +429,77 @@ class Linter():
     
     def lintoptional(self,optionaldict:dict):
         try:
-            for tag in optionaldict:
-                if tag == 'state':
-                    self.processstate(optionaldict)
-                if tag == 'author':
-                    self.processauthor(optionaldict)
-                elif tag == "attempts":
-                    self.processattempts(optionaldict)
-                elif tag =="topics":
-                    self.processtopics(optionaldict)
-                elif tag =="tags":
-                    self.processtags(optionaldict)
-                elif tag =="files":
-                    self.processfiles(optionaldict)
-                elif tag =="hints":
-                    self.processhints(optionaldict)
-                elif tag =="requirements":
-                    self.processrequirements(optionaldict)
-                elif tag =="notes":
-                    self.processnotes(optionaldict)
+            for tag in optionaldict.copy():
+                length = len(optionaldict)
+                debuggreen(f"[DEBUG] requirementsdict length {length} ")
+                if (length == 0):
+                    break
+                    #continue
+                elif (length > 0):
+                    tagdata = optionaldict.get(tag)
+                    debuggreen(f"[DEBUG] processing tag  {tag} : {tagdata} ")
+                    #if tag == 'state':
+                        #self._processstate(optionaldict)
+                    if tag == 'author':
+                        self._processauthor(optionaldict)
+                    elif tag == "attempts":
+                        self._processattempts(optionaldict)
+                    elif tag =="topics":
+                        self._processtopics(optionaldict)
+                    elif tag =="tags":
+                        self._processtags(optionaldict)
+                    elif tag =="files":
+                        self._processfiles(optionaldict)
+                    elif tag =="hints":
+                        self._processhints(optionaldict)
+                    elif tag =="requirements":
+                        self._processrequirements(optionaldict)
+                    elif tag =="notes":
+                        self._processnotes(optionaldict)
                 
-                else:
-                    pass
+                    else:
+                        pass
         except Exception:
             errorlogger(f"[-] ERROR: tag data not valid: {tag}")
     
     def setpayload(self):
         # set base challenge payload
-        self.jsonpayload.update({
-                "name":            self.name,
-                **self.category,
-                "description":     self.description,
-                #"type":            self.typeof,
-                **self.scorepayload,
-                #"value":           self.value,
-                #"state":           self.state,
-                # the rest of the challenge information
-                **self.flags,
-                **self.topics,
-                **self.tags,
-                **self.files,
-                **self.hints,
-                **self.requirements
-            })
-        if self.attempts:
-            self.jsonpayload["max_attempts"] = self.attempts
-        if self.connection_info and self.connection_info:
-            self.jsonpayload['connection_info'] = self.connection_info
+        templatelist = [self.name,
+                        self.category,
+                        self.description,
+                        self.scorepayload,
+                        self.flags ,
+                        self.topics,
+                        self.tags,
+                        self.files,
+                        self.hints,
+                        self.requirements,
+                        self.attempts,
+                        self.notes,
+                        self.author,
+                        self.version,
+                        self.state,
+                        ]
+        print(templatelist)
+        for yamltag in templatelist:
+            if yamltag != None:
+                self.jsonpayload.update(yamltag)
+        #self.jsonpayload.update({
+        #        **self.name,
+        #        **self.category,
+        #        **self.description,
+        #        #"type":            self.typeof,
+        #        **self.scorepayload,
+        #        #"value":           self.value,
+        #        #"state":           self.state,
+        #        # the rest of the challenge information
+        #        **self.flags ,
+        #        **self.topics,
+        #        **self.tags,
+        #        **self.files,
+        #        **self.hints,
+        #        **self.requirements
+        #    })
+        #if self.connection_info and self.connection_info:
+        #    self.jsonpayload['connection_info'] = self.connection_info
 
