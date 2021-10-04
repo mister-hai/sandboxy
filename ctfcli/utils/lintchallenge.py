@@ -81,7 +81,7 @@ class Linter():
 
         self.requiredfields = [
             "name", "category", "description", 
-            'value', "version",
+            'value', "version", "type",
             #"state"
             ]
         self.optionalfields = ["topics","hints","attempts","requirements",'notes', 'tags','scoreboard_name','author','files']
