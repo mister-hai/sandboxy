@@ -1,0 +1,64 @@
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="ctf_name"
+
+testname
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="ctf_description"
+
+testdescription
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="user_mode"
+
+users
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="name"
+
+moop
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="email"
+
+testemail@wat.net
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="password"
+
+password
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="ctf_logo"; filename=""
+Content-Type: application/octet-stream
+
+
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="ctf_banner"; filename=""
+Content-Type: application/octet-stream
+
+
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="ctf_small_icon"; filename=""
+Content-Type: application/octet-stream
+
+
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="ctf_theme"
+
+core
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="theme_color"
+
+
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="start"
+
+
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="start"
+
+
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="_submit"
+
+Finish
+------WebKitFormBoundary4AuGUbLdScc1c6it
+Content-Disposition: form-data; name="nonce"
+
+d5bb1b88793723bcdc87cdf3eeb1b92442bdcd109241a24b77d75a2536175805
+------WebKitFormBoundary4AuGUbLdScc1c6it--

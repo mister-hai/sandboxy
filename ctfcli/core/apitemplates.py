@@ -1,4 +1,23 @@
 #wat
+def comparetotemplate(template:dict, comparedict:dict):
+    """
+    Compares a dict with a template, only basic checks for now
+    Args:
+        template    (dict): template from function to compare against
+        comparedict (dict): dict of information to campare
+    """
+    if len(comparedict) == len(template):
+        for each in template.copy():
+            valuetocompare = comparedict.get(each)
+            valuetype = type(valuetocompare)
+            templatetype = type(template.get(each))
+            if valuetype == templatetype:
+                continue
+            else:
+                return False
+        return True
+    else:
+        return False
 
 def authtemplate():
     return {
@@ -81,10 +100,10 @@ def flagstemplate():
     POST
     """
     return {
-        "content":str,
+        "content":str(),
         #"data":str,
-        "type":str, #"static",
-        "challenge":str#int
+        "type":str(), #"static",
+        "challenge":int()
     }
 def requirementstemplate():
     """

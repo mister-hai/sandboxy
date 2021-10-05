@@ -92,56 +92,6 @@ class Challenge():#Yaml):
         self.__qualname__ = self.internalname
         yellowboldprint(f'[+] Internal name: {self.internalname}')
 
-
-    
-    def _setpayload(self):
-        """
-        Set the json_payload variable for interacting with the CTFd API
-        This is the /challenge endpoint template
-        """
-        self.basepayload = {}
-        self.secondarypayload = {}
-        # set base challenge information
-        debuggreen("[DEBUG] setting challenge information challenge class before API call")
-        baselist = ["name","category","description","typeof","state"]
-        for each in baselist:
-            try:
-                basevalue = getattr(self,each)
-                self.basepayload.update({each:basevalue})
-            except:
-                pass
-        #######################################################
-        # shitty hack to undo the name change from            #
-        # "type" to "typeof" for avoiding any bullshit        #
-        # with python                                         #
-        typeofchallengescore = self.basepayload.pop("typeof") #
-        self.basepayload.update({"type":typeofchallengescore})#
-        #######################################################
-        # set score payload in base challenge information
-        debugblue(f"[DEBUG] {self.basepayload}")
-        if self.typeof == 'dynamic':
-            self.scorepayload = {
-                                'value'  : self.value,
-                                'initial': self.initial,
-                                'decay'  : self.decay,
-                                'minimum': self.minimum
-                                }
-        elif (self.typeof == 'standard') or (self.typeof == 'static'):
-            self.scorepayload = {'value' : self.value}
-           #pass
-        debuggreen("[DEBUG] Appending score payload to base payload")
-        self.basepayload.update(self.scorepayload)# = {
-        debugblue(f"[DEBUG] {self.basepayload}")
-        # set secondary payload in base challenge information
-        # the rest of the challenge information
-        secondarypayload = ["connection_info","flags",'flag',"topics","tags","hints","requirements","max_attempts"]
-        for each in secondarypayload:
-            try:
-                secondaryvalue = getattr(self,each)
-                self.secondarypayload.update({each:secondaryvalue})
-            except:
-                pass
-
     def sync(self, apihandler:APIHandler):
         '''
         Adds a challenge to CTFd server
@@ -163,6 +113,55 @@ class Challenge():#Yaml):
         except Exception:
             errorlogger(f"[-] Error syncing challenge:")
 
+    
+    def _setpayload(self):
+        """
+        Set the json_payload variable for interacting with the CTFd API
+        This is the /challenge endpoint template
+        """
+        self.basepayload = {}
+        self.secondarypayload = {}
+        # set base challenge information
+        debuggreen("[DEBUG] setting challenge information challenge class before API call")
+        baselist = ["name","category","description","typeof","state"]
+        for each in baselist:
+            try:
+                basevalue = getattr(self,each)
+                self.basepayload.update({each:basevalue})
+            except:
+                pass
+        #######################################################
+        # shitty hack to undo the name change from            #
+        # "type" to "typeof" for avoiding any bullshit        #
+        # with memorybrains                                        #
+        typeofchallengescore = self.basepayload.pop("typeof") #
+        self.basepayload.update({"type":typeofchallengescore})#
+        #######################################################
+        # set score payload in base challenge information
+        debugblue(f"[DEBUG] {self.basepayload}")
+        if self.typeof == 'dynamic':
+            self.scorepayload = {
+                                'value'  : self.value,
+                                'initial': self.initial,
+                                'decay'  : self.decay,
+                                'minimum': self.minimum
+                                }
+        elif (self.typeof == 'standard') or (self.typeof == 'static'):
+            self.scorepayload = {'value' : self.value}
+           #pass
+        debuggreen("[DEBUG] Appending score payload to base payload")
+        self.basepayload.update(self.scorepayload)# = {
+        debugblue(f"[DEBUG] {self.basepayload}")
+        # set secondary payload in base challenge information
+        # the rest of the challenge information
+        secondarypayload = ["connection_info","flags","topics","tags","hints","requirements","max_attempts"]
+        for each in secondarypayload:
+            try:
+                secondaryvalue = getattr(self,each)
+                self.secondarypayload.update({each:secondaryvalue})
+            except:
+                pass
+
     def _processchallenge(self,apihandler:APIHandler):#,jsonpayload:dict):
         """
         Handles uploading the rest of the challenge information
@@ -171,7 +170,7 @@ class Challenge():#Yaml):
         
         """
         try:
-            for each in ['flags','flag','topics','tags','hints','requirements']:#'files',
+            for each in ['flags','topics','tags','hints','requirements']:#'files',
                 # hints
                 if self.secondarypayload.get(each) != None:
                     apihandler._process(each,self.id,self.secondarypayload)

@@ -75,8 +75,8 @@ class Linter():
                 "description":[str],
                 'value':[int], 
                 "version":[str,int],
-                'flag':[str,list,dict],
-                'flags':[str,list,dict],
+                'flag':[str,list],
+                'flags':[str,list],
                 "state":[str]
                 }
 
@@ -343,30 +343,46 @@ class Linter():
         """
         
         """
+        self.flagstemplate = {
+                "content":str,
+                #"data":str,
+                "type":str, #"static",
+                "challenge":str#int
+            }
+        flagsdict = {}
         try:
             debuggreen("[DEBUG] processing flags in linter")
-            if requirementsdict.get("flags") != None:
-                tagdata = requirementsdict.pop("flags")
-            elif requirementsdict.get("flag") != None:
-                tagdata = requirementsdict.pop("flag")
-            self.flags = {"flags": tagdata }
+            try:
+                flagsdata = requirementsdict.pop("flags")
+            except:
+                try:
+                    flagsdata = requirementsdict.pop("flag")
+                except:
+                    errorlogger("[-] ERROR: Flags missing from challenge, rejecting")
+            #single flag, inline with tag
+            if (type(flagsdata) == str):
+                self.flagstemplate["content"] = flagsdata
+                self.flagstemplate["type"] = "static"
+                flagsdict.update(self.flagstemplate)
+            #multiple flags, on thier own lines
+            elif type(flagsdata) == list:
+                for flag in flagsdata:
+                    # special flags
+                    if type(flag) == dict:
+                        flagsdict.update(flag)
+                    #string flag on its own line
+                    elif (type(flag) == str):
+                        self.flagstemplate["content"] = flagsdata[0]
+                        self.flagstemplate["type"] = "static"
+                        flagsdict.update(self.flagstemplate)
+            # multiple flags
+            elif type(flagsdata) == dict:
+                flagsdict.update(flagsdict)        
+        # finally, assign everything to dict, it should all be a dict of dicts now
+            self.flags = {"flags": flagsdict }
         except Exception:
             errorlogger("[-] ERROR: flags do not conform to spec")
 
-    #def _processflags(self, dictfromyaml:dict):
-    #    """
-    #    POPs all the required, thorws an exception if they arent present
-    #    """
-    #    try:
-    #        reqdict = {}
-    #        if dictfromyaml.copy().get('flag'):
-    #            reqdict.update({'flag': dictfromyaml.pop('flag')})
-    #        if dictfromyaml.copy().get('flags'):
-    #            reqdict.update({'flags': dictfromyaml.pop('flags')})
-    #        return reqdict
-    #    except Exception:
-    #        errorlogger("[-] ERROR: flags do not conform to spec")
-    
     def _processtopics(self, optionaldict:dict):
         """
         
@@ -550,3 +566,32 @@ class Linter():
             if yamltag != None:
                 self.jsonpayload.update(yamltag)
 
+    def lintdockerstuff(self,dictofstuff:dict=None,pathtothing:Path=None):
+        """
+        Lints dockerfile and deplyment items
+        """
+        # Check that the image field and Dockerfile match
+        if (Path(pathtothing).parent / "Dockerfile").is_file() and dictofstuff.get("image") != ".":
+            print("Dockerfile exists but image field does not point to it")
+            exit(1)
+
+        # Check that Dockerfile exists and is EXPOSE'ing a port
+        if dictofstuff.get("image") == ".":
+            try:
+                dockerfile = (Path(pathtothing).parent / "Dockerfile").open().read()
+            except FileNotFoundError:
+                print("Dockerfile specified in 'image' field but no Dockerfile found")
+                exit(1)
+
+            if "EXPOSE" not in dockerfile:
+                print("Dockerfile missing EXPOSE")
+                exit(1)
+
+            # Check Dockerfile with hadolint
+            proc = subprocess.run(
+                ["docker", "run", "--rm", "-i", "hadolint/hadolint"],
+                input=dockerfile.encode(),
+            )
+            if proc.returncode != 0:
+                print("Hadolint found Dockerfile lint issues, please resolve")
+                exit(1)

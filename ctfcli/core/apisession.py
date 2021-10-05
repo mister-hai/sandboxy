@@ -1,9 +1,10 @@
-from logging import debug
+from logging import debug, exception
 import requests
 from pathlib import Path
 from ctfcli.utils.config import Config
 from ctfcli.utils.utils import errorlog, greenprint, errorlogger,yellowboldprint
 from ctfcli.core.apitemplates import hintstemplate,topictemplate, flagstemplate
+from ctfcli.core.apitemplates import comparetotemplate
 from ctfcli.utils.utils import redprint,DEBUG
 from ctfcli.utils.utils import debugblue,debuggreen,debugred,debugyellow
 
@@ -167,6 +168,16 @@ class APIHandler(requests.Session):
             print("[-] Route not found in accepted list")
             exit()
 
+    def _templatePOST(self, route:str,template:dict,redirects:bool=True):
+        """
+        Makes a post request with a template
+        """
+        self.apiresponse = self.post(
+                                self._getroute(route),
+                                json=template,
+                                allow_redirects=True
+                                )
+        return self.apiresponse
 
     def authtoserver(self,username:str=None,password:str=None):
         """
@@ -448,7 +459,7 @@ class APIHandler(requests.Session):
         on the challenge creators intents and designs
         """
         # Create new flags
-        if tag == 'flags':
+        if tag == 'flags':# or tag == 'flag':
             self._processflags(challenge_id,jsonpayload)
         # Update topics
         if tag == 'topics':
@@ -555,8 +566,6 @@ class APIHandler(requests.Session):
         process hints for the challenge
         '''
         debuggreen("[DEBUG] Processing Flags")
-        self.flagstempl = flagstemplate()
-        self.flagstempl["challenge"] = challenge_id
         try:
             try:
                 flags =  jsonpayload.pop("flags")
@@ -565,18 +574,59 @@ class APIHandler(requests.Session):
         except:
             errorlog("[-] flag missing from data before API call")
 
-        if (type(flags) == str): # and (len(flags) == 1):
+        self.flagstempl = flagstemplate()
+        self.flagstempl["challenge"] = challenge_id
+        debuggreen(f"[DEBUG] Challenge ID {challenge_id} assigned to flag data")
+        #single flag inline with yaml tag
+        if (type(flags) == str):
             self.flagstempl["content"] = flags
             self.flagstempl["type"] = "static"
-            self.apiresponse = self.post(self._getroute("flags"),
-                            json=dict(self.flagstempl),
-                            allow_redirects=True)                
-        if type(flags) == dict:
-            self.apiresponse = self.post(self._getroute("flags"), json=self.flagstempl)
-        
-        self.apiresponse.raise_for_status()
-        debugblue("[DEBUG] API RESPONSE CODE:")
-        debugblue(f"[DEBUG] {self.apiresponse.status_code}")
+            debugblue(f"[DEBUG] {self.flagstempl}")
+            self._templatePOST('flags',dict(self.flagstempl),True)
+            self.apiresponse.raise_for_status()
+            debugblue("[DEBUG] API RESPONSE CODE:")
+            debugblue(f"[DEBUG] {self.apiresponse.status_code}")
+            #self.apiresponse = self.post(self._getroute("flags"),json=dict(self.flagstempl),allow_redirects=True)
+        #multiple flags on new lines
+        elif type(flags) == list:
+            for flag in flags:
+                # multiple special flags
+                if type(flag) == dict and 'challenge' in flags.keys():
+                    debugblue(f"[DEBUG] {flag}")
+                    flag["challenge"] = challenge_id
+                    self._templatePOST('flags',flag,True)
+                # string flag on new line
+                elif (type(flag) == str):
+                    self.flagstempl["content"] = flag
+                    self.flagstempl["type"] = "static"
+                    debugblue(f"[DEBUG] {self.flagstempl}")
+                    self._templatePOST('flags',dict(self.flagstempl),True)
+                self.apiresponse.raise_for_status()
+                debugblue("[DEBUG] API RESPONSE CODE:")
+                debugblue(f"[DEBUG] {self.apiresponse.status_code}")
+        # everything from yaml linter should be dicts
+        elif type(flags) == dict:
+            # if its from a top level, inline, singleton
+            if 'challenge' in flags.keys():
+                debugblue(f"[DEBUG] {flags}")
+                flags["challenge"] = challenge_id
+                self._templatePOST('flags',flags,True)
+            else:
+                # second layer to catch multiple flags
+                for flag in flags:
+                    if 'challenge' in flag.keys():
+                        debugblue(f"[DEBUG] {flag}")
+                        flag["challenge"] = challenge_id
+                        self._templatePOST('flags',flag,True)
+                        #self.apiresponse = self.post(self._getroute("flags"), json=self.flagstempl, allow_redirects=True)
+                        self.apiresponse.raise_for_status()
+                        debugblue("[DEBUG] API RESPONSE CODE:")
+                        debugblue(f"[DEBUG] {self.apiresponse.status_code}")    
+                    else:
+                        raise Exception("Flags do not conform to specification, too many layers detected")
+            self.apiresponse.raise_for_status()
+            debugblue("[DEBUG] API RESPONSE CODE:")
+            debugblue(f"[DEBUG] {self.apiresponse.status_code}")
 
     def _uploadfiles(self, challenge_id:str=None,file:Path=None):
         """

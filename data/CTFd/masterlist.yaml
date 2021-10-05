@@ -11,7 +11,9 @@ crypto: !!python/object:ctfcli.core.category.Category
       so I can useit to open the zip file. I tried using RSA but the zip doesn't open
       by it. Can you help me get the flag please?
     flags:
-    - csictf{gr34t_m1nds_th1nk_4l1ke}
+      challenge: &id001 !!python/name:builtins.str ''
+      content: csictf{gr34t_m1nds_th1nk_4l1ke}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -30,9 +32,9 @@ crypto: !!python/object:ctfcli.core.category.Category
     - content: Try looking up Wiener's attack
       cost: 50
     - This hint is free
-    id: &id002 !!python/name:builtins.str ''
+    id: *id001
     initial: 500
-    installed: &id001 !!python/name:builtins.bool ''
+    installed: &id002 !!python/name:builtins.bool ''
     internalname: Challenge_05ceb7a0eecb50da84a41b83a64d1f67de35326f
     jsonpayload: {}
     minimum: 100
@@ -54,7 +56,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - crypto
@@ -73,7 +75,9 @@ crypto: !!python/object:ctfcli.core.category.Category
       except the key, is public knowledge."  So here''s our **really** unbreakable
       cipher.'
     flags:
-    - CTF{but_even_I_couldnt_break_IT}
+      challenge: *id001
+      content: CTF{but_even_I_couldnt_break_IT}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -88,8 +92,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     - decrypto-2
     - solution
     - handout.tar.gz
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_0ba78d383272dcfd5e058aaeef70c9b44e94b568
     jsonpayload: {}
     name: decrypto-2
@@ -110,7 +114,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Crypto
@@ -127,7 +131,9 @@ crypto: !!python/object:ctfcli.core.category.Category
       states that "A cryptosystem should be secure even if everything about the system,
       except the key, is public knowledge."  So here''s our unbreakable cipher.'
     flags:
-    - CTF{plz_dont_r0ll_ur_own_crypto}
+      challenge: *id001
+      content: CTF{plz_dont_r0ll_ur_own_crypto}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -142,8 +148,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     - decrypto-1
     - solution
     - handout.tar.gz
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_46da01030dc3ca8ae28751409bb8a747414deb83
     jsonpayload: {}
     name: decrypto-1
@@ -165,7 +171,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Crypto
@@ -185,7 +191,9 @@ crypto: !!python/object:ctfcli.core.category.Category
       and got the cipher texts - \nc1 = 8875674977048\nc2 = 70744354709710\nc3 = 29146719498409.\n\
       Find the original message. (Wrap it with csictf{})\n"
     flags:
-    - csictf{h45t4d}
+      challenge: *id001
+      content: csictf{h45t4d}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -200,9 +208,9 @@ crypto: !!python/object:ctfcli.core.category.Category
     - Quick Math
     - solution
     - handout.tar.gz
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_4d6f3e295ffe446f1316f33752a71d259a1e3596
     jsonpayload: {}
     minimum: 100
@@ -224,7 +232,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - crypto
@@ -244,7 +252,9 @@ crypto: !!python/object:ctfcli.core.category.Category
       \nM4 \nUKW $\nGamma 2 4 \n$ 5 9 \n$ 14 3 \n$ 5 20 \nfv cd hu ik es op yl wq\
       \ jm\n\n\"Ciphertext: zkrtwvvvnrkulxhoywoj\"\n"
     flags:
-    - csictf{no_shit_sherlock}
+      challenge: *id001
+      content: csictf{no_shit_sherlock}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -263,9 +273,9 @@ crypto: !!python/object:ctfcli.core.category.Category
     - content: Words in the flag are separated by underscores
       cost: 100
     - This hint is free
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_51a17e64a29c1a2d4cd588e2b5656fd72a225860
     jsonpayload: {}
     minimum: 100
@@ -287,7 +297,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - crypto
@@ -304,7 +314,9 @@ crypto: !!python/object:ctfcli.core.category.Category
     description: We are not lost, we're right here somewhere on this little blue line.
       Wait, why do I feel like I'm being watched?
     flags:
-    - csictf{hillshaveeyes}
+      challenge: *id001
+      content: csictf{hillshaveeyes}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -319,9 +331,9 @@ crypto: !!python/object:ctfcli.core.category.Category
     - The Climb
     - solution
     - handout.tar.gz
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_6d8cbf62334579224346a82c7b158bf6de48ddd0
     jsonpayload: {}
     minimum: 100
@@ -343,7 +355,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - crypto
@@ -359,7 +371,9 @@ crypto: !!python/object:ctfcli.core.category.Category
     category: crypto
     description: Reveal my identity! What's the flag encoded in the badge?
     flags:
-    - CTF{way_too_common}
+      challenge: *id001
+      content: CTF{way_too_common}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -374,8 +388,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     - barcoder
     - solution
     - handout.tar.gz
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_79dd344ccce61f61f586cd177bf477e3ef2af396
     jsonpayload: {}
     name: barcoder
@@ -396,7 +410,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Forensics
@@ -426,7 +440,9 @@ crypto: !!python/object:ctfcli.core.category.Category
 
       '
     flags:
-    - csictf{you_are_a_basic_person}
+      challenge: *id001
+      content: csictf{you_are_a_basic_person}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -445,9 +461,9 @@ crypto: !!python/object:ctfcli.core.category.Category
     - content: This hint costs points, points you can never get back! muahahaha!
       cost: 10
     - This hint is free
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_bb62be0a02ff7381c1838de0ebe400317edd90f0
     jsonpayload: {}
     minimum: 100
@@ -469,7 +485,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - crypto
@@ -484,11 +500,14 @@ crypto: !!python/object:ctfcli.core.category.Category
     decay: 100
     description: Check out the BSidesSF CTF program.  We got a chance to put a puzzle
       in there. If you're good with permutations, you'll get this once.
-    flags: CTF{ONEFORANAGRAMS}
+    flags:
+      challenge: *id001
+      content: CTF{ONEFORANAGRAMS}
+      type: static
     handout: null
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_e274b92ce505414a892e55bc83d8b67d1838e39d
     jsonpayload: {}
     minimum: 50
@@ -511,7 +530,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - language
@@ -528,7 +547,9 @@ crypto: !!python/object:ctfcli.core.category.Category
     description: These 3 guys encrypted my flag, but they didn't tell me how to decrypt
       it.
     flags:
-    - csictf{sh0uld'v3_t4k3n_b1gg3r_pr1m3s}
+      challenge: *id001
+      content: csictf{sh0uld'v3_t4k3n_b1gg3r_pr1m3s}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -543,9 +564,9 @@ crypto: !!python/object:ctfcli.core.category.Category
     - Rivest Shamir Adleman
     - solution
     - handout.tar.gz
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_e5eccf5b64550d3542d082a9e6f8f698cc416c4e
     jsonpayload: {}
     minimum: 100
@@ -567,7 +588,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - crypto
@@ -581,7 +602,10 @@ crypto: !!python/object:ctfcli.core.category.Category
     author: iagox86
     category: crypto
     description: Find the password encrypted in the configuration file
-    flags: CTF{my_rust_is_rusty}
+    flags:
+      challenge: *id001
+      content: CTF{my_rust_is_rusty}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -596,8 +620,8 @@ crypto: !!python/object:ctfcli.core.category.Category
     - config-me
     - solution
     - handout.tar.gz
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_ed283b676f070e11b3b6bf14c3a35a8c0b8643dd
     jsonpayload: {}
     name: config-me
@@ -618,7 +642,7 @@ crypto: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Reversing
@@ -652,15 +676,17 @@ forensics: !!python/object:ctfcli.core.category.Category
       sure. I stand in your place and close my eyes, What do I see? (Open your windows
       to see the secret message)
     flags:
-    - csictf{ucbr4ill3}
+      challenge: *id001
+      content: csictf{ucbr4ill3}
+      type: static
     handout: null
     hints:
     - content: braille encoded text
       cost: 100
     - open with a stego tool!
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_39e5dfde4a4193a4f5189c2db4718aa07706ac94
     jsonpayload: {}
     minimum: 50
@@ -682,7 +708,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - forensics
@@ -699,11 +725,13 @@ forensics: !!python/object:ctfcli.core.category.Category
     description: I wanted to send this file to AJ1479 but I did not want anyone else
       to see what's inside it, so I protected it with a pin.
     flags:
-    - csictf{kung_fu_p4nd4}
+      challenge: *id001
+      content: csictf{kung_fu_p4nd4}
+      type: static
     handout: null
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_65c91fe4e3e72018680a835ed6fb2d1e57373db3
     jsonpayload: {}
     minimum: 50
@@ -725,7 +753,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - forensics
@@ -739,7 +767,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     category: forensics
     decay: 50
     description: Was MPEG ever good?
-    flags: CTF{bridge_ext2_gaps}
+    flags:
+      challenge: *id001
+      content: CTF{bridge_ext2_gaps}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -754,9 +785,9 @@ forensics: !!python/object:ctfcli.core.category.Category
     - mpfrag
     - solution
     - handout.tar.gz
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_7eac55a5fcd1bbbd8788ad0f870a664b4cde37c4
     jsonpayload: {}
     minimum: 50
@@ -778,7 +809,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Forensics
@@ -793,7 +824,9 @@ forensics: !!python/object:ctfcli.core.category.Category
     decay: 50
     description: John likes Arch Linux. What is he hiding?
     flags:
-    - csictf{1_h0pe_y0u_don't_s33_m3_here}
+      challenge: *id001
+      content: csictf{1_h0pe_y0u_don't_s33_m3_here}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -808,9 +841,9 @@ forensics: !!python/object:ctfcli.core.category.Category
     - Archenemy
     - solution
     - handout.tar.gz
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_8f09dd41969d23d87b16ee8d68980debfcc49d79
     jsonpayload: {}
     minimum: 50
@@ -832,7 +865,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - forensics
@@ -847,7 +880,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     author: symmetric
     category: forensics
     description: "01\xCE\xB9"
-    flags: CTF{one_iota_away_from_riches}
+    flags:
+      challenge: *id001
+      content: CTF{one_iota_away_from_riches}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -862,8 +898,8 @@ forensics: !!python/object:ctfcli.core.category.Category
     - earota
     - solution
     - handout.tar.gz
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_917b7b3e99830ebd59a69cfa9cb9c411a6df59b5
     jsonpayload: {}
     name: earota
@@ -884,7 +920,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Forensics
@@ -904,11 +940,13 @@ forensics: !!python/object:ctfcli.core.category.Category
     description: Gradient Skies is a beginner level forensics CTF challenge aimed
       towards rookies which can be solved which can be solved with basic steganography.
     flags:
-    - csictf{j0ker_w4snt_happy}
+      challenge: *id001
+      content: csictf{j0ker_w4snt_happy}
+      type: static
     handout: null
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_974e92a1560885156df0a62bab36a58c8b12338d
     jsonpayload: {}
     minimum: 50
@@ -930,7 +968,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - forensics
@@ -948,7 +986,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     description: 'Can you crack the device password? I bet you can, cos'' you rock!
       P.s, flag is not in CTF{} format. If you run into an error when running the
       avd, make sure the pixel_2 skin is available. Device image: https://storage.googleapis.com/bsides-sf-ctf-2020-attachments/avd.zip'
-    flags: lifeinchinatown
+    flags:
+      challenge: *id001
+      content: lifeinchinatown
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -963,8 +1004,8 @@ forensics: !!python/object:ctfcli.core.category.Category
     - open-sesame
     - solution
     - handout.tar.gz
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_a621ae711753c066fbfa2dd2d6cbcd8a4eb4f9fc
     jsonpayload: {}
     name: open-sesame
@@ -985,7 +1026,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Mobile
@@ -999,7 +1040,10 @@ forensics: !!python/object:ctfcli.core.category.Category
     author: symmetric
     category: forensics
     description: Much magic, so rainbow, wow!
-    flags: CTF{magical_unicorn_gait}
+    flags:
+      challenge: *id001
+      content: CTF{magical_unicorn_gait}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -1018,8 +1062,8 @@ forensics: !!python/object:ctfcli.core.category.Category
     - content: take a histogram to find the color
       cost: 50
     - open with a stego tool!
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_b40981aab75932c5b2f555f50769d878e44913d7
     jsonpayload: {}
     name: magic
@@ -1040,7 +1084,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Forensics
@@ -1059,7 +1103,9 @@ forensics: !!python/object:ctfcli.core.category.Category
       for nothing, but trust me it's not. https://mega.nz/file/cmhnAQDB#9dbHojKcxzliZ5NAYtGBN7N8WHCqtoU7kKa5yuJzG0w
       https://mega.nz/file/h75UCIRJ#YGF3yCViKSQpwogmMgkdPQ1DXMez9Sv2DZBUWvCueSY
     flags:
-    - csictf{7h47_15_h0w_y0u_c4n_83c0m3_1nv151813}
+      challenge: *id001
+      content: csictf{7h47_15_h0w_y0u_c4n_83c0m3_1nv151813}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -1074,9 +1120,9 @@ forensics: !!python/object:ctfcli.core.category.Category
     - unseen
     - solution
     - handout.tar.gz
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_f56b6ddb250e669168de7770b2a0c379c0eed565
     jsonpayload: {}
     minimum: 50
@@ -1098,7 +1144,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - forensics
@@ -1127,7 +1173,10 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     description: A lot of the computer world is just layers of abstraction.  Layers
       and layers and layers and layers and layers and layers and layers and layers
       and ... layers and layers and ...
-    flags: CTF{so_easy_an_ogre_could_do_it}
+    flags:
+      challenge: *id001
+      content: CTF{so_easy_an_ogre_could_do_it}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -1142,8 +1191,8 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     - mini-matroyshka
     - solution
     - handout.tar.gz
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_a807c6a34a5d3630252177e87049151ffbabe746
     jsonpayload: {}
     name: mini-matroyshka
@@ -1164,7 +1213,7 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Misc
@@ -1184,7 +1233,9 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
 
       The flag would be of the format csictf{answer_you_get_from_above}.'
     flags:
-    - csictf{785539772602034710213927792950}
+      challenge: *id001
+      content: csictf{785539772602034710213927792950}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -1199,9 +1250,9 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     - Machine Fix
     - solution
     - handout.tar.gz
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_c8bafe35321f9496c8059578287f1d11a178442a
     jsonpayload: {}
     minimum: 50
@@ -1223,7 +1274,7 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - miscellaneous
@@ -1254,11 +1305,13 @@ osint: !!python/object:ctfcli.core.category.Category
     description: There are 3 parts to this challenge. Who took it? What was "taken"?
       Note The format of the flag is csictf{answer1_answer2}
     flags:
-    - csictf{yevgeny_khaldei_adrianov_compass}
+      challenge: *id001
+      content: csictf{yevgeny_khaldei_adrianov_compass}
+      type: static
     handout: null
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_5f1ff41d3ac45893b8f2c3e02781a04ac7ecbc3e
     jsonpayload: {}
     minimum: 50
@@ -1280,7 +1333,7 @@ osint: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - osint
@@ -1299,11 +1352,13 @@ osint: !!python/object:ctfcli.core.category.Category
 
       '
     flags:
-    - csictf{pl4g14r1sm_1s_b4d}
+      challenge: *id001
+      content: csictf{pl4g14r1sm_1s_b4d}
+      type: static
     handout: null
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_830f4a661a8d810714822bd421d394fae3fd22ad
     jsonpayload: {}
     minimum: 50
@@ -1325,7 +1380,7 @@ osint: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - osint
@@ -1344,11 +1399,13 @@ osint: !!python/object:ctfcli.core.category.Category
 
       '
     flags:
-    - csictf{gareth_mallory}
+      challenge: *id001
+      content: csictf{gareth_mallory}
+      type: static
     handout: null
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_9920e0af24a0ad7e74e5c8dc0904570a1efa8a2d
     jsonpayload: {}
     minimum: 50
@@ -1370,7 +1427,7 @@ osint: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - osint
@@ -1389,11 +1446,13 @@ osint: !!python/object:ctfcli.core.category.Category
 
       '
     flags:
-    - csictf{san_francisco}
+      challenge: *id001
+      content: csictf{san_francisco}
+      type: static
     handout: null
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_a0226107cf34892abc1923f61669744b70e42b9b
     jsonpayload: {}
     minimum: 50
@@ -1415,7 +1474,7 @@ osint: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - osint
@@ -1438,12 +1497,13 @@ osint: !!python/object:ctfcli.core.category.Category
 
       '
     flags:
-    - csictf{liberty_hotel}
-    - csictf{liberty_hotel_boston}
+      challenge: *id001
+      content: csictf{liberty_hotel}
+      type: static
     handout: null
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_b23d762f584943f69a2c9d16c607bff60de5cfa5
     jsonpayload: {}
     minimum: 50
@@ -1452,7 +1512,7 @@ osint: !!python/object:ctfcli.core.category.Category
     scorepayload: {}
     solution: null
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - osint
@@ -1467,11 +1527,13 @@ osint: !!python/object:ctfcli.core.category.Category
     decay: 50
     description: hoshimaseok is up to no good. Track him down.
     flags:
-    - csictf{sc4r3d_0f_c0mm1tm3nt}
+      challenge: *id001
+      content: csictf{sc4r3d_0f_c0mm1tm3nt}
+      type: static
     handout: null
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_e3577c1de70ca1810e29e402be362e8b127fc018
     jsonpayload: {}
     minimum: 50
@@ -1480,7 +1542,7 @@ osint: !!python/object:ctfcli.core.category.Category
     scorepayload: {}
     solution: null
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - osint
@@ -1511,10 +1573,13 @@ reversing: !!python/object:ctfcli.core.category.Category
       but we can't figure out what data was being sent.  When we analyze it on another
       host, we see nothing strange, but on the management hosts, we think it was beaconing
       home.  Can you find out what it was sending?
-    flags: CTF{notJustCCleaner}
+    flags:
+      challenge: *id001
+      content: CTF{notJustCCleaner}
+      type: static
     handout: null
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_02fa1fc55cb52cc26dd70f9627b214c5d6755b65
     jsonpayload: {}
     name: maltty
@@ -1535,7 +1600,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Reversing
@@ -1550,7 +1615,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     category: reversing
     description: A fun toast clicker game for your enjoyment. While you are at it,
       can you find the first flag?  Android challenge, one APK three flags
-    flags: CTF{Bready_To_Crumble}
+    flags:
+      challenge: *id001
+      content: CTF{Bready_To_Crumble}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -1565,8 +1633,8 @@ reversing: !!python/object:ctfcli.core.category.Category
     - toast-clicker1
     - solution
     - handout.tar.gz
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_12d5fd8e64f6f3cb6ceb3443822773153a164058
     jsonpayload: {}
     name: toast-clicker1
@@ -1587,7 +1655,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Mobile
@@ -1603,7 +1671,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     author: itsC0rg1
     category: reversing
     description: You found the first flag, can you find the second one?
-    flags: CTF{T00_Many_S3cr3t5}
+    flags:
+      challenge: *id001
+      content: CTF{T00_Many_S3cr3t5}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -1618,8 +1689,8 @@ reversing: !!python/object:ctfcli.core.category.Category
     - toast-clicker2
     - solution
     - handout.tar.gz
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_23cda283bb1a5b9924f1f00dc97cf04d69591279
     jsonpayload: {}
     name: toast-clicker2
@@ -1640,7 +1711,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Mobile
@@ -1656,7 +1727,9 @@ reversing: !!python/object:ctfcli.core.category.Category
     decay: 50
     description: I like my eggs sunny side up, but I ended up scrambling them.
     flags:
-    - csictf{all_the_kings_horses}
+      challenge: *id001
+      content: csictf{all_the_kings_horses}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -1671,9 +1744,9 @@ reversing: !!python/object:ctfcli.core.category.Category
     - Scrambled Eggs
     - solution
     - handout.tar.gz
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_79109b1a7ca6898317905e1e467675e2ab600317
     jsonpayload: {}
     minimum: 50
@@ -1695,7 +1768,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - crypto
@@ -1711,7 +1784,9 @@ reversing: !!python/object:ctfcli.core.category.Category
     decay: 50
     description: I learnt Python in school but I have no clue what this is!
     flags:
-    - csictf{T#a+_wA5_g0oD_d155aSe^^bLy}
+      challenge: *id001
+      content: csictf{T#a+_wA5_g0oD_d155aSe^^bLy}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -1726,9 +1801,9 @@ reversing: !!python/object:ctfcli.core.category.Category
     - pydis2ctf
     - solution
     - handout.tar.gz
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_8007f382a1fb591cbfebcdbd1dd1e0b5a275bdf0
     jsonpayload: {}
     minimum: 50
@@ -1750,7 +1825,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - reversing
@@ -1767,7 +1842,9 @@ reversing: !!python/object:ctfcli.core.category.Category
     description: I encrypted my flag so that nobody can see it, but now I realize
       I don't know how to decrypt it. Can you help me?
     flags:
-    - csictf{esreverisjustreverseinreverseright}
+      challenge: *id001
+      content: csictf{esreverisjustreverseinreverseright}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -1782,9 +1859,9 @@ reversing: !!python/object:ctfcli.core.category.Category
     - Esrever
     - solution
     - handout.tar.gz
-    id: *id002
+    id: *id001
     initial: 500
-    installed: *id001
+    installed: *id002
     internalname: Challenge_a5361b6880fa0f85b8c90c492fa17e9a70a2da26
     jsonpayload: {}
     minimum: 50
@@ -1806,7 +1883,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: visible
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - crypto
@@ -1821,7 +1898,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     category: reversing
     description: This program seems to be sending us a hidden message. Can you find
       it?
-    flags: CTF{the_longer_the_flag_is_the_more_interesting_output_you_are_seeing_so_the_long_flag_is_long!}
+    flags:
+      challenge: *id001
+      content: CTF{the_longer_the_flag_is_the_more_interesting_output_you_are_seeing_so_the_long_flag_is_long!}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -1836,8 +1916,8 @@ reversing: !!python/object:ctfcli.core.category.Category
     - strace-me
     - solution
     - handout.tar.gz
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_d1307442a65e870b8acab6eabbb4b081426f3ad9
     jsonpayload: {}
     name: strace-me
@@ -1858,7 +1938,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Reversing
@@ -1873,7 +1953,10 @@ reversing: !!python/object:ctfcli.core.category.Category
     author: itsC0rg1
     category: reversing
     description: You are on a roll! Why not find the final flag hidden in the APK?
-    flags: CTF{makingbaconpancakes}
+    flags:
+      challenge: *id001
+      content: CTF{makingbaconpancakes}
+      type: static
     handout: !!python/object/apply:pathlib.WindowsPath
     - C:\
     - Users
@@ -1888,8 +1971,8 @@ reversing: !!python/object:ctfcli.core.category.Category
     - toast-clicker3
     - solution
     - handout.tar.gz
-    id: *id002
-    installed: *id001
+    id: *id001
+    installed: *id002
     internalname: Challenge_ddc371e9712424687af7e5d925950a8593850515
     jsonpayload: {}
     name: toast-clicker3
@@ -1910,7 +1993,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     - handout
     - solution.tar.gz
     state: hidden
-    synched: *id001
+    synched: *id002
     tag: '!Challenge:'
     tags:
     - Mobile

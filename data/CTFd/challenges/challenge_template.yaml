@@ -49,17 +49,17 @@ flags:
         content: "flag{wat}",
     }
     # A static case insensitive flag
-    - {
-        type: "static",
-        content: "flag{wat}",
-        data: "case_insensitive",
-    }
+    #- {
+    #    type: "static",
+    #    content: "flag{wat}",
+    #    #data: "case_insensitive",
+    #}
     # A regex case insensitive flag
-    - {
-        type: "regex",
-        content: "(.*)STUFF(.*)",
-        data: "case_insensitive",
-    }
+    #- {
+    #    type: "regex",
+    #    content: "(.*)STUFF(.*)",
+    #    data: "case_insensitive",
+    #}
 
 # Topics are used to help tell what techniques/information a challenge involves
 # They are generally only visible to admins
