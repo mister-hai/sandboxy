@@ -14,7 +14,7 @@ scoreboard_name: earota
 author: symmetric
 flags: 'CTF{one_iota_away_from_riches}'
 description: '01ι'
-type: static
+type: standard
 value: 500
 tags:
   - Forensics

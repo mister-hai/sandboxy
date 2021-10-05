@@ -6,7 +6,7 @@ description:
   A lot of the computer world is just layers of abstraction.  Layers and layers
   and layers and layers and layers and layers and layers and layers and ...
   layers and layers and ...
-type: static
+type: standard
 value: 500
 tags:
   - Misc

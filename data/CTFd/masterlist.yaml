@@ -737,6 +737,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     __qualname__: Challenge_7eac55a5fcd1bbbd8788ad0f870a664b4cde37c4
     author: symmetric
     category: forensics
+    decay: 50
     description: Was MPEG ever good?
     flags: CTF{bridge_ext2_gaps}
     handout: !!python/object/apply:pathlib.WindowsPath
@@ -754,9 +755,11 @@ forensics: !!python/object:ctfcli.core.category.Category
     - solution
     - handout.tar.gz
     id: *id002
+    initial: 500
     installed: *id001
     internalname: Challenge_7eac55a5fcd1bbbd8788ad0f870a664b4cde37c4
     jsonpayload: {}
+    minimum: 50
     name: mpfrag
     readme: null
     scorepayload: {}
@@ -779,9 +782,9 @@ forensics: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - Forensics
-    typeof: static
+    typeof: dynamic
     value: 500
-    version: beta1
+    version: '0.1'
   Challenge_8f09dd41969d23d87b16ee8d68980debfcc49d79: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_8f09dd41969d23d87b16ee8d68980debfcc49d79
     __qualname__: Challenge_8f09dd41969d23d87b16ee8d68980debfcc49d79
@@ -889,9 +892,9 @@ forensics: !!python/object:ctfcli.core.category.Category
     - go
     - multimedia
     - encoding
-    typeof: static
+    typeof: standard
     value: 500
-    version: beta1
+    version: '0.1'
   Challenge_974e92a1560885156df0a62bab36a58c8b12338d: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_974e92a1560885156df0a62bab36a58c8b12338d
     __qualname__: Challenge_974e92a1560885156df0a62bab36a58c8b12338d
@@ -987,7 +990,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     tags:
     - Mobile
     - Forensics
-    typeof: static
+    typeof: standard
     value: 500
     version: beta1
   Challenge_b40981aab75932c5b2f555f50769d878e44913d7: !!python/object:ctfcli.core.challenge.Challenge
@@ -1041,7 +1044,7 @@ forensics: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - Forensics
-    typeof: static
+    typeof: standard
     value: 500
     version: '0.1'
   Challenge_f56b6ddb250e669168de7770b2a0c379c0eed565: !!python/object:ctfcli.core.challenge.Challenge
@@ -1115,16 +1118,6 @@ forensics: !!python/object:ctfcli.core.category.Category
   - forensics
   name: forensics
   tag: '!Category:'
-location: !!python/object/apply:pathlib.WindowsPath
-- C:\
-- Users
-- moop
-- Desktop
-- repositories
-- sandboxy
-- data
-- CTFd
-- challenges
 miscellaneous: !!python/object:ctfcli.core.category.Category
   Challenge_a807c6a34a5d3630252177e87049151ffbabe746: !!python/object:ctfcli.core.challenge.Challenge
     _Challenge__name: Challenge_a807c6a34a5d3630252177e87049151ffbabe746
@@ -1175,7 +1168,7 @@ miscellaneous: !!python/object:ctfcli.core.category.Category
     tag: '!Challenge:'
     tags:
     - Misc
-    typeof: static
+    typeof: standard
     value: 500
     version: beta1
   Challenge_c8bafe35321f9496c8059578287f1d11a178442a: !!python/object:ctfcli.core.challenge.Challenge
@@ -1547,7 +1540,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     tags:
     - Reversing
     - Windows
-    typeof: static
+    typeof: standard
     value: 500
     version: beta1
   Challenge_12d5fd8e64f6f3cb6ceb3443822773153a164058: !!python/object:ctfcli.core.challenge.Challenge
@@ -1601,7 +1594,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     - Reversing
     - Android
     - apk
-    typeof: static
+    typeof: standard
     value: 500
     version: beta1
   Challenge_23cda283bb1a5b9924f1f00dc97cf04d69591279: !!python/object:ctfcli.core.challenge.Challenge
@@ -1652,7 +1645,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     tags:
     - Mobile
     - Reversing
-    typeof: static
+    typeof: standard
     value: 500
     version: beta1
   Challenge_79109b1a7ca6898317905e1e467675e2ab600317: !!python/object:ctfcli.core.challenge.Challenge
@@ -1871,7 +1864,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     - Reversing
     - '101'
     - easy
-    typeof: static
+    typeof: standard
     value: 500
     version: beta1
   Challenge_ddc371e9712424687af7e5d925950a8593850515: !!python/object:ctfcli.core.challenge.Challenge
@@ -1922,7 +1915,7 @@ reversing: !!python/object:ctfcli.core.category.Category
     tags:
     - Mobile
     - Reversing
-    typeof: static
+    typeof: standard
     value: 500
     version: beta1
   location: !!python/object/apply:pathlib.WindowsPath

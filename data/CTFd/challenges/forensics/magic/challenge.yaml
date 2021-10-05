@@ -3,7 +3,7 @@ name: magic
 author: symmetric
 flags: 'CTF{magical_unicorn_gait}'
 description: 'Much magic, so rainbow, wow!'
-type: static
+type: standard
 value: 500
 tags:
   - Forensics

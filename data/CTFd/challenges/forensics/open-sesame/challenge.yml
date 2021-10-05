@@ -16,7 +16,7 @@ description:
   P.s, flag is not in CTF{} format.
   If you run into an error when running the avd, make sure the pixel_2 skin is available.
   Device image: https://storage.googleapis.com/bsides-sf-ctf-2020-attachments/avd.zip"
-type: static
+type: standard
 value: 500
 tags:
   - Mobile

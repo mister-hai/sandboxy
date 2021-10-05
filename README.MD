@@ -19,11 +19,11 @@
                     
 # DAILY PLAN
 
-    Working on getting the packer/unpacker/installer/main-menu working
+    Working on getting the main-menu working
 
     Writing tutorials based on the code in the repository
 
-    Debugging the latest addition to repo code
+    Debugging the latest additions to repo code
 
     Starting the deployment code, this will essentially become the backend 
     to a ctfd/electron interface
@@ -31,10 +31,10 @@
     ctfcli moved to top level scope, it will become the deployment manager 
     in addition to installing challenges to ctfd
 
-![terminal output](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/startscript.png)
-![terminal output](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/terminal.png)
+![terminal output](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/ctfd1.png)
+![terminal output](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/test1.png)
 
-![platform display](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/ctfd.png))
+![platform display](https://raw.githubusercontent.com/mister-hai/sandboxy/master/extra/docs/startscript.png))
 
 # WEEKLY PLAN
     

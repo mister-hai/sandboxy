@@ -157,11 +157,11 @@ class APIHandler(requests.Session):
                 self.schema = schema
                 self.route = f"{schema}://{self.url}{self.APIPREFIX}{tag}"
                 if admin == True:
-                    print(f"[+] Route {self.route}?view=admin")
+                    greenprint(f"[+] Route {self.route}?view=admin")
                     self.route = f"{self.route}?view=admin"
                     return f"{self.route}"
                 else:
-                    print(f"[+] Route {self.route}")
+                    greenprint(f"[+] Route {self.route}")
                     return f"{self.route}" #dictofroutes
         except Exception:
             print("[-] Route not found in accepted list")

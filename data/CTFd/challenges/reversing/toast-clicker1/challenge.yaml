@@ -12,7 +12,7 @@ name: toast-clicker1
 author: itsC0rg1
 flag: 'CTF{Bready_To_Crumble}'
 description: A fun toast clicker game for your enjoyment. While you are at it, can you find the first flag?  Android challenge, one APK three flags
-type: static
+type: standard
 value: 500
 tags:
   - Mobile

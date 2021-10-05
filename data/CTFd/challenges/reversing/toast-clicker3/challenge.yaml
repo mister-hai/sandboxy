@@ -12,7 +12,7 @@ name: toast-clicker3
 author: itsC0rg1
 flag: 'CTF{makingbaconpancakes}'
 description: You are on a roll! Why not find the final flag hidden in the APK?
-type: static
+type: standard
 value: 500
 tags:
   - Mobile
