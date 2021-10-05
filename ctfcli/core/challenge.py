@@ -39,12 +39,6 @@ class Challenge():#Yaml):
         handout         (Path)
         solution        (Path)
     """
-    #def __new__(cls,*args, **kwargs):
-
-#    def __new__(cls,**kwargs):
-#        #return super(cls).__new__(cls, *args, **kwargs)
-#        return super().__new__(cls)
-    
     def __init__(self,
             category,
             handout,
