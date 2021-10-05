@@ -483,6 +483,8 @@ class APIHandler(requests.Session):
         data = {"requirements": {"prerequisites": required_challenges}}
         self.apiresponse = self.patch(self._getroute('challenges') + str(challenge_id), json=data)
         self.apiresponse.raise_for_status()
+        debugblue("[DEBUG] API RESPONSE CODE:")
+        debugblue(f"[DEBUG] {self.apiresponse.status_code}")
 
     def _processtags(self, challenge_id:int, jsonpayload:dict) -> requests.Response:
         '''
@@ -498,6 +500,8 @@ class APIHandler(requests.Session):
                         }
                     )
             self.apiresponse.raise_for_status()
+        debugblue("[DEBUG] API RESPONSE CODE:")
+        debugblue(f"[DEBUG] {self.apiresponse.status_code}")
 
     def _processhints(self,challenge_id:int,hints):
         '''
@@ -514,31 +518,6 @@ class APIHandler(requests.Session):
         '''
         self.deletehintbyid(challenge_id)
         self.hintstempl = hintstemplate()
-        # sent to server
-        #{"challenge_id":int,"content": str,"cost": int}
-        # returned from yaml load
-        # [
-        #   {
-        #       'content': 'braille encoded text', 
-        #       'cost': 100
-        #   }, 
-        # 'open with a stego tool!'
-        # ]
-        # if its only one hint and its free
-        #if type(hints) == str:
-        #    self.hintstempl["content"] = hints
-        #    self.hintstempl["cost"] = 0
-        #    self.hintstempl["challenge_id"] = challenge_id
-        #    self.apiresponse = self.post(self._getroute('hints'), json=self.hintstempl)
-        # if its one hint with a cost value
-        #elif type(hints) == dict:
-        #    self.hintstempl["content"] = hints["content"]
-        #    self.hintstempl["cost"] = hints["cost"]
-        #    self.hintstempl["challenge_id"] = challenge_id
-        #    self.apiresponse = self.post(self._getroute('hints'), json=self.hintstempl)
-        # if its multiple hints
-        #elif type(hints) == list:
-            # we process them like before but itteratively
         for each in hints:
                 #if it has a cost value
                 if type(each) == dict:
@@ -555,43 +534,49 @@ class APIHandler(requests.Session):
         #make request with hints template
         #self.apiresponse = self.post(self._getroute('hints'), json=self.hintstempl)
         self.apiresponse.raise_for_status()
+        debugblue("[DEBUG] API RESPONSE CODE:")
+        debugblue(f"[DEBUG] {self.apiresponse.status_code}")
 
     def _processtopics(self, jsonpayload:dict):
         '''
         process hints for the challenge
         '''
+        debuggreen("[DEBUG] Processing topics")
         self.topictempl = topictemplate()
         for topic in jsonpayload.get("topics"):
             self.topictempl['value'] = topic
             self.apiresponse = self.post(self._getroute("topics"),json=self.topictempl)
             self.apiresponse.raise_for_status()
+            debugblue("[DEBUG] API RESPONSE CODE:")
+            debugblue(f"[DEBUG] {self.apiresponse.status_code}")
 
     def _processflags(self, challenge_id:int, jsonpayload:dict) -> requests.Response:
         '''
         process hints for the challenge
         '''
+        debuggreen("[DEBUG] Processing Flags")
         self.flagstempl = flagstemplate()
         self.flagstempl["challenge"] = challenge_id
-        flags = jsonpayload.get("flags")
-        # there is only one flag, it should be a string
-        # unless there is a 
-        # flags:
-        #   - flag{flagstring}
-        # !?!?right?!?!
-        # to extend to multiple flags, add to the challenge class input
+        try:
+            try:
+                flags =  jsonpayload.pop("flags")
+            except:
+                flags = jsonpayload.pop('flag')
+        except:
+            errorlog("[-] flag missing from data before API call")
+
         if (type(flags) == str): # and (len(flags) == 1):
-                    self.flagstempl["content"] = flags
-                    self.flagstempl["type"] = "static"
-                    self.apiresponse = self.post(
-                                                self._getroute("flags"),
-                                                json=dict(self.flagstempl),
-                                                allow_redirects=True
-                                                )
-                                            
-                    self.apiresponse.raise_for_status()
+            self.flagstempl["content"] = flags
+            self.flagstempl["type"] = "static"
+            self.apiresponse = self.post(self._getroute("flags"),
+                            json=dict(self.flagstempl),
+                            allow_redirects=True)                
         if type(flags) == dict:
             self.apiresponse = self.post(self._getroute("flags"), json=self.flagstempl)
-            self.apiresponse.raise_for_status()
+        
+        self.apiresponse.raise_for_status()
+        debugblue("[DEBUG] API RESPONSE CODE:")
+        debugblue(f"[DEBUG] {self.apiresponse.status_code}")
 
     def _uploadfiles(self, challenge_id:str=None,file:Path=None):
         """
@@ -602,7 +587,7 @@ class APIHandler(requests.Session):
             file (TarFile): The file to upload to accompany the challenge
         """
         try:
-            greenprint(f"[+] Uploading {file}")
+            debuggreen("[DEBUG] Processing file")
             jsonpayload = {                 # this was for a rando idea I had, might still be useful
                 "challenge_id": challenge_id,# if challenge_id is not None else self.challenge_id, 
                 "type": "challenge"
@@ -622,13 +607,16 @@ class APIHandler(requests.Session):
                                          data = jsonpayload, 
                                          verify = False)
             self.apiresponse.raise_for_status()
+            debugblue("[DEBUG] API RESPONSE CODE:")
+            debugblue(f"[DEBUG] {self.apiresponse.status_code}")
+
         except Exception as e:
             errorlogger(f"[-] Could not upload file: {e}")
 
     def deletehintbyid(self, challenge_id):
         # Delete existing hints
         try:
-            greenprint(f'[+] Deleting existing hints for challenge {challenge_id}')
+            debuggreen(f'[DEBUG] Deleting existing hints for challenge {challenge_id}')
             self.hintstempl = hintstemplate()
             data = {"challenge_id": challenge_id, "type": "challenge"}
             # request a list of all hints
@@ -639,5 +627,7 @@ class APIHandler(requests.Session):
                     hint_id = hint["id"]
                     self.apiresponse = self.delete(self._getroute('hints')+ hint_id, json=True)
                     self.apiresponse.raise_for_status()
+                    debugblue("[DEBUG] API RESPONSE CODE:")
+                    debugblue(f"[DEBUG] {self.apiresponse.status_code}")
         except Exception:
             errorlogger(f"[-] ERROR: Could not delete hints for challenge ID: {challenge_id} ")

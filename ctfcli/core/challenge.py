@@ -134,7 +134,7 @@ class Challenge():#Yaml):
         debugblue(f"[DEBUG] {self.basepayload}")
         # set secondary payload in base challenge information
         # the rest of the challenge information
-        secondarypayload = ["connection_info","flags","topics","tags","hints","requirements","max_attempts"]
+        secondarypayload = ["connection_info","flags",'flag',"topics","tags","hints","requirements","max_attempts"]
         for each in secondarypayload:
             try:
                 secondaryvalue = getattr(self,each)
@@ -171,10 +171,10 @@ class Challenge():#Yaml):
         
         """
         try:
-            for each in ['flags','topics','tags','hints','requirements']:#'files',
+            for each in ['flags','flag','topics','tags','hints','requirements']:#'files',
                 # hints
-                if self.jsonpayload.get(each) != None:
-                    apihandler._process(each,self.id,self.jsonpayload)
+                if self.secondarypayload.get(each) != None:
+                    apihandler._process(each,self.id,self.secondarypayload)
             # we are not providing solutions to the users by default
             if self.solution != None:
                 pass
@@ -182,7 +182,7 @@ class Challenge():#Yaml):
                 apihandler._uploadfiles(self.id,self.handout)
         except Exception:
             print(each)
-            print(self.jsonpayload.get(each))
+            print(self.secondarypayload.get(each))
             errorlogger("[-] Error in Challenge.processchallenge()")
 
 
