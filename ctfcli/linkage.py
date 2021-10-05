@@ -179,17 +179,19 @@ class SandBoxyCTFdLinkage():
                     # feed it to the api handler
                     apihandler._setauth(authdict)
                     #auth to server can grab the info from itself if no args given
+                    # but setauth must be used first
                     apihandler.authtoserver()
                     # perform the requested operation
                     self.repo.syncrepository(apihandler)
+                #they are feeding the arguments directly and not using a config
                 elif config == False:
                     # they have given a url/token "e2c1cb51859e5d7afad6c2cd82757277077a564166d360b48cafd5fcc1e4e015"
-                    if token != None:
+                    if (token != None) and (password == None) and (username == None):
                         # different method that sets same param as _setauth
                         apihandler._settoken(token)
                         self.repo.syncrepository(apihandler)
                     # they have given a url/password/username
-                    elif (password != None) and (username != None):
+                    elif (password != None) and (username != None) and (token == None):
                         #authenticate to server
                         apihandler.authtoserver(username=username,password=password)
                         # this obtains a token so the password is only sent once

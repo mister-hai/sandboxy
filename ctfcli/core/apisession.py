@@ -379,7 +379,7 @@ class APIHandler(requests.Session):
                 challengename = challenge.get('name')
                 if name == challengename:
                     return challenge
-        elif len(self.listofchallenges) == 0:
+        elif len(challengelist) == 0:
             yellowboldprint("[!] No challenges are installed currently!")
             return None
         else:

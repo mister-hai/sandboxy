@@ -82,7 +82,7 @@ class SandboxyCTFdRepository():
         for challengefolder in categoryfolder:
             challengefolderpath = Path(self.repofolder,categorypath.name, challengefolder)
             debuggreen(f"[+] Found Challenge folder {challengefolderpath.name}")
-            yellowboldprint(f'[+] {challengefolderpath}')
+            debugyellow(f'[+] {challengefolderpath}')
             try:
                 # create new Challenge() class from folder contents
                 newchallenge = self._createchallengefromfolder(challengefolderpath,newcategory.name)
@@ -108,7 +108,10 @@ class SandboxyCTFdRepository():
         # get path to challenge subitem
         challengeitempath = lambda challengedata: Path(os.path.abspath(os.path.join(challengefolderpath,challengedata)))
         kwargs = {}
+        #standard challenge stuff
         contentslist = ["handout","solution","challenge"] #.yaml","challenge.yml"]
+        # if these exist, make a deployment instead
+        
         # TODO: Flesh this out some for more validations
         try:
             # for list of all item in dir
@@ -157,6 +160,12 @@ class SandboxyCTFdRepository():
             return newchallenge
         except Exception:
             errorlogger("[-] ERROR: Could not Create new Challenge from supplied data, Please check the log file")
+
+    def _createdeploymentchallengefromfolder(self, challengefolderpath:Path,category:str) -> Challenge:
+        """
+        Creates a DeploymentChallenge() from a challenge folder containing a dockerfile 
+        or a kubernetes spec
+        """
 
     def _setcategory(self, repo:Repository, category:Category):
         """
