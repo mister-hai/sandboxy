@@ -291,9 +291,10 @@ class Linter():
         if requirementsdict.get('version') != None:
             tagdata = requirementsdict.pop("version")
             self.version = {"version":tagdata}
+        # if version is not present in the yaml file
         else:
             debugred("[DEBUG] no Version tag in yaml")
-            self.version = {"version": "1.0"}
+            self.version = {"version": "0.1"}
             #raise Exception
 
     def _processintitem(self, tag:str,yamldict:dict):
@@ -542,26 +543,10 @@ class Linter():
                         self.state,
                         self.typeof,
                         ]
-        print(templatelist)
-        for yamltag in templatelist:
+        #print(templatelist)
+        asdf = [thing for thing in templatelist if thing != None]
+        print(asdf)
+        for yamltag in asdf:
             if yamltag != None:
                 self.jsonpayload.update(yamltag)
-        #self.jsonpayload.update({
-        #        **self.name,
-        #        **self.category,
-        #        **self.description,
-        #        #"type":            self.typeof,
-        #        **self.scorepayload,
-        #        #"value":           self.value,
-        #        #"state":           self.state,
-        #        # the rest of the challenge information
-        #        **self.flags ,
-        #        **self.topics,
-        #        **self.tags,
-        #        **self.files,
-        #        **self.hints,
-        #        **self.requirements
-        #    })
-        #if self.connection_info and self.connection_info:
-        #    self.jsonpayload['connection_info'] = self.connection_info
 

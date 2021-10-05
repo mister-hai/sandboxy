@@ -167,7 +167,7 @@ class Challenge():#Yaml):
             # process the rest of the challenge data
             self._processchallenge(apihandler)#,self.jsonpayload)
         except Exception:
-            errorlogger(f"[-] Error syncing challenge: {self.jsonpayload}")
+            errorlogger(f"[-] Error syncing challenge:")
 
     def _processchallenge(self,apihandler:APIHandler):#,jsonpayload:dict):
         """

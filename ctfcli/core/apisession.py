@@ -58,7 +58,7 @@ class APIHandler(requests.Session):
             "_submit": "Submit",
             "nonce": str
             }
-
+        self.synchedchallengelist:dict = None
         super().__init__()
 
     def _setheaders(self):
@@ -133,14 +133,14 @@ class APIHandler(requests.Session):
                 self.schema = schema
                 self.route = f"{schema}://{self.url}/{tag}"
                 if admin == True:
-                    print(f"[+] Route {self.route}?view=admin")
+                    debuggreen(f"[DEBUG] Route {self.route}?view=admin")
                     self.route = f"{self.route}?view=admin"
                     return f"{self.route}"
                 else:
                     debugyellow(f"[INFOR] Route {self.route}")
                     return f"{self.route}" #dictofroutes
         except Exception:
-            print("[-] Route not found in accepted list")
+            errorlogger("[-] Route not found in accepted list")
             exit()
 
     def _getroute(self,tag, admin=False, schema='http'):
@@ -369,8 +369,10 @@ class APIHandler(requests.Session):
         and returns the ID
         """
         greenprint("[+] Looking for existing challenge with same parameters")
-        self.listofchallenges = self.getsyncedchallenges()
-        challengelist = self.listofchallenges.json()['data']
+        if self.synchedchallengelist == None:
+            self.getsyncedchallenges()
+        
+        challengelist = self.synchedchallengelist
         if len(challengelist) > 0:
             #self.listofnames = [name.get('name) for name in self.listofchallenges]
             for challenge in challengelist:
@@ -389,13 +391,17 @@ class APIHandler(requests.Session):
         This is step one for any procedure modifying challenges
         We cant discern if a challenges attributes have been modified on the
         server by an administrator or a hacker
+        
+        Returns:
+            synchedchallengelist    (dict): list of all challenges installed in server
         """
         debuggreen("[DEBUG] getting list of all challenges")
         endpoint = self._getroute('challenges',admin=True)
         self._setheaders()
-        self.challengedata = self.get(url = endpoint, json=True)
-        debuggreen(f"[DEBUG] {self.challengedata.json()}")
-        return self.challengedata
+        challengedata = self.get(url = endpoint, json=True)
+        self.synchedchallengelist = challengedata.json()['data']
+        debuggreen(f"[DEBUG] {self.synchedchallengelist}")
+        return self.synchedchallengelist
 
     def _createbasechallenge(self,jsonpayload:dict):
         """
