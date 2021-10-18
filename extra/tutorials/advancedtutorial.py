@@ -9,25 +9,26 @@ PROGRAM_DESCRIPTION = """
 mini-tutorial in python programming, meta-programming, and error printing
 
 """
-# this is not a beginner tutorial, this is for intermediate level programmers, 
-TESTING = True
+
+# this is a variable declaration
+DEBUG = True
+# try changing this to false and running the program like this
+# python3 ./tutorial.py
 ################################################################################
 ##############                    IMPORTS                      #################
 ################################################################################
 # this tutoriasl has the imports at the location they are used
 # this is unacceptable for professionals and you should declare your imports 
 # at the top of the file as often as you can, there are exceptions to all rules
-# those exceptions will be partially outline in this file
+# those exceptions will be partially outlined in this file
 
-import re
-import sys,os
+import sys
 import threading
-import inspect
 import traceback
 import subprocess
 from pathlib import Path
 try:
-    import colorama
+    #import colorama
     from colorama import init
     init()
     from colorama import Fore, Back, Style
@@ -42,12 +43,37 @@ except ImportError as derp:
 ################################################################################
 ##############                 INTERNAL FUNkS                  #################
 ################################################################################
+# the basic syntax when declaring a function is :
 
-#######################
-# Check for root
-#######################
-#import getpass
-#isroot = getpass.getuser()
+# def functionname(param1:type=Default_value) -> ReturnType:
+#   """
+#   Documentation text for Google Style Docstrings
+#
+#   Args:
+#       param1 (type): description of parameter and its usage
+#   """
+#   somevalue = code.("lots_of_it")
+#   return somevalue
+
+
+# another example of type annotation:
+
+#   variable1:str = "I love dogs and cats"
+
+# the ": " operator is a "type annotation" indicating the "type" of data that variable represents
+# you can make a default value by using the " = " after the type annotation
+# it MUST be in that format and you cannot have a default value field before a uninitialized field
+# in the function declaration
+
+#Lambdas are pretty useful 
+#They are declared by using the syntax
+# lambda__function_name = lambda input_parameter: print(input_parameter)
+
+#the exact equivalent as a function declaration
+# def lambda_function_name(input_parameter):
+#    print(input_parameter)
+
+#Notice how you cannot use type annotation with lambdas
 
 #you could make lambdas or functions for things like this, it just depends on your usage
 redprint          = lambda text: print(Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL) if (DEBUG == True) else print(text)
@@ -55,11 +81,6 @@ blueprint         = lambda text: print(Fore.BLUE + ' ' +  text + ' ' + Style.RES
 greenprint        = lambda text: print(Fore.GREEN + ' ' +  text + ' ' + Style.RESET_ALL) if (DEBUG == True) else print(text)
 yellow_bold_print = lambda text: print(Fore.YELLOW + Style.BRIGHT + ' {} '.format(text) + Style.RESET_ALL) if (DEBUG == True) else print(text)
 
-#You can annotate types and return values at the same time
-# message is the string input
-# the " ": " operator is a "type annotation" indicating the "type" of data that variable represents
-# you can make a default value by using the " = " after the type annotation
-# it MUST be in that format and you cannot have a default value field before a uninitialized field
 
 #EXAMPLE OF WHAT WORKS
 def debugred(message:str=None):
@@ -196,7 +217,7 @@ class GenPerpThreader():
                 self.threader(self.exec_command(command), name)
 
         except Exception:
-                error_printer("[-] Interpreter Message: exec_command() failed!")
+                errorlogger("[-] Interpreter Message: exec_command() failed!")
                 return False
 
     def exec_command(command, blocking = True, shell_env = True):
@@ -222,21 +243,29 @@ class GenPerpThreader():
         Since the shell may spawn a subprocess to run the command, the shell 
         may finish before the spawned subprocess
         '''
+        def checkresponse(OSreply:tuple)-> bool:
+                        # its usually a good idea to return some sort of value from calls 
+            # to the OS like if it was even successfull
+            if OSreply is not None:
+                return False
+            else:
+                return True
         try:
             if blocking == True:
                 subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-                #step = subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-                #output, error = step.communicate()
-#                for output_line in output.decode().split('\n'):
-#                    print(output_line)
-    #            for error_lines in error.decode().split('\n'):
-#                    print(error_lines + " ERROR LINE")
+                step = subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                output, error = step.communicate()
+                for output_line in output.decode().split('\n'):
+                    print(output_line)
+                for error_lines in error.decode().split('\n'):
+                    print(error_lines + " ERROR LINE")
+                if checkresponse():
             elif blocking == False:
-                # TODO: not implemented yet                
+                # TODO: why dont you write something here to make a non blocking
+                # subprocess!
                 pass
-            return True
         except Exception:
-            error_printer("[-] Interpreter Message: exec_command() failed!")
+            errorlogger("[-] Interpreter Message: exec_command() failed!")
             return False
 
 ################################################################################
