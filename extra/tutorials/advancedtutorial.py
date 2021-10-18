@@ -2,6 +2,9 @@
 # object oriented programming constructs
 # you will see that in this tutorial
 
+# the code that should be written in a compiled language will be annotated with
+# the reasoning behind why it should or should not be in a compiled language
+
 PROGRAM_DESCRIPTION = """
 mini-tutorial in python programming, meta-programming, and error printing
 
@@ -11,12 +14,15 @@ TESTING = True
 ################################################################################
 ##############                    IMPORTS                      #################
 ################################################################################
+# this tutoriasl has the imports at the location they are used
+# this is unacceptable for professionals and you should declare your imports 
+# at the top of the file as often as you can, there are exceptions to all rules
+# those exceptions will be partially outline in this file
+
 import re
 import sys,os
-import logging
-import inspect
 import threading
-import argparse
+import inspect
 import traceback
 import subprocess
 from pathlib import Path
@@ -26,11 +32,11 @@ try:
     init()
     from colorama import Fore, Back, Style
 # Not from the documentation on colorama
-    COLORMEQUALIFIED = True
+    DEBUG = True
 except ImportError as derp:
     herp_a = derp
     print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
-    COLORMEQUALIFIED = False
+    DEBUG = False
 
    
 ################################################################################
@@ -43,12 +49,51 @@ except ImportError as derp:
 #import getpass
 #isroot = getpass.getuser()
 
+#you could make lambdas or functions for things like this, it just depends on your usage
+redprint          = lambda text: print(Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL) if (DEBUG == True) else print(text)
+blueprint         = lambda text: print(Fore.BLUE + ' ' +  text + ' ' + Style.RESET_ALL) if (DEBUG == True) else print(text)
+greenprint        = lambda text: print(Fore.GREEN + ' ' +  text + ' ' + Style.RESET_ALL) if (DEBUG == True) else print(text)
+yellow_bold_print = lambda text: print(Fore.YELLOW + Style.BRIGHT + ' {} '.format(text) + Style.RESET_ALL) if (DEBUG == True) else print(text)
 
-redprint          = lambda text: print(Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-blueprint         = lambda text: print(Fore.BLUE + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-greenprint        = lambda text: print(Fore.GREEN + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-yellow_bold_print = lambda text: print(Fore.YELLOW + Style.BRIGHT + ' {} '.format(text) + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
+#You can annotate types and return values at the same time
+# message is the string input
+# the " ": " operator is a "type annotation" indicating the "type" of data that variable represents
+# you can make a default value by using the " = " after the type annotation
+# it MUST be in that format and you cannot have a default value field before a uninitialized field
 
+#EXAMPLE OF WHAT WORKS
+def debugred(message:str=None):
+    '''
+    prints a message in color if DEBUG is set to true
+    '''
+    # you could put the conditional outside the function and check 
+    # DEBUG variable BEFORE you run the function but then you have to type 
+    # if (DEBUG == True): 
+    # more than once
+    # try to reduce the amount of characters by avoiding that and place your 
+    # conditionals in the correct scope to prevent repetition
+    if (DEBUG == True):
+        print(Fore.RED + ' ' +  message + ' ' + Style.RESET_ALL)        
+    # if that fails, just print the message without formatting
+    else:
+        print(message)
+
+# EXAMPLE OF WHAT DOESNT WORK
+# you would get the error "Non-default argument follows default argument"
+#def debugred(message:str=None,bold:bool):
+#    """
+#    This will throw an error on script initialization
+#    """
+
+
+
+################################################################################
+##############       FEEDING COMMAND LINE ARGUMENTS TO SCRIPT  #################
+################################################################################
+
+# you can use the "fire" module from google or the argparse module built into 
+# python
+import argparse
 parser = argparse.ArgumentParser(description=PROGRAM_DESCRIPTION)
 parser.add_argument('--file_input',
                                  dest    = 'FileInput',
@@ -59,6 +104,8 @@ parser.add_argument('--file_input',
 ################################################################################
 ##############               LOGGING AND ERRORS                #################
 ################################################################################
+# python has built in logging utilities
+import logging
 log_file            = 'logfile'
 logging.basicConfig(filename=log_file, 
                     #format='%(asctime)s %(message)s', 
@@ -66,10 +113,16 @@ logging.basicConfig(filename=log_file,
                     )
 logger              = logging.getLogger()
 
+
+################################################################################
+##############             ERROR HANDLING FUNCTIONS            #################
+################################################################################
 # this function uses the current "frame context" to draw from for its data
-def error_printer(message):
+def errorlogger(message):
     """
-    Basic error catching/printing function
+    prints line number and traceback
+    TODO: save stack trace to error log
+            only print linenumber and function failure
     """
     # exception:
     #   type
@@ -83,20 +136,6 @@ def error_printer(message):
     # The traceback module captures enough attributes from the original exception 
     # to this intermediary form to ensure that no references are held, while 
     # still being able to fully print or format it.
-    trace = traceback.TracebackException(exc_type, exc_value, exc_tb)
-    blueprint('LINE NUMBER >>>' + str(exc_tb.tb_lineno))
-    greenprint('[+]The Error That Occured Was :')
-    redprint( message + ''.join(trace.format_exception_only()))
-################################################################################
-##############             ERROR HANDLING FUNCTIONS            #################
-################################################################################
-def errorlogger(message):
-    """
-    prints line number and traceback
-    TODO: save stack trace to error log
-            only print linenumber and function failure
-    """
-    exc_type, exc_value, exc_tb = sys.exc_info()
     trace = traceback.TracebackException(exc_type, exc_value, exc_tb) 
     errormesg = message + ''.join(trace.format_exception_only())
     #traceback.format_list(trace.extract_tb(trace)[-1:])[-1]
@@ -144,18 +183,46 @@ class GenPerpThreader():
         
         Args: 
         """
-        self.threader(self.exec_command(command), name)
-
-    def exec_command(command, blocking = True, shell_env = True):
-        '''Runs a command with subprocess.Popen'''
         try:
-            # these are crappy but illustrate the point
+            # these are crappy but illustrate the point of a filtering mechanism to prevent abuse
+            # you should always be paying attention to the inputs from all directioons
             if "sudo" in command:
                 print("who's using SUDO!?!?")
                 exit()
             if "/etc" in command:
                 print("holy crap! they are trying to hack me!")
                 exit()
+            else:
+                self.threader(self.exec_command(command), name)
+
+        except Exception:
+                error_printer("[-] Interpreter Message: exec_command() failed!")
+                return False
+
+    def exec_command(command, blocking = True, shell_env = True):
+        '''Runs a command with subprocess
+        
+        Popen is nonblocking. call and check_call are blocking. 
+        You can make the Popen instance block by calling its wait or 
+        communicate method. 
+        If you look in the source code, you'll see call calls 
+        >>> Popen(...).wait(), 
+
+        which is why it is blocking. 
+        
+        check_call calls call, which is why it blocks as well.
+
+        Strictly speaking, the following code is orthogonal to the 
+        issue of blocking. 
+        >>> subprocess.Popen(cmd,shell=True)
+        
+        However, shell=True causes Python to exec a shell and then run the 
+        command in the shell. If you use a blocking call, the call will return
+        when the shell finishes. 
+        Since the shell may spawn a subprocess to run the command, the shell 
+        may finish before the spawned subprocess
+        '''
+        try:
             if blocking == True:
                 subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
                 #step = subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)

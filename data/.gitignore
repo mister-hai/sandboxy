@@ -1,5 +1,5 @@
 CTFd/logs/*
-CTFd/uploads/*
+ctf*
 redis/*
 mysql/*
 

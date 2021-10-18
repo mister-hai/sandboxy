@@ -5,11 +5,77 @@ from kubernetes import client, config, watch
 import docker,yaml
 
 class Deployment():
-    def __init__(self):
+    """
+    Base Class for all the attributes required on both the CTFd side and Repository side
+    Represents the challenge.yml as exists in the folder for that specific challenge
+
+    Represents a Challenge Folder
+    
+    Contents of a Challenge Folder:
+        handouts: File or Folder
+        solution: File or Folder
+        challenge.yaml
+
+    Args:
+        yamlfile        (Path): filepath of challenge.yaml
+        category        (str):  category to assign to, currently set as folder name
+                                needs to be set by yaml tag
+        handout         (Path)
+        solution        (Path)
+    """
+    def __init__(self,
+            category,
+            handout,
+            solution,
+            readme
+            ):
+        self.tag = "!Challenge:"
+        self.readme = readme
+        self.category = category
+        #self.deployment         = deployment
+        self.solution = solution
+        self.handout  = handout
+
+        # this is set after syncing by the ctfd server, it increments by one per
+        # challenge upload so it's predictable
+        self.id = int
+
+    def _initchallenge(self,**kwargs):
         """
-        Represents a kubernetes yaml, this is the same as the challenge class
-        but it resides ALONGSIDE a challenge , LINKED to it
+        Unpacks a dict representation of the challenge.yaml into
+        The Challenge() Class, this is ONLY for challenge.yaml
+
+        The structure is simple and only has two levels, and no stored code
+
+        >>> asdf = Challenge(filepath)
+        >>> print(asdf.category)
+        >>> 'Forensics'
+
+        The new challenge name is created by:
+
+        >>> self.__name = "Challenge_" + str(hashlib.sha256(self.name))
+        >>> self.__qualname__ = "Challenge_" + str(hashlib.sha256(self.name))
+        
+        Resulting in a name similar to 
+        Args:
+            **entries (dict): Dict returned from a yaml.load() operation on challenge.yaml
         """
+        # internal data
+        self.id = str
+        self.synched = bool
+        self.installed = bool
+
+        self.jsonpayload = {}
+        self.scorepayload = {}
+        # we have everything preprocessed
+        for each in kwargs:
+            setattr(self,each,kwargs.get(each))
+        # the new classname is defined by the name tag in the Yaml now
+        self.internalname = "Challenge_" + str(sha1(self.name.encode("ascii")).hexdigest())
+        self.__name = self.internalname
+        self.__qualname__ = self.internalname
+        yellowboldprint(f'[+] Internal name: {self.internalname}')
+
 
 class DockerManagment():
     def __init__(self):

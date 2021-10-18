@@ -1,0 +1,215 @@
+version: "3"
+#################################################################
+## THIS FILE CONTAINS A TEST 
+##docker network create --gateway=192.168.0.1 --subnet=192.168.0.0/24 net
+#################################################################
+services:
+#################################################################
+#               ECHO CTF BACKEND
+#################################################################
+
+    backend:
+      container_name: echoctfred_backend
+      image: echothrust/echoctf.red-backend
+      build:
+        context: ./containers/echoCTF/
+        dockerfile: contrib/Dockerfile-backend
+        args:
+        - RED_APP=${RED_APP}
+        - MYSQL_HOST=${MYSQL_HOST}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+      restart: "always"
+      volumes:
+        - ./data:/var/www/echoCTF.RED/backend/web/uploads
+  #      - ./themes/images:/var/www/echoCTF.RED/backend/web/images
+      ports:
+        - ${ECHOCTFBACKENDPORT}:80
+      links:
+        - db:db
+      networks:
+        public:
+          ipv4_address: ${ECHOCTFBACKEND}
+        private:
+          ipv4_address: ${ECHOCTFBACKENDPRIVATE}
+#################################################################
+#         ECHO CTF FRONTEND
+#################################################################
+
+    frontend:
+      container_name: echoctfred_frontend
+      image: echothrust/echoctf.red-frontend
+      build:
+        context: ./containers/echoCTF/
+        dockerfile: contrib/Dockerfile-frontend
+        args:
+        - RED_APP=frontend
+        - MYSQL_HOST=db
+        - MYSQL_USER=vpnuser
+        - MYSQL_PASSWORD=vpnuserpass
+        - MYSQL_DATABASE=echoCTF
+      restart: "always"
+      volumes:
+        - data-challenges:/var/www/echoCTF.RED/frontend/web/uploads
+  #      - ./themes/images:/var/www/echoCTF.RED/frontend/web/images
+      links:
+        - db:db
+      ports:
+        - ${ECHOCTFFRONTENDPORT}:80
+      networks:
+        private:
+          ipv4_address: ${ECHOCTFFRONTENDPRIVATE}
+        public:
+          ipv4_address: ${ECHOCTFFRONTEND}
+
+#################################################################
+#                   REDIS SERVER
+#################################################################
+    cache:
+      image: redis
+      #depends_on:
+      #  - nginx
+      hostname: cache
+      #command: redis-server --appendonly yes
+      ports:
+        #- ${REDISPORT}:6379
+        - 6379:6379
+      volumes:
+        - ./data/redis:/data
+      restart: unless-stopped
+      #network_mode: host
+      networks:
+        private:
+#################################################################
+#                   MYSQL SERVER
+#################################################################
+    db1:
+      container_name: echoctfred_db
+      image: echothrust/echoctf.red-db
+      build:
+        context: ./containers/echoCTF/
+        dockerfile: contrib/Dockerfile-mariadb
+      restart: "always"
+      ports:
+        - 3306:3306
+        - 11211:11211
+      volumes:
+        - data-mysql:/var/lib/mysql
+      environment:
+        - MYSQL_ALLOW_EMPTY_PASSWORD=root
+        - MYSQL_USER=vpnuser
+        - MYSQL_PASSWORD=vpnuserpass
+        - MYSQL_DATABASE=echoCTF
+      networks:
+        private:
+          ipv4_address: "172.24.0.253"
+
+    db:
+      image: mariadb:10.4.12
+#      depends_on:
+#        - nginx
+      restart: always
+      environment:
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+      # This command is required to set important mariadb defaults
+      command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
+      volumes:
+        - ./data/mysql:/var/lib/mysql
+      #network_mode: host
+      networks:
+          private:
+#################################################################
+# OPEN VPN GATEWAY
+#################################################################   
+
+#    vpn:
+#      container_name: echoctfred_vpn
+#      cap_add:
+#        - NET_ADMIN
+#      privileged: true
+#      image: echothrust/echoctf.red-vpn
+#      build:
+#        context: ./containers/echoCTF/
+#        dockerfile: contrib/Dockerfile-vpn
+#        args:
+#        - RED_APP=backend
+#        - MYSQL_HOST=db
+#        - MYSQL_USER=vpnuser
+#        - MYSQL_PASSWORD=vpnuserpass
+#        - MYSQL_DATABASE=echoCTF
+#      restart: "always"
+#      environment:
+#      - RED_APP=backend
+#      - MYSQL_HOST=db
+#      - MYSQL_USER=vpnuser
+#      - MYSQL_PASSWORD=vpnuserpass
+#      - MYSQL_DATABASE=echoCTF
+#      volumes:
+#        - data-openvpn:/etc/openvpn
+#      ports:
+#        - "1194:1194/udp"
+#      links:
+#        - db:db
+#      networks:
+#        public:
+#          ipv4_address: ${ECHOCTFVPN}
+#        private:
+#          ipv4_address: ${ECHOCTFVPNPRIVATE}
+#        targets:
+#          ipv4_address: "10.0.160.1"
+
+#  target1:
+#    container_name: echoctfred_target1
+#    restart: "always"
+#    image: nginx
+#    networks:
+#      targets:
+#        ipv4_address: "10.0.160.2"
+
+#################################################################
+#     VOLUMES SECTION
+#################################################################      
+
+volumes:
+  data-mysql:
+    driver: local
+  data-openvpn:
+    driver: local
+  data-challenges:
+    driver: local
+#################################################################
+#     NETWORKS SECTION
+#################################################################      
+
+networks:
+  public:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.26.0.0/24
+        gateway: 172.26.0.254
+  private:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.24.0.0/24
+        gateway: 172.24.0.254
+  targets:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 10.0.160.0/24
+        gateway: 10.0.160.254

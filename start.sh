@@ -306,6 +306,34 @@ installdockercompose()
 # mkdir -p ~/.local/bin/kubectl
 # mv ./kubectl ~/.local/bin/kubectl
 # and then add ~/.local/bin/kubectl to $PATH
+setupforkubernetes()
+{
+  cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+  br_netfilter
+EOF
+
+  cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+  net.bridge.bridge-nf-call-ip6tables = 1
+  net.bridge.bridge-nf-call-iptables = 1
+EOF
+  cmd='sudo sysctl --system'
+  runcommand cmd
+  cmd='sudo apt-get update'
+  runcommand cmd
+  cmd='sudo apt-get install -y apt-transport-https ca-certificates curl'
+  runcommand cmd
+  cmd='sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg'
+  runcommand cmd
+  cmd='echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list'
+  runcommand cmd
+  cmd='sudo apt-get update'
+  runcommand cmd
+  cmd='sudo apt-get install -y kubelet kubeadm kubectl'
+  runcommand cmd
+  cmd='sudo apt-mark hold kubelet kubeadm kubectl'
+  runcommand cmd
+}
+
 installkubernetes()
 {
   #kubectl
@@ -348,6 +376,10 @@ installhelm(){
   cmd='chmod 700 get_helm.sh'
   runcommand cmd
   cmd='./get_helm.sh'
+  runcommand cmd
+}
+installansiblek8s(){
+  cmd='ansible-galaxy collection install community.kubernetes'
   runcommand cmd
 }
 installpythonlibraries()
@@ -453,7 +485,6 @@ buildproject()
 }
 
 # CTFCLI tool
-# the .env file should be setting all these
 ctfclifunction()
 {
   if [ $(python3 ./ctfdcli/ --help) ] ; then

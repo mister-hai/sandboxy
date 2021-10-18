@@ -16,12 +16,12 @@ def read(fname):
 
 
 setup(
-    name="SandboxyCTFCLI",
+    name="CTFCLI",
     version="wat",
-    author="Kevin Chung (original author), MRHAI (rewrite)",
-    author_email="kchung@ctfd.io",
+    author="MRHAI",
+    author_email="MRHAI@HAX.NET",
     license="Apache 2.0",
-    description="Tool for creating and running Capture The Flag competitions && WITH SANDBOXY",
+    description="Tool for creating and running Capture The Flag competitions",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     keywords=["ctf"],
@@ -34,7 +34,6 @@ setup(
         "Pygments==2.7.4",
         "requests==2.22.0",
         "colorama==0.4.3",
-        "appdirs==1.4.3",
         "gitpython",
     ],
     packages=find_packages(),

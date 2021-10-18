@@ -1,6 +1,6 @@
 /data/CTFd/**/*.tar.gz
 /data/CTFd/**/*.gz
-
+/containers/echo*
 data/mysql/*
 data/CTFd/logs/*
 data/redis/*
