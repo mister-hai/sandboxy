@@ -17,15 +17,20 @@ DEBUG = True
 ################################################################################
 ##############                    IMPORTS                      #################
 ################################################################################
+
 # this tutoriasl has the imports at the location they are used
 # this is unacceptable for professionals and you should declare your imports 
 # at the top of the file as often as you can, there are exceptions to all rules
 # those exceptions will be partially outlined in this file
 
-import sys
-import threading
-import traceback
-import subprocess
+# this is code to insert the current files location into the system PATH Variable
+# this is good for turning the file into a module without using an __init__.py
+# although the traditional method of module creation is preffered
+# that would involve this code being in the __init__.py file itself
+# before the imports to define the module structure
+import os,sys
+sys.path.insert(0, os.path.abspath('.'))
+
 from pathlib import Path
 try:
     #import colorama
@@ -122,6 +127,7 @@ parser.add_argument('--file_input',
                                  default = "cowtest", 
                                  help    = "Binary file" )
 
+
 ################################################################################
 ##############               LOGGING AND ERRORS                #################
 ################################################################################
@@ -138,6 +144,7 @@ logger              = logging.getLogger()
 ################################################################################
 ##############             ERROR HANDLING FUNCTIONS            #################
 ################################################################################
+import traceback
 # this function uses the current "frame context" to draw from for its data
 def errorlogger(message):
     """
@@ -171,6 +178,13 @@ def errorlogger(message):
     exc_info = sys.exc_info()
     traceback.print_exception(*exc_info)
 
+
+################################################################################
+##############        Threading and parallel processing        #################
+################################################################################
+
+import threading
+import subprocess
 
 # do NOT just casually execute commands with subprocess
 # make a specific function to validate and handle the execution
@@ -243,9 +257,14 @@ class GenPerpThreader():
         Since the shell may spawn a subprocess to run the command, the shell 
         may finish before the spawned subprocess
         '''
+        # you can declare functions inside functions
+        # this is one of the foundations of "decorators" A meta programming technique
+        # to add additional functionality to the functions/classes they "decorate"
         def checkresponse(OSreply:tuple)-> bool:
                         # its usually a good idea to return some sort of value from calls 
             # to the OS like if it was even successfull
+
+            # this was written early in the morning and you should try to make it do more than this
             if OSreply is not None:
                 return False
             else:
@@ -259,7 +278,10 @@ class GenPerpThreader():
                     print(output_line)
                 for error_lines in error.decode().split('\n'):
                     print(error_lines + " ERROR LINE")
-                if checkresponse():
+                if checkresponse(step.returncode):
+                    pass
+                else:
+                    raise Exception
             elif blocking == False:
                 # TODO: why dont you write something here to make a non blocking
                 # subprocess!
@@ -269,12 +291,79 @@ class GenPerpThreader():
             return False
 
 ################################################################################
-##############            SHELLCODE GENERATION                 #################
+##############            METACLASSING TUTORIAL                #################
+# https://www.programiz.com/python-programming/multiple-inheritance            #
 ################################################################################
 
+# so you can have your base class just sitting there being itself, right?
+class ClassA():
+    def __init__(self, message):
+        print(message)
+
+# when another class comes along...
+class ProtoClass1():
+    """
+    An example of how to dynamically create classes based on params
+
+    Args:
+        codeobject (object): An arbitrary function or bit of code as a single object
+    """
+    # and when it starts operation, its telling the other class to do something!
+    # "codeobject" can be literally anything, but its most effective if you use
+    # a class or a function, this is the basis of decorators which will be shown 
+    # further below
+    def __init__(self, codeobject, message:str):
+        print("ClassB.__init__()")
+        self.codeobject = codeobject
+        # this thing here
+        self.codeobject(message)
+        # is exactly the same as
+        # self.ClassA(message)
+
+# using the classes
+message = "this message is piped through the scope to an arbitrary class"
+testinstance = ProtoClass1(ClassA,message=message)
+testinstance
+
+# but then you have this other class here, it unpacks arguments into itself
+class Prototype1():
+    """
+    The Class Accepts a dict, it turns those key,value pairs into 
+    class attributes in the form of 
+    >>> dictofmany = {'integer':42069,'string':'ayyyyy lmao'}
+    >>> test = Prototype1(**dictofmany)
+    >>> test.integer
+    42069
+    >>> test.string
+    ayyyyy lmao
+
+    """
+    # __cls__ is the "dunder" method for "inherent trait to the class"
+    # cls attributes are like saying
+    # Dog.Family = "canidae"
+    # dog.species = "Canis lupus familiaris"
+    # Dog.name   = "poopmaster9001"
+
+    # in this example, a dogs name.... is something that is not inherent to that animal itself
+    # however, its species and taxonomic nomenclature ARE inherent values, assigned to ALL dogs
+    
+    # you would assign those values here, in the __cls__ "dunder" method
+    # ** "unpacks" the dict
+    # https://realpython.com/python-kwargs-and-args/
+
+    def __cls__(cls,*args,**kwargs):
+        for key in kwargs.copy().keys():
+            if key not in ["",""] :
+                raise Exception
+    def __init__(self,**entries):
+        self.__dict__.update(entries)
+
+################################################################################
+##############            SHELLCODE GENERATION                 #################
+################################################################################
 # metaclass to represent a disassembled file
 # this is an example of inheritance
-class DisassembledFile(Prototype2):
+class DisassembledFile(Prototype1):
     def __init__(self, **kwargs):
         # this performs the following actions
         # calls Prototype2
@@ -296,7 +385,7 @@ class Radare2Disassembler():
         try:
             import r2pipe
         except Exception:
-            error_printer("R2pipe not installed, exiting program")
+            errorlogger("R2pipe not installed, exiting program")
             exit()
         # Stick a new cartridge into the slot
         # self.herp = DisassembledFile()
@@ -340,11 +429,11 @@ class ObjDumpDisassembler():
         try:
             objdump_input = open("objdump-{}.txt".format(self.file_input), "r")
         except Exception:
-            error_printer("[-] Could not open file : objdump-{}.txt".format(self.file_input))
+            errorlogger("[-] Could not open file : objdump-{}.txt".format(self.file_input))
         try:
             self.ParseObjDumpOutput(objdump_input)
         except Exception:
-            error_printer("[-] Could not parse ObjDump output")
+            errorlogger("[-] Could not parse ObjDump output")
 
 
     def exec_objdump(self, input):
@@ -405,7 +494,7 @@ class Disassembler():
                 yellow_bold_print("[+] Using RADARE2 For disassembly, hope youre in a pyshell!")
                 Radare2Disassembler(filename)
             except ImportError:
-                error_printer("[-] R2PIPE not installed, falling back to objdump")
+                errorlogger("[-] R2PIPE not installed, falling back to objdump")
                 ObjDumpDisassembler(filename)
         elif choice == "objdump":
             #yellow_bold_print("[+] Using Objdump for disassembly")
@@ -420,7 +509,7 @@ class Disassembler():
 #        try:
 #            open(file= file_input)
 #        except Exception:
-#            error_printer("[-] Error: Failed to open file {}".format(file_input))
+#            errorlogger("[-] Error: Failed to open file {}".format(file_input))
 #class TestCompiler():
 #    def __init__(self, input_src      = "cowtest.c",
 #                       output_file    = "cowtest",

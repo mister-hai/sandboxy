@@ -11,7 +11,7 @@ class ClassA():
         print(message)
 
 # when another class comes along...
-class Dog():
+class DecoratorFactory():
     """
     An example of how to dynamically create classes based on params
 
@@ -22,13 +22,10 @@ class Dog():
     # "codeobject" can be literally anything, but its most effective if you use
     # a class or a function, this is the basis of decorators which will be shown 
     # further below
-    def __init__(self, codeobject, message:str):
+    def __init__(self, codeobject):
         print("ClassB.__init__()")
         self.codeobject = codeobject
-        # this thing here
-        self.codeobject(message)
-        # is exactly the same as
-        # self.ClassA(message)
+        self.codeobject()
 
 # using the classes
 message = "this message is piped through the scope to an arbitrary class"
