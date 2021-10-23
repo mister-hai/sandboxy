@@ -1,3 +1,10 @@
+# dev server
+    K:\vms
+    λ set PATH=%PATH%;"C:\Program Files\Oracle\VirtualBox"
+
+    K:\vms
+    λ VBoxManage modifyvm parrotOS --nested-hw-virt on
+
 
 # FIRST TIME SERVER SETUP
 

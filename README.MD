@@ -19,6 +19,13 @@
                     
 # DAILY PLAN
 
+    Recently moved, switching from CTFd frontend to EchoCTF.RED frontend 
+    progress is slow. 
+
+    Many things need to be done IRL
+
+    This is my main project it will be finished eventually
+
     Working on getting the main-menu working
 
     Writing tutorials based on the code in the repository

@@ -1,12 +1,17 @@
-# I like using analogies to real world itens, and machines to explain
-# object oriented programming constructs
-# you will see that in this tutorial
-
-# the code that should be written in a compiled language will be annotated with
-# the reasoning behind why it should or should not be in a compiled language
-
 PROGRAM_DESCRIPTION = """
 mini-tutorial in python programming, meta-programming, and error printing
+
+I like using analogies to real world itens, and machines to explain
+object oriented programming constructs
+you will see that in this tutorial
+
+the code that should be written in a compiled language will be annotated with
+the reasoning behind why it should or should not be in a compiled language
+
+the following videos can be used as instruction
+
+Most Advance Python Course for Professionals [2021] 8 HOUR VIDEO
+https://www.youtube.com/watch?v=tdn9_MZ0lN4
 
 """
 
@@ -29,6 +34,7 @@ DEBUG = True
 # that would involve this code being in the __init__.py file itself
 # before the imports to define the module structure
 import os,sys
+from shutil import ExecError
 sys.path.insert(0, os.path.abspath('.'))
 
 from pathlib import Path
@@ -193,15 +199,14 @@ import subprocess
 
 class GenPerpThreader():
     '''General Purpose threading implementation that accepts a generic programmatic entity'''
-    def __init__(self,function_to_thread, threadname):
-        self.thread_function = function_to_thread
-        self.function_name   = threadname
-        self.threader(self.thread_function,self.function_name)
 
-    def threader(self, thread_function, name):
+    # single underscore functions are "private"
+    # double underscore functions are "strongly private"
+    def _threader(self, thread_function, name):
+        """ Dont use this method, it gets called by run"""
         try:
-            print("Thread {}: starting".format(self.function_name))
-            thread = threading.Thread(None,self.thread_function, self.function_name)
+            print("Thread {}: starting".format(name))
+            thread = threading.Thread(None,thread_function, name)
             thread.start()
             print("Thread {}: finishing".format(name))
             return True
@@ -209,32 +214,21 @@ class GenPerpThreader():
             errorlogger("[-] asdf")
             return False
 
-    def run(self, command, name):
+    def run(self,function_to_thread, threadname):
         """
-        Uses Threader to run a shell command, this is the public method
-        to run them. 
+        Uses Threader to run a shell command, this is another private method
+        but I want to use it pubically sometimes so its not got an underscore
 
-        Do not use the internal one
+        Do not use this otherwise
         
         Args: 
         """
-        try:
-            # these are crappy but illustrate the point of a filtering mechanism to prevent abuse
-            # you should always be paying attention to the inputs from all directioons
-            if "sudo" in command:
-                print("who's using SUDO!?!?")
-                exit()
-            if "/etc" in command:
-                print("holy crap! they are trying to hack me!")
-                exit()
-            else:
-                self.threader(self.exec_command(command), name)
+        self.thread_function = function_to_thread
+        self.function_name   = threadname
+        self.threader(self.thread_function,self.function_name)
 
-        except Exception:
-                errorlogger("[-] Interpreter Message: exec_command() failed!")
-                return False
 
-    def exec_command(command, blocking = True, shell_env = True):
+    def exec_command(self,command, blocking = True, shell_env = True):
         '''Runs a command with subprocess
         
         Popen is nonblocking. call and check_call are blocking. 
@@ -257,31 +251,39 @@ class GenPerpThreader():
         Since the shell may spawn a subprocess to run the command, the shell 
         may finish before the spawned subprocess
         '''
-        # you can declare functions inside functions
-        # this is one of the foundations of "decorators" A meta programming technique
-        # to add additional functionality to the functions/classes they "decorate"
-        def checkresponse(OSreply:tuple)-> bool:
-                        # its usually a good idea to return some sort of value from calls 
-            # to the OS like if it was even successfull
 
-            # this was written early in the morning and you should try to make it do more than this
-            if OSreply is not None:
-                return False
+        try:
+            # try to check if something exists before calling it
+            # shutil is a library to perform shell functions, independant of OS
+            import shutil
+            if shutil.which("objdump"):
+                # do nothing right now if command is available
+                pass
             else:
-                return True
+                # raise an exception if the command doesnt exist
+                raise ExecError("[-] Error: command not available")
+            # these are crappy but illustrate the point of a filtering mechanism to prevent abuse
+            # you should always be paying attention to the inputs from all directioons
+            if "sudo" in command:
+                print("who's using SUDO!?!?")
+                exit()
+            if "/etc" in command:
+                print("holy crap! they are trying to hack me!")
+                exit()
+            else:
+                print("[+] command seems safe to run, proceeding")
+        except Exception:
+                errorlogger("[-] Interpreter Message: exec_command() failed!")
+                return False
+        # if all those filters dont cause issue, run the command
         try:
             if blocking == True:
-                subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
                 step = subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
                 output, error = step.communicate()
                 for output_line in output.decode().split('\n'):
                     print(output_line)
                 for error_lines in error.decode().split('\n'):
                     print(error_lines + " ERROR LINE")
-                if checkresponse(step.returncode):
-                    pass
-                else:
-                    raise Exception
             elif blocking == False:
                 # TODO: why dont you write something here to make a non blocking
                 # subprocess!
@@ -351,10 +353,30 @@ class Prototype1():
     # ** "unpacks" the dict
     # https://realpython.com/python-kwargs-and-args/
 
-    def __cls__(cls,*args,**kwargs):
+    # for the purposes of this tutorial, I will be using file attributes
+    # every file has a "type" and format
+    def __cls__(cls,**kwargs):
+        cls.Symbols = dict
+        cls.Sections = dict
+
+    # __new__ is the function run whenever you instantiate a new class
+    # python splits the inputs and feeds the kwargs to everything called
+    # when the class is created
+    # __cls__ , __new__, __init__ 
+    # all that sort of stuff
+    def __new__(cls, **kwargs):
+        # the dict.copy() method will create a shallow copy of the dict so you
+        # can loop over it without error.
         for key in kwargs.copy().keys():
-            if key not in ["",""] :
-                raise Exception
+        # try commenting the above line and uncommenting the following line
+        # better to filter out unwanted / unexpected info by whitelisting
+        # the data desired
+        #for key in kwargs.keys():
+            if key not in ["Symbols","Sections"] :
+                raise KeyError("[-] Error: Key {key} not in input, check the file path/type?")
+            elif key in ["Symbols","Sections"]:
+                setattr(cls,key,kwargs.pop(key))
+
     def __init__(self,**entries):
         self.__dict__.update(entries)
 
@@ -364,13 +386,12 @@ class Prototype1():
 # metaclass to represent a disassembled file
 # this is an example of inheritance
 class DisassembledFile(Prototype1):
+
     def __init__(self, **kwargs):
         # this performs the following actions
-        # calls Prototype2
-        # gives Prototype2 the kwargs dict
+        # calls Prototype1
+        # gives Prototype1 the kwargs dict
         super().__init__(**kwargs)
-
-
 
 class Radare2Disassembler():
     '''assigns data to a metaclass DisassembledFile()'''
@@ -417,32 +438,28 @@ class Radare2Disassembler():
 class ObjDumpDisassembler():
     ''''Uses the linux command objdump'''
 
-    def __init__(self, FileInput):
-        
+    def __init__(self, FileInput):        
         self.file_input = FileInput
-
-        self.command = "objdump -d {} >> objdump-{}.txt".format(self.file_input,self.file_input)
-        # do the thing
-        #yellow_bold_print("[+] Beginning disassembly")
-        self.exec_objdump(self.file_input)
-        # get the hex
         try:
-            objdump_input = open("objdump-{}.txt".format(self.file_input), "r")
+            self.objdump_input = open("objdump-{}.txt".format(self.file_input), "r")
+            # do the thing
+            self.objdump_output = self.exec_objdump(self.objdump_input)
         except Exception:
             errorlogger("[-] Could not open file : objdump-{}.txt".format(self.file_input))
         try:
-            self.ParseObjDumpOutput(objdump_input)
+            # get the hex
+            self.ParseObjDumpOutput(self.objdump_output)
         except Exception:
             errorlogger("[-] Could not parse ObjDump output")
 
 
     def exec_objdump(self, input):
         ''' 
-        Command to execute , place command line args here
+        Executes objdump if objdump is available
         '''
-        command = "objdump -d {} >> objdump-{}.txt".format(input,input)
-        
-        exec_command(command = command)
+        self.command = f"objdump -d {input} >> objdump-{input}.txt"
+        threader = GenPerpThreader()
+        threader.exec_command(command = self.command)
 
     def ParseObjDumpOutput(self, objdump_output):
         '''
@@ -485,6 +502,9 @@ class ObjDumpDisassembler():
         #prints the shellcode so you can pipe the data
         print(hexstring)
 
+# this class imports r2pipe in the case they have radare 2 installed
+# it requires a large download and many packages and not everyone needs that
+# this is an example of acceptable inline imports
 class Disassembler():
     ''' main class that holds the logic for argparsing'''
     def __init__(self, filename, choice):
